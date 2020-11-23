@@ -26,14 +26,14 @@ echo "=> Installing PHP...\n"
 sudo apt install php libapache2-mod-php -y
 
 echo "=> Installing regattastart php files at /var/www/html/...\n"
-sudo mkdir -v /var/www/html/images
-sudo -v cp index.php /var/www/html
-sudo -v cp index0.php /var/www/html
-sudo -v cp index6.php /var/www/html
-sudo -v cp index7.php /var/www/html
-sudo -v cp w3.css /var/www/html
-sudo -v chmod -R 755 /var/www/html/
-sudo -v chown -R www-data:www-data /var/www/html
+sudo mkdir -v -p /var/www/html/images
+sudo cp -v index.php /var/www/html
+sudo cp -v index0.php /var/www/html
+sudo cp -v index6.php /var/www/html
+sudo cp -v index7.php /var/www/html
+sudo cp -v w3.css /var/www/html
+sudo chmod -R 755 /var/www/html/
+sudo chown -R www-data:www-data /var/www/html
 
 echo "=> setup for videocamera ...\n"
 sudo usermod -a -G video www-data
