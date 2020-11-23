@@ -12,10 +12,10 @@ sudo a2enmod cgi
 
 echo "=> Installing regattastart files at CGI-BIN...\n"
 sudo cp regattastart7.py /usr/lib/cgi-bin
-sudo cp regattastart6.py /usr/lib/cgi-bin 
+sudo cp regattastart6.py /usr/lib/cgi-bin
 sudo cp select_data7.py /usr/lib/cgi-bin
 sudo cp select_data6.py /usr/lib/cgi-bin
-sudo cp logging.conf /usr/lib/cgi-bin/ 
+sudo cp logging.conf /usr/lib/cgi-bin/
 sudo cp power_check.py /usr/lib/cgi-bin
 sudo cp .dropbox_uploader /usr/lib/cgi-bin/
 sudo cp -vr /Dropbox-Uploader /usr/lib/cgi-bin/
@@ -26,7 +26,7 @@ echo "=> Installing PHP...\n"
 sudo apt install php libapache2-mod-php -y
 
 echo "=> Installing regattastart php files at /var/www/html/...\n"
-mkdir /var/www/html/images
+sudo mkdir /var/www/html/images
 sudo cp index.php /var/www/html
 sudo cp index0.php /var/www/html
 sudo cp index4.php /var/www/html
