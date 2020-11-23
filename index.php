@@ -99,9 +99,6 @@ if (file_exists($filename))
 <div align="center">
 <h4><a href="http://90.236.109.106:3000" title="Grafana data and charts"> Grafana Dashboard</a></h4>
 <div align="center">
-<h4><a href="/chart_data.php" title="Power data and chartds"> Old Power Charts  </a></h4>
-<div align="center">
-
 <h3> Bilder tagna vid varje signal innan 1a start </h3>
 <h3> Varningssignal 5 minuter innan 1a start</h3>
 <img src="/images/1st-5min_pict.jpg?<?php echo Date("Y.m.d.G.i.s")?>" alt="1st 5 min picture" width="720" height="480"  >
@@ -131,9 +128,6 @@ for ($x = 1; $x <= $num_video; $x++) {
 }
 ?>
 </div>
-<div>
-<iframe src="http://90.236.109.106:3000/d-solo/6uuoK1iRz/regattastart-dashboard?orgId=1&from=1604952350667&to=1604995550667&panelId=12" width="450" height="200" frameborder="0"></iframe>
-</dev>
 </main>
 </body>
 </html>
