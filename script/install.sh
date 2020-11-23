@@ -27,6 +27,8 @@ sudo apt install php libapache2-mod-php -y
 
 echo "=> Installing regattastart php files at /var/www/html/...\n"
 sudo mkdir -v -p /var/www/html/images
+sudo cp -v /var/www/html/index.html /var/www/html/index0.html
+sudo rm -v /var/www/html/index.html
 sudo cp -v index.php /var/www/html
 sudo cp -v index0.php /var/www/html
 sudo cp -v index6.php /var/www/html
