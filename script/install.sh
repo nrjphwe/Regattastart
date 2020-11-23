@@ -15,8 +15,12 @@ sudo cp regattastart7.py /usr/lib/cgi-bin
 sudo cp regattastart6.py /usr/lib/cgi-bin
 sudo cp select_data7.py /usr/lib/cgi-bin
 sudo cp select_data6.py /usr/lib/cgi-bin
+<<<<<<< HEAD
 sudo cp logging.conf /usr/lib/cgi-bin/
 sudo cp power_check.py /usr/lib/cgi-bin
+=======
+sudo cp logging.conf /usr/lib/cgi-bin/ 
+>>>>>>> 1a9ad127767fb68965f312febb53234184563d01
 sudo cp .dropbox_uploader /usr/lib/cgi-bin/
 sudo cp -vr /Dropbox-Uploader /usr/lib/cgi-bin/
 sudo chmod -R 755 /usr/lib/cgi-bin
