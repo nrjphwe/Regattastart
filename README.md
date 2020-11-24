@@ -6,4 +6,5 @@ Installation
 
 Connect to your Raspberry Pi via SSH
 Clone this repo: git clone https://github.com/nrjphwe/Regattastart
-Run the setup script: ./Regattastart/script/install
+cd Regattastart 
+and run the setup script: ./script/install.sh
