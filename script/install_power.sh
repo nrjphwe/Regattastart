@@ -24,6 +24,7 @@ sudo chmod -R 755 /var/www/html/
 sudo chown -R www-data:www-data /var/www/html
 
 echo "=> setup for ADS1115 ...\n"
+sudo apt-get -y install python3-pip
 pip3 install adafruit-circuitpython-ads1x15
 
 
