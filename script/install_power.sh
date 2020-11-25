@@ -30,10 +30,16 @@ pip3 install adafruit-circuitpython-ads1x15
 
 echo "=> setup SQL-Mariadb:...\n"
 sudo apt install mariadb-server
-sudo apt-get install -y php5-mysql
+echo "this is skipped sudo apt-get install -y php5-mysql"
 sudo systemctl stop mariadb
 sudo mysqld_safe --skip-grant-tables --skip-networking &
-echo mysql -u root
+echo " skipped mysql -u root"
 sudo mysql_secure_installation
 sudo systemctl start mariadb
 systemctl status mariadb.service
+
+echo "python integration to MYSQL"
+pip3 install mariadb
+sudo apt install python3-mysql.connector
+
+http://localhost/phpmyadmin/index.php
