@@ -46,3 +46,7 @@ sudo usermod -a -G gpio www-data
 
 echo "=> setup for video encoding...\n"
 sudo apt install -y gpac
+
+# Next we need to start this script on boot. So we'll place the script in /usr/local/bin and make it executable:
+sudo cp listen-for-shutdown.py /usr/local/bin/
+sudo chmod +x /usr/local/bin/listen-for-shutdown.py
