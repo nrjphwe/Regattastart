@@ -50,3 +50,11 @@ sudo apt install -y gpac
 # Next we need to start this script on boot. So we'll place the script in /usr/local/bin and make it executable:
 sudo cp listen-for-shutdown.py /usr/local/bin/
 sudo chmod +x /usr/local/bin/listen-for-shutdown.py
+
+# Now add another script called listen-for-shutdown.sh that will start/stop our service.
+# Place this file in /etc/init.d and make it executable.
+sudo cp listen-for-shutdown.sh /etc/init.d/
+sudo chmod +x /etc/init.d/listen-for-shutdown.sh
+# Now we'll register the script to run on boot.
+sudo update-rc.d listen-for-shutdown.sh defaults
+
