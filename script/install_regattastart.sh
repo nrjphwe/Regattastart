@@ -9,7 +9,6 @@ sudo apt update
 sudo apt install apache2 -y
 sudo a2enmod cgi
 
-
 echo "=> Installing regattastart files at CGI-BIN...\n"
 sudo cp -v regattastart7.py /usr/lib/cgi-bin
 sudo cp -v regattastart6.py /usr/lib/cgi-bin
