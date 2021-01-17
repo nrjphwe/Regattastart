@@ -21,3 +21,9 @@ Pin 5 i2c SCL
 Pin 6 Ground
 Pin 7 GPIO4 used for shutdown
 Pin 9 Ground used for shutdown
+
+
+# GPIO19 = pin 36 left 3rd from the bottom, for signalhorn
+# GPIO20 = pin 38 right 2nd from the bottom, for lamp1
+# GPIO26 = pin 37 left 2nd from the bottom, for lamp2
+# GPIO21 = pin 40 right 1th from bottom
