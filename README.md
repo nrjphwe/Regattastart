@@ -8,3 +8,6 @@ Connect to your Raspberry Pi via SSH
 Clone this repo: git clone https://github.com/nrjphwe/Regattastart
 Then cd Regattastart 
 and run the setup script: ./script/install_regattastart.sh
+
+
+The shut down uses GPIO4, which is Pin 7.
