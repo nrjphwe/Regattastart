@@ -56,20 +56,16 @@ camera.framerate = 5
 #--------------------------------------------------------------#
 import RPi.GPIO as GPIO
 # using BCM GPIO 00..nn numbers
-# GPIO2 =  pin 3  left 2nd from top
-# GPIO26 = pin 37 left 2nd from the bottom, for jumper to ground
-# GPIO5 =  pin 29 left 6th from the bottom, for signalhorn
-# GPIO17 = pin 11 left 6th from the top, for lamp1
-# GPIO27 = pin 13 left 7th from the top, for lamp2
-# GPIO22 = pin 15 left 8th from the top
+# GPIO19 =  pin 36 left 3rd from the bottom, for signalhorn
+# GPIO20 = pin 38 right 2nd from the bottom, for lamp1
+# GPIO26 = pin 37 left 2nd from the bottom, for lamp2
+# GPIO21 = pin 40 right 1th from bottom
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(True)
-#shutdown_pin = 26 # pin 37 for manual shutdown
 signal = 19 # GPI019 = pin 35 // U1
 lamp1 = 20  # GPIO20 = pin 38 // U2
 lamp2 = 26  # GPIO26 = pin 37 // U3
 # lamp3 = 21 # GPIO21 = pin 40 // U44 # not used
-# GPIO.setup(shutdown_pin, GPIO.IN)
 GPIO.setup(signal, GPIO.OUT, initial=GPIO.HIGH)
 GPIO.setup(lamp1,  GPIO.OUT, initial=GPIO.HIGH)
 GPIO.setup(lamp2,  GPIO.OUT, initial=GPIO.HIGH)
