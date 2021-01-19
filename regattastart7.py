@@ -63,10 +63,10 @@ import RPi.GPIO as GPIO
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(True)
 signal = 19 # GPI019 = pin 35 // U1
-lamp1 = 20  # GPIO20 = pin 38 // U2
+lamp1 = 20  # GPIO20 = pin 38 // U23
 lamp2 = 26  # GPIO26 = pin 37 // U3
 # lamp3 = 21 # GPIO21 = pin 40 // U44 # not used
-GPIO.setup(signal, GPIO.OUT, initial=GPIO.HIGH)
+GPIO.setup(signal, GPIO.OUT, initial=GPIO.HIGH) #Pin is initially made HIGH so that relay is OFF
 GPIO.setup(lamp1,  GPIO.OUT, initial=GPIO.HIGH)
 GPIO.setup(lamp2,  GPIO.OUT, initial=GPIO.HIGH)
 #---------------------------------------------------------------#
