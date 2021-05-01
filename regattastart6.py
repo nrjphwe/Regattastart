@@ -62,8 +62,8 @@ signal = 19 # GPI019 = pin 35 // U1
 lamp1 = 20  # GPIO20 = pin 38 // U2
 lamp2 = 26  # GPIO26 = pin 37 // U3
 # lamp3 = 21 # GPIO21 = pin 40 // U44 # not used
-GPIO.setup(signal, GPIO.OUT, initial=GPIO.HIGH)
-GPIO.setup(lamp1,  GPIO.OUT, initial=GPIO.HIGH)
+GPIO.setup(signal, GPIO.OUT, initial=GPIO.LOW)
+GPIO.setup(lamp1,  GPIO.OUT, initial=GPIO.LOW)
 GPIO.setup(lamp2,  GPIO.OUT, initial=GPIO.LOW)
 #---------------------------------------------------------------#
 # Setup GUI
