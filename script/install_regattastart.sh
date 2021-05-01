@@ -1,6 +1,8 @@
-#! /bin/sh
+#!/bin/bash
+#trap 'read -p "run: $BASH_COMMAND "' DEBUG
 
-set -e
+#set -e
+set -x
 
 cd "$(dirname "$0")/.."
 
