@@ -174,7 +174,7 @@ while ( True ):
             if seconds_now == (start_time_sec - 1*60):
                 logger.info (" 1st 1 minute before start, signal on for 3 sec")
                 GPIO.output(signal, GPIO.LOW)  # Signal On
-                GPIO.output(lamp2, GPIO.LOW)   # Lamp 2 Off (Flag P)
+                GPIO.output(lamp2, GPIO.HIGH)   # Lamp 2 Off (Flag P)
                 logger.info (" 1st 1 min  Lamp-2 Off -- Flag P down")
                 #----------------------------------------------------------#
                 # 1st 1 min before start picture with overlay of date & time
@@ -209,7 +209,7 @@ while ( True ):
                 camera.annotate_text = "1st start " + dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                 camera.capture(photo_path + "1st-start_pict.jpg", use_video_port=True)
                 time.sleep(1)                   # 1 sec
-                GPIO.output(signal, GPIO.LOW)   # Signal Off
+                GPIO.output(signal, GPIO.HIGH)   # Signal Off
             #-------------------------------------------------------#
             #
             # SECOND START SEQUENCE
