@@ -56,7 +56,7 @@ camera.framerate = 5
 #--------------------------------------------------------------#
 import RPi.GPIO as GPIO
 # using BCM GPIO 00..nn numbers
-# GPIO19 =  pin 36 left 3rd from the bottom, for signalhorn
+# GPIO19 = pin 35 left 3rd from the bottom, for signalhorn
 # GPIO20 = pin 38 right 2nd from the bottom, for lamp1
 # GPIO26 = pin 37 left 2nd from the bottom, for lamp2
 # GPIO21 = pin 40 right 1th from bottom
@@ -166,10 +166,11 @@ while ( True ):
                 #------------------------------------------------------#
                 # 1st 4 min before start, picture with overlay of date & time
                 #------------------------------------------------------#
-                time.sleep(0.5)                  # 1 sec
+                time.sleep(0.5)                  # 0.5 sec
                 camera.annotate_text = " 1st 4 min  " + dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                 camera.capture(photo_path + "1st-4min_pict.jpg", use_video_port=True)
                 GPIO.output(signal, GPIO.LOW)  # Signal Off
+                time.sleep(0.5)
             #----------------------------------------------------------#
             # $$$$ 1st One-Minute-to-start signal
             #----------------------------------------------------------#
@@ -178,14 +179,15 @@ while ( True ):
                 GPIO.output(signal, GPIO.HIGH)  # Signal On
                 time.sleep(0.5)
                 GPIO.output(lamp2, GPIO.LOW)   # Lamp 2 Off (Flag P)
+                time.sleep(0.5)
                 logger.info (" 1st 1 min  Lamp-2 Off -- Flag P down")
                 #----------------------------------------------------------#
                 # 1st 1 min before start picture with overlay of date & time
                 #----------------------------------------------------------#
-                time.sleep(0.5)                    # 1 sec
                 camera.annotate_text = "1st-1 min  " + dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                 camera.capture(photo_path + "1st-1min_pict.jpg", use_video_port=True)
                 GPIO.output(signal, GPIO.LOW)   # Signal Off
+                time.sleep(0.5)
             #----------------------------------------------------------#
             #$$$$ Start signal
             #----------------------------------------------------------#
@@ -205,15 +207,16 @@ while ( True ):
                 GPIO.output(signal, GPIO.HIGH)  # Signal On
                 time.sleep(0.5)
                 GPIO.output(lamp1, GPIO.LOW)  # Lamp 1 Off (Flag O)
+                time.sleep(0.5)
                 logger.info(" 1st start -- Lamp-1 Off  --- Flag O down")
                 #-------------------------------------------------------#
                 # 1st start picture with overlay of date & time
                 #-------------------------------------------------------#
-                time.sleep(0.5)                    # 1 sec
                 camera.annotate_text = "1st start " + dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                 camera.capture(photo_path + "1st-start_pict.jpg", use_video_port=True)
-                time.sleep(1)                   # 1 sec
+                time.sleep(0.5)                   # 1 sec
                 GPIO.output(signal, GPIO.LOW)   # Signal Off
+                time.sleep(0.5)
             #-------------------------------------------------------#
             #
             # SECOND START SEQUENCE
@@ -232,6 +235,7 @@ while ( True ):
                 GPIO.output(signal, GPIO.HIGH)  # Signal On
                 time.sleep(0.5)
                 GPIO.output(lamp1, GPIO.HIGH)   # Lamp 1 On (Flag O)
+                time.sleep(0.5)
                 #--------------------------------------------------------#
                 # 5 min before 2nd start, picture with overlay of date & time
                 #--------------------------------------------------------#
@@ -239,6 +243,7 @@ while ( True ):
                 camera.capture(photo_path + "2nd-5min_pict.jpg", use_video_port=True)
                 time.sleep(0.5)                   # 1 sec
                 GPIO.output(signal, GPIO.LOW)   # Signal Off
+                time.sleep(0.5)
                 logger.info (" 2nd 5 min Lamp-1 On -- Up with Flag O")
             #----------------------------------------------------------#
             # $$$$  2nd 4 minutes signal, 6 minutes after start
@@ -248,14 +253,15 @@ while ( True ):
                 GPIO.output(signal, GPIO.HIGH)  # Signal On
                 time.sleep(0.5)
                 GPIO.output(lamp2, GPIO.HIGH)   # Lamp 2 On (Flag P)
+                time.sleep(0.5)
                 logger.info (" 2nd 4 min Lamp-2 On  --- Up with Flag P ")
                 #------------------------------------------------------#
                 # 2nd 4 min before start, pic with overlay of date & time
                 #------------------------------------------------------#
-                time.sleep(0.5)                  # 1 sec
                 camera.annotate_text = " 2nd 4 min  " + dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                 camera.capture(photo_path + "2nd-4min_pict.jpg", use_video_port=True)
                 GPIO.output(signal, GPIO.LOW)  # Signal Off
+                time.sleep(0.5)
             #----------------------------------------------------------#
             # $ One-Minute-to-start signal, 9 minutes after first start
             #----------------------------------------------------------#
@@ -264,15 +270,16 @@ while ( True ):
                 GPIO.output(signal, GPIO.HIGH)  # Signal On
                 time.sleep(0.5)
                 GPIO.output(lamp2, GPIO.LOW)    # Lamp 2 Off (Flag P)
+                time.sleep(0.5)
                 logger.info (" 1 min  Lamp-2 Off -- Flag P down")
                 #------------------------------------------------------#
                 # 1 min before start picture with overlay of date & time
                 #------------------------------------------------------#
-                time.sleep(0.5)                    # 1 sec
                 logger.info (" Now 1 min before 2nd start")
                 camera.annotate_text = "1 min  " + dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                 camera.capture(photo_path + "2nd-1min_pict.jpg", use_video_port=True)
                 GPIO.output(signal, GPIO.LOW)   # Signal Off
+                time.sleep(0.5)
             #----------------------------------------------------------#
             #$ 2nd Start signal 10 min after 1st start
             #----------------------------------------------------------#
@@ -292,15 +299,16 @@ while ( True ):
                 GPIO.output(signal, GPIO.HIGH)  # Signal On
                 time.sleep(0.5)
                 GPIO.output(lamp1, GPIO.LOW)  # Lamp 1 Off (Flag O)
+                time.sleep(0.5)
                 logger.info(" 2nd start -- Lamp-1 Off  --- Flag O down")
                 #-------------------------------------------------------#
                 # 2nd start picture with overlay of date & time
                 #-------------------------------------------------------#
-                time.sleep(0.5)                    # 1 sec
                 camera.annotate_text = "2nd start " + dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                 camera.capture(photo_path + "2nd-start_pict.jpg", use_video_port=True)
-                time.sleep(1)                    # 1 sec
+                time.sleep(0.5)                    # 1 sec
                 GPIO.output(signal, GPIO.LOW)   # Signal Off
+                time.sleep(0.5)
                 #------------------------------------------------------#
                 # continue  video0 recording for 5 minutes after Start
                 #------------------------------------------------------#
