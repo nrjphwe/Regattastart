@@ -26,3 +26,9 @@ The shut down uses GPIO4, which is Pin 7.
 - GPIO20 = pin 38 right 2nd from the bottom, for lamp1
 - GPIO26 = pin 37 left 2nd from the bottom, for lamp2
 - GPIO21 = pin 40 right 1th from bottom
+
+Gret Dropbox working:
+Open: https://www.dropbox.com/developers/apps
+Generate token.
+sudo /usr/lib/cgi-bin/dropbox_uploader.sh
+Add token
