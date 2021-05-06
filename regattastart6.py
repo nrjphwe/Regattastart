@@ -134,6 +134,7 @@ while ( True ):
                 #---------------------------------------------------#
                 logger.info (" Varningsignal 5 minutes before start (3 sec)")
                 GPIO.output(signal, GPIO.HIGH)  # Signal On
+                time.sleep(0.5)
                 GPIO.output(lamp1, GPIO.HIGH)   # Lamp 1 On (Flag O)
                 #--------------------------------------------------------#
                 # 5 min before start, picture with overlay of date & time
@@ -141,7 +142,7 @@ while ( True ):
                 camera.annotate_background = True
                 camera.annotate_text = "5 min  " + dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                 camera.capture(photo_path + "1st-5min_pict.jpg", use_video_port=True)
-                time.sleep(1)                   # 1 sec
+                time.sleep(0.5)                 # 1 sec
                 GPIO.output(signal, GPIO.LOW)   # Signal Off
                 logger.info (" 5 min Lamp-1 On -- Up with Flag O")
             #----------------------------------------------------------#
@@ -150,6 +151,7 @@ while ( True ):
             if seconds_now == (start_time_sec - 4*60):
                 logger.info (" Prep-signal 4 min before start, for 3 sec")
                 GPIO.output(signal, GPIO.HIGH)  # Signal On
+                time.sleep(0.5)
                 GPIO.output(lamp2, GPIO.HIGH)   # Lamp 2 On (Flag P)
                 logger.info (" 4 min Lamp-2 On  --- Up with Flag P ")
                 #------------------------------------------------------#
@@ -166,12 +168,13 @@ while ( True ):
             if seconds_now == (start_time_sec - 1*60):
                 logger.info (" 1 minute before start, signal on for 3 sec")
                 GPIO.output(signal, GPIO.HIGH)  # Signal On
+                time.sleep(0.5)
                 GPIO.output(lamp2, GPIO.LOW)    # Lamp 2 Off (Flag P)
                 logger.info (" 1 min  Lamp-2 Off -- Flag P down")
                 #------------------------------------------------------#
                 # 1 min before start picture with overlay of date & time
                 #------------------------------------------------------#
-                time.sleep(1)                    # 1 sec
+                time.sleep(0.5)                    # 1 sec
                 print ( "Now 1 min before start", dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
                 #camera.annotate_background = True
                 camera.annotate_text = "1 min  " + dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
@@ -194,12 +197,13 @@ while ( True ):
                 print ("  ===           =          =                =      =       =           =")
                 print (" ")
                 GPIO.output(signal, GPIO.HIGH)  # Signal On
+                time.sleep(0.5)
                 GPIO.output(lamp1, GPIO.LOW)    # Lamp 1 Off (Flag O)
                 logger.info(" Start -- Lamp-1 Off  --- Flag O down")
                 #-------------------------------------------------------#
                 # start picture with overlay of date & time
                 #-------------------------------------------------------#
-                time.sleep(1)                    # 1 sec
+                time.sleep(0.5)                    # 1 sec
                 camera.annotate_text = "Start " + dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                 camera.capture(photo_path + "1st-start_pict.jpg", use_video_port=True)
                 time.sleep(1)                    # 1 sec
