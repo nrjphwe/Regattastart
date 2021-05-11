@@ -128,7 +128,9 @@ while ( True ):
                 # and 2 min after start
                 #
                 #---------------------------------------------------#
+                time.sleep(1)
                 camera.start_recording(photo_path + "video0.h264")
+                time.sleep(0.5)
                 #---------------------------------------------------#
                 # trigger signal and lamp
                 #---------------------------------------------------#
