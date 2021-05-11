@@ -220,7 +220,7 @@ while ( True ):
                 #------------------------------------------------------#
                 camera.stop_recording()
                 logger.info (" video 0 recording stopped")
-                time.sleep(1) # test with a delay 1 sec
+                time.sleep(2) # test with a delay 1 sec
                 #------------------------------------------------------#
                 # convert video0 format from h264 to mp4
                 #------------------------------------------------------#
