@@ -133,8 +133,9 @@ while ( True ):
                 # and 15 min after first start start (20 minutes)
                 #
                 #-------------------------------------------------------#
-                camera.start_recording(photo_path + "video0.h264")
                 time.sleep(1)
+                camera.start_recording(photo_path + "video0.h264")
+                time.sleep(0.5)
                 #-------------------------------------------------------#
                 #
                 #    Varningssignal === 5 minute signal before start
