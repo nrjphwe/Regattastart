@@ -74,16 +74,23 @@ start_time_sec = 60 * (int(start_minute) + 60 * int(start_hour)) # 6660
 logger.info (' Weekday = %s', week_day)
 #logger.info (" Time ok, now waiting to 5 minutes before start %d", start_time)
 #logger.info (" Video_delay = ", video_delay, "video_dur = ", video_dur)
+#---------------------------------------------------#
+# remove video0.mp4 .. video7.mp
+# sudo chmod a+w filename-or-full-filepath
+#---------------------------------------------------#
+remove_video = "rm " + photo_path + "video*.*4"
+#subprocess.Popen([remove_video], shell = True)
+try:
+    subprocess.Popen([remove_video], shell = True)
+    #os.remove("remove_video")
+except OSError:
+    logger.info (" OS error remove video*.*4 ")
+    pass
+#---------------------------------------------------#
+# While loop
+#---------------------------------------------------#
 while ( True ):
     try:
-        #----------------------------------------------------------#
-        # if the pin is connected to GND, shutdown the system
-        #----------------------------------------------------------#
-        #input_value=GPIO.input(shutdown_pin)
-        #if (input_value == 0) :  # short circuit
-        #    logger.info (" pin to ground --> Shutdown")
-        #    shutdown = "sudo shutdown -h now"
-        #    subprocess.call ([shutdown], shell = True)
         now = dt.datetime.now()
         wd = dt.datetime.today().strftime("%A")
         #-----------------------------------------------------------#
@@ -109,26 +116,13 @@ while ( True ):
             camera.annotate_background = True
             camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             if seconds_now == (start_time_sec - 5*60) :
-                print ("== Executing today, daynumber = ", wd)
-                #---------------------------------------------------#
-                # remove video0.mp4 .. video7.mp4
-                # sudo chmod a+w filename-or-full-filepath
-                #---------------------------------------------------#
-                remove_video = "rm " + photo_path + "video*.*4"
-                #subprocess.Popen([remove_video], shell = True)
-                try:
-                    subprocess.Popen([remove_video], shell = True)
-                    #os.remove("remove_video")
-                except OSError:
-                   logger.info (" OS error remove video*.*4 ")
-                   pass
+                logger.info ("== Executing today, daynumber = ", wd)
                 #---------------------------------------------------#
                 #
                 # trigger video0 recording 5 min before
                 # and 2 min after start
                 #
                 #---------------------------------------------------#
-                time.sleep(1)
                 camera.start_recording(photo_path + "video0.h264")
                 time.sleep(0.5)
                 #---------------------------------------------------#
@@ -136,7 +130,7 @@ while ( True ):
                 #---------------------------------------------------#
                 logger.info (" Varningsignal 5 minutes before start (3 sec)")
                 GPIO.output(signal, GPIO.HIGH)  # Signal On
-                time.sleep(0.2)
+                time.sleep(0.5)
                 GPIO.output(lamp1, GPIO.HIGH)   # Lamp 1 On (Flag O)
                 #--------------------------------------------------------#
                 # 5 min before start, picture with overlay of date & time
@@ -146,6 +140,7 @@ while ( True ):
                 camera.capture(photo_path + "1st-5min_pict.jpg", use_video_port=True)
                 time.sleep(0.3)                 # 1 sec
                 GPIO.output(signal, GPIO.LOW)   # Signal Off
+                GPIO.output(lamp1, GPIO.HIGH)   # Lamp1 On (Flag O)
                 logger.info (" 5 min Lamp-1 On -- Up with Flag O")
             #----------------------------------------------------------#
             # $$$$  Forberedelsesignal 4 minutes
@@ -153,41 +148,41 @@ while ( True ):
             if seconds_now == (start_time_sec - 4*60):
                 logger.info (" Prep-signal 4 min before start, for 3 sec")
                 GPIO.output(signal, GPIO.HIGH)  # Signal On
-                time.sleep(0.2)
-                GPIO.output(lamp2, GPIO.HIGH)   # Lamp 2 On (Flag P)
-                logger.info (" 4 min Lamp-2 On  --- Up with Flag P ")
+                time.sleep(1)                  # 1 sec
                 #------------------------------------------------------#
                 # 4 min before start, picture with overlay of date & time
                 #------------------------------------------------------#
-                time.sleep(0.3)                  # 1 sec
                 # camera.annotate_background = True
                 camera.annotate_text = "4 min  " + dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                 camera.capture(photo_path + "1st-4min_pict.jpg", use_video_port=True)
                 GPIO.output(signal, GPIO.LOW)  # Signal Off
+                time.sleep(0.5)                # 0.5 sec
+                GPIO.output(lamp2, GPIO.HIGH)   # Lamp 2 On (Flag P)
+                logger.info (" 4 min Lamp-2 On  --- Up with Flag P ")
             #----------------------------------------------------------#
             # $$$$ One-Minute-to-start signal
             #----------------------------------------------------------#
             if seconds_now == (start_time_sec - 1*60):
-                logger.info (" 1 minute before start, signal on for 3 sec")
+                logger.info (" 1 minute before start, signal on for 1 sec")
                 GPIO.output(signal, GPIO.HIGH)  # Signal On
-                time.sleep(0.2)
-                GPIO.output(lamp2, GPIO.LOW)    # Lamp 2 Off (Flag P)
-                logger.info (" 1 min  Lamp-2 Off -- Flag P down")
+                time.sleep(1) 
                 #------------------------------------------------------#
                 # 1 min before start picture with overlay of date & time
                 #------------------------------------------------------#
-                time.sleep(0.3)                    # 1 sec
                 print ( "Now 1 min before start", dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
                 #camera.annotate_background = True
                 camera.annotate_text = "1 min  " + dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                 camera.capture(photo_path + "1st-1min_pict.jpg", use_video_port=True)
+                time.sleep(0.5) 
                 GPIO.output(signal, GPIO.LOW)   # Signal Off
+                GPIO.output(lamp2, GPIO.LOW)    # Lamp 2 Off (Flag P)
+                logger.info (" 1 min  Lamp-2 Off -- Flag P down")
             #----------------------------------------------------------#
             #$$$$ Start signal
             #----------------------------------------------------------#
             if seconds_now == start_time_sec :
                 s_start = time.time()  # will be used for annotations of seconds
-                logger.info(" Start signal on for 3 sec ")
+                logger.info(" Start signal on for 2 sec ")
                 print ("  ===       ==========             =               =======        ==========")
                 print (" =    =         =                 =  =             =       =           =")
                 print ("=               =                =    =            =        =          =")
@@ -199,17 +194,17 @@ while ( True ):
                 print ("  ===           =          =                =      =       =           =")
                 print (" ")
                 GPIO.output(signal, GPIO.HIGH)  # Signal On
-                time.sleep(0.2)
-                GPIO.output(lamp1, GPIO.LOW)    # Lamp 1 Off (Flag O)
-                logger.info(" Start -- Lamp-1 Off  --- Flag O down")
+                time.sleep(1)  
                 #-------------------------------------------------------#
                 # start picture with overlay of date & time
                 #-------------------------------------------------------#
-                time.sleep(0.3)                    # 1 sec
                 camera.annotate_text = "Start " + dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                 camera.capture(photo_path + "1st-start_pict.jpg", use_video_port=True)
-                time.sleep(0.5)                    # 1 sec
+                time.sleep(0.5)                 # 0.5 sec
                 GPIO.output(signal, GPIO.LOW)   # Signal Off
+                time.sleep(0.2)                 # 0.2 sec
+                GPIO.output(lamp1, GPIO.LOW)    # Lamp 1 Off (Flag O)
+                logger.info(" Start -- Lamp-1 Off  --- Flag O down")
                 #------------------------------------------------------#
                 # continue  video0 recording for 2 minutes after Start
                 #------------------------------------------------------#
