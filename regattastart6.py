@@ -38,7 +38,7 @@ camera.resolution = (1280, 720)
 #camera.brightness = 70
 #camera.hflip = True
 #camera.vflip = True
-#camera.rotation = (180) # Depends on how camera is mounted
+camera.rotation = (180) # Depends on how camera is mounted
 #--------------------------------------------------------------#
 # Video made with different frame-rates, with 640,480:
 #  - 30 fps gives for 1 hour video 225 Mbyte
@@ -140,9 +140,9 @@ while ( True ):
                 camera.annotate_background = True
                 camera.annotate_text = "5 min  " + dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                 camera.capture(photo_path + "1st-5min_pict.jpg", use_video_port=True)
-                time.sleep(0.5)                 # 1 sec
+                time.sleep(0.3)                 # 1 sec
                 GPIO.output(signal, OFF)  # Signal Off
-                time.sleep(0.5)           # 0.5 sec
+                time.sleep(1)             # 1 sec
                 GPIO.output(lamp1, ON)    # Lamp1 On (Flag O)
                 logger.info (" 5 min Lamp-1 On -- Up with Flag O")
             #----------------------------------------------------------#
@@ -158,6 +158,7 @@ while ( True ):
                 # camera.annotate_background = True
                 camera.annotate_text = "4 min  " + dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                 camera.capture(photo_path + "1st-4min_pict.jpg", use_video_port=True)
+                time.sleep(0.5)           # 0.5 sec
                 GPIO.output(signal, OFF)  # Signal Off
                 time.sleep(0.5)           # 0.5 sec
                 GPIO.output(lamp2, ON)    # Lamp 2 On (Flag P)
@@ -178,7 +179,7 @@ while ( True ):
                 camera.capture(photo_path + "1st-1min_pict.jpg", use_video_port=True)
                 time.sleep(0.5)            # 0.5 sec
                 GPIO.output(signal, OFF)   # Signal Off
-                time.sleep(0.5)            # 0.5 sec
+                time.sleep(1)              # 1 sec
                 GPIO.output(lamp2, OFF)    # Lamp 2 Off (Flag P)
                 logger.info (" 1 min  Lamp-2 Off -- Flag P down")
             #----------------------------------------------------------#
@@ -186,7 +187,7 @@ while ( True ):
             #----------------------------------------------------------#
             if seconds_now == start_time_sec :
                 s_start = time.time()  # will be used for annotations of seconds
-                logger.info(" Start signal on for 2 sec ")
+                logger.info(" Start signal on for 1 sec ")
                 print ("  ===       ==========             =               =======        ==========")
                 print (" =    =         =                 =  =             =       =           =")
                 print ("=               =                =    =            =        =          =")
@@ -206,7 +207,7 @@ while ( True ):
                 camera.capture(photo_path + "1st-start_pict.jpg", use_video_port=True)
                 time.sleep(0.5)            # 1 sec
                 GPIO.output(signal, OFF)   # Signal Off
-                time.sleep(0.5)            # 0.5 sec
+                time.sleep(1)              # 1 sec
                 GPIO.output(lamp1, OFF)    # Lamp 1 Off (Flag O)
                 logger.info(" Start -- Lamp-1 Off  --- Flag O down")
                 #------------------------------------------------------#
