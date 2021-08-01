@@ -151,7 +151,7 @@ while ( True ):
             if seconds_now == (start_time_sec - 4*60 - 1):
                 logger.info (" Prep-signal 4 min before start, for 1 sec")
                 GPIO.output(signal, ON)   # Signal On
-                time.sleep(1)             # 1 sec
+                time.sleep(0.5)           # 0.5 sec
                 #------------------------------------------------------#
                 # 4 min before start, picture with overlay of date & time
                 #------------------------------------------------------#
@@ -168,7 +168,7 @@ while ( True ):
             if seconds_now == (start_time_sec - 1*60):
                 logger.info (" 1 minute before start, signal on for 1 sec")
                 GPIO.output(signal, ON)  # Signal On
-                time.sleep(1)            # 1 sec
+                time.sleep(0.5)          # 0.5 sec
                 #------------------------------------------------------#
                 # 1 min before start picture with overlay of date & time
                 #------------------------------------------------------#
@@ -198,13 +198,13 @@ while ( True ):
                 print ("  ===           =          =                =      =       =           =")
                 print (" ")
                 GPIO.output(signal, ON)  # Signal On
-                time.sleep(1)  
+                time.sleep(0.5)  
                 #-------------------------------------------------------#
                 # start picture with overlay of date & time
                 #-------------------------------------------------------#
                 camera.annotate_text = "Start " + dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                 camera.capture(photo_path + "1st-start_pict.jpg", use_video_port=True)
-                time.sleep(1)                 # 1 sec
+                time.sleep(0.5)            # 1 sec
                 GPIO.output(signal, OFF)   # Signal Off
                 time.sleep(0.5)            # 0.5 sec
                 GPIO.output(lamp1, OFF)    # Lamp 1 Off (Flag O)
@@ -221,7 +221,7 @@ while ( True ):
                 #------------------------------------------------------#
                 camera.stop_recording()
                 logger.info (" video 0 recording stopped")
-                time.sleep(2)                # test with a delay 2 sec
+                time.sleep(2)             # delay 2 sec
                 #------------------------------------------------------#
                 # convert video0 format from h264 to mp4
                 #------------------------------------------------------#
