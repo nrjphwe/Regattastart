@@ -151,16 +151,16 @@ while ( True ):
             if seconds_now == (start_time_sec - 4*60 - 1):
                 logger.info (" Prep-signal 4 min before start, for 1 sec")
                 GPIO.output(signal, ON)   # Signal On
-                time.sleep(0.5)           # 0.5 sec
+                time.sleep(0.8)           # 0.8 sec
+                GPIO.output(signal, OFF)  # Signal Off
                 #------------------------------------------------------#
                 # 4 min before start, picture with overlay of date & time
                 #------------------------------------------------------#
                 # camera.annotate_background = True
+                time.sleep(0.5)           # 0.5 sec
                 camera.annotate_text = "4 min  " + dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                 camera.capture(photo_path + "1st-4min_pict.jpg", use_video_port=True)
-                time.sleep(0.5)           # 0.5 sec
-                GPIO.output(signal, OFF)  # Signal Off
-                time.sleep(2)           # 0.5 sec
+                time.sleep(2)             # 2 sec
                 GPIO.output(lamp2, ON)    # Lamp 2 On (Flag P)
                 logger.info (" 4 min Lamp-2 On  --- Up with Flag P ")
             #----------------------------------------------------------#
@@ -169,7 +169,9 @@ while ( True ):
             if seconds_now == (start_time_sec - 1*60):
                 logger.info (" 1 minute before start, signal on for 1 sec")
                 GPIO.output(signal, ON)  # Signal On
-                time.sleep(0.5)          # 0.5 sec
+                time.sleep(0.8)          # 0.8 sec
+                GPIO.output(signal, OFF) # Signal Off
+                time.sleep(0.5)            # 0.5 sec
                 #------------------------------------------------------#
                 # 1 min before start picture with overlay of date & time
                 #------------------------------------------------------#
@@ -177,8 +179,6 @@ while ( True ):
                 #camera.annotate_background = True
                 camera.annotate_text = "1 min  " + dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                 camera.capture(photo_path + "1st-1min_pict.jpg", use_video_port=True)
-                time.sleep(0.5)            # 0.5 sec
-                GPIO.output(signal, OFF)   # Signal Off
                 time.sleep(2)              # 1 sec
                 GPIO.output(lamp2, OFF)    # Lamp 2 Off (Flag P)
                 logger.info (" 1 min  Lamp-2 Off -- Flag P down")
@@ -199,14 +199,14 @@ while ( True ):
                 print ("  ===           =          =                =      =       =           =")
                 print (" ")
                 GPIO.output(signal, ON)  # Signal On
-                time.sleep(0.5)  
+                time.sleep(0.8) 
+                GPIO.output(signal, OFF)   # Signal Off
+                time.sleep(0.5)            # 0.5 sec
                 #-------------------------------------------------------#
                 # start picture with overlay of date & time
                 #-------------------------------------------------------#
                 camera.annotate_text = "Start " + dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                 camera.capture(photo_path + "1st-start_pict.jpg", use_video_port=True)
-                time.sleep(0.5)            # 1 sec
-                GPIO.output(signal, OFF)   # Signal Off
                 time.sleep(2)              # 1 sec
                 GPIO.output(lamp1, OFF)    # Lamp 1 Off (Flag O)
                 logger.info(" Start -- Lamp-1 Off  --- Flag O down")
