@@ -64,7 +64,7 @@ lamp2 = 26  # GPIO26 = pin 37 // U3
 # lamp3 = 21 # GPIO21 = pin 40 // U44 # not used
 #
 # ON & OFF can be set to LOW or HIGH depending on whatrelay type is used
-ON = GPIO.HIGH 
+ON = GPIO.HIGH
 OFF = GPIO.LOW
 GPIO.setup(signal, GPIO.OUT, initial=OFF)
 GPIO.setup(lamp1,  GPIO.OUT, initial=OFF)
@@ -197,7 +197,7 @@ while ( True ):
                 print ("  ===           =          =                =      =       =           =")
                 print (" ")
                 GPIO.output(signal, ON)  # Signal On
-                time.sleep(0.8) 
+                time.sleep(0.8)
                 GPIO.output(signal, OFF)   # Signal Off
                 time.sleep(0.5)            # 0.5 sec
                 #-------------------------------------------------------#
