@@ -169,7 +169,7 @@ while ( True ):
             if seconds_now == (start_time_sec - 1*60):
                 logger.info (" 1 minute before start, signal on for 1 sec")
                 GPIO.output(signal, ON)  # Signal On
-                time.sleep(0.8)          # 0.8 sec
+                time.sleep(0.5)          # 0.5 sec
                 GPIO.output(signal, OFF) # Signal Off
                 time.sleep(0.5)            # 0.5 sec
                 #------------------------------------------------------#
