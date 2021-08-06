@@ -171,12 +171,10 @@ while ( True ):
                 GPIO.output(signal, ON)  # Signal On
                 time.sleep(0.5)          # 0.5 sec
                 GPIO.output(signal, OFF) # Signal Off
-                time.sleep(0.5)            # 0.5 sec
+                time.sleep(0.5)          # 0.5 sec
                 #------------------------------------------------------#
                 # 1 min before start picture with overlay of date & time
                 #------------------------------------------------------#
-                print ( "Now 1 min before start", dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
-                #camera.annotate_background = True
                 camera.annotate_text = "1 min  " + dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                 camera.capture(photo_path + "1st-1min_pict.jpg", use_video_port=True)
                 time.sleep(2)              # 1 sec
@@ -235,7 +233,6 @@ while ( True ):
                 try:
                     output = subprocess.check_output(convert_video, stderr=subprocess.STDOUT, shell=True)
                 except subprocess.CalledProcessError as e:
-                    print('FAIL:\ncmd:{}\noutput:{}'.format(e.cmd, e.output))
                     logger.info ('FAIL:\ncmd:{}\noutput:{}'.format(e.cmd, e.output))
                 #logger.info (" >>>>>>>>> innan communicate")
                 #proc.communicate()
@@ -307,7 +304,6 @@ while ( True ):
                         try:
                             output = subprocess.check_output(convert_video, stderr=subprocess.STDOUT, shell=True)
                         except subprocess.CalledProcessError as e:
-                            print('FAIL:\ncmd:{}\noutput:{}'.format(e.cmd, e.output))
                             logger.info ('FAIL:\ncmd:{}\output:{}'.format(e.cmd, e.output))
                         logger.info (' video%s', i ," converted to mp4 format")
                         logger.info (' video%s', i ,' is now complete !!! Time now: %s', dt.datetime.now().strftime('%H:%M:%S'))
