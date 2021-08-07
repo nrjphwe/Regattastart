@@ -52,7 +52,7 @@ if (c):
     #---------------------------------------------------------#
     camera.framerate = 5
     #---------------------------------------------------------#
-else
+else:
     logger.info ("camera NOT detected")    # Camera not connected.
 fi
 
