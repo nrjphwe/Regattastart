@@ -107,7 +107,7 @@ if (file_exists($filename))
 Start Time: <select name = "start_time" id = "start_time">
 <?php
 $hour = date('H');
-$steps   = 30; // only edit the minutes value
+$steps   = 10; // only edit the minutes value
 $current = 0;
 $loops   = 24*(60/$steps);
 //$loops   = (24-$hour)*(60/$steps);
@@ -139,7 +139,7 @@ Day for race <select name = "day" id="day">
 <h4>Video Setup</h4>
 <p></p>
 Duration between start and finish: <select name = "video_delay" id = "video_delay">
-<option <?php if(isset($video_delay) && $video_delay == "2"){echo "selected=\"selected\"";} ?> value="2">2</option>
+<option <?php if(isset($video_delay) && $video_delay == "3"){echo "selected=\"selected\"";} ?> value="2">2</option>
 <option <?php if(isset($video_delay) && $video_delay == "20"){echo "selected=\"selected\"";} ?> value="20">20</option>
 <option <?php if(isset($video_delay) && $video_delay == "30"){echo "selected=\"selected\"";} ?> value="30">30</option>
 <option <?php if(isset($video_delay) && $video_delay == "40"){echo "selected=\"selected\"";} ?> value="40">40</option>
@@ -150,7 +150,7 @@ Duration between start and finish: <select name = "video_delay" id = "video_dela
 </select>
 <p></p>
 Duration for each video: <select name = "video_dur" id = "video_dur">
-<option <?php if(isset($video_delay) && $video_dur == "1"){echo "selected=\"selected\"";} ?> value="1">1</option>
+<option <?php if(isset($video_delay) && $video_dur == "2"){echo "selected=\"selected\"";} ?> value="1">1</option>
 <option <?php if(isset($video_delay) && $video_dur == "10"){echo "selected=\"selected\"";} ?> value="10">10</option>
 <option <?php if(isset($video_delay) && $video_dur == "15"){echo "selected=\"selected\"";} ?> value="15">15</option>
 <option <?php if(isset($video_delay) && $video_dur == "20"){echo "selected=\"selected\"";} ?> value="20">20</option>
