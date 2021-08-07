@@ -151,7 +151,7 @@ while ( True ):
                 camera.annotate_background = picamera.Color('black')
                 camera.annotate_text = "5 min  " + dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                 camera.capture(photo_path + "1st-5min_pict.jpg", use_video_port=True)
-                logger.info (" Varningsignal 5 minutes before start, off")                
+                logger.info (" Varningsignal 5 minutes before start, off")
                 GPIO.output(signal, OFF)  # Signal Off
                 time.sleep(2)             # 1 sec
                 logger.info (" 5 min Lamp-1 On -- Up with Flag O")
@@ -162,7 +162,7 @@ while ( True ):
             if seconds_now == (start_time_sec - 4*60 - 1):
                 logger.info (" Prep-signal 4 min before start, for 1 sec")
                 GPIO.output(signal, ON)   # Signal On
-                time.sleep(1)             # 1 sec          
+                time.sleep(1)             # 1 sec
                 #------------------------------------------------------#
                 # 4 min before start, picture with overlay of date & time
                 #------------------------------------------------------#
