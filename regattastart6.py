@@ -144,18 +144,18 @@ while ( True ):
                 #---------------------------------------------------------#
                 logger.info (" Varningsignal 5 minutes before start (1 sec)")
                 GPIO.output(signal, ON)  # Signal On
-                time.sleep(0.5)
+                time.sleep(1)            # 1 sec
                 #--------------------------------------------------------#
                 # 5 min before start, picture with overlay of date & time
                 #--------------------------------------------------------#
                 camera.annotate_background = True
                 camera.annotate_text = "5 min  " + dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                 camera.capture(photo_path + "1st-5min_pict.jpg", use_video_port=True)
-                time.sleep(0.5)                 # 1 sec
+                logger.info (" Varningsignal 5 minutes before start, off")                
                 GPIO.output(signal, OFF)  # Signal Off
                 time.sleep(2)             # 1 sec
-                GPIO.output(lamp1, ON)    # Lamp1 On (Flag O)
                 logger.info (" 5 min Lamp-1 On -- Up with Flag O")
+                GPIO.output(lamp1, ON)    # Lamp1 On (Flag O)
             #----------------------------------------------------------#
             # $$$$  Forberedelsesignal 4 minutes
             #----------------------------------------------------------#
