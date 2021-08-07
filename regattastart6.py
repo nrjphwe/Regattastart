@@ -180,17 +180,17 @@ while ( True ):
             if seconds_now == (start_time_sec - 1*60):
                 logger.info (" 1 minute before start, signal on for 1 sec")
                 GPIO.output(signal, ON)  # Signal On
-                time.sleep(0.5)          # 0.5 sec
-                GPIO.output(signal, OFF) # Signal Off
-                time.sleep(0.5)          # 0.5 sec
+                time.sleep(1)            # 1 sec
                 #------------------------------------------------------#
                 # 1 min before start picture with overlay of date & time
                 #------------------------------------------------------#
                 camera.annotate_text = "1 min  " + dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                 camera.capture(photo_path + "1st-1min_pict.jpg", use_video_port=True)
+                logger.info (" 1 minute before start, signal off")
+                GPIO.output(signal, OFF) # Signal Off
                 time.sleep(2)              # 1 sec
-                GPIO.output(lamp2, OFF)    # Lamp 2 Off (Flag P)
                 logger.info (" 1 min  Lamp-2 Off -- Flag P down")
+                GPIO.output(lamp2, OFF)    # Lamp 2 Off (Flag P)
             #----------------------------------------------------------#
             #$$$$ Start signal
             #----------------------------------------------------------#
@@ -208,16 +208,15 @@ while ( True ):
                 print (" ")
                 logger.info(" Start signal on for 1 sec ")
                 GPIO.output(signal, ON)  # Signal On
-                time.sleep(1)
-                logger.info(" Start signal off, then wait 0.5 sec ")
-                GPIO.output(signal, OFF)   # Signal Off
-                time.sleep(0.5)            # 0.5 sec
+                time.sleep(1)                
                 #-------------------------------------------------------#
                 # start picture with overlay of date & time
                 #-------------------------------------------------------#
                 camera.annotate_text = "Start " + dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                 camera.capture(photo_path + "1st-start_pict.jpg", use_video_port=True)
-                time.sleep(2)              # 1 sec
+                logger.info(" Start signal off, then wait 2 sec ")
+                GPIO.output(signal, OFF)   # Signal Off
+                time.sleep(2)              # 2 sec
                 logger.info(" Start -- Lamp-1 Off  --- Flag O down")
                 GPIO.output(lamp1, OFF)    # Lamp 1 Off (Flag O)
                 #------------------------------------------------------#
