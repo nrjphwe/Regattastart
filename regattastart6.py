@@ -196,7 +196,6 @@ while ( True ):
             #----------------------------------------------------------#
             if seconds_now == start_time_sec :
                 s_start = time.time()  # will be used for annotations of seconds
-                logger.info(" Start signal on for 1 sec ")
                 print ("  ===       ==========             =               =======        ==========")
                 print (" =    =         =                 =  =             =       =           =")
                 print ("=               =                =    =            =        =          =")
@@ -207,8 +206,10 @@ while ( True ):
                 print (" =    =         =           =              =       =      =            =")
                 print ("  ===           =          =                =      =       =           =")
                 print (" ")
+                logger.info(" Start signal on for 1 sec ")
                 GPIO.output(signal, ON)  # Signal On
-                time.sleep(0.8)
+                time.sleep(1)
+                logger.info(" Start signal off, then wait 0.5 sec ")
                 GPIO.output(signal, OFF)   # Signal Off
                 time.sleep(0.5)            # 0.5 sec
                 #-------------------------------------------------------#
@@ -217,8 +218,8 @@ while ( True ):
                 camera.annotate_text = "Start " + dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                 camera.capture(photo_path + "1st-start_pict.jpg", use_video_port=True)
                 time.sleep(2)              # 1 sec
-                GPIO.output(lamp1, OFF)    # Lamp 1 Off (Flag O)
                 logger.info(" Start -- Lamp-1 Off  --- Flag O down")
+                GPIO.output(lamp1, OFF)    # Lamp 1 Off (Flag O)
                 #------------------------------------------------------#
                 # continue  video0 recording for 2 minutes after Start
                 #------------------------------------------------------#
