@@ -33,20 +33,32 @@ import picamera
 photo_path = '/var/www/html/images/'
 dropbox_path = '/usr/lib/cgi-bin/dropbox_uploader.sh upload ' + photo_path
 photo_name = 'latest.jpg'
-camera = picamera.PiCamera()
-camera.resolution = (1280, 720)
-#camera.brightness = 70
-#camera.hflip = True
-#camera.vflip = True
-camera.rotation = (180) # Depends on how camera is mounted
-#--------------------------------------------------------------#
-# Video made with different frame-rates, with 640,480:
-#  - 30 fps gives for 1 hour video 225 Mbyte
-#  - 10 fps gives for 1 hour video  76 Mbyte
-#  - 5 fps gives for 1 hour video   50 Mbyte
-#--------------------------------------------------------------#
-camera.framerate = 5
-#--------------------------------------------------------------#
+##########
+string=$(/opt/vc/bin/vcgencmd get_camera)
+substring="detected=1"
+if test "${string#*$substring}" != "$string"
+then
+    logger.info ("camera detected")
+    camera = picamera.PiCamera()
+    camera.resolution = (1280, 720)
+    #camera.brightness = 70
+    #camera.hflip = True
+    #camera.vflip = True
+    camera.rotation = (180) # Depends on how camera is mounted
+    #---------------------------------------------------------#
+    # Video made with different frame-rates, with 640,480:
+    #  - 30 fps gives for 1 hour video 225 Mbyte
+    #  - 10 fps gives for 1 hour video  76 Mbyte
+    #  - 5 fps gives for 1 hour video   50 Mbyte
+    #---------------------------------------------------------#
+    camera.framerate = 5
+    #---------------------------------------------------------#
+else
+    logger.info ("camera NOT detected")    # Camera not connected.
+fi
+
+##########
+
 # set up the GPIO channels - one for output "signal"
 # one as output for "lamp1" and one for "lamp2"
 #--------------------------------------------------------------#
