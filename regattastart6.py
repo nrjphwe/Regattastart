@@ -35,9 +35,6 @@ dropbox_path = '/usr/lib/cgi-bin/dropbox_uploader.sh upload ' + photo_path
 photo_name = 'latest.jpg'
 
 ##########
-commandResult = subprocess.check_output("vcgencmd get_camera", shell=True)
-logger.info ("commandResult = ", commandResult)
-#
 c = subprocess.check_output(["vcgencmd","get_camera"])
 camdetect = int(c.strip()[-1:]) #-- Removes the final CR character and gets only the "0" or "1" from detected status
 logger.info (camdetect)
@@ -59,8 +56,6 @@ if (camdetect):
     #---------------------------------------------------------#
 else:
     logger.info ("camera NOT detected")    # Camera not connected.
-fi
-
 ##########
 
 # set up the GPIO channels - one for output "signal"
