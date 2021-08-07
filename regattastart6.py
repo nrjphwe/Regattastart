@@ -128,7 +128,7 @@ while ( True ):
             #    Varningssignal === 5 minute signal before start
             #
             #-------------------------------------------------------#
-            camera.annotate_background = True
+            camera.annotate_background = picamera.Color('black')
             camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             if seconds_now == (start_time_sec - 5*60) :
                 logger.info ("== Executing today, daynumber = ", wd)
@@ -148,7 +148,7 @@ while ( True ):
                 #--------------------------------------------------------#
                 # 5 min before start, picture with overlay of date & time
                 #--------------------------------------------------------#
-                camera.annotate_background = True
+                camera.annotate_background = picamera.Color('black')
                 camera.annotate_text = "5 min  " + dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                 camera.capture(photo_path + "1st-5min_pict.jpg", use_video_port=True)
                 logger.info (" Varningsignal 5 minutes before start, off")                
@@ -166,7 +166,7 @@ while ( True ):
                 #------------------------------------------------------#
                 # 4 min before start, picture with overlay of date & time
                 #------------------------------------------------------#
-                camera.annotate_background = True
+                camera.annotate_background = picamera.Color('black')
                 camera.annotate_text = "4 min  " + dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                 camera.capture(photo_path + "1st-4min_pict.jpg", use_video_port=True)
                 logger.info (" Prep-signal 4 min before start, off")
@@ -208,7 +208,7 @@ while ( True ):
                 print (" ")
                 logger.info(" Start signal on for 1 sec ")
                 GPIO.output(signal, ON)  # Signal On
-                time.sleep(1)                
+                time.sleep(1)
                 #-------------------------------------------------------#
                 # start picture with overlay of date & time
                 #-------------------------------------------------------#
