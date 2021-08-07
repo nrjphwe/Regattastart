@@ -34,8 +34,8 @@ photo_path = '/var/www/html/images/'
 dropbox_path = '/usr/lib/cgi-bin/dropbox_uploader.sh upload ' + photo_path
 photo_name = 'latest.jpg'
 ##########
-if commandResult = subprocess.check_output("vcgencmd get_camera", shell=True):
-    logger.info ("True")
+commandResult = subprocess.check_output("vcgencmd get_camera", shell=True)
+logger.info ("commanddResult = ",commandResult)
 
 c = subprocess.check_output(["vcgencmd","get_camera"])
 int(c.strip()[-1]) #-- Removes the final CR character and gets only the "0" or "1" from detected status
