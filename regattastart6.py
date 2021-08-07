@@ -34,9 +34,9 @@ photo_path = '/var/www/html/images/'
 dropbox_path = '/usr/lib/cgi-bin/dropbox_uploader.sh upload ' + photo_path
 photo_name = 'latest.jpg'
 ##########
-string=$(/opt/vc/bin/vcgencmd get_camera)
-substring="detected=1"
-if test "${string#*$substring}" != "$string"
+c = subprocess.check_output(["vcgencmd","get_camera"])
+int(camdet.strip()[-1]) #-- Removes the final CR character and gets only the "0" or "1" from detected status
+if (c):
 then
     logger.info ("camera detected")
     camera = picamera.PiCamera()
