@@ -37,7 +37,6 @@ photo_name = 'latest.jpg'
 c = subprocess.check_output(["vcgencmd","get_camera"])
 int(camdet.strip()[-1]) #-- Removes the final CR character and gets only the "0" or "1" from detected status
 if (c):
-then
     logger.info ("camera detected")
     camera = picamera.PiCamera()
     camera.resolution = (1280, 720)
