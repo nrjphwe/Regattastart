@@ -39,7 +39,7 @@ commandResult = subprocess.check_output("vcgencmd get_camera", shell=True)
 logger.info ("commandResult = ", commandResult)
 #
 c = subprocess.check_output(["vcgencmd","get_camera"])
-camdetect = int(c.strip()[-1]) #-- Removes the final CR character and gets only the "0" or "1" from detected status
+camdetect = int(c.strip()[-1:]) #-- Removes the final CR character and gets only the "0" or "1" from detected status
 logger.info (camdetect)
 if (camdetect):
     logger.info ("camera detected")
