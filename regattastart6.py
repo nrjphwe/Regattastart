@@ -144,7 +144,7 @@ while ( True ):
                 #---------------------------------------------------------#
                 logger.info (" Varningsignal 5 minutes before start (1 sec)")
                 GPIO.output(signal, ON)  # Signal On
-                time.sleep(1)            # 1 sec
+                time.sleep(0.5)          # 0.5 sec
                 #--------------------------------------------------------#
                 # 5 min before start, picture with overlay of date & time
                 #--------------------------------------------------------#
@@ -162,7 +162,7 @@ while ( True ):
             if seconds_now == (start_time_sec - 4*60 - 1):
                 logger.info (" Prep-signal 4 min before start, for 1 sec")
                 GPIO.output(signal, ON)   # Signal On
-                time.sleep(1)             # 1 sec
+                time.sleep(0.5)           # 0.5 sec
                 #------------------------------------------------------#
                 # 4 min before start, picture with overlay of date & time
                 #------------------------------------------------------#
@@ -180,7 +180,7 @@ while ( True ):
             if seconds_now == (start_time_sec - 1*60):
                 logger.info (" 1 minute before start, signal on for 1 sec")
                 GPIO.output(signal, ON)  # Signal On
-                time.sleep(1)            # 1 sec
+                time.sleep(0.5)            # 0.5 sec
                 #------------------------------------------------------#
                 # 1 min before start picture with overlay of date & time
                 #------------------------------------------------------#
@@ -208,7 +208,7 @@ while ( True ):
                 print (" ")
                 logger.info(" Start signal on for 1 sec ")
                 GPIO.output(signal, ON)  # Signal On
-                time.sleep(1)
+                time.sleep(0.4)          # 0.4 sec
                 #-------------------------------------------------------#
                 # start picture with overlay of date & time
                 #-------------------------------------------------------#
