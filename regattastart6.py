@@ -106,8 +106,8 @@ except OSError:
 #---------------------------------------------------#
 while ( True ):
     try:
-        #now = dt.datetime.now()
-        #wd = dt.datetime.today().strftime("%A")
+        now = dt.datetime.now()
+        wd = dt.datetime.today().strftime("%A")
         #-----------------------------------------------------------#
         # startday = "Wednesday" = "wd" = 3
         #-----------------------------------------------------------#
