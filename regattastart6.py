@@ -340,7 +340,7 @@ while ( True ):
     except ValueError:
         logger.warn ("Could not convert data to an integer.")
     except Exception as e:
-        logging.Exception("Unexpected exception! %s",e)
+        logging.warn ("Unexpected exception! %s",e)
     except OSError as err:
         logger.warn("OS error: {0}".format(err))
 GPIO.cleanup()
