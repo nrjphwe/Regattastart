@@ -341,4 +341,6 @@ while ( True ):
         logger.warn ("Could not convert data to an integer.")
     except RuntimeError:
         logger.warn ("Runtime error")
+    except OSError as err:
+        logger.warn("OS error: {0}".format(err))
 GPIO.cleanup()
