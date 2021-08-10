@@ -106,8 +106,8 @@ except OSError:
 #---------------------------------------------------#
 while ( True ):
     try:
-        now = dt.datetime.now()
-        wd = dt.datetime.today().strftime("%A")
+        #now = dt.datetime.now()
+        #wd = dt.datetime.today().strftime("%A")
         #-----------------------------------------------------------#
         # startday = "Wednesday" = "wd" = 3
         #-----------------------------------------------------------#
@@ -128,9 +128,9 @@ while ( True ):
             #    Varningssignal === 5 minute signal before start
             #
             #-------------------------------------------------------#
-            camera.annotate_background = picamera.Color('black')
-            camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             if seconds_now == (start_time_sec - 5*60) :
+                camera.annotate_background = picamera.Color('black')
+                camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                 logger.info ("== Executing today, daynumber = ", wd)
                 #---------------------------------------------------------#
                 #
@@ -148,7 +148,7 @@ while ( True ):
                 #--------------------------------------------------------#
                 # 5 min before start, picture with overlay of date & time
                 #--------------------------------------------------------#
-                camera.annotate_background = picamera.Color('black')
+                #camera.annotate_background = picamera.Color('black')
                 camera.annotate_text = "5 min  " + dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                 camera.capture(photo_path + "1st-5min_pict.jpg", use_video_port=True)
                 logger.info (" Varningsignal 5 minutes before start, off")
