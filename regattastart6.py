@@ -339,8 +339,8 @@ while ( True ):
         logger.warn ("I/O error({0}): {1}".format(e.errno, e.strerror))
     except ValueError:
         logger.warn ("Could not convert data to an integer.")
-    except RuntimeError:
-        logger.warn ("Runtime error")
+    except Exception as e:
+        logging.Exception("Unexpected exception! %s",e)
     except OSError as err:
         logger.warn("OS error: {0}".format(err))
 GPIO.cleanup()
