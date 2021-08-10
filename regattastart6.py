@@ -100,7 +100,7 @@ try:
     #os.remove("remove_video")
 except OSError:
     logger.info (" OS error remove video*.*4 ")
-    pass
+    #pass
 #---------------------------------------------------#
 # While loop
 #---------------------------------------------------#
