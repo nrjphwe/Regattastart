@@ -128,17 +128,19 @@ while ( True ):
             #    Varningssignal === 5 minute signal before start
             #
             #-------------------------------------------------------#
-            if seconds_now == (start_time_sec - 5*60) :
+            if seconds_now == (start_time_sec - 5*60 - 2) :
+                logger.info ("== Executing today, daynumber = ", wd)
                 camera.annotate_background = picamera.Color('black')
                 camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                logger.info ("== Executing today, daynumber = ", wd)
                 #---------------------------------------------------------#
                 #
                 # trigger video0 recording 5 min before until 2 min after start
                 #
                 #---------------------------------------------------------#
+                # Camera warm-up time
+                time.sleep(2)
                 camera.start_recording(photo_path + "video0.h264")
-                time.sleep(1)
+                time.sleep(2)
                 #---------------------------------------------------------#
                 # trigger signal and lamp
                 #---------------------------------------------------------#
