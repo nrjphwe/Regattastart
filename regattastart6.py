@@ -165,7 +165,7 @@ while ( True ):
                 #camera.annotate_background = picamera.Color('black')
                 camera.annotate_text = "4 min  " + dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                 time.sleep(2)             # 2 sec
-                camera.capture(photo_path + "1st-4min_pict.jpg", use_video_port=True
+                camera.capture(photo_path + "1st-4min_pict.jpg", use_video_port=True)
                 logger.info (" Prep-signal 4 min before start, for 1 sec")
                 GPIO.output(signal, ON)   # Signal On
                 time.sleep(1)             # 1 sec
