@@ -128,19 +128,17 @@ while ( True ):
             #    Varningssignal === 5 minute signal before start
             #
             #-------------------------------------------------------#
-            if seconds_now == (start_time_sec - 5*60 - 2) :
-                logger.info ("== Executing today, daynumber = ", wd)
-                camera.annotate_background = picamera.Color('black')
-                camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            camera.annotate_background = picamera.Color('black')
+            camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            if seconds_now == (start_time_sec - 5*60 - 1) :
+                logger.info ("== Executing today, daynumber = ", wd)   
                 #---------------------------------------------------------#
                 #
                 # trigger video0 recording 5 min before until 2 min after start
                 #
                 #---------------------------------------------------------#
-                # Camera warm-up time
-                time.sleep(2)
                 camera.start_recording(photo_path + "video0.h264")
-                time.sleep(2)
+                time.sleep(1)
                 #---------------------------------------------------------#
                 # trigger signal and lamp
                 #---------------------------------------------------------#
@@ -153,15 +151,16 @@ while ( True ):
                 #camera.annotate_background = picamera.Color('black')
                 camera.annotate_text = "5 min  " + dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                 camera.capture(photo_path + "1st-5min_pict.jpg", use_video_port=True)
+                time.sleep(0.5)           # 0.5 sec
                 logger.info (" Varningsignal 5 minutes before start, off")
                 GPIO.output(signal, OFF)  # Signal Off
-                time.sleep(2)             # 1 sec
+                time.sleep(1)             # 1 sec
                 logger.info (" 5 min Lamp-1 On -- Up with Flag O")
                 GPIO.output(lamp1, ON)    # Lamp1 On (Flag O)
             #----------------------------------------------------------#
             # $$$$  Forberedelsesignal 4 minutes
             #----------------------------------------------------------#
-            if seconds_now == (start_time_sec - 4*60 -2 ):
+            if seconds_now == (start_time_sec - 4*60 - 1 ):
                 #camera.annotate_background = picamera.Color('black')
                 camera.annotate_text = "4 min  " + dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                 time.sleep(2)             # 2 sec
@@ -180,7 +179,7 @@ while ( True ):
             #----------------------------------------------------------#
             # $$$$ One-Minute-to-start signal
             #----------------------------------------------------------#
-            if seconds_now == (start_time_sec - 1*60 -2):
+            if seconds_now == (start_time_sec - 1*60 - 1):
                 camera.annotate_text = "1 min  " + dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                 time.sleep(2)             # 2 sec
                 camera.capture(photo_path + "1st-1min_pict.jpg", use_video_port=True)
