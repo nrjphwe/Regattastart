@@ -197,7 +197,7 @@ while ( True ):
             #----------------------------------------------------------#
             #$$$$ Start signal
             #----------------------------------------------------------#
-            if seconds_now == start_time_sec :
+            if seconds_now == start_time_sec - 1 :
                 s_start = time.time()  # will be used for annotations of seconds
                 print ("  ===       ==========             =               =======        ==========")
                 print (" =    =         =                 =  =             =       =           =")
@@ -209,19 +209,20 @@ while ( True ):
                 print (" =    =         =           =              =       =      =            =")
                 print ("  ===           =          =                =      =       =           =")
                 print (" ")
+                logger.info(" Start -- Lamp-1 Off  --- Flag O down")
+                GPIO.output(lamp1, OFF)    # Lamp 1 Off (Flag O)
+                time.sleep(0.5)            # 0.5 sec
                 logger.info(" Start signal on for 1 sec ")
-                GPIO.output(signal, ON)  # Signal On
-                time.sleep(0.4)          # 0.4 sec
+                GPIO.output(signal, ON)    # Signal On
+                time.sleep(1)              # 1 sec
+                logger.info(" Start signal off, then wait 2 sec ")
+                GPIO.output(signal, OFF)   # Signal Off
+                time.sleep(1)              # 1 sec
                 #-------------------------------------------------------#
                 # start picture with overlay of date & time
                 #-------------------------------------------------------#
                 camera.annotate_text = "Start " + dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                 camera.capture(photo_path + "1st-start_pict.jpg", use_video_port=True)
-                logger.info(" Start signal off, then wait 2 sec ")
-                GPIO.output(signal, OFF)   # Signal Off
-                time.sleep(2)              # 2 sec
-                logger.info(" Start -- Lamp-1 Off  --- Flag O down")
-                GPIO.output(lamp1, OFF)    # Lamp 1 Off (Flag O)
                 #------------------------------------------------------#
                 # continue  video0 recording for 2 minutes after Start
                 #------------------------------------------------------#
