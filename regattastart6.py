@@ -179,10 +179,10 @@ while ( True ):
             #----------------------------------------------------------#
             # $$$$ One-Minute-to-start signal
             #----------------------------------------------------------#
-            if seconds_now == (start_time_sec - 1*60 - 1):
+            if seconds_now == (start_time_sec - 1*60 - 2):
                 camera.annotate_text = "1 min  " + dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                time.sleep(2)             # 2 sec
                 camera.capture(photo_path + "1st-1min_pict.jpg", use_video_port=True)
+                time.sleep(2)             # 2 sec
                 logger.info (" 1 minute before start, signal on for 1 sec")
                 GPIO.output(signal, ON)  # Signal On
                 time.sleep(1)            # 0.5 sec
