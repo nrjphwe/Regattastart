@@ -131,7 +131,7 @@ while ( True ):
             camera.annotate_background = picamera.Color('black')
             camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             if seconds_now == (start_time_sec - 5*60 - 1) :
-                logger.info ("== Executing today, daynumber = ", wd)   
+                logger.info ("== Executing today, daynumber = ", wd)
                 #---------------------------------------------------------#
                 #
                 # trigger video0 recording 5 min before until 2 min after start
