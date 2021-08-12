@@ -130,8 +130,9 @@ while ( True ):
             #    Varningssignal === 5 minute signal before start
             #
             #-------------------------------------------------------------#
-            camera.annotate_background = picamera.Color('black')
-            camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            if camdetect = 1:
+                camera.annotate_background = picamera.Color('black')
+                camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             if seconds_now == (start_time_sec - 5*60 - 1) :
                 logger.info ("== Executing today, daynumber = ", wd)
                 #---------------------------------------------------------#
