@@ -33,7 +33,7 @@ import picamera
 photo_path = '/var/www/html/images/'
 dropbox_path = '/usr/lib/cgi-bin/dropbox_uploader.sh upload ' + photo_path
 photo_name = 'latest.jpg'
-
+signal_dur = 3
 ##########
 c = subprocess.check_output(["vcgencmd","get_camera"])
 # camdetect = 0 => No camera
@@ -144,7 +144,7 @@ while ( True ):
                 #---------------------------------------------------------#
                 logger.info (" Varningsignal 5 minutes before start (1 sec)")
                 GPIO.output(signal, ON)  # Signal On
-                time.sleep(1)            # 1 sec
+                time.sleep(signal_dur)            # 1 sec
                 logger.info (" Varningsignal 5 minutes before start, off")
                 GPIO.output(signal, OFF)  # Signal Off
                 #---------------------------------------------------------#
@@ -164,7 +164,7 @@ while ( True ):
             if seconds_now == (start_time_sec - 4*60 - 1 ):
                 logger.info (" Prep-signal 4 min before start, for 1 sec")
                 GPIO.output(signal, ON)   # Signal On
-                time.sleep(1)             # 1 sec
+                time.sleep(signal_dur)             # 1 sec
                 logger.info (" Prep-signal 4 min before start, off")
                 GPIO.output(signal, OFF)  # Signal Off
                 time.sleep(1)             # 1 sec
@@ -186,7 +186,7 @@ while ( True ):
             if seconds_now == (start_time_sec - 1*60 - 2):
                 logger.info (" 1 minute before start, signal on for 1 sec")
                 GPIO.output(signal, ON)  # Signal On
-                time.sleep(1)            # 1
+                time.sleep(signal_dur)            # 1
                 logger.info (" 1 minute before start, signal off")
                 GPIO.output(signal, OFF) # Signal Off
                 time.sleep(2)              # 1 sec
@@ -225,7 +225,7 @@ while ( True ):
                 time.sleep(1)            # 0.5 sec
                 logger.info(" Start signal on for 1 sec ")
                 GPIO.output(signal, ON)    # Signal On
-                time.sleep(1)              # 1 sec
+                time.sleep(signal_dur)              # 1 sec
                 logger.info(" Start signal off, then wait 2 sec ")
                 GPIO.output(signal, OFF)   # Signal Off
                 time.sleep(1)              # 1 sec
