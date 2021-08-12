@@ -94,7 +94,7 @@ logger.info (' Weekday = %s', week_day)
 # remove video0.mp4 .. video7.mp
 # sudo chmod a+w filename-or-full-filepath
 #---------------------------------------------------#
-while (True)
+while (True):
     remove_video = "rm " + photo_path + "video*.*4"
     try:
         os.remove("remove_video")
