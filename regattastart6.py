@@ -94,10 +94,11 @@ logger.info (' Weekday = %s', week_day)
 # remove video0.mp4 .. video7.mp
 # sudo chmod a+w filename-or-full-filepath
 #---------------------------------------------------#
-while (True):
-    remove_video = "rm " + photo_path + "video*.*4"
+while ( True ):
     try:
-        os.remove("remove_video")
+        remove_video = "rm " + photo_path + "video*.*4"
+        subprocess.Popen([remove_video], shell = True)
+        #os.remove("remove_video")
         break
     except OSError:
         logger.info (" OS error remove video*.*4 ")
