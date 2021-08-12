@@ -36,7 +36,7 @@ photo_name = 'latest.jpg'
 
 ##########
 c = subprocess.check_output(["vcgencmd","get_camera"])
-# camdetect = 0 => No camera 
+# camdetect = 0 => No camera
 camdetect = int(c.strip()[-1:]) #-- Removes the final CR character and gets only the "0" or "1" from detected status
 logger.info (camdetect)
 if (camdetect):
