@@ -190,8 +190,8 @@ while ( True ):
                 GPIO.output(signal, ON)  # Signal On
                 time.sleep(signal_dur)   # 1
                 GPIO.output(signal, OFF) # Signal Off
-                logger.info (" 1 minute before start, signal off")
                 time.sleep(1)            # 1 sec
+                logger.info (" 1 minute before start, signal off")
                 #---------------------------------------------------------#
                 # 1 min before start picture with overlay of date & time
                 #---------------------------------------------------------#
@@ -229,8 +229,8 @@ while ( True ):
                 GPIO.output(signal, ON)    # Signal On
                 time.sleep(signal_dur)     # 1 sec
                 GPIO.output(signal, OFF)   # Signal Off
-                logger.info(" Start signal off, then wait 1 sec ")
                 time.sleep(1)              # 1 sec
+                logger.info(" Start signal off, then wait 1 sec ")
                 #-------------------------------------------------------#
                 # start picture with overlay of date & time
                 #-------------------------------------------------------#
