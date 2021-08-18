@@ -360,7 +360,8 @@ while ( True ):
     #except Exception as e:
     #    logging.warn ("Unexpected exception! %s",e)
     except Exception:
-        logger.exception("Fatal error in main loop")
+        logger.error("Fatal error in main loop", exc_info=True)
+        #logger.exception("Fatal error in main loop")
     except OSError as err:
         logger.warn("OS error: {0}".format(err))
 GPIO.cleanup()
