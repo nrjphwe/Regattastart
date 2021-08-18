@@ -166,7 +166,7 @@ while ( True ):
             if seconds_now == (start_time_sec - 4*60 - 1 ):
                 logger.info (" Prep-signal 4 min before start, for 1 sec")
                 GPIO.output(signal, ON)   # Signal On
-                time.sleep(signal_dur)             # 1 sec
+                time.sleep(signal_dur)    # 1 sec
                 logger.info (" Prep-signal 4 min before start, off")
                 GPIO.output(signal, OFF)  # Signal Off
                 time.sleep(1)             # 1 sec
