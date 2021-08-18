@@ -33,7 +33,7 @@ import picamera
 photo_path = '/var/www/html/images/'
 dropbox_path = '/usr/lib/cgi-bin/dropbox_uploader.sh upload ' + photo_path
 photo_name = 'latest.jpg'
-signal_dur = 3
+signal_dur = 1
 ##########
 c = subprocess.check_output(["vcgencmd","get_camera"])
 # camdetect = 0 => No camera
