@@ -236,7 +236,6 @@ while ( True ):
                 if camdetect == 1:
                     camera.annotate_text = "Start " + dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                     camera.capture(photo_path + "1st-start_pict.jpg", use_video_port=True)
-                    time.sleep(1)              # 1 sec
                     #-------------------------------------------------------#
                     # continue  video0 recording for 2 minutes after Start
                     #-------------------------------------------------------#
