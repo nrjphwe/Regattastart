@@ -96,13 +96,10 @@ logger.info (' Weekday = %s', week_day)
 #---------------------------------------------------#
 while ( True ):
     try:
-        try:
-            remove_video = "rm " + photo_path + "video*.*4"
-            subprocess.Popen([remove_video], shell = True)
-        except IOError as e:
-             logger.info (str(e))
-    except Exception as e:
-        logger.info (" OS error remove video*.*4 ",str(e))
+        remove_video = "rm " + photo_path + "video*.*4"
+        subprocess.Popen([remove_video], shell = True)
+    except IOError, OSerror as e:
+        logger.info (str(e))
 #---------------------------------------------------#
 # While loop
 #---------------------------------------------------#
