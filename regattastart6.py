@@ -98,7 +98,7 @@ while ( True ):
     try:
         remove_video = "rm " + photo_path + "video*.*4"
         subprocess.Popen([remove_video], shell = True)
-    except IOError, OSerror as e:
+    except (IOError, OSerror) as e:
         logger.info (str(e))
 #---------------------------------------------------#
 # While loop
