@@ -96,13 +96,13 @@ logger.info (' Weekday = %s', week_day)
 #---------------------------------------------------#
 while ( True ):
     try:
-        remove_video = "rm " + photo_path + "video*.*4"
-        subprocess.Popen([remove_video], shell = True)
-        #os.remove("remove_video")
-        break
-    except OSError:
-        logger.info (" OS error remove video*.*4 ")
-        pass
+        try:
+            remove_video = "rm " + photo_path + "video*.*4"
+            subprocess.Popen([remove_video], shell = True)
+        except IOError as e:
+             logger.info (str(e))
+    except Exception as e:
+        logger.info (" OS error remove video*.*4 ",str(e))
 #---------------------------------------------------#
 # While loop
 #---------------------------------------------------#
@@ -360,7 +360,7 @@ while ( True ):
     #except Exception as e:
     #    logging.warn ("Unexpected exception! %s",e)
     except Exception:
-        logger.error("Fatal error in main loop", exc_info=True)
+        logger.info("Fatal error in main loop", exc_info=True)
         #logger.exception("Fatal error in main loop")
     except OSError as err:
         logger.warn("OS error: {0}".format(err))
