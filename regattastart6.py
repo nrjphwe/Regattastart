@@ -99,9 +99,9 @@ try:
     #subprocess.Popen([remove_video], shell = True)
     os.remove([remove_video])
     #except (IOError, OSError) as e:
-    except OSError as error:
-        logger.info('file removal error', str(error))   
-        pass
+except OSError as error:
+    logger.info('file removal error', str(error))   
+    pass
 #---------------------------------------------------#
 # While loop
 #---------------------------------------------------#
