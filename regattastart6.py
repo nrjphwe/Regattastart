@@ -100,7 +100,7 @@ try:
     os.remove(remove_video)
     #except (IOError, OSError) as e:
 except OSError as error:
-    logger.info('file removal error', str(error))   
+    logger.info('file removal error = %s', error)   
     pass
 #---------------------------------------------------#
 # While loop
