@@ -343,7 +343,6 @@ while ( True ):
                         logger.info (' video%s', i ," sent to dropbox")
                 logger.info ("========    Finished   =======")
                 logger.info ("==============================")
-                GPIO.cleanup()
                 break
     #--------------------------------------------------------------#
     # end if this
