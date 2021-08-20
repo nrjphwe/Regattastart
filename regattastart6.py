@@ -133,7 +133,7 @@ while ( True ):
             #
             #-------------------------------------------------------------#
             if seconds_now == (start_time_sec - 5*60) :
-                logger.info ("== Executing today, daynumber = ", str(wd))
+                #logger.info ("== Executing today, daynumber = ", str(wd))
                 #---------------------------------------------------------#
                 # trigger video0 recording 5 min before until 2 min after start
                 #---------------------------------------------------------#
@@ -346,7 +346,7 @@ while ( True ):
                 GPIO.cleanup()
                 break
     #--------------------------------------------------------------#
-    # end if this Weekday
+    # end if this
     #--------------------------------------------------------------#
     except KeyboardInterrupt:
         logger.info ("======= Stopped by Ctrl-C =====")
