@@ -97,7 +97,7 @@ logger.info (' Weekday = %s', week_day)
 try:
     remove_video = "rm " + photo_path + "video*.*4"
     #subprocess.Popen([remove_video], shell = True)
-    os.remove([remove_video])
+    os.remove(remove_video)
     #except (IOError, OSError) as e:
 except OSError as error:
     logger.info('file removal error', str(error))   
