@@ -76,8 +76,8 @@ lamp2 = 26  # GPIO26 = pin 37 // U3
 # lamp3 = 21 # GPIO21 = pin 40 // U44 # not used
 #
 # ON & OFF can be set to LOW or HIGH depending on whatrelay type is used
-ON = GPIO.HIGH
-OFF = GPIO.LOW
+OFF = GPIO.HIGH
+ON = GPIO.LOW
 GPIO.setup(signal, GPIO.OUT, initial=OFF)
 GPIO.setup(lamp1,  GPIO.OUT, initial=OFF)
 GPIO.setup(lamp2,  GPIO.OUT, initial=OFF)
