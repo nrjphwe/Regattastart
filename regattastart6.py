@@ -225,14 +225,16 @@ while ( True ):
                 #---------------------------------------------------------#
                 # shut off lamp1 and Signal for 1 sec
                 #---------------------------------------------------------#
-                logger.info(" Start signal on for 1 sec ")
+                logger.info(" Lamp1 off plus sleep 1 sec ")
                 GPIO.output(lamp1, OFF)    # Lamp 1 Off (Flag O)
                 time.sleep(1)              # 1 sec
+                logger.info(" Start signal on for 1 sec ")
                 GPIO.output(signal, ON)    # Signal On
                 time.sleep(signal_dur)     # 1 sec
+                logger.info(" Turn start signal off then sleep for 1 sec ")
                 GPIO.output(signal, OFF)   # Signal Off
                 time.sleep(1)              # 1 sec
-                logger.info(" Start signal off, then wait 1 sec ")
+                logger.info(" Start signal turned off, and waited 1 sec ")
                 #-------------------------------------------------------#
                 # start picture with overlay of date & time
                 #-------------------------------------------------------#
