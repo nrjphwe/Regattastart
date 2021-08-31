@@ -64,16 +64,14 @@ else:
 #--------------------------------------------------------------#
 import RPi.GPIO as GPIO
 # using BCM GPIO 00..nn numbers
-# GPIO19 =  pin 35 left 3rd from the bottom, for signalhorn
+# GPIO19 =  pin 37 left 2nd from the bottom, for signalhorn
 # GPIO20 = pin 38 right 2nd from the bottom, for lamp1
-# GPIO26 = pin 37 left 2nd from the bottom, for lamp2
-# GPIO21 = pin 40 right 1th from bottom
+# GPIO21 = pin 40 right 1st from the bottom, for lamp2
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(True)
-signal = 19 # GPI019 = pin 35 // U1
+signal = 26 # GPIO26 = pin 37 // U1
 lamp1 = 20  # GPIO20 = pin 38 // U2
-lamp2 = 26  # GPIO26 = pin 37 // U3
-# lamp3 = 21 # GPIO21 = pin 40 // U44 # not used
+lamp2 = 21  # GPIO21 = pin 40 // U3
 #
 # ON & OFF can be set to LOW or HIGH depending on whatrelay type is used
 OFF = GPIO.HIGH
