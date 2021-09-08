@@ -297,7 +297,7 @@ while ( True ):
                     #----------------------------------------------------------#
                     logger.info (" num_videos = %s",num_videos)
                     logger.info (' video duration = %s', video_dur)
-                    for i in range(1, num_videos + 1):
+                    for i in range(1, num_videos):
                         camera.start_recording(photo_path + "video" + str(i) + ".h264")
                         logger.info (' Started recording of video%s', i)
                         logger.info (' i = %s', i)
@@ -318,7 +318,7 @@ while ( True ):
                         t = dt.datetime.now()
                         logger.info (" Time now: %s", t.strftime('%H:%M:%S'))
                         #------------------------------------------------------#
-                        logger.info ('stopped recording video%s', i)
+                        logger.info (' stopped recording video%s', i)
                     logger.info ("==============================")
                     logger.info (" This was the last Video =====")
                     logger.info ("==============================")
@@ -327,19 +327,19 @@ while ( True ):
                         t = dt.datetime.now()
                         logger.info (" Time now: %s", t.strftime('%H:%M:%S'))
                         # Camera running convert previous made video #
-                        logger.info (' convert video%s', i, "  to mp4 format")
+                        logger.info (" convert video %s", i, "  to mp4 format")
                         convert_video = "MP4Box -add " + photo_path + "video" + str(i) + ".h264 " + photo_path + "video" + str(i) +".mp4"
                         try:
                             output = subprocess.check_output(convert_video, shell=True)
                             #output = subprocess.check_output(convert_video, stderr=subprocess.STDOUT, shell=True)
                         except subprocess.CalledProcessError as e:
                             logger.info ('FAIL:\ncmd:{}\output:{}'.format(e.cmd, e.output))
-                        logger.info (' video%s', i ," converted to mp4 format")
-                        logger.info (' video%s', i ,' is now complete !!! Time now: %s', dt.datetime.now().strftime('%H:%M:%S'))
+                        logger.info (" video%s converted to mp4 format", i)
+                        logger.info (" video%s", i ," is now complete !!! Time now: %s", dt.datetime.now().strftime('%H:%M:%S'))
                         #------------------------------------------------------#
                         # send Video to DROPBOX
                         #------------------------------------------------------#
-                        logger.info (" send video%s", i ," to dropbox")
+                        logger.info (" send video%s to dropbox", i)
                         send_to_DB = dropbox_path + "video" + str(i) + ".mp4 " + "/"
                         proc = subprocess.Popen ([send_to_DB], shell = True)
                         logger.info (' video%s', i ," sent to dropbox")
