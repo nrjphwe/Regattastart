@@ -69,7 +69,7 @@ import RPi.GPIO as GPIO
 # GPIO21 = pin 40 right 1st from the bottom, for lamp2
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(True)
-signal = 26 # GPIO26 = pin 37 // U1
+signal = 19 # GPIO19 = pin 37 // U1
 lamp1 = 20  # GPIO20 = pin 38 // U2
 lamp2 = 21  # GPIO21 = pin 40 // U3
 #
