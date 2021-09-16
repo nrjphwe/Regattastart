@@ -34,3 +34,6 @@ Get Dropbox working:
 - Add token
 - sudo chmod -R 755 /usr/lib/cgi-bin/
 - sudo chown -R www-data:www-data /usr/lib/cgi-bin
+
+Setting up wireless networking:
+- You will need to define a wpa_supplicant.conf file for your particular wireless network. Put this file in the boot folder, and when the Pi first boots, it will copy that file into the correct location (/etc/wpa_supplicant/wpa_supplicant.conf) in the Linux root file system and use those settings to start up wireless networking.
