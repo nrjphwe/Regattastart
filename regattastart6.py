@@ -64,12 +64,12 @@ else:
 #--------------------------------------------------------------#
 import RPi.GPIO as GPIO
 # using BCM GPIO 00..nn numbers
-# GPIO19 =  pin 37 left 2nd from the bottom, for signalhorn
+# GPIO26 = pin 37 left 2nd from the bottom, for signalhorn
 # GPIO20 = pin 38 right 2nd from the bottom, for lamp1
 # GPIO21 = pin 40 right 1st from the bottom, for lamp2
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(True)
-signal = 19 # GPIO19 = pin 37 // U1
+signal = 26 # GPIO16 = pin 37 // U1
 lamp1 = 20  # GPIO20 = pin 38 // U2
 lamp2 = 21  # GPIO21 = pin 40 // U3
 #
