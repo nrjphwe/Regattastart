@@ -96,21 +96,21 @@ if (file_exists($filename))
 <h4><a href="/index6.php" title="Version using sessions"> Regattstart6 setup </a></h4>
 <div align="center">
 <h4><a href="/index7.php" title="Version using sessions"> Regattstart7 setup </a></h4>
-<div align="center">
-<h4><a href="http://90.236.109.106:3000" title="Grafana data and charts"> Grafana Dashboard</a></h4>
+// <div align="center">
+// <h4><a href="http://90.236.109.106:3000" title="Grafana data and charts"> Grafana Dashboard</a></h4>
 <div align="center">
 <h3> Bilder tagna vid varje signal innan 1a start </h3>
-<h3> Varningssignal 5 minuter innan 1a start</h3>
+<h3> Bild vid varningssignal 5 minuter innan 1a start</h3>
 <img src="/images/1st-5min_pict.jpg?<?php echo Date("Y.m.d.G.i.s")?>" alt="1st 5 min picture" width="720" height="480"  >
-<h3> Signal 4 minuter innan 1a start</h3>
+<h3> Bild vid signal 4 minuter innan 1a start</h3>
 <img src="/images/1st-4min_pict.jpg?<?php echo Date("Y.m.d.G.i.s")?>" alt="1st 4 min picture" width="720" height="480"  >
-<h3> Signal 1 minut innan 1a start</h3>
+<h3> Bild vid signal 1 minut innan 1a start</h3>
 <img src="/images/1st-1min_pict.jpg?<?php echo Date("Y.m.d.G.i.s")?>" alt="1st 1 min picture" width="720" height="480"  >
 <h3> Foto vid 1a start</h3>
 <img src="/images/1st-start_pict.jpg?<?php echo Date("Y.m.d.G.i.s")?>" alt="1st start  picture" width="720" height="480"  >
 
 <h3> Bilder tagna vid varje signal innan 2a start </h3>
-<h3> Varningssignal 5 minuter innan 2a start</h3>
+<h3> Bild vid varningssignal 5 minuter innan 2a start</h3>
 <img src="/images/2nd-5min_pict.jpg?<?php echo Date("Y.m.d.G.i.s")?>" alt="2nd 5 min picture" width="720" height="480"  >
 <h3> Signal 4 minuter innan 2a start</h3>
 <img src="/images/2nd-4min_pict.jpg?<?php echo Date("Y.m.d.G.i.s")?>" alt="2nd 4 min picture" width="720" height="480"  >
