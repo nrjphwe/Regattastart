@@ -77,13 +77,13 @@ if(isset($_SESSION[$session_variable1])){
 <!DOCTYPE html>
 <html>
 <div align="center">
-<head><title> Regattastart6 för 1 start </title>
+<head><title> Regattastart 1 för endast en start </title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="/w3.css"
 </head>
 <body>
 <div class="w3-container w3-green">
-<h2>Regattastart6 setup sida för 1 start</h2>
+<h2>Regattastart 1 setup sida för endast en start</h2>
 </div>
 <!-- Here is our main header that is used across all the pages of our website -->
  <meta http-equiv="refresh" content="200" >
