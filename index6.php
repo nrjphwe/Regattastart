@@ -77,13 +77,13 @@ if(isset($_SESSION[$session_variable1])){
 <!DOCTYPE html>
 <html>
 <div align="center">
-<head><title> Regattastart6 </title>
+<head><title> Regattastart6 för 1 start </title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="/w3.css"
 </head>
 <body>
 <div class="w3-container w3-green">
-<h2>Regattastart 6 setup page</h2>
+<h2>Regattastart6 setup sida för 1 start</h2>
 </div>
 <!-- Here is our main header that is used across all the pages of our website -->
  <meta http-equiv="refresh" content="200" >
@@ -138,7 +138,7 @@ Day for race <select name = "day" id="day">
 <fieldset>
 <h4>Video Setup</h4>
 <p></p>
-Duration between start and finish: <select name = "video_delay" id = "video_delay">
+Duration between start and estimated finish: <select name = "video_delay" id = "video_delay">
 <option <?php if(isset($video_delay) && $video_delay == "3"){echo "selected=\"selected\"";} ?> value="3">3</option>
 <option <?php if(isset($video_delay) && $video_delay == "20"){echo "selected=\"selected\"";} ?> value="20">20</option>
 <option <?php if(isset($video_delay) && $video_delay == "30"){echo "selected=\"selected\"";} ?> value="30">30</option>
