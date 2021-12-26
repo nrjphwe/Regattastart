@@ -161,7 +161,7 @@ while ( True ):
             #-------------------------------------------------------------#
             # $$$$  Forberedelsesignal 4 minutes
             #-------------------------------------------------------------#
-            if seconds_now == (start_time_sec - 4*60 - 1 ):
+            if seconds_now == (start_time_sec - 4*60):
                 logger.info (" Prep-signal 4 min before start, for 1 sec")
                 GPIO.output(signal, ON)   # Signal On
                 time.sleep(signal_dur)    # 1 sec
@@ -184,7 +184,7 @@ while ( True ):
             #------------------------------------------------------------#
             # $$$$ One-Minute-to-start signal
             #------------------------------------------------------------#
-            if seconds_now == (start_time_sec - 1*60 - 2):
+            if seconds_now == (start_time_sec - 1*60):
                 logger.info (" 1 minute before start, signal on for 1 sec")
                 GPIO.output(signal, ON)  # Signal On
                 time.sleep(signal_dur)   # 1
@@ -207,7 +207,7 @@ while ( True ):
             #-------------------------------------------------------------#
             #$$$$ Start signal
             #-------------------------------------------------------------#
-            if seconds_now == start_time_sec - 2 :
+            if seconds_now == start_time_sec:
                 s_start = time.time()  # will be used for annotations of seconds
                 print ("  ===       ==========             =               =======        ==========")
                 print (" =    =         =                 =  =             =       =           =")
