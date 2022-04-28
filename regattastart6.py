@@ -328,7 +328,7 @@ while ( True ):
                         logger.info (" Time now: %s", t.strftime('%H:%M:%S'))
                         # Camera running convert previous made video #
                         logger.info (" convert video %s to mp4 format", i)
-                        convert_video = "MP4Box -add " + photo_path + "video" + str(i) + ".h264 " + photo_path + "video" + str(i) +".mp4"
+                        convert_video = "sudo MP4Box -add " + photo_path + "video" + str(i) + ".h264 " + photo_path + "video" + str(i) +".mp4"
                         try:
                             output = subprocess.check_output(convert_video, shell=True)
                             #output = subprocess.check_output(convert_video, stderr=subprocess.STDOUT, shell=True)
