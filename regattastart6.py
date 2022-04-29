@@ -263,11 +263,11 @@ while ( True ):
 # https://stackoverflow.com/questions/45040261/python-3-auto-conversion-from-h264-to-mp4
 #---------------------------------------------------------------------------------------#
                     try:
-                        output = subprocess.run(convert_video, stderr=subprocess.STDOUT, shell=True)
+                        output = subprocess.run(convert_video, stderr=subprocess.STDOUT)
                         #output = subprocess.check_output(convert_video, stderr=subprocess.STDOUT, shell=True)
                     except subprocess.CalledProcessError as e:
                         #x = 'FAIL:\ncmd:{}\noutput:{}'.format(e.cmd, e.output)
-                        logger.info (e)
+                        logger.info ('FAIL:\ncmd:{}\noutput:{}'.format(e.cmd, e.output)
                     logger.info (" video 0 converted to mp4 format")
                     #------------------------------------------------------#
                     # Send pictures to DB
@@ -332,10 +332,10 @@ while ( True ):
                         logger.info (" convert video %s to mp4 format", i)
                         convert_video = "MP4Box -add " + photo_path + "video" + str(i) + ".h264 " + photo_path + "video" + str(i) +".mp4 "
                         try:
-                            output = subprocess.run(convert_video, stderr=subprocess.STDOUT, shell=True)
+                            output = subprocess.run(convert_video, stderr=subprocess.STDOUT)
                         except subprocess.CalledProcessError as e:
-                            #logger.info ('FAIL:\ncmd:{}\output:{}'.format(e.cmd, e.output))
-                             logger.info (e)
+                            logger.info ('FAIL:\ncmd:{}\output:{}'.format(e.cmd, e.output))
+                            #logger.info (e)
                         logger.info (" video%s converted to mp4 format", i)
                         logger.info (" video%s is now complete", i)
                         #------------------------------------------------------#
