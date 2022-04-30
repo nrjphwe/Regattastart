@@ -267,7 +267,7 @@ while ( True ):
                         #output = subprocess.check_output(convert_video, stderr=subprocess.STDOUT, shell=True)
                     except subprocess.CalledProcessError as e:
                         #x = 'FAIL:\ncmd:{}\noutput:{}'.format(e.cmd, e.output)
-                        logger.info ('FAIL:\ncmd:{}\noutput:{}'.format(e.cmd, e.output)
+                        logger.info ('FAIL:\ncmd:{}\noutput:{}'.format(e.cmd, e.output))
                     logger.info (" video 0 converted to mp4 format")
                     #------------------------------------------------------#
                     # Send pictures to DB
