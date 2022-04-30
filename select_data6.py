@@ -87,12 +87,11 @@ if os.fork(): # Get out parent process
 time.sleep(1)  # Be sure the parent process reach exit command.
 os.setsid()
 execution_string =  "python3 " + "regattastart6.py " + str(start_time) + " " + week_day + " " + str(video_delay) + " " + str(num_video) + " " + str(video_dur) + " " + " &"
-proc = subprocess.Popen([execution_string], shell = True)
-proc.communicate()
+proc = subprocess.run([execution_string], shell = True)
+#proc.communicate()
 #print (cookme)
 print ("</body>")
 print ("</html>")
 if os.fork():
   print ("success")
   sys.exit(0)
-
