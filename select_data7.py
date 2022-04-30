@@ -4,7 +4,7 @@ import time, subprocess, sys, os
 from http import cookies
 # Import modules for CGI handling
 import cgi, cgitb,datetime
-cgitb.enable(display=0, logdir="/usr/lig/cgi-bin/") #for debugging
+cgitb.enable(display=0, logdir="/usr/lib/cgi-bin/") #for debugging
 # Create instance of FieldStorage
 form = cgi.FieldStorage()
 # Get data from drop down fields
