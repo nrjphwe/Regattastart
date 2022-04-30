@@ -264,7 +264,6 @@ while ( True ):
 #---------------------------------------------------------------------------------------#
                     try:
                         output = subprocess.run(convert_video, shell=True)
-                        #output = subprocess.check_output(convert_video, stderr=subprocess.STDOUT, shell=True)
                     except subprocess.CalledProcessError as e:
                         logger.info ('FAIL:\ncmd:{}\noutput:{}'.format(e.cmd, e.output))
                     logger.info (" video 0 converted to mp4 format")
@@ -331,7 +330,7 @@ while ( True ):
                         logger.info (" convert video %s to mp4 format", i)
                         convert_video = "MP4Box " + "-add " + photo_path + "video" + str(i) + ".h264 " + photo_path + "video" + str(i) + ".mp4" + "-v"
                         try:
-                            output = subprocess.run(convert_video, stderr=subprocess.STDOUT, shell=True)
+                            output = subprocess.run(convert_video, shell=True)
                         except subprocess.CalledProcessError as e:
                             logger.info ('FAIL:\ncmd:{}\output:{}'.format(e.cmd, e.output))
                         logger.info (" video%s converted to mp4 format", i)
