@@ -17,6 +17,8 @@
 # If the pin is connected to GND, the system does a shutdown, not OK #")
 #--------------------------------------------------------------------#")
 import os, sys
+import cgitb
+cgitb.enable(display=0, logdir="/var/www/html/images")
 start_time = str(sys.argv[1])
 week_day = str(sys.argv[2])
 video_delay = int(sys.argv[3])
