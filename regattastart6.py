@@ -258,7 +258,7 @@ while ( True ):
                     #-------------------------------------------------------#
                     logger.info (" >>>>>> start convert video 0 to mp4 format")
                     from subprocess import CalledProcessError
-                    convert_video = "MP4Box" + " -add " + photo_path + "video0.h264 " + photo_path + "video0.mp4" + " -v"
+                    convert_video = "MP4Box" + " -add " + photo_path + "video0.h264 " + photo_path + "video0.mp4"
 #---------------------------------------------------------------------------------------#
 # https://stackoverflow.com/questions/45040261/python-3-auto-conversion-from-h264-to-mp4
 #---------------------------------------------------------------------------------------#
@@ -329,7 +329,7 @@ while ( True ):
                         logger.info (" Time now: %s", t.strftime('%H:%M:%S'))
                         # Camera running convert previous made video #
                         logger.info (" convert video %s to mp4 format", i)
-                        convert_video = "MP4Box " + "-add " + photo_path + "video" + str(i) + ".h264 " + photo_path + "video" + str(i) + ".mp4" + "-v"
+                        convert_video = "MP4Box " + "-add " + photo_path + "video" + str(i) + ".h264 " + photo_path + "video" + str(i) + ".mp4"
                         try:
                             output = subprocess.run(convert_video, shell=True, check=True)
                         except subprocess.CalledProcessError as e:
