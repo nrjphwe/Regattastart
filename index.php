@@ -107,8 +107,6 @@ if (file_exists($filename))
 <h3> Foto vid 1a start</h3>
 <img src="/images/1st-start_pict.jpg?<?php echo Date("Y.m.d.G.i.s")?>" alt="1st start  picture" width="720" height="480"  >
 
-<?php if (file_exists ( string $/images/2nd-5min_pict.jpg )): ?>
-
 <h3> Bilder tagna vid varje signal innan 2a start </h3>
 <h3> Bild vid varningssignal 5 minuter innan 2a start</h3>
 <img src="/images/2nd-5min_pict.jpg?<?php echo Date("Y.m.d.G.i.s")?>" alt="2nd 5 min picture" width="720" height="480"  >
@@ -121,8 +119,6 @@ if (file_exists($filename))
 <h2>Video for 5 minutes before 1st start and 5 minutes after 2nd start</h2>
 <video src="/images/video0.mp4?<?php echo Date("Y.m.d.G.i.s")?>" controls >HTML5 Video is required for this example</video>
 
-<?php endif ?>
-// 2nd start pictures end
 <?php
 for ($x = 1; $x <= $num_video; $x++) {
     echo "<h2> Finish video, this is video $x for the finish</h2><br>";
