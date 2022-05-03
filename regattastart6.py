@@ -1,6 +1,9 @@
 #!/usr/bin/python3 -u
 # problem with permission on /var/www/html/images folder, cant write mp4 file
 # maybe solution: sudo chmod 2775 /var/www/html/images/
+# or this:
+#    sudo chown www-data:www-data /var/www/html/images/
+#    sudo chmod g+w /var/www/html/images/
 #check by: cat /var/www/html/python.log
 # stored at: /usr/lib/cgi-bin
 # sudo setfacl -d -m g::rwx /var/www/html
