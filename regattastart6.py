@@ -266,7 +266,7 @@ while ( True ):
                     #-------------------------------------------------------#
                     logger.info (" >>>>>> start convert video 0 to mp4 format")
                     from subprocess import CalledProcessError
-                    convert_video = "MP4Box" + " -add " + photo_path + "video0.h264 " + photo_path + "video0.mp4"
+                    convert_video = "MP4Box" + " -add " + photo_path + "video0.h264 " + "-new " + photo_path + "video0.mp4"
 #---------------------------------------------------------------------------------------#
 # https://stackoverflow.com/questions/45040261/python-3-auto-conversion-from-h264-to-mp4
 #---------------------------------------------------------------------------------------#
