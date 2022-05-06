@@ -273,7 +273,7 @@ while ( True ):
 # https://stackoverflow.com/questions/45040261/python-3-auto-conversion-from-h264-to-mp4
 #---------------------------------------------------------------------------------------#
                     try:
-                        output = subprocess.run(convert_video, shell=True, check=True)
+                        output = subprocess.call(convert_video, shell=True, check=True)
                     except subprocess.CalledProcessError as e:
                         print ('FAIL:\ncmd:{}\noutput:{}'.format(e.cmd, e.output))
                         logger.info ("exception")
