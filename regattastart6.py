@@ -45,8 +45,9 @@ photo_name = 'latest.jpg'
 signal_dur = 1
 ##########
 c = subprocess.check_output(["vcgencmd","get_camera"])
-# camdetect = 0 => No camera
 camdetect = int(c.strip()[-1:]) #-- Removes the final CR character and gets only the "0" or "1" from detected status
+logger.info (camdetect)
+camdetect = 1 # => camera
 logger.info (camdetect)
 if (camdetect):
     logger.info ("camera detected")
@@ -65,7 +66,7 @@ if (camdetect):
     camera.framerate = 5
     #---------------------------------------------------------#
 else:
-    logger.info ("camera NOT detected")    # Camera not connected.
+    logger.info ("camera NOT detected")   # Camera not connected.
 ##########
 
 # set up the GPIO channels - one for output "signal"
@@ -107,7 +108,7 @@ try:
     #os.remove(remove_video)
     #except (IOError, OSError) as e:
 except OSError as error:
-    logger.info('file removal error = %s', error)   
+    logger.info('file removal error = %s', error)
     pass
 #---------------------------------------------------#
 # While loop
@@ -266,7 +267,8 @@ while ( True ):
                     #-------------------------------------------------------#
                     logger.info (" >>>>>> start convert video 0 to mp4 format")
                     from subprocess import CalledProcessError
-                    convert_video = "MP4Box" + " -add " + photo_path + "video0.h264" + " -new " + photo_path + "video0.mp4"
+                    convert_video = "MP4Box" + " -add " + photo_path + "video0.h264 " + "-old " + photo_path + "video0.mp4"
+                    #convert_video = "MP4Box" + " -add " + photo_path + "video0.h264 " + "-new " + photo_path + "video0.mp4"
 #---------------------------------------------------------------------------------------#
 # https://stackoverflow.com/questions/45040261/python-3-auto-conversion-from-h264-to-mp4
 #---------------------------------------------------------------------------------------#
