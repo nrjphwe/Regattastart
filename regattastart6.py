@@ -341,7 +341,7 @@ while ( True ):
                         logger.info (" Time now: %s", t.strftime('%H:%M:%S'))
                         # Camera running convert previous made video #
                         logger.info (" convert video %s to mp4 format", i)
-                        convert_video = "MP4Box " + "-add " + photo_path + "video" + str(i) + ".h264" + " -new" + photo_path + "video" + str(i) + ".mp4"
+                        convert_video = "MP4Box " + "-add " + photo_path + "video" + str(i) + ".h264" + " -new " + photo_path + "video" + str(i) + ".mp4"
                         try:
                             output = subprocess.run(convert_video, shell=True, check=True)
                         except subprocess.CalledProcessError as e:
