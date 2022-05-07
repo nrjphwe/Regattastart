@@ -8,6 +8,9 @@
 # stored at: /usr/lib/cgi-bin
 # sudo setfacl -d -m g::rwx /var/www/html
 # sudo setfacl -d -m g::rwx /var/www/html/images
+# eller
+# sudo setfacl -R -m g:www-data:rwx /var/www/html/*
+# sudo setfacl -d -m g:www-data:rwx /var/www/html/
 #--------------------------------------------------------------------#")
 # This program triggers the signal and lamps, and records a video of #")
 # the start from the 5 minutes signal to 2 minutes after the start.  #")
