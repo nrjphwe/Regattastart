@@ -271,7 +271,7 @@ while ( True ):
                     from subprocess import CalledProcessError
                     #convert_video = "MP4Box" + " -add " + photo_path + "video0.h264 " + "-old " + photo_path + "video0.mp4"
                     #convert_video = "MP4Box" + " -add " + photo_path + "video0.h264 " + "-o " + photo_path + "video0.mp4"
-                    convert_video_mkv = "mkvmerge -o " + photo_path + "video0.mkv " + "--timecodes 0:timecodes.txt " +  photo_path + "video0.h264"
+                    convert_video_mkv = "mkvmerge " + "-o " + photo_path + "video0.mkv " + "--timecodes 0:timecodes.txt " +  photo_path + "video0.h264"
 #---------------------------------------------------------------------------------------#
 # https://stackoverflow.com/questions/45040261/python-3-auto-conversion-from-h264-to-mp4
 #---------------------------------------------------------------------------------------#
