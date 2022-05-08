@@ -268,7 +268,6 @@ while ( True ):
                     #-------------------------------------------------------#
                     # convert video0 format from h264 to mp4
                     #-------------------------------------------------------#
-                    logger.info (" >>>>>> start convert video 0 to mp4 format")
                     from subprocess import CalledProcessError
                     #convert_video = "MP4Box" + " -add " + photo_path + "video0.h264 " + "-old " + photo_path + "video0.mp4"
                     convert_video = "MP4Box" + " -add " + photo_path + "video0.h264 " + "-o " + photo_path + "video0.mp4"
@@ -278,7 +277,9 @@ while ( True ):
 #---------------------------------------------------------------------------------------#
                     try:
                         #output = subprocess.call(convert_video, shell=True)
+                        logger.info (" >>>>>> start convert video 0 to mp4 format")        
                         output = subprocess.call(convert_video)
+                        logger.info (" >>>>>> start convert video 0 to mp4 format")
                         output = subprocess.call(convert_video_mkv)
                     except subprocess.CalledProcessError as e:
                         print ('FAIL:\ncmd:{}\noutput:{}'.format(e.cmd, e.output))
@@ -371,14 +372,14 @@ while ( True ):
         logger.info ("======= Stopped by Ctrl-C =====")
         break
     except IOError as e:
-        logger.warn ("I/O error({0}): {1}".format(e.errno, e.strerror))
+        logger.warning ("I/O error({0}): {1}".format(e.errno, e.strerror))
     except ValueError:
-        logger.warn ("Could not convert data to an integer.")
+        logger.warning ("Could not convert data to an integer.")
     #except Exception as e:
-    #    logging.warn ("Unexpected exception! %s",e)
+    #    logging.warning ("Unexpected exception! %s",e)
     except Exception:
         logger.info("Fatal error in main loop", exc_info=True)
         #logger.exception("Fatal error in main loop")
     except OSError as err:
-        logger.warn("OS error: {0}".format(err))
+        logger.warning ("OS error: {0}".format(err))
 GPIO.cleanup()
