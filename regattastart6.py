@@ -270,15 +270,15 @@ while ( True ):
                     #-------------------------------------------------------#
                     from subprocess import CalledProcessError
                     #convert_video = "MP4Box" + " -add " + photo_path + "video0.h264 " + "-old " + photo_path + "video0.mp4"
-                    convert_video = "MP4Box" + " -add " + photo_path + "video0.h264 " + "-o " + photo_path + "video0.mp4"
+                    #convert_video = "MP4Box" + " -add " + photo_path + "video0.h264 " + "-o " + photo_path + "video0.mp4"
                     convert_video_mkv = "mkvmerge -o " + photo_path + "video0.mkv " + "--timecodes 0:timecodes.txt " +  photo_path + "video0.h264"
 #---------------------------------------------------------------------------------------#
 # https://stackoverflow.com/questions/45040261/python-3-auto-conversion-from-h264-to-mp4
 #---------------------------------------------------------------------------------------#
                     try:
                         #output = subprocess.call(convert_video, shell=True)
-                        logger.info (" >>>>>> start convert video 0 to mp4 format")        
-                        output = subprocess.call(convert_video)
+                        #logger.info (" >>>>>> start convert video 0 to mp4 format")        
+                        #output = subprocess.call(convert_video)
                         logger.info (" >>>>>> start convert video 0 to mp4 format")
                         output = subprocess.call(convert_video_mkv)
                     except subprocess.CalledProcessError as e:
