@@ -279,7 +279,7 @@ while ( True ):
                         #output = subprocess.call(convert_video, shell=True)
                         #logger.info (" >>>>>> start convert video 0 to mp4 format")        
                         #output = subprocess.call(convert_video)
-                        logger.info (" >>>>>> start convert video 0 to mp4 format")
+                        logger.info (" >>>>>> start convert video 0 to mkv format")
                         output = subprocess.call(convert_video_mkv)
                     except subprocess.CalledProcessError as e:
                         print ('FAIL:\ncmd:{}\noutput:{}'.format(e.cmd, e.output))
