@@ -277,10 +277,10 @@ while ( True ):
 #---------------------------------------------------------------------------------------#
                     logger.info (" >>>>>> try convert video 0 to mp4 format")
                     try:
-                        output = subprocess.Popen([convert_video], shell=True)
+                        output = subprocess.check_output([convert_video], shell=True)
                         #output = subprocess.call([convert_video], shell=True)
                     except subprocess.CalledProcessError as e:
-                        logger.info ('FAIL:\ncmd:{}\output:{}'.format(e.cmd, e.output))
+                        logger.error ('FAIL:\ncmd:{}\output:{}'.format(e.cmd, e.output))
                     logger.info (" video 0 converted to mp4 format")
                     #------------------------------------------------------#
                     # Send pictures to DB
