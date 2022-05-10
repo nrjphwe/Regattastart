@@ -343,9 +343,9 @@ while ( True ):
                         logger.info (" Time now: %s", t.strftime('%H:%M:%S'))
                         # Camera running convert previous made video #
                         logger.info (" convert video %s to mp4 format", i)
-                        convert_video = ["MP4Box " + "-add " + photo_path + "video" + str(i) + ".h264 " + "-new " + photo_path + "video" + str(i) + ".mp4"
+                        convert_video = "MP4Box " + "-add " + photo_path + "video" + str(i) + ".h264 " + "-new " + photo_path + "video" + str(i) + ".mp4"
                         try:
-                            output = subprocess.Popen([convert_video], shell=True)
+                            output = subprocess.check_output(convert_video, shell=False)
                             #output = subprocess.call(convert_video, shell=True)
                         except subprocess.CalledProcessError as e:
                             logger.info ('FAIL:\ncmd:{}\output:{}'.format(e.cmd, e.output))
