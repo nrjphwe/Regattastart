@@ -271,13 +271,14 @@ while ( True ):
                     #########################################
                     from subprocess import CalledProcessError
                     convert_video = "MP4Box" + " -add " + photo_path + "video0.h264 " + "-new " + photo_path + "video0.mp4"
+                    logger.info (convert_video)
                     #convert_video_mkv = "mkvmerge " + "-o " + photo_path + "video0.mkv " + "--timecodes 0:timecodes.txt " +  photo_path + "video0.h264"
 #---------------------------------------------------------------------------------------#
 # https://stackoverflow.com/questions/45040261/python-3-auto-conversion-from-h264-to-mp4
 #---------------------------------------------------------------------------------------#
                     logger.info (" >>>>>> try convert video 0 to mp4 format")
                     try:
-                        output = subprocess.check_output([convert_video], shell=False)
+                        output = subprocess.check_output(convert_video, shell=True)
                         #output = subprocess.call(convert_video, shell=True)
                     except subprocess.CalledProcessError as e:
                         logger.error ('FAIL:\ncmd:{}\output:{}'.format(e.cmd, e.output))
@@ -345,7 +346,7 @@ while ( True ):
                         logger.info (" convert video %s to mp4 format", i)
                         convert_video = "MP4Box " + "-add " + photo_path + "video" + str(i) + ".h264 " + "-new " + photo_path + "video" + str(i) + ".mp4"
                         try:
-                            output = subprocess.check_output(convert_video, shell=False)
+                            output = subprocess.check_output(convert_video, shell=True)
                             #output = subprocess.call(convert_video, shell=True)
                         except subprocess.CalledProcessError as e:
                             logger.info ('FAIL:\ncmd:{}\output:{}'.format(e.cmd, e.output))
