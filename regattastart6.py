@@ -270,7 +270,8 @@ while ( True ):
                     #########################################
                     #########################################
                     from subprocess import CalledProcessError
-                    convert_video = "MP4Box" + " -add " + photo_path + "video0.h264 " + "-new " + photo_path + "video0.mp4 "
+                    convert_video_str = "MP4Box" + " -add " + photo_path + "video0.h264 " + "-new " + photo_path + "video0.mp4 "
+                    convert_video = convert_video_str.encode(encodeing='utf8')
                     logger.info (convert_video)
                     #convert_video_mkv = "mkvmerge " + "-o " + photo_path + "video0.mkv " + "--timecodes 0:timecodes.txt " +  photo_path + "video0.h264"
 #---------------------------------------------------------------------------------------#
