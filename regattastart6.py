@@ -42,8 +42,8 @@ logger.info (" Start logging")
 import subprocess
 from subprocess import CalledProcessError
 import picamera
-photo_path = '/var/www/html/images'
-mp4_path = "/var/www/html"
+photo_path = '/var/www/html/images/'
+mp4_path = "/var/www/html/"
 dropbox_path = '/usr/lib/cgi-bin/dropbox_uploader.sh upload ' + photo_path
 photo_name = 'latest.jpg'
 signal_dur = 1
@@ -346,7 +346,7 @@ while ( True ):
                         logger.info (" Time now: %s", t.strftime('%H:%M:%S'))
                         # Camera running convert previous made video #
                         logger.info (" convert video %s to mp4 format", i)
-                        convert_video = "MP4Box " + "-add " + photo_path + "video" + str(i) + ".h264 " + "-new " + photo_path + "video" + str(i) + ".mp4 "
+                        convert_video = "MP4Box " + "-add " + photo_path + "video" + str(i) + ".h264 " + "-new " + mp4_path + "video" + str(i) + ".mp4 "
                         try:
                             output = subprocess.check_output(convert_video, shell=True)
                             #output = subprocess.call(convert_video, shell=True)
