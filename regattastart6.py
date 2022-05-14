@@ -43,7 +43,7 @@ import subprocess
 from subprocess import CalledProcessError
 import picamera
 photo_path = '/var/www/html/images/'
-mp4_path = "/var/www/html/"
+mp4_path = ""
 dropbox_path = '/usr/lib/cgi-bin/dropbox_uploader.sh upload ' + photo_path
 photo_name = 'latest.jpg'
 signal_dur = 1
@@ -271,7 +271,7 @@ while ( True ):
                     #########################################
                     #########################################
                     from subprocess import CalledProcessError
-                    convert_video_str = "MP4Box" + " -add " + photo_path + "video0.h264 " + "-new " + mp4_path + "video0.mp4 "
+                    convert_video_str = "MP4Box" + " -force-cat" " -add " + photo_path + "video0.h264 " + "-new " + mp4_path + "video0.mp4 "
                     convert_video = convert_video_str.encode(encoding='utf8')
                     logger.info (convert_video)
                     #convert_video_mkv = "mkvmerge " + "-o " + photo_path + "video0.mkv " + "--timecodes 0:timecodes.txt " +  photo_path + "video0.h264"
