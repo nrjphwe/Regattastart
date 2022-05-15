@@ -286,7 +286,8 @@ while ( True ):
                         logger.error ('FAIL:\ncmd:{}\output:{}'.format(e.cmd, e.output))
                     else
                         logger.info (" video 0 converted to mp4 format")
-                    output = subprocess.check_output(convert_video, shell=True)
+                    finally: 
+                        exec (convert_video)
                     #------------------------------------------------------#
                     # Send pictures to DB
                     #------------------------------------------------------#
