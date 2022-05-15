@@ -289,7 +289,7 @@ while ( True ):
                     else:
                         logger.info (" video 0 converted to mp4 format")
                     finally: 
-                        output = subprocess.check_output(convert_video, shell=True)
+                        subprocess.run(convert_video, shell=True)
                         logger.info (" video 0 converted again to mp4 format")
                     #------------------------------------------------------#
                     # Send pictures to DB
