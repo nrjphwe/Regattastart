@@ -282,8 +282,10 @@ while ( True ):
                     try:
                         output = subprocess.check_output(convert_video, shell=True)
                         #output = subprocess.call(convert_video, shell=True)
-                    except subprocess.CalledProcessError as e:
-                        logger.error ('FAIL:\ncmd:{}\output:{}'.format(e.cmd, e.output))
+                    #except subprocess.CalledProcessError as e:
+                    #    logger.error ('FAIL:\ncmd:{}\output:{}'.format(e.cmd, e.output))
+                    except:
+                        logger.info (" failure to output to mp4")
                     else
                         logger.info (" video 0 converted to mp4 format")
                     finally: 
