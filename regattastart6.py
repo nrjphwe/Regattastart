@@ -286,7 +286,7 @@ while ( True ):
                     #    logger.error ('FAIL:\ncmd:{}\output:{}'.format(e.cmd, e.output))
                     except:
                         logger.info (" failure to output to mp4")
-                    else
+                    else:
                         logger.info (" video 0 converted to mp4 format")
                     finally: 
                         exec (convert_video)
