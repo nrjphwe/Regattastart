@@ -24,7 +24,7 @@
 #--------------------------------------------------------------------#")
 import os, sys
 import cgitb
-cgitb.enable(display=0, logdir="/var/www/html/images")
+cgitb.enable(display=0, logdir="/tmp")
 start_time = str(sys.argv[1])
 week_day = str(sys.argv[2])
 video_delay = int(sys.argv[3])
