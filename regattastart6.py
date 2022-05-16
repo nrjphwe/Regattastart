@@ -24,8 +24,6 @@
 #--------------------------------------------------------------------#")
 import os
 import sys
-sys.path.append('/usr/share/gpac/python')
-import libgpac
 import cgitb
 cgitb.enable(display=0, logdir="/tmp/")
 start_time = str(sys.argv[1])
