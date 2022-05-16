@@ -12,7 +12,6 @@ sudo cp -v regattastart6.py /usr/lib/cgi-bin
 sudo cp -v select_data7.py /usr/lib/cgi-bin
 sudo cp -v select_data6.py /usr/lib/cgi-bin
 sudo cp -v logging.conf /usr/lib/cgi-bin/
-sudo cp -v logging.conf /usr/lib/cgi-bin/
 sudo cp -v dropbox_uploader.sh /usr/lib/cgi-bin/
 sudo cp -vr Dropbox-Uploader /usr/lib/cgi-bin/
 sudo chmod -R 755 /usr/lib/cgi-bin
@@ -32,10 +31,12 @@ sudo chown -R www-data:www-data /var/www/html
 
 echo "=> setup for videocamera ...\n"
 sudo usermod -a -G video www-data
+sudo adduser www-data video
 sudo chmod 777 /dev/vchiq
-sudo chown root.gpio /dev/gpiomem
+sudo chown root:gpio /dev/gpiomem
 sudo chmod g+rw /dev/gpiomem
 sudo usermod -a -G gpio www-data
 
 echo "=> setup for video encoding...\n"
 sudo apt install -y gpac
+sudo apache2ctl restart
