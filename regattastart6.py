@@ -22,7 +22,10 @@
 #--------------------------------------------------------------------#")
 # If the pin is connected to GND, the system does a shutdown, not OK #")
 #--------------------------------------------------------------------#")
-import os, sys
+import os
+import sys
+sys.path.append('/usr/share/gpac/python')
+import libgpac
 import cgitb
 cgitb.enable(display=0, logdir="/tmp/")
 start_time = str(sys.argv[1])
@@ -274,14 +277,12 @@ while ( True ):
                     convert_video_str = "MP4Box" + " -add " + photo_path + "video0.h264 " + "-new " + mp4_path + "video0.mp4 "
                     convert_video = convert_video_str.encode(encoding='utf8')
                     logger.info (f"convert_video: {convert_video}")
-                    #convert_video_mkv = "mkvmerge " + "-o " + photo_path + "video0.mkv " + "--timecodes 0:timecodes.txt " +  photo_path + "video0.h264"
 #---------------------------------------------------------------------------------------#
 # https://stackoverflow.com/questions/45040261/python-3-auto-conversion-from-h264-to-mp4
 #---------------------------------------------------------------------------------------#
                     logger.info (" >>>>>> try convert video 0 to mp4 format")
                     try:
-                        output = subprocess.check_output(convert_video, shell=True)
-                        #output = subprocess.call(convert_video, shell=True)
+                        output = subprocess.run(convert_video, shell=True)
                     #except subprocess.CalledProcessError as e:
                     #    logger.error ('FAIL:\ncmd:{}\output:{}'.format(e.cmd, e.output))
                     except:
@@ -354,8 +355,7 @@ while ( True ):
                         logger.info (" convert video %s to mp4 format", i)
                         convert_video = "MP4Box " + "-add " + photo_path + "video" + str(i) + ".h264 " + "-new " + mp4_path + "video" + str(i) + ".mp4 "
                         try:
-                            output = subprocess.check_output(convert_video, shell=True)
-                            #output = subprocess.call(convert_video, shell=True)
+                            output = subprocess.run(convert_video, shell=True)
                         except subprocess.CalledProcessError as e:
                             logger.info ('FAIL:\ncmd:{}\output:{}'.format(e.cmd, e.output))
                         logger.info (" video%s converted to mp4 format", i)
