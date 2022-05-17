@@ -287,7 +287,7 @@ while ( True ):
                         logger.info (" failure to output to mp4")
                     else:
                         logger.info (" video 0 converted to mp4 format")
-                    finally: 
+                    finally:
                         subprocess.run(convert_video, shell=True)
                         logger.info (" video 0 converted again to mp4 format")
                     #------------------------------------------------------#
