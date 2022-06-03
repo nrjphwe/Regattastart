@@ -107,7 +107,7 @@ if (file_exists($filename))
 <h3> Foto vid 1a start</h3>
 <img src="/images/1st-start_pict.jpg?<?php echo Date("Y.m.d.G.i.s")?>" alt="1st start  picture" width="720" height="480"  >
 <?php
-$path = '/var/www/html/images/';
+$path = '/images/';
 $filename = '2nd-5min_pict.jpg';
 if (file_exists($filename)) {
    echo "<h3> Bilder tagna vid varje signal innan 2a start  </h3> ";
