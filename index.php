@@ -84,11 +84,11 @@ video {
 // output index.php was last modified.
 $filename = 'index.php';
 if (file_exists($filename))
-{echo "This web-page was last modified: \n" . date ("Y-m-d H:i:s.", filemtime($filename));
+{
+   echo "This web-page was last modified: \n" . date ("Y-m-d H:i:s.", filemtime($filename));
 }
 ?>
-<?php echo "Time now: " .date("yH:i:s")
-?>
+<?php echo "Time now: " .date("yH:i:s")?>
 <br>
 <!-- Here is our page's main content -->
 <main>
@@ -113,15 +113,16 @@ if (file_exists($filename))
 {
 echo "<h3> Bilder tagna vid varje signal innan 2a start </h3>";
 echo "<h3> Bild vid varningssignal 5 minuter innan 2a start</h3>";
-echo "<img src="/images/2nd-5min_pict.jpg?<?php echo Date("Y.m.d.G.i.s")?>" alt="2nd 5 min picture" width="720" height="480"  >";
-echo "<h3> Signal 4 minuter innan 2a start</h3>";
-echo "<img src="/images/2nd-4min_pict.jpg?<?php echo Date("Y.m.d.G.i.s")?>" alt="2nd 4 min picture" width="720" height="480"  >";
-echo "<h3> Signal 1 minut innan 2a start</h3>";
-echo "<img src="/images/2nd-1min_pict.jpg?<?php echo Date("Y.m.d.G.i.s")?>" alt="2nd 1 min picture" width="720" height="480"  >";
-echo "<h3> Foto vid 2a start</h3>";
-echo "<img src="/images/2nd-start_pict.jpg?<?php echo Date("Y.m.d.G.i.s")?>" alt="2nd start  picture" width="720" height="480"  >"
-echo "<h2>Video for 5 minutes before 1st start and 5 minutes after 2nd start</h2>";
-echo "<video src="/images/video0.mp4?<?php echo Date("Y.m.d.G.i.s")?>" controls >HTML5 Video is required for this example</video>";
+<img src="/images/2nd-5min_pict.jpg?
+//echo "Date("Y.m.d.G.i.s")?>"; alt="2nd 5 min picture" width="720" height="480";
+//echo "<h3> Signal 4 minuter innan 2a start</h3>";
+//echo "<img src="/images/2nd-4min_pict.jpg?<?php echo Date("Y.m.d.G.i.s")?>" alt="2nd 4 min picture" width="720" height="480"  >";
+//echo "<h3> Signal 1 minut innan 2a start</h3>";
+//echo "<img src="/images/2nd-1min_pict.jpg?<?php echo Date("Y.m.d.G.i.s")?>" alt="2nd 1 min picture" width="720" height="480"  >";
+//echo "<h3> Foto vid 2a start</h3>";
+//echo "<img src="/images/2nd-start_pict.jpg?<?php echo Date("Y.m.d.G.i.s")?>" alt="2nd start  picture" width="720" height="480"  >"
+//echo "<h2>Video for 5 minutes before 1st start and 5 minutes after 2nd start</h2>";
+//echo "<video src="/images/video0.mp4?<?php echo Date("Y.m.d.G.i.s")?>" controls >HTML5 Video is required for this example</video>";
 }
 ?>
 <?php
