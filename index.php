@@ -112,7 +112,7 @@ $filename = '2nd-5min_pict.jpg';
 if (file_exists($filename)) {
    echo "<h3> Bilder tagna vid varje signal innan 2a start  </h3> ";
    echo "<h3> Bild vid varningssignal 5 minuter innan 2a start</h3>"; 
-   echo '<img src ="' $path.$filename '" >';
+   echo '<img src = "' . $path . $filename . '" >';
 //" "Date("Y.m.d.G.i.s")?>"; alt="2nd 5 min picture" width="720" height="480";
 //echo "<h3> Signal 4 minuter innan 2a start</h3>";
 //echo "<img src="/images/2nd-4min_pict.jpg?<?php echo Date("Y.m.d.G.i.s")?>" alt="2nd 4 min picture" width="720" height="480"  >";
