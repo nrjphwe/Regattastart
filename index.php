@@ -124,7 +124,7 @@ if (file_exists($filename)) {
    echo '<img src = "' . $path . $filename . '" />';
    $filename = 'video0.mp4';
    echo "<h3> Video for 5 minutes before 1st start and 5 minutes after 2nd start </h3>"; 
-   echo '<img src = "' . $path . $filename . '" />';
+   echo '<video src = "' . $path . $filename . '" />';
 }
 ?>
 <?php
