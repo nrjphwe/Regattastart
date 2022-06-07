@@ -126,12 +126,10 @@ if (file_exists($filename))
 }
 ?>
 <?php
-$path = '/images/';
-$filename = 'video0.mp4';
-if (file_exists($filename))
+$video_name = '/images/video0.mp4';
 {
    echo "<h3> Video for 5 minutes before 1st start and 5 minutes after 2nd start </h3>";
-   echo '<video src = "' . $path . $filename . '" />';
+   echo "<video src = " . $video_name . " controls ></video><p>";
 }
 ?>
 <?php
