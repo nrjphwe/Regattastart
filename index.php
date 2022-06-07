@@ -126,6 +126,7 @@ if (file_exists($filename))
 }
 ?>
 <?php
+$path = '/images/';
 $filename = 'video0.mp4';
 if (file_exists($filename)) 
 {
