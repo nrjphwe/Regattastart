@@ -122,6 +122,9 @@ if (file_exists($filename)) {
    $filename = '2nd-start_pict.jpg';
    echo "<h3> 2Foto vid 2a start </h3>"; 
    echo '<img src = "' . $path . $filename . '" />';
+   $filename = 'video0.mp4';
+   echo "<h3> Video for 5 minutes before 1st start and 5 minutes after 2nd start </h3>"; 
+   echo '<img src = "' . $path . $filename . '" />';
 }
 ?>
 <?php
