@@ -109,28 +109,33 @@ if (file_exists($filename))
 <?php
 $path = '/images/';
 $filename = '2nd-5min_pict.jpg';
-if (file_exists($filename)) {
+if (file_exists($filename))
+{
    echo "<h3> Bilder tagna vid varje signal innan 2a start  </h3> ";
-   echo "<h3> Bild vid varningssignal 5 minuter innan 2a start</h3>"; 
+   echo "<h3> Bild vid varningssignal 5 minuter innan 2a start</h3>";
    echo '<img src = "' . $path . $filename . '" />';
    $filename = '2nd-4min_pict.jpg';
-   echo "<h3> Signal 4 minuter innan 2a start </h3>"; 
+   echo "<h3> Signal 4 minuter innan 2a start </h3>";
    echo '<img src = "' . $path . $filename . '" />';
    $filename = '2nd-1min_pict.jpg';
-   echo "<h3> Signal 1 minut innan 2a start </h3>"; 
+   echo "<h3> Signal 1 minut innan 2a start </h3>";
    echo '<img src = "' . $path . $filename . '" />';
    $filename = '2nd-start_pict.jpg';
-   echo "<h3> 2Foto vid 2a start </h3>"; 
+   echo "<h3> 2Foto vid 2a start </h3>";
    echo '<img src = "' . $path . $filename . '" />';
-}   
+}
+?>
+<?php
 $filename = 'video0.mp4';
-if (file_exists($filename)) {
+if (file_exists($filename)) 
+{
    echo "<h3> Video for 5 minutes before 1st start and 5 minutes after 2nd start </h3>"; 
    echo '<video src = "' . $path . $filename . '" />';
 }
 ?>
 <?php
-for ($x = 1; $x <= $num_video; $x++) {
+for ($x = 1; $x <= $num_video; $x++) 
+{
     echo "<h2> Finish video, this is video $x for the finish</h2><br>";
     $video_name =  "/images/video" . $x . ".mp4";
     echo "<video src=" . $video_name . " controls ></video><p>";
