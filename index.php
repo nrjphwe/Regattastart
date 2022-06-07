@@ -128,14 +128,14 @@ if (file_exists($filename))
 <?php
 $path = '/images/';
 $filename = 'video0.mp4';
-if (file_exists($filename)) 
+if (file_exists($filename))
 {
-   echo "<h3> Video for 5 minutes before 1st start and 5 minutes after 2nd start </h3>"; 
+   echo "<h3> Video for 5 minutes before 1st start and 5 minutes after 2nd start </h3>";
    echo '<video src = "' . $path . $filename . '" />';
 }
 ?>
 <?php
-for ($x = 1; $x <= $num_video; $x++) 
+for ($x = 1; $x <= $num_video; $x++)
 {
     echo "<h2> Finish video, this is video $x for the finish</h2><br>";
     $video_name =  "/images/video" . $x . ".mp4";
