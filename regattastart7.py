@@ -207,7 +207,7 @@ while ( True ):
                 # =    =         =          =              =       =      =           =         =
                 #  ===           =         =                =      =       =          =        ===
                 #
-                GPIO.output(signal, , ON)  # Signal On
+                GPIO.output(signal, ON)  # Signal On
                 time.sleep(0.5)
                 GPIO.output(lamp1, OFF)  # Lamp 1 Off (Flag O)
                 time.sleep(0.5)
