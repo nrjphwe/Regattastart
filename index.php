@@ -88,7 +88,7 @@ if (file_exists($filename))
    echo "This web-page was last modified: \n" . date ("Y-m-d H:i:s.", filemtime($filename));
 }
 ?>
-<?php echo "Time now: " .date("yH:i:s")?>
+<?php echo " Time now: " .date("H:i:s")?>
 <br>
 <!-- Here is our page's main content -->
 <main>
