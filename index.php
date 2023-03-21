@@ -111,9 +111,9 @@ $path = '/images/';
 $filename = '2nd-5min_pict.jpg';
 if (file_exists($filename))
 {
-"<h3> Bilder tagna vid varje signal innan 2a start  </h3> ";
-"<h3> Bild vid varningssignal 5 minuter innan 2a start</h3>";
-'<img src = "' . $path . $filename . '" />';
+  echo "<h3> Bilder tagna vid varje signal innan 2a start  </h3> ";
+  echo "<h3> Bild vid varningssignal 5 minuter innan 2a start</h3>";
+  echo '<img src = "' . $path . $filename . '" />';
 $filename = '2nd-4min_pict.jpg';
 "<h3> Signal 4 minuter innan 2a start </h3>";
 '<img src = "' . $path . $filename . '" />';
