@@ -109,10 +109,10 @@ if (file_exists($filename))
 <?php
 $path = '/images/';
 $filename = '2nd-5min_pict.jpg';
-if (file_exists($filename))
-{
-    echo "The file $filename exists";
-} else
+//if (file_exists($filename))
+//{
+//    echo "The file $filename exists";
+//} else
 {
    echo "The file $filename does not exist";
    echo "<h3> Bilder tagna vid varje signal innan 2a start  </h3> ";
