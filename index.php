@@ -116,13 +116,13 @@ if (file_exists($filename)) {
    echo '<img src = "' . $path . $filename . '" / alt="1st 5 min picture" width="720" height="480"  >';
    $filename = '2nd-4min_pict.jpg';
    echo "<h3> Signal 4 minuter innan 2a start </h3>";
-   echo '<img src = "' . $path . $filename . '" />';
+   echo '<img src = "' . $path . $filename . '" / alt="1st 5 min picture" width="720" height="480"  >';
    $filename = '2nd-1min_pict.jpg';
    echo "<h3> Signal 1 minut innan 2a start </h3>";
-   echo '<img src = "' . $path . $filename . '" />';
+   echo '<img src = "' . $path . $filename . '" / alt="1st 5 min picture" width="720" height="480"  >';
    $filename = '2nd-start_pict.jpg';
    echo "<h3> Foto vid 2a start </h3>";
-   echo '<img src = "' . $path . $filename . '" />';
+   echo '<img src = "' . $path . $filename . '" / alt="1st 5 min picture" width="720" height="480"  >';
 }
 ?>
 <?php
