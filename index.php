@@ -109,7 +109,7 @@ if (file_exists($filename))
 <?php
 $path = '/images/';
 $filename = '2nd-5min_pict';
-if (is_file($filename)) {
+if (file_exists($filename)) {
   echo "The file $filename exists";
 } else {
    echo "The file $filename does not exist";
