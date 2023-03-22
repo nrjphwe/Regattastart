@@ -109,11 +109,9 @@ if (file_exists($filename))
 <?php
 $path = '/images/';
 $filename = '2nd-5min_pict.jpg';
-//if (file_exists($filename))
-//{
-//    echo "The file $filename exists";
-//} else
-{
+if (is_file($filename)) {
+  echo "The file $filename exists";
+} else {
    echo "The file $filename does not exist";
    echo "<h3> Bilder tagna vid varje signal innan 2a start  </h3> ";
    echo "<h3> Bild vid varningssignal 5 minuter innan 2a start</h3>";
@@ -125,7 +123,7 @@ $filename = '2nd-5min_pict.jpg';
    echo "<h3> Signal 1 minut innan 2a start </h3>";
    echo '<img src = "' . $path . $filename . '" />';
    $filename = '2nd-start_pict.jpg';
-   echo "<h3> 2Foto vid 2a start </h3>";
+   echo "<h3> Foto vid 2a start </h3>";
    echo '<img src = "' . $path . $filename . '" />';
 }
 ?>
