@@ -108,7 +108,7 @@ if (file_exists($filename))
 <img src="/images/1st-start_pict.jpg?<?php echo Date("Y.m.d.G.i.s")?>" alt="1st start  picture" width="720" height="480"  >
 <?php
 $path = '/images/';
-$filename = '/regattastart.local/images/2nd-5min_pict.jpg';
+$filename = 'images/2nd-5min_pict.jpg';
 if (file_exists($filename)) {
   echo "The file $filename exists";
 } else {
