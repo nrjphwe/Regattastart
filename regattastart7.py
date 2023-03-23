@@ -85,8 +85,10 @@ logger.info (' Weekday = %s', week_day)
 # sudo chmod a+w filename-or-full-filepath
 #-----------------------------------------------------------------#
 remove_video = "rm " + photo_path + "video*.*4"
+remove_pictures = "rm " + photo_path + "*pict.jpg"
 try:
     subprocess.Popen([remove_video], shell = True)
+    subprocess.Popen([remove_pictures], shell = True)
 except OSError:
     logger.info (" OS error remove video*.*4 ")
     pass
