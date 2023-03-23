@@ -103,19 +103,19 @@ start_time_sec = 60 * (int(start_minute) + 60 * int(start_hour)) # 6660
 logger.info (' Weekday = %s', week_day)
 #logger.info (" Time ok, now waiting to 5 minutes before start %d", start_time)
 #logger.info (" Video_delay = ", video_delay, "video_dur = ", video_dur)
-#---------------------------------------------------#
-# remove video0.mp4 .. video7.mp
+#-----------------------------------------------------------------#
+# remove video0.mp4 .. video7.mp4
 # sudo chmod a+w filename-or-full-filepath
-#---------------------------------------------------#
-#try:
-#    remove_video = "rm " + photo_path + "video*.*4"
-#    subprocess.Popen([remove_video], shell = True)
-#except OSError as error:
-#    logger.info('file removal error = %s', error)
-#    pass
-#---------------------------------------------------#
-# While loop
-#---------------------------------------------------#
+#-----------------------------------------------------------------#
+remove_video = "rm " + photo_path + "video*.*4"
+remove_pictures = "rm " + photo_path + "*pict.jpg"
+try:
+    subprocess.Popen([remove_video], shell = True)
+    subprocess.Popen([remove_pictures], shell = True)
+except OSError:
+    logger.info (" OS error remove video*.*4 ")
+    pass
+#-----------------------------------------------------------------#
 while ( True ):
     try:
         now = dt.datetime.now()
