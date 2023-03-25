@@ -107,7 +107,9 @@ if (file_exists($filename))
 <div align="center">
 <h4><a href="/index7.php" title="Version using sessions"> Regattstart2 för 2 starter, 2a start 10 min efter första</a></h4>
 <div align="center">
+<div class="w3-panel w3-grey">
 <h3> Bilder tagna vid varje signal innan 1a start </h3>
+</div> 
 <h3> Bild vid varningssignal 5 minuter innan 1a start</h3>
 <img src="/images/1st-5min_pict.jpg?<?php echo Date("Y.m.d.G.i.s")?>" alt="1st 5 min picture" width="720" height="480"  >
 <h3> Bild vid signal 4 minuter innan 1a start</h3>
