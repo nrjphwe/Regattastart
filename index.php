@@ -81,7 +81,7 @@ video {
 // output index.php was last modified.
 $filename = 'index.php';
 if (file_exists($filename)) {
-   $version_date = . date ("Y-m-d H:i:s.", filemtime($filename)); 
+   $version_date = date ("Y-m-d H:i:s.", filemtime($filename)); 
 }
 ?>
 
