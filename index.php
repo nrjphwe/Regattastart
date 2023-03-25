@@ -78,7 +78,7 @@ video {
 <header>
 <div align="center">
 <div class="w3-panel w3-green">
-<h2>Regattastart result page v echo . date ("Y-m-d H:i:s.", filemtime($filename)) </h2>
+<h2>Regattastart result page v <?php echo date ("Y-m-d H:i:s.", filemtime($filename)) ?> </h2>
 </div>
 <?php
 // output index.php was last modified.
