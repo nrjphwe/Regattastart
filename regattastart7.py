@@ -374,7 +374,8 @@ while ( True ):
                 #----------------------------------------------------------#
                 logger.info (" num_videos = %s",num_videos)
                 logger.info (' video duration = %s', video_dur)
-                for i in range(1, num_videos + 1):
+                stop = num_videos+1
+                for i in range(1, stop):
                         camera.start_recording(photo_path + "video" + str(i) + ".h264")
                         logger.info (' Started recording of video%s', i)
                         logger.info (' i = %s', i)
@@ -399,7 +400,7 @@ while ( True ):
                 logger.info ("==============================")
                 logger.info (" This was the last Video =====")
                 logger.info ("==============================")
-                for i in range(1, num_videos + 1):
+                for i in range(1, stop):
                         logger.info (' i = %s', i)
                         t = dt.datetime.now()
                         logger.info (" Time now: %s", t.strftime('%H:%M:%S'))
