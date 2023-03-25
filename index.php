@@ -107,7 +107,7 @@ if (file_exists($filename))
 <div align="center">
 <h4><a href="/index7.php" title="Version using sessions"> Regattstart2 för 2 starter, 2a start 10 min efter första</a></h4>
 <div align="center">
-<div class="w3-panel w3-grey">
+<div class="w3-panel w3-pale-blue">
 <h3> Bilder tagna vid varje signal innan 1a start </h3>
 </div> 
 <h3> Bild vid varningssignal 5 minuter innan 1a start</h3>
@@ -137,6 +137,7 @@ if (file_exists($filename)) {
    echo '<img src = "' . $path . $filename . '" / alt="1st 5 min picture" width="720" height="480"  >';
 }
 ?>
+<div class="w3-panel w3-pale-blue">
 <?php
 $video_name = '/images/video0.mp4';
 {
@@ -144,6 +145,7 @@ $video_name = '/images/video0.mp4';
    echo "<video src = " . $video_name . " controls ></video><p>";
 }
 ?>
+</div>
 <?php
 for ($x = 1; $x <= $num_video; $x++)
 {
