@@ -78,8 +78,8 @@ video {
 <!-- Here is our main header that is used across all the pages of our website -->
 <header>
 <div align="center">
-<div class="w3-panel w3-green">
-<h2>Regattastart result page v <?php echo .date ("Y-m-d.", filemtime($filename)) ?> </h2>
+<div class="w3-panel w3-blue">
+<h2>Regattastart result page v <?php echo . date ("Y-m-d.", filemtime($filename)) ?> </h2>
 </div>
 <?php
 // output index.php was last modified.
