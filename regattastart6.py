@@ -323,8 +323,8 @@ while ( True ):
                     stop = num_videos+1
                     for i in range(1, stop):
                         camera.start_recording(photo_path + "video" + str(i) + ".h264")
-                        logger.info (' #325 Started recording of video%s', i)
-                        logger.info (' #326 i = %s', i)
+                        logger.info (' #326 Started recording of video%s', i)
+                        logger.info (' #327 i = %s', i)
                         #------------------------------------------------------#
                         t = dt.datetime.now()
                         logger.info (" Time now: %s", t.strftime('%H:%M:%S'))
@@ -342,12 +342,12 @@ while ( True ):
                         t = dt.datetime.now()
                         logger.info (" Time now: %s", t.strftime('%H:%M:%S'))
                         #------------------------------------------------------#
-                        logger.info (' #344 stopped recording video%s', i)
+                        logger.info (' #345 stopped recording video%s', i)
                     logger.info ("==============================")
                     logger.info (" This was the last video =====")
                     logger.info ("==============================")
                     for i in range(1, stop):
-                        logger.info ('#349 i = %s', i)
+                        logger.info ('#350 i = %s', i)
                         t = dt.datetime.now()
                         logger.info (" Time now: %s", t.strftime('%H:%M:%S'))
                         # Camera running convert previous made video #
