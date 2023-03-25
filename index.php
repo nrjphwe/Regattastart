@@ -77,9 +77,17 @@ video {
 <body>
 <!-- Here is our main header that is used across all the pages of our website -->
 <header>
+<?php
+// output index.php was last modified.
+$filename = 'index.php';
+if (file_exists($filename))
+{
+   version_date = . date ("Y-m-d H:i:s.", filemtime($filename));
+}
+?>
 <div align="center">
 <div class="w3-panel w3-blue">
-<h2>Regattastart result page v <?php echo . date ("Y-m-d.", filemtime($filename)) ?> </h2>
+<h2> Regattastart result page v \n" <?php echo version_date ?> </h2>
 </div>
 <?php
 // output index.php was last modified.
