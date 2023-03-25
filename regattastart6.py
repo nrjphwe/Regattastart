@@ -274,7 +274,7 @@ while ( True ):
                     from subprocess import CalledProcessError
                     convert_video_str = "MP4Box" + " -add " + photo_path + "video0.h264 " + "-new " + mp4_path + "video0.mp4 "
                     convert_video = convert_video_str.encode(encoding='utf8')
-                    logger.info (f"convert_video: {convert_video}")
+                    logger.info (" convert_video: {convert_video}")
 #---------------------------------------------------------------------------------------#
 # https://stackoverflow.com/questions/45040261/python-3-auto-conversion-from-h264-to-mp4
 #---------------------------------------------------------------------------------------#
@@ -320,10 +320,11 @@ while ( True ):
                     #----------------------------------------------------------#
                     logger.info (" num_videos = %s",num_videos)
                     logger.info (' video duration = %s', video_dur)
-                    for i in range(1, num_videos):
+                    stop = num_videos+1
+                    for i in range(1, stop):
                         camera.start_recording(photo_path + "video" + str(i) + ".h264")
-                        logger.info (' Started recording of video%s', i)
-                        logger.info (' i = %s', i)
+                        logger.info (' #325 Started recording of video%s', i)
+                        logger.info (' #326 i = %s', i)
                         #------------------------------------------------------#
                         t = dt.datetime.now()
                         logger.info (" Time now: %s", t.strftime('%H:%M:%S'))
@@ -341,12 +342,12 @@ while ( True ):
                         t = dt.datetime.now()
                         logger.info (" Time now: %s", t.strftime('%H:%M:%S'))
                         #------------------------------------------------------#
-                        logger.info (' stopped recording video%s', i)
+                        logger.info (' #344 stopped recording video%s', i)
                     logger.info ("==============================")
                     logger.info (" This was the last video =====")
                     logger.info ("==============================")
-                    for i in range(1, num_videos):
-                        logger.info (' i = %s', i)
+                    for i in range(1, stop):
+                        logger.info ('#349 i = %s', i)
                         t = dt.datetime.now()
                         logger.info (" Time now: %s", t.strftime('%H:%M:%S'))
                         # Camera running convert previous made video #
