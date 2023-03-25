@@ -95,7 +95,7 @@ if (file_exists($filename))
 <div align="center">
 <h4><a href="/index6.php" title="Version using sessions"> Regattstart1 för 1 start</a></h4>
 <div align="center">
-<h4><a href="/index7.php" title="Version using sessions"> Regattstart2 för 2 starter</a></h4>
+<h4><a href="/index7.php" title="Version using sessions"> Regattstart2 för 2 starter, 2a start 10 min efter första</a></h4>
 <div align="center">
 <h3> Bilder tagna vid varje signal innan 1a start </h3>
 <h3> Bild vid varningssignal 5 minuter innan 1a start</h3>
@@ -128,7 +128,7 @@ if (file_exists($filename)) {
 <?php
 $video_name = '/images/video0.mp4';
 {
-   echo "<h3> Video for 5 minutes before 1st start and 5 minutes after 2nd start </h3>";
+   echo "<h3> Video for 5 minutes before 1st start and 5 minutes after 1st start, or until after 5min after 2nd start </h3>";
    echo "<video src = " . $video_name . " controls ></video><p>";
 }
 ?>
