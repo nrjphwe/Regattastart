@@ -178,10 +178,12 @@ Number of video's: <select name = "num_video" id = "num_video">
 $_SESSION["video_delay"] = $video_delay;
 $_SESSION["video_dur"] = $video_dur;
 $_SESSION["num_video"] = $num_video;
+$_SESSION["start_time"] = $start_time;
 echo "Session variables are set. ";
 echo "video delay = " . $_SESSION["video_delay"] . ". ";
 echo "video_dur = " . $_SESSION["video_dur"] . ". " ;
 echo "num_video = " . $_SESSION["num_video"] . "." ;
+echo "start_time = " . $_SESSION["start_time"] . "." ;
 ?>
 <p></p>
 <input type = "submit" value = "Submit"/>
