@@ -141,7 +141,7 @@ if (file_exists($filename)) {
 <?php
 $video_name = '/images/video0.mp4';
 {
-   echo "<h3> Video vid starten, 5 min före och 2 min efter, eller vid 2 starter, till 2 min efter andra start </h3>";
+   echo "<h3> Video 5 min före start och 2 min efter, eller vid 2 starter, till 2 min efter andra start </h3>";
    echo "<video src = " . $video_name . " controls ></video><p>";
 }
 ?>
