@@ -24,7 +24,7 @@ echo "session variables set on previous page: ";
 echo "video_delay = " . $_SESSION["video_delay"] . ", ";
 echo "video_dur =  " . $_SESSION["video_dur"] . ", ";
 echo "num_video = " . $_SESSION["num_video"] . ", ";
-echo "start_time = " . $_SESSION["start_time"] . ", ";
+//echo "start_time = " . $_SESSION["start_time"] . ", ";
 echo "<br/>"
 $num_video = $_SESSION["num_video"];
 } else {
