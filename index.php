@@ -44,7 +44,6 @@ if(!isset($_COOKIE[$cookie_name2]))
        echo "Video delay in minutes is: " . $_SESSION[$cookie_name2];
        echo "</br>";
        echo "Number of consecutive videos are: " . $_SESSION[$cookie_name3];
-//       echo "Start time = : " . $_SESSION[$cookie_name4];
        $num_video = $_SESSION["num_video"];
      }
 } else {
