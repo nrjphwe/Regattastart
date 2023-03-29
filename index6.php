@@ -18,6 +18,7 @@ if(isset($_POST['video_delay'])) {
 $cookie_name1 = "video_delay";
 $cookie_name2 = "video_dur";
 $cookie_name3 = "num_video";
+$cookie_name4 = "start_time";
 ?>
 <?php
 if(isset($_COOKIE[$cookie_name2])) {
@@ -25,16 +26,20 @@ if(isset($_COOKIE[$cookie_name2])) {
     $video_delay = $_COOKIE['video_delay'];
     $video_dur = $_COOKIE['video_dur'];
     $num_video = $_COOKIE['num_video'];
+    $start_time = $_COOKIE['start_time'];
     echo " Your old cookie video_delay = ".$video_delay;
     echo ("\n");
     echo " and video_dur = ".$_COOKIE['video_dur'];
     echo ("\n");
     echo " and num_video = ".$_COOKIE['num_video'];
     echo ("\n");
+    echo " and num_video = ".$_COOKIE['start_time'];
+    echo ("\n");
     echo "<br/>";
     echo " Your new value for video_delay: ".$_POST['video_delay'];
     echo " and new video_dur: ".$_POST['video_dur'];
     echo " and new num_video: ".$_POST['num_video'];
+    echo " and new start_time: ".$_POST['start_time'];
     } else {
         echo "no cookie data  ";
 }
@@ -44,6 +49,7 @@ if(isset($_COOKIE[$cookie_name2])) {
 $session_variable1 = "video_delay";
 $session_variable2 = "video_dur";
 $session_variable3 = "num_video";
+$session_variable4 = "start_time";
 // if sessions exists no action
 if(isset($_SESSION[$session_variable1])){
 //   echo "Session variables are set. ";
