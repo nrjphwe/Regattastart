@@ -12,6 +12,7 @@
 $cookie_name1 = "video_delay";
 $cookie_name2 = "video_dur";
 $cookie_name3 = "num_video";
+$cookie_name4 = "start_time";
 ?>
 <!DOCTYPE html>
 <html>
@@ -23,6 +24,7 @@ echo "session variables set on previous page: ";
 echo "video_delay = " . $_SESSION["video_delay"] . ", ";
 echo "video_dur =  " . $_SESSION["video_dur"] . ", ";
 echo "num_video = " . $_SESSION["num_video"] . ", ";
+echo "start_time = " . $_SESSION["start_timeo"] . ", ";
 echo "<br/>";
 $num_video = $_SESSION["num_video"];
 } else {
@@ -44,13 +46,15 @@ if(!isset($_COOKIE[$cookie_name2]))
        echo "Video delay in minutes is: " . $_SESSION[$cookie_name2];
        echo "</br>";
        echo "Number of consecutive videos are: " . $_SESSION[$cookie_name3];
+       echo "Start time = : " . $_SESSION[$cookie_name4];
        $num_video = $_SESSION["num_video"];
      }
 } else {
    echo " cookie data exists with: ";
    echo " video_delay=" . $_COOKIE["video_delay"];
    echo ", video_dur=" . $_COOKIE["video_dur"];
-   echo ", cookie num_video=" . $_COOKIE["num_video"];
+   echo ", cookie num_video=" . $_COOKIE["num_video"];   
+   echo ", cookie start_time=" . $_COOKIE["start_time"];
    echo "<br/>";
    $num_video = $_COOKIE["num_video"];
    echo "Number of finish videos vill be " . $num_video, " and each have a duration of ". $_COOKIE[$cookie_name2], " min";
