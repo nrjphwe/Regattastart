@@ -12,6 +12,7 @@
 $cookie_name1 = "video_delay";
 $cookie_name2 = "video_dur";
 $cookie_name3 = "num_video";
+$cookie_name4 = "start_time";
 ?>
 <!DOCTYPE html>
 <html>
