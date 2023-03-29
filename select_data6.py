@@ -61,8 +61,8 @@ if ('video_delay' or 'video_dur') in cookme:
     print (cookme.get('video_dur').value)
     print ("Current num_video: ")
     print (cookme.get('num_video').value)
-    print ("Current start_time: ")
-    print (cookme.get('start_time').value)
+##    print ("Current start_time: ")
+##    print (cookme.get('start_time').value)
     print ("</h4>")
 else:
     print ("<h4>no video_delay/video_dur set yet.</h4>")
