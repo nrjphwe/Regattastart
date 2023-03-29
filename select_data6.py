@@ -32,6 +32,8 @@ if ('video_delay'or 'video_dur') in FormData:
     cooked['video_dur']['path']='/'
     cooked['num_video']=FormData.getvalue('num_video')
     cooked['num_video']['path']='/'
+    cooked['start_time']=FormData.getvalue('start_time')
+    cooked['start_time']['path']='/'
     test = 1
     print (cooked)
 # Get data from fields
