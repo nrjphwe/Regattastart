@@ -237,7 +237,7 @@ while ( True ):
                 #--------------------------------------------------------#
                 # trigger signal and lamp
                 #--------------------------------------------------------#
-                logger.info (" Varningsignal 5 minutes before 2nd start (3 sec)")
+                logger.info (" 2nd varning signal 5 minutes before 2nd start (3 sec)")
                 GPIO.output(signal, ON)  # Signal On
                 time.sleep(0.5)
                 GPIO.output(lamp1, ON)   # Lamp 1 On (Flag O)
@@ -255,7 +255,7 @@ while ( True ):
             # $$$$  2nd 4 minutes signal, 6 minutes after start
             #----------------------------------------------------------#
             if seconds_now == (start_time_sec + 6*60):
-                logger.info (" Prep-signal 2nd 4 min before start, for 3 sec")
+                logger.info (" 2nd Prep-signal 4 min before 2nd start, for 3 sec")
                 GPIO.output(signal, ON)  # Signal On
                 time.sleep(0.5)
                 GPIO.output(lamp2, ON)   # Lamp 2 On (Flag P)
@@ -272,7 +272,7 @@ while ( True ):
             # $ One-Minute-to-start signal, 9 minutes after first start
             #----------------------------------------------------------#
             if seconds_now == (start_time_sec + 9*60):
-                logger.info (" 1 minute before 2nd start, signal on for 3 sec")
+                logger.info (" 2nd 1 minute signal before 2nd start, signal on for 3 sec")
                 GPIO.output(signal, ON)  # Signal On
                 time.sleep(0.5)
                 GPIO.output(lamp2, OFF)    # Lamp 2 Off (Flag P)
