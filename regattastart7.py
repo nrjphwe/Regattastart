@@ -397,7 +397,7 @@ while ( True ):
                         t = dt.datetime.now()
                         logger.info (" Time now: %s", t.strftime('%H:%M:%S'))
                         #------------------------------------------------------#
-                        logger.info ('stopped recording video%s', i)
+                        logger.info (' stopped recording video%s', i)
                 logger.info ("==============================")
                 logger.info (" This was the last Video =====")
                 logger.info ("==============================")
