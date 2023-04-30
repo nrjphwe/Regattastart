@@ -79,7 +79,8 @@ start_hour, start_minute = start_time.split(':')
 start_time_sec = 60 * (int(start_minute) + 60 * int(start_hour)) # 6660
 logger.info (' Weekday = %s', week_day)
 logger.info (" Time ok, now waiting to 5 minutes before start %d", start_time)
-logger.info (" Video_delay = ", video_delay, "video_dur = ", video_dur)
+logger.info (" Video_delay = %d", video_delay)
+logger.info (" video_dur = %d", video_dur)
 #-----------------------------------------------------------------#
 # remove video0.mp4 .. video7.mp4
 # sudo chmod a+w filename-or-full-filepath
