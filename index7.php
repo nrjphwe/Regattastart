@@ -107,7 +107,7 @@ if (file_exists($filename))
 Start Time: <select name = "start_time" id = "start_time">
 <?php
 $hour = date('H');
-$steps   = 30; // only edit the minutes value
+$steps   = 10; // only edit the minutes value
 $current = 0;
 $loops   = 24*(60/$steps);
 //$loops   = (24-$hour)*(60/$steps);
