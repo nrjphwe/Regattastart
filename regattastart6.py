@@ -174,7 +174,6 @@ while ( True ):
             #-------------------------------------------------------------#
             # $$$$  Forberedelsesignal 4 minutes
             #-------------------------------------------------------------#
-            logger.info (" seconds_now = %s", seconds_now)
             if seconds_now == (start_time_sec - 4*60):
                 logger.info (" Prep-signal 4 min before start, for 1 sec")
                 GPIO.output(signal, ON)   # Signal On
