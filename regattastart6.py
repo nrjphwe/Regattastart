@@ -95,7 +95,7 @@ GPIO.setup(signal, GPIO.OUT, initial=OFF)
 GPIO.setup(lamp1,  GPIO.OUT, initial=OFF)
 GPIO.setup(lamp2,  GPIO.OUT, initial=OFF)
 #---------------------------------------------------------------#
-signal_duration = 1 # 1 sec
+signal_duration = 0.3 # 1 sec
 #---------------------------------------------------------------#
 logger.info (" Start_time = %s", start_time)
 start_hour, start_minute = start_time.split(':')
