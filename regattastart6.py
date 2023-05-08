@@ -47,8 +47,10 @@ photo_path = '/var/www/html/images/'
 mp4_path = '/var/www/html/images/'
 dropbox_path = '/usr/lib/cgi-bin/dropbox_uploader.sh upload ' + photo_path
 photo_name = 'latest.jpg'
-signal_dur = 1
-##########
+#---------------------------------------------------------------#
+signal_dur = 0.3 # 0.3 sec
+#---------------------------------------------------------------#
+#####
 c = subprocess.check_output(["vcgencmd","get_camera"])
 camdetect = int(c.strip()[-1:]) #-- Removes the final CR character and gets only the "0" or "1" from detected status
 logger.info (camdetect)
@@ -73,7 +75,6 @@ if (camdetect):
 else:
     logger.info ("camera NOT detected")   # Camera not connected.
 ##########
-
 # set up the GPIO channels - one for output "signal"
 # one as output for "lamp1" and one for "lamp2"
 #--------------------------------------------------------------#
@@ -94,9 +95,6 @@ ON = GPIO.LOW
 GPIO.setup(signal, GPIO.OUT, initial=OFF)
 GPIO.setup(lamp1,  GPIO.OUT, initial=OFF)
 GPIO.setup(lamp2,  GPIO.OUT, initial=OFF)
-#---------------------------------------------------------------#
-signal_duration = 0.3 # 1 sec
-#---------------------------------------------------------------#
 logger.info (" Start_time = %s", start_time)
 start_hour, start_minute = start_time.split(':')
 start_time_sec = 60 * (int(start_minute) + 60 * int(start_hour)) # 6660
