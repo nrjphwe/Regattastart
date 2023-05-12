@@ -42,7 +42,8 @@ camera.resolution = (1280, 720)
 #camera.brightness = 70
 #camera.hflip = True
 #camera.vflip = True
-camera.rotation = (180) # Depends on how camera is mounted
+#camera.rotation = (180) # Depends on how camera is mounted
+# ribbon down = 0, ribbon up = 180 
 #--------------------------------------------------------------#
 # Video made with different frame-rates, with 640,480:
 #  - 30 fps gives for 1 hour video 225 Mbyte
