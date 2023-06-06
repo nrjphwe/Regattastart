@@ -107,7 +107,7 @@ if (file_exists($filename))
 Start Time: <select name = "start_time" id = "start_time">
 <?php
 $hour = date('H');
-$steps   = 10; // only edit the minutes value
+$steps   = 5; // only edit the minutes value
 $current = 0;
 $loops   = 24*(60/$steps);
 //$loops   = (24-$hour)*(60/$steps);
@@ -156,7 +156,7 @@ Duration between first start and estimated finish: <select name = "video_delay" 
 </select>
 <p></p>
 Duration for each video: <select name = "video_dur" id = "video_dur">
-<option <?php if(isset($video_delay) && $video_dur == "1"){echo "selected=\"selected\"";} ?> value="1">1</option>
+<option <?php if(isset($video_delay) && $video_dur == "2"){echo "selected=\"selected\"";} ?> value="1">1</option>
 <option <?php if(isset($video_delay) && $video_dur == "10"){echo "selected=\"selected\"";} ?> value="10">10</option>
 <option <?php if(isset($video_delay) && $video_dur == "15"){echo "selected=\"selected\"";} ?> value="15">15</option>
 <option <?php if(isset($video_delay) && $video_dur == "20"){echo "selected=\"selected\"";} ?> value="20">20</option>
