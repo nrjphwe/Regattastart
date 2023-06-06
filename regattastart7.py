@@ -282,7 +282,7 @@ while ( True ):
                 GPIO.output(signal, ON)     # Signal On
                 time.sleep(signal_duration) # 1 sec
                 GPIO.output(lamp2, OFF)     # Lamp 2 Off (Flag P)
-                time.sleep(signal_duration) " 1 sec
+                time.sleep(signal_duration) # 1 sec
                 logger.info (" 1 min  Lamp-2 Off -- Flag P down")
                 #------------------------------------------------------#
                 # 1 min before start picture with overlay of date & time
