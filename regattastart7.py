@@ -227,7 +227,7 @@ while ( True ):
                 camera.capture(photo_path + "1st-start_pict.jpg", use_video_port=True)
                 time.sleep(signal_duration) # 1 sec
                 GPIO.output(signal, OFF)    # Signal Off
-                time.sleep(0.5)
+                # time.sleep(0.5)
             #-------------------------------------------------------#
             #
             # SECOND START SEQUENCE
