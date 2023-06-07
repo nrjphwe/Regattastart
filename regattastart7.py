@@ -33,7 +33,8 @@ import datetime as dt
 logger = logging.getLogger('Start')     # create logger
 logger.info (" Start logging")
 import subprocess
-import picamera
+#import picamera
+from picamera import PiCamera, Color
 photo_path = '/var/www/html/images/'
 dropbox_path = '/usr/lib/cgi-bin/dropbox_uploader.sh upload ' + photo_path
 photo_name = 'latest.jpg'
