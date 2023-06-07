@@ -43,7 +43,7 @@ logger.info (" Start logging")
 import subprocess
 from subprocess import CalledProcessError
 from picamera import PiCamera, Color
-camera = PiCamera()
+#camera = PiCamera()
 photo_path = '/var/www/html/images/'
 mp4_path = '/var/www/html/images/'
 dropbox_path = '/usr/lib/cgi-bin/dropbox_uploader.sh upload ' + photo_path
@@ -59,8 +59,8 @@ camdetect = 1 # => camera
 logger.info (camdetect)
 if (camdetect):
     logger.info ("camera detected")
-    camera = picamera.PiCamera()
-    camera.resolution = (1280, 720)
+    camera = PiCamera()
+    camera.resolution = (1296, 730)
     #camera.brightness = 70
     #camera.hflip = True
     #camera.vflip = True
