@@ -111,7 +111,7 @@ if (file_exists($filename))
 <div align="center">
 <h4><a href="/index6.php" title="Version using sessions"> Regattstart1 för 1 start</a></h4>
 <div align="center">
-<h4><a href="/index7.php" title="Version using sessions"> Regattstart2 för 2 starter, 2a start 10 min efter första</a></h4>
+<h4><a href="/index7.php" title="Version using sessions"> Regattstart2 för 2 starter, 2a start 5 min !! efter första</a></h4>
 <div align="center">
 <div class="w3-panel w3-pale-blue">
 <h3> Bilder tagna vid varje signal innan 1a start </h3>
