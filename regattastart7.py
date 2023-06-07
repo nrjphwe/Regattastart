@@ -38,7 +38,7 @@ from picamera import PiCamera, Color
 photo_path = '/var/www/html/images/'
 dropbox_path = '/usr/lib/cgi-bin/dropbox_uploader.sh upload ' + photo_path
 photo_name = 'latest.jpg'
-camera = picamera.PiCamera()
+camera = PiCamera()
 camera.resolution = (1280, 720)
 #camera.brightness = 70
 #camera.hflip = True
