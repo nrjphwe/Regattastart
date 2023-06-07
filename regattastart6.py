@@ -42,7 +42,8 @@ logger = logging.getLogger('Start')     # create logger
 logger.info (" Start logging")
 import subprocess
 from subprocess import CalledProcessError
-import picamera
+from picamera import PiCamera, Color
+camera = PiCamera()
 photo_path = '/var/www/html/images/'
 mp4_path = '/var/www/html/images/'
 dropbox_path = '/usr/lib/cgi-bin/dropbox_uploader.sh upload ' + photo_path
@@ -133,9 +134,9 @@ while ( True ):
             time_now = t.strftime('%H:%M:%S')   # 18:48:33
             nh, nm, ns = time_now.split(':')
             seconds_now =  60 * (int(nm) + 60 * int(nh)) + int(ns)
-            # seconds now is 60*(min + 60*hours)+seconds
             if camdetect == 1:
                 camera.annotate_background = picamera.Color('black')
+                camera.annotate_foreground = Color('white')
                 camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             #-------------------------------------------------------------#
             #
