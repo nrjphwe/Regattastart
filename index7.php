@@ -139,7 +139,7 @@ Day for race <select name = "day" id="day">
 <h4>Video Setup</h4>
 <p></p>
 Duration between first start and estimated finish: <select name = "video_delay" id = "video_delay">
-<option <?php if(isset($video_delay) && $video_delay == "10"){echo "selected=\"selected\"";} ?> value="10">2</option>
+<option <?php if(isset($video_delay) && $video_delay == "10"){echo "selected=\"selected\"";} ?> value="10">10</option>
 <option <?php if(isset($video_delay) && $video_delay == "20"){echo "selected=\"selected\"";} ?> value="20">20</option>
 <option <?php if(isset($video_delay) && $video_delay == "30"){echo "selected=\"selected\"";} ?> value="30">30</option>
 <option <?php if(isset($video_delay) && $video_delay == "40"){echo "selected=\"selected\"";} ?> value="40">40</option>
