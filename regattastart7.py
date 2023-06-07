@@ -116,10 +116,10 @@ while ( True ):
         #-----------------------------------------------------------#
         if wd == week_day :            # example Wednesday = 3
             #-------------------------------------------------------#
-            # Define start for regatta and delay before finish video
-            # commence and duration for each video-film
-            # regattastart7 will add another start sequence 10 min
-            # after first sequence.
+            # Define the start for regatta and the delay before finish 
+            # video will commence and the duration for each video 
+            # film. Regattastart7 will add another start sequence 
+            # 5 min after first sequence. (Was 10 min earlier)
             #-------------------------------------------------------#
             # setup start time
             #-------------------------------------------------------#
@@ -238,16 +238,17 @@ while ( True ):
                 logger.info (" 2nd START SEQUENCE ")
                 #-------------------------------------------------------#
                 #
-                #   varningssignal === 2nd 5 minute signal before start
+                #  Warning signal == 2nd start, 5 minute before 2nd start
                 #
                 #--------------------------------------------------------#
                 # trigger signal and lamp
                 #--------------------------------------------------------#
-                logger.info (" 2nd varning signal 5 minutes before 2nd start (0.2 sec)")
+                logger.info (" 2nd varning signal 5 minutes before 2nd start (1.4 sec)")
                 GPIO.output(signal, ON)  # Signal On
-                time.sleep(0.1)
+                time.sleep(0.2)
                 GPIO.output(lamp1, ON)   # Lamp 1 On (Flag O)
-                time.sleep(0.1)
+                logger.info (" 2nd 5 min Lamp-1 On -- Up with Flag O")
+                time.sleep(0.2)
                 #--------------------------------------------------------#
                 # 5 min before 2nd start, picture with overlay of date & time
                 #--------------------------------------------------------#
@@ -255,8 +256,7 @@ while ( True ):
                 camera.capture(photo_path + "2nd-5min_pict.jpg", use_video_port=True)
                 time.sleep(signal_duration)     # 1 sec
                 GPIO.output(signal, OFF)        # Signal Off
-                time.sleep(signal_duration)     # 1 sec
-                logger.info (" 2nd 5 min Lamp-1 On -- Up with Flag O")
+                time.sleep(0.5)                 # 1/2 sec
             #----------------------------------------------------------#
             # $$$$  2nd 4 minutes signal, 1 minute after first start
             #----------------------------------------------------------#
@@ -278,7 +278,7 @@ while ( True ):
             # $ One-Minute-to-start signal, 4 minutes after first start
             #----------------------------------------------------------#
             if seconds_now == (start_time_sec + 4*60):
-                logger.info (" 2nd 1 minute signal before 2nd start, signal on for 3 sec")
+                logger.info (" 2nd 1 minute signal before 2nd start, signal on for 2 sec")
                 GPIO.output(signal, ON)     # Signal On
                 time.sleep(signal_duration) # 1 sec
                 GPIO.output(lamp2, OFF)     # Lamp 2 Off (Flag P)
@@ -332,10 +332,10 @@ while ( True ):
                 #------------------------------------------------------#
                 # stop video0 recording
                 #------------------------------------------------------#
-                time.sleep(2)
+                time.sleep(2)   " 2 sec delay
                 camera.stop_recording()
                 logger.info (" video 0 recording stopped")
-                time.sleep(1) # test with a delay 1 sec
+                time.sleep(1) # delay 1 sec
                 #------------------------------------------------------#
                 # convert video0 format from h264 to mp4
                 #------------------------------------------------------#
