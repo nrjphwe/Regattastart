@@ -332,7 +332,7 @@ while ( True ):
                 #------------------------------------------------------#
                 # stop video0 recording
                 #------------------------------------------------------#
-                time.sleep(2)   " 2 sec delay
+                time.sleep(2)   # 2 sec delay
                 camera.stop_recording()
                 logger.info (" video 0 recording stopped")
                 time.sleep(1) # delay 1 sec
