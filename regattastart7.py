@@ -132,6 +132,8 @@ while ( True ):
             # FIRST START SEQUENCE
             #
             #-------------------------------------------------------#
+            camera.annotate_foreground = Color('black')
+            camera.annotate_background = Color('white')
             camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             time.sleep(1)
             if seconds_now == (start_time_sec - 5*60) :
