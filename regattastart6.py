@@ -135,7 +135,7 @@ while ( True ):
             nh, nm, ns = time_now.split(':')
             seconds_now =  60 * (int(nm) + 60 * int(nh)) + int(ns)
             if camdetect == 1:
-                camera.annotate_background = picamera.Color('black')
+                camera.annotate_background = Color('black')
                 camera.annotate_foreground = Color('white')
                 camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             #-------------------------------------------------------------#
