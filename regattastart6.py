@@ -244,7 +244,7 @@ def main():
                 logger.info (" This was the last video =====")
                 logger.info ("==============================")
                 for i in range(1, stop):
-                    logger.info (i = %s', i)
+                    logger.info ('i = %s', i)
                     t = dt.datetime.now()
                     logger.info (" Time now: %s", t.strftime('%H:%M:%S'))
                     # Camera running convert previous made video #
