@@ -113,150 +113,151 @@ def main():
         pass
     #-----------------------------------------------------------------#
     while ( True ):
-        now = dt.datetime.now()
-        wd = dt.datetime.today().strftime("%A")
-        if wd == week_day :            # example Wednesday = 3
-            t = dt.datetime.now() # ex: 2015-01-04 18:48:33.255145
-            time_now = t.strftime('%H:%M:%S')   # 18:48:33
-            nh, nm, ns = time_now.split(':')
-            seconds_now =  60 * (int(nm) + 60 * int(nh)) + int(ns)
-            camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            #-------------------------------------------------------------#
-            #
-            #    Varningssignal === 5 minute signal before start
-            #
-            #-------------------------------------------------------------#
-            if seconds_now == (start_time_sec - 5*60) :
-                trigger_warning_signal()
-                capture_picture(camera, photo_path + "1st-5min_pict.jpg", "5 min " + dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
-                GPIO.output(lamp1, ON)    # Lamp1 On (Flag O)
-                logger.info (" 5 min Lamp-1 On -- Up with Flag O")
-            #-------------------------------------------------------------#
-            # $$$$  Forberedelsesignal 4 minutes
-            #-------------------------------------------------------------#
-            if seconds_now == (start_time_sec - 4*60):
-                trigger_warning_signal()
-                capture_picture(camera, photo_path + "1st-4min_pict.jpg", "4 min " + dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
-                logger.info (" Prep-signal 4 min before start, for 1 sec")
-                GPIO.output(lamp2, ON)    # Lamp 2 On (Flag P)
-                logger.info (" 4 min Lamp-2 On  --- Up with Flag P ")
-            #------------------------------------------------------------#
-            # $$$$ One-Minute-to-start signal
-            #------------------------------------------------------------#
-            if seconds_now == (start_time_sec - 1*60):
-                trigger_warning_signal()
-                capture_picture(camera, photo_path + "1st-1min_pict.jpg", "1 min " + dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
-                logger.info (" 1 minute before start, signal on for 1 sec")
-                logger.info (" 1 min  Lamp-2 Off -- Flag P down")
-                GPIO.output(lamp2, OFF)    # Lamp 2 Off (Flag P)
-            #-------------------------------------------------------------#
-            #$$$$ Start signal
-            #-------------------------------------------------------------#
-            if seconds_now == start_time_sec:
-                s_start = time.time()  # will be used for annotations of seconds
-                print ("  ===       ==========             =               =======        ==========")
-                print (" =    =         =                 =  =             =       =           =")
-                print ("=               =                =    =            =        =          =")
-                print (" =              =               =      =           =       =           =")
-                print ("  = =           =              =========           =======             = ")
-                print ("      =         =             =          =         =    =              =")
-                print ("       =        =            =            =        =     =             =")
-                print (" =    =         =           =              =       =      =            =")
-                print ("  ===           =          =                =      =       =           =")
-                print (" ")
-                GPIO.output(lamp1, OFF)    # Lamp 1 Off (Flag O)
-                trigger_warning_signal()
-                capture_picture(camera, photo_path + "1st-start_pict.jpg", "start " + dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+        try:      
+            now = dt.datetime.now()
+            wd = dt.datetime.today().strftime("%A")
+            if wd == week_day :            # example Wednesday = 3
+                t = dt.datetime.now() # ex: 2015-01-04 18:48:33.255145
+                time_now = t.strftime('%H:%M:%S')   # 18:48:33
+                nh, nm, ns = time_now.split(':')
+                seconds_now =  60 * (int(nm) + 60 * int(nh)) + int(ns)
+                camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                #-------------------------------------------------------------#
+                #
+                #    Varningssignal === 5 minute signal before start
+                #
+                #-------------------------------------------------------------#
+                if seconds_now == (start_time_sec - 5*60) :
+                    trigger_warning_signal()
+                    capture_picture(camera, photo_path + "1st-5min_pict.jpg", "5 min " + dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+                    GPIO.output(lamp1, ON)    # Lamp1 On (Flag O)
+                    logger.info (" 5 min Lamp-1 On -- Up with Flag O")
+                #-------------------------------------------------------------#
+                # $$$$  Forberedelsesignal 4 minutes
+                #-------------------------------------------------------------#
+                if seconds_now == (start_time_sec - 4*60):
+                    trigger_warning_signal()
+                    capture_picture(camera, photo_path + "1st-4min_pict.jpg", "4 min " + dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+                    logger.info (" Prep-signal 4 min before start, for 1 sec")
+                    GPIO.output(lamp2, ON)    # Lamp 2 On (Flag P)
+                    logger.info (" 4 min Lamp-2 On  --- Up with Flag P ")
+                #------------------------------------------------------------#
+                # $$$$ One-Minute-to-start signal
+                #------------------------------------------------------------#
+                if seconds_now == (start_time_sec - 1*60):
+                    trigger_warning_signal()
+                    capture_picture(camera, photo_path + "1st-1min_pict.jpg", "1 min " + dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+                    logger.info (" 1 minute before start, signal on for 1 sec")
+                    logger.info (" 1 min  Lamp-2 Off -- Flag P down")
+                    GPIO.output(lamp2, OFF)    # Lamp 2 Off (Flag P)
+                #-------------------------------------------------------------#
+                #$$$$ Start signal
+                #-------------------------------------------------------------#
+                if seconds_now == start_time_sec:
+                    s_start = time.time()  # will be used for annotations of seconds
+                    print ("  ===       ==========             =               =======        ==========")
+                    print (" =    =         =                 =  =             =       =           =")
+                    print ("=               =                =    =            =        =          =")
+                    print (" =              =               =      =           =       =           =")
+                    print ("  = =           =              =========           =======             = ")
+                    print ("      =         =             =          =         =    =              =")
+                    print ("       =        =            =            =        =     =             =")
+                    print (" =    =         =           =              =       =      =            =")
+                    print ("  ===           =          =                =      =       =           =")
+                    print (" ")
+                    GPIO.output(lamp1, OFF)    # Lamp 1 Off (Flag O)
+                    trigger_warning_signal()
+                    capture_picture(camera, photo_path + "1st-start_pict.jpg", "start " + dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
 
-                logger.info (" Wait 2 minutes then stop video recording")
-                while (dt.datetime.now() - t).seconds < 118:
-                    camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                    camera.wait_recording(1)
-                #-------------------------------------------------------#
-                # stop video0 recording
-                #-------------------------------------------------------#
-                camera.stop_recording()
-                logger.info (" video 0 recording stopped")
-
-                #-------------------------------------------------------#
-                # convert video0 format from h264 to mp4
-                #-------------------------------------------------------#
-                from subprocess import CalledProcessError
-                convert_video_str = "MP4Box" + " -add " + photo_path + "video0.h264 " + "-new " + mp4_path + "video0.mp4 "
-                convert_video = convert_video_str.encode(encoding='utf8')
-                logger.info (" convert_video: {convert_video}")
-                #---------------------------------------------------------------------------------------#
-                # https://stackoverflow.com/questions/45040261/python-3-auto-conversion-from-h264-to-mp4
-                #---------------------------------------------------------------------------------------#
-                logger.info (" >>>>>> try convert video 0 to mp4 format")
-                try:
-                    output = subprocess.run(convert_video, shell=True)
-                except:
-                    logger.info (" failure to output to mp4")
-                else:
-                    logger.info (" video 0 converted to mp4 format")
-                finally:
-                    subprocess.run(convert_video, shell=True)
-                    logger.info (" video 0 converted again to mp4 format")
-                #----------------------------------------------------------#
-                # Wait for finish, when next video1 will start, video_delay
-                #----------------------------------------------------------#
-                t = dt.datetime.now()
-                logger.info (" Time now: %s", t.strftime('%H:%M:%S'))
-                sum = video_delay - 2  # Delay in minutes
-                while sum > 0:
-                    sum = sum - 1
-                    time.sleep(60)
-                    logger.info (' sum: %s', sum)
-                #----------------------------------------------------------#
-                # end while loop, delay from 2 minutes after start to video1
-                #----------------------------------------------------------#
-                # Result video, duration at "video_dur"
-                #----------------------------------------------------------#
-                logger.info (" num_videos = %s",num_videos)
-                logger.info (' video duration = %s', video_dur)
-                stop = num_videos+1
-                for i in range(1, stop):
-                    camera.start_recording(photo_path + "video" + str(i) + ".h264")
-                    logger.info (' Started recording of video%s', i)
-                    logger.info (' i = %s', i)
-                    #------------------------------------------------------#
-                    t = dt.datetime.now()
-                    logger.info (" Time now: %s", t.strftime('%H:%M:%S'))
-                    #------------------------------------------------------#
-                    # video running, duration at "video_dur"
-                    #------------------------------------------------------#
-                    while (dt.datetime.now() - t).seconds < (60 * video_dur):
-                        camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + "  " + str(int((time.time()-s_start)))
-                        camera.wait_recording(0.5)
-                    #------------------------------------------------------#
-                    #  stop video recording
-                    #------------------------------------------------------#
+                    logger.info (" Wait 2 minutes then stop video recording")
+                    while (dt.datetime.now() - t).seconds < 118:
+                        camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                        camera.wait_recording(1)
+                    #-------------------------------------------------------#
+                    # stop video0 recording
+                    #-------------------------------------------------------#
                     camera.stop_recording()
-                    #------------------------------------------------------#
-                    t = dt.datetime.now()
-                    logger.info (" Time now: %s", t.strftime('%H:%M:%S'))
-                    #------------------------------------------------------#
-                    logger.info ('stopped recording video%s', i)
-                logger.info ("==============================")
-                logger.info (" This was the last video =====")
-                logger.info ("==============================")
-                for i in range(1, stop):
-                    logger.info ('i = %s', i)
-                    t = dt.datetime.now()
-                    logger.info (" Time now: %s", t.strftime('%H:%M:%S'))
-                    # Camera running convert previous made video #
-                    logger.info (" convert video %s to mp4 format", i)
-                    convert_video = "MP4Box " + "-add " + photo_path + "video" + str(i) + ".h264 " + "-new " + mp4_path + "video" + str(i) + ".mp4 "
+                    logger.info (" video 0 recording stopped")
+
+                    #-------------------------------------------------------#
+                    # convert video0 format from h264 to mp4
+                    #-------------------------------------------------------#
+                    from subprocess import CalledProcessError
+                    convert_video_str = "MP4Box" + " -add " + photo_path + "video0.h264 " + "-new " + mp4_path + "video0.mp4 "
+                    convert_video = convert_video_str.encode(encoding='utf8')
+                    logger.info (" convert_video: {convert_video}")
+                    #---------------------------------------------------------------------------------------#
+                    # https://stackoverflow.com/questions/45040261/python-3-auto-conversion-from-h264-to-mp4
+                    #---------------------------------------------------------------------------------------#
+                    logger.info (" >>>>>> try convert video 0 to mp4 format")
                     try:
                         output = subprocess.run(convert_video, shell=True)
-                    except subprocess.CalledProcessError as e:
-                        logger.info ('FAIL:\ncmd:{}\output:{}'.format(e.cmd, e.output))
-                    logger.info (" video%s converted to mp4 format", i)
-                    logger.info (" video%s is now complete", i)
-                logger.info ("========    Finished   =======")
-                logger.info ("==============================")
-                #break
+                    except:
+                        logger.info (" failure to output to mp4")
+                    else:
+                        logger.info (" video 0 converted to mp4 format")
+                    finally:
+                        subprocess.run(convert_video, shell=True)
+                        logger.info (" video 0 converted again to mp4 format")
+                    #----------------------------------------------------------#
+                    # Wait for finish, when next video1 will start, video_delay
+                    #----------------------------------------------------------#
+                    t = dt.datetime.now()
+                    logger.info (" Time now: %s", t.strftime('%H:%M:%S'))
+                    sum = video_delay - 2  # Delay in minutes
+                    while sum > 0:
+                        sum = sum - 1
+                        time.sleep(60)
+                        logger.info (' sum: %s', sum)
+                    #----------------------------------------------------------#
+                    # end while loop, delay from 2 minutes after start to video1
+                    #----------------------------------------------------------#
+                    # Result video, duration at "video_dur"
+                    #----------------------------------------------------------#
+                    logger.info (" num_videos = %s",num_videos)
+                    logger.info (' video duration = %s', video_dur)
+                    stop = num_videos+1
+                    for i in range(1, stop):
+                        camera.start_recording(photo_path + "video" + str(i) + ".h264")
+                        logger.info (' Started recording of video%s', i)
+                        logger.info (' i = %s', i)
+                        #------------------------------------------------------#
+                        t = dt.datetime.now()
+                        logger.info (" Time now: %s", t.strftime('%H:%M:%S'))
+                        #------------------------------------------------------#
+                        # video running, duration at "video_dur"
+                        #------------------------------------------------------#
+                        while (dt.datetime.now() - t).seconds < (60 * video_dur):
+                            camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + "  " + str(int((time.time()-s_start)))
+                            camera.wait_recording(0.5)
+                        #------------------------------------------------------#
+                        #  stop video recording
+                        #------------------------------------------------------#
+                        camera.stop_recording()
+                        #------------------------------------------------------#
+                        t = dt.datetime.now()
+                        logger.info (" Time now: %s", t.strftime('%H:%M:%S'))
+                        #------------------------------------------------------#
+                        logger.info ('stopped recording video%s', i)
+                    logger.info ("==============================")
+                    logger.info (" This was the last video =====")
+                    logger.info ("==============================")
+                    for i in range(1, stop):
+                        logger.info ('i = %s', i)
+                        t = dt.datetime.now()
+                        logger.info (" Time now: %s", t.strftime('%H:%M:%S'))
+                        # Camera running convert previous made video #
+                        logger.info (" convert video %s to mp4 format", i)
+                        convert_video = "MP4Box " + "-add " + photo_path + "video" + str(i) + ".h264 " + "-new " + mp4_path + "video" + str(i) + ".mp4 "
+                        try:
+                            output = subprocess.run(convert_video, shell=True)
+                        except subprocess.CalledProcessError as e:
+                            logger.info ('FAIL:\ncmd:{}\output:{}'.format(e.cmd, e.output))
+                        logger.info (" video%s converted to mp4 format", i)
+                        logger.info (" video%s is now complete", i)
+                    logger.info ("========    Finished   =======")
+                    logger.info ("==============================")
+                    #break
         #--------------------------------------------------------------#
         # end if this
         #--------------------------------------------------------------#
