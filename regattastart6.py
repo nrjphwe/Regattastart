@@ -168,7 +168,6 @@ def main():
                     GPIO.output(lamp1, OFF)    # Lamp 1 Off (Flag O)
                     trigger_warning_signal()
                     capture_picture(camera, photo_path + "1st-start_pict.jpg", "start " + dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
-
                     logger.info (" Wait 2 minutes then stop video recording")
                     while (dt.datetime.now() - t).seconds < 118:
                         camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
@@ -178,7 +177,6 @@ def main():
                     #-------------------------------------------------------#
                     camera.stop_recording()
                     logger.info (" video 0 recording stopped")
-
                     #-------------------------------------------------------#
                     # convert video0 format from h264 to mp4
                     #-------------------------------------------------------#
@@ -255,9 +253,9 @@ def main():
                             logger.info ('FAIL:\ncmd:{}\output:{}'.format(e.cmd, e.output))
                         logger.info (" video%s converted to mp4 format", i)
                         logger.info (" video%s is now complete", i)
-                logger.info ("========    Finished   =======")
-                logger.info ("==============================")
-                break
-        #--------------------------------------------------------------#
-        # end if this
-        #--------------------------------------------------------------#
+        logger.info ("========    Finished   =======")
+        logger.info ("==============================")
+        break
+#--------------------------------------------------------------#
+# end if this
+#--------------------------------------------------------------#
