@@ -261,15 +261,3 @@ def main():
         #--------------------------------------------------------------#
         # end if this
         #--------------------------------------------------------------#
-        except KeyboardInterrupt:
-            logger.info ("======= Stopped by Ctrl-C =====")
-            break
-        except IOError as e:
-            logger.warning ("I/O error({0}): {1}".format(e.errno, e.strerror))
-        except ValueError:
-            logger.warning ("Could not convert data to an integer.")
-        except Exception:
-                logger.info("Fatal error in main loop", exc_info=True)
-        except OSError as err:
-            logger.warning ("OS error: {0}".format(err))
-    GPIO.cleanup()
