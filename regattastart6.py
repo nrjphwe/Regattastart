@@ -52,7 +52,7 @@ def convert_video_to_mp4(source_file, destination_file):
     subprocess.run(convert_video_str, shell=True)
 
 # Function to check if Camera exists and as working
-def camera_detected()
+def camera_detected():
     c = subprocess.check_output(["vcgencmd","get_camera"])
     camdetect = int(c.strip()[-1:]) #-- Removes the final CR character and gets only the "0" or "1" from detected status
     logger.info (camdetect)
