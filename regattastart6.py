@@ -6,15 +6,13 @@ import subprocess
 from picamera import PiCamera, Color
 import RPi.GPIO as GPIO
 
-# Set up initial data  
-photo_path = '/var/www/html/images/'
-mp4_path = '/var/www/html/images/'
-dropbox_path = '/usr/lib/cgi-bin/dropbox_uploader.sh upload ' + photo_path
-photo_name = 'latest.jpg'
-signal_dur = 0.3 # 0.3 sec
+def setup_logging():
+    logging.config.fileConfig('logging.conf')
+    logger = logging.getLogger('Start')
+    logger.info(" Start logging")
+    return logger
 
-# Function to initialize the camera
-def initialize_camera():
+def setup_camera():
     camera = PiCamera()
     camera.resolution = (1296, 730)
     camera.framerate = 5
@@ -27,91 +25,68 @@ def initialize_camera():
     # ribbon down 0, ribbon up 180
     return camera
 
+def remove_files(directory, pattern):
+    files = os.listdir(directory)
+    for file in files:
+        if file.startswith(pattern):
+            file_path = os.path.join(directory, file)
+            os.remove(file_path)
+    
+def setup_gpio():
+    GPIO.setmode(GPIO.BCM)
+    GPIO.setwarnings(True)
+    signal = 26
+    lamp1 = 20
+    lamp2 = 21
+    GPIO.setup(signal, GPIO.OUT, initial=GPIO.HIGH)
+    GPIO.setup(lamp1, GPIO.OUT, initial=GPIO.HIGH)
+    GPIO.setup(lamp2, GPIO.OUT, initial=GPIO.HIGH)
+    return signal, lamp1, lamp2
+
+def capture_picture(camera, photo_path, filename):
+    camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    camera.capture(photo_path + filename, use_video_port=True)
+
+def start_recording(camera, path, filename):
+    camera.start_recording(os.path.join(path, filename))
+
+def stop_recording(camera):
+    camera.stop_recording()
+
+def convert_video(input_file, output_file):
+    convert_video_str = f"MP4Box -add {input_file} -new {output_file}"
+    subprocess.run(convert_video_str, shell=True)
+
 # Function to trigger the warning signal
 def trigger_warning_signal():
     GPIO.output(signal, ON)
     time.sleep(signal_dur)
     GPIO.output(signal, OFF)
-
-# Function to capture a picture with overlay
-def capture_picture(camera, file_name, text):
-    camera.annotate_text = text
-    camera.capture(file_name, use_video_port=True)
-
-# Function to start video recording
-def start_video_recording(camera, file_name):
-    camera.start_recording(file_name)
-
-# Function to stop video recording
-def stop_video_recording(camera):
-    camera.stop_recording()
-
-# Function to convert the video format from h264 to mp4
-def convert_video_to_mp4(source_file, destination_file):
-    convert_video_str = "MP4Box -add {} -new {}".format(source_file, destination_file)
-    subprocess.run(convert_video_str, shell=True)
-
-# Function to check if Camera exists and as working
-def camera_detected():
-    c = subprocess.check_output(["vcgencmd","get_camera"])
-    camdetect = int(c.strip()[-1:]) #-- Removes the final CR character and gets only the "0" or "1" from detected status
-    logger.info (camdetect)
-    return camdetect
    
 # Main function
-def main():
-    
+def main():   
     start_time = str(sys.argv[1])
     week_day = str(sys.argv[2])
     video_delay = int(sys.argv[3])
     num_videos = int(sys.argv[4])
     video_dur = int(sys.argv[5])
-    import logging
-    import logging.config
-    logging.config.fileConfig('logging.conf')
-    from datetime import date
-    from datetime import datetime
-    import datetime as dt
-    logger = logging.getLogger('Start')     # create logger
-    logger.info (" Start logging")
-
-    # Initialize the camera
-    if camera_detect() == 1 :
-        camera = initialize_camera()
-    else:
-        logger.info ("camera NOT detected")   # Camera not connected.
-
-    # set up the GPIO channels - one for output "signal"
-    # one as output for "lamp1" and one for "lamp2"
-    #--------------------------------------------------------------#
-    # using BCM GPIO 00..nn numbers
-    # GPIO26 = pin 37 left 2nd from the bottom, for signalhorn
-    # GPIO20 = pin 38 right 2nd from the bottom, for lamp1
-    # GPIO21 = pin 40 right 1st from the bottom, for lamp2
-    GPIO.setmode(GPIO.BCM)
-    GPIO.setwarnings(True)
-    signal = 26 # GPIO16 = pin 37 // U1
-    lamp1 = 20  # GPIO20 = pin 38 // U2
-    lamp2 = 21  # GPIO21 = pin 40 // U3
     
-    # ON & OFF can be set to LOW or HIGH depending on what relay type is used
-    OFF = GPIO.HIGH
-    ON = GPIO.LOW
-    GPIO.setup(signal, GPIO.OUT, initial=OFF)
-    GPIO.setup(lamp1,  GPIO.OUT, initial=OFF)
-    GPIO.setup(lamp2,  GPIO.OUT, initial=OFF)
-    logger.info (" Start_time = %s", start_time)
+    signal_dur = 0.3 # 0.3 sec
+    
+    logger = setup_logging()
+    camera = setup_camera()
+    signal, lamp1, lamp2 = setup_gpio()
+
+    photo_path = '/var/www/html/images/'
+    mp4_path = '/var/www/html/images/'
+
+    remove_files(photo_path, "video")
+    remove_files(photo_path, "pict")
+    
     start_hour, start_minute = start_time.split(':')
-    start_time_sec = 60 * (int(start_minute) + 60 * int(start_hour)) # 6660
-    logger.info (' Weekday = %s', week_day)
-    remove_video = "rm " + photo_path + "video*.*4"
-    remove_pictures = "rm " + photo_path + "*pict.jpg"
-    try:
-        subprocess.Popen([remove_video], shell = True)
-        subprocess.Popen([remove_pictures], shell = True)
-    except OSError:
-        logger.info (" OS error remove video*.*4 ")
-        pass
+    start_time_sec = 60 * (int(start_minute) + 60 * int(start_hour))
+    logger.info(' Weekday = %s', week_day)
+    
     #-----------------------------------------------------------------#
     while ( True ):
         now = dt.datetime.now()
@@ -261,15 +236,5 @@ def main():
         #--------------------------------------------------------------#
         # end if this
         #--------------------------------------------------------------#
-        except KeyboardInterrupt:
-            logger.info ("======= Stopped by Ctrl-C =====")
-            break
-        except IOError as e:
-            logger.warning ("I/O error({0}): {1}".format(e.errno, e.strerror))
-        except ValueError:
-            logger.warning ("Could not convert data to an integer.")
-        except Exception:
-                logger.info("Fatal error in main loop", exc_info=True)
-        except OSError as err:
-            logger.warning ("OS error: {0}".format(err))
-    GPIO.cleanup()
+if __name__ == "__main__":
+    main()
