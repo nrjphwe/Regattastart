@@ -187,38 +187,38 @@ def main():
                 convert_video_str = "MP4Box" + " -add " + photo_path + "video0.h264 " + "-new " + mp4_path + "video0.mp4 "
                 convert_video = convert_video_str.encode(encoding='utf8')
                 logger.info (" convert_video: {convert_video}")
-#---------------------------------------------------------------------------------------#
-# https://stackoverflow.com/questions/45040261/python-3-auto-conversion-from-h264-to-mp4
-#---------------------------------------------------------------------------------------#
-                 logger.info (" >>>>>> try convert video 0 to mp4 format")
-                 try:
+                #---------------------------------------------------------------------------------------#
+                # https://stackoverflow.com/questions/45040261/python-3-auto-conversion-from-h264-to-mp4
+                #---------------------------------------------------------------------------------------#
+                logger.info (" >>>>>> try convert video 0 to mp4 format")
+                try:
                     output = subprocess.run(convert_video, shell=True)
-                 except:
+                except:
                     logger.info (" failure to output to mp4")
-                 else:
+                else:
                     logger.info (" video 0 converted to mp4 format")
-                 finally:
+                finally:
                     subprocess.run(convert_video, shell=True)
                     logger.info (" video 0 converted again to mp4 format")
-                 #----------------------------------------------------------#
-                 # Wait for finish, when next video1 will start, video_delay
-                 #----------------------------------------------------------#
-                 t = dt.datetime.now()
-                 logger.info (" Time now: %s", t.strftime('%H:%M:%S'))
-                 sum = video_delay - 2  # Delay in minutes
-                 while sum > 0:
+                #----------------------------------------------------------#
+                # Wait for finish, when next video1 will start, video_delay
+                #----------------------------------------------------------#
+                t = dt.datetime.now()
+                logger.info (" Time now: %s", t.strftime('%H:%M:%S'))
+                sum = video_delay - 2  # Delay in minutes
+                while sum > 0:
                     sum = sum - 1
                     time.sleep(60)
                     logger.info (' sum: %s', sum)
-                 #----------------------------------------------------------#
-                 # end while loop, delay from 2 minutes after start to video1
-                 #----------------------------------------------------------#
-                 # Result video, duration at "video_dur"
-                 #----------------------------------------------------------#
-                 logger.info (" num_videos = %s",num_videos)
-                 logger.info (' video duration = %s', video_dur)
-                 stop = num_videos+1
-                 for i in range(1, stop):
+                #----------------------------------------------------------#
+                # end while loop, delay from 2 minutes after start to video1
+                #----------------------------------------------------------#
+                # Result video, duration at "video_dur"
+                #----------------------------------------------------------#
+                logger.info (" num_videos = %s",num_videos)
+                logger.info (' video duration = %s', video_dur)
+                stop = num_videos+1
+                for i in range(1, stop):
                     camera.start_recording(photo_path + "video" + str(i) + ".h264")
                     logger.info (' Started recording of video%s', i)
                     logger.info (' i = %s', i)
@@ -240,10 +240,10 @@ def main():
                     logger.info (" Time now: %s", t.strftime('%H:%M:%S'))
                     #------------------------------------------------------#
                     logger.info ('stopped recording video%s', i)
-                logger.info ("==============================")
-                logger.info (" This was the last video =====")
-                logger.info ("==============================")
-                for i in range(1, stop):
+               logger.info ("==============================")
+               logger.info (" This was the last video =====")
+               logger.info ("==============================")
+               for i in range(1, stop):
                     logger.info (i = %s', i)
                     t = dt.datetime.now()
                     logger.info (" Time now: %s", t.strftime('%H:%M:%S'))
@@ -256,8 +256,8 @@ def main():
                         logger.info ('FAIL:\ncmd:{}\output:{}'.format(e.cmd, e.output))
                     logger.info (" video%s converted to mp4 format", i)
                     logger.info (" video%s is now complete", i)
-                logger.info ("========    Finished   =======")
-                logger.info ("==============================")
+               logger.info ("========    Finished   =======")
+               logger.info ("==============================")
     #--------------------------------------------------------------#
     # end if this
     #--------------------------------------------------------------#
