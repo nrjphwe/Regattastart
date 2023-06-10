@@ -240,10 +240,10 @@ def main():
                     logger.info (" Time now: %s", t.strftime('%H:%M:%S'))
                     #------------------------------------------------------#
                     logger.info ('stopped recording video%s', i)
-               logger.info ("==============================")
-               logger.info (" This was the last video =====")
-               logger.info ("==============================")
-               for i in range(1, stop):
+                logger.info ("==============================")
+                logger.info (" This was the last video =====")
+                logger.info ("==============================")
+                for i in range(1, stop):
                     logger.info (i = %s', i)
                     t = dt.datetime.now()
                     logger.info (" Time now: %s", t.strftime('%H:%M:%S'))
@@ -256,8 +256,8 @@ def main():
                         logger.info ('FAIL:\ncmd:{}\output:{}'.format(e.cmd, e.output))
                     logger.info (" video%s converted to mp4 format", i)
                     logger.info (" video%s is now complete", i)
-               logger.info ("========    Finished   =======")
-               logger.info ("==============================")
+                logger.info ("========    Finished   =======")
+                logger.info ("==============================")
     #--------------------------------------------------------------#
     # end if this
     #--------------------------------------------------------------#
