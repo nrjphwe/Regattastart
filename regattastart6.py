@@ -255,9 +255,9 @@ def main():
                             logger.info ('FAIL:\ncmd:{}\output:{}'.format(e.cmd, e.output))
                         logger.info (" video%s converted to mp4 format", i)
                         logger.info (" video%s is now complete", i)
-                    logger.info ("========    Finished   =======")
-                    logger.info ("==============================")
-                    break
+                logger.info ("========    Finished   =======")
+                logger.info ("==============================")
+                break
         #--------------------------------------------------------------#
         # end if this
         #--------------------------------------------------------------#
