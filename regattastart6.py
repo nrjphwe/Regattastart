@@ -10,7 +10,8 @@ import RPi.GPIO as GPIO
 from picamera import PiCamera, Color
 
 def setup_logging():
-    logging.config.fileConfig('logging.conf')
+    logging.basicConfig(filename='/tmp/error_log.txt', level=logging.DEBUG)
+    #logging.config.fileConfig('logging.conf')
     logger = logging.getLogger('Start')
     logger.info("Start logging")
     return logger
@@ -80,7 +81,8 @@ def main():
     mp4_path = '/var/www/html/images/'
     photo_name = 'latest.jpg'
     signal_dur = 0.3 # 0.3 sec
-  
+    
+    logger = setup_logging()
     logger.info (" Start_time = %s", start_time)
     start_hour, start_minute = start_time.split(':')
     start_time_sec = 60 * (int(start_minute) + 60 * int(start_hour)) # 6660
@@ -195,9 +197,8 @@ def main():
                             convert_video ("video" + str(i) + ".h264",  "video" + str(i) + ".mp4 ")
             logger.info ("========    Finished   =======")
             logger.info ("==============================")
-        except Exception:
-            logger.info("Fatal error in main loop", exc_info=True)
-            logger.exception("Fatal error in main loop")
+        except Exception as e:
+            logger.exception("Fatal error in main loop: %s", str(e))
         except OSError as err:
             logger.warning ("OS error: {0}".format(err))
     GPIO.cleanup()
