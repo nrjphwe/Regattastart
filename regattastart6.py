@@ -1,7 +1,7 @@
 import os
 import sys
 import cgitb
-cgitb.enable(display=0, logdir="/tmp/", filename="error_log.txt")
+cgitb.enable(display=0, logdir="/tmp/")
 import time
 import logging
 import subprocess
