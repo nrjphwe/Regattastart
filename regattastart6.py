@@ -193,10 +193,9 @@ def main():
                             convert_video ("video" + str(i) + ".h264",  "video" + str(i) + ".mp4 ")
             logger.info ("========    Finished   =======")
             logger.info ("==============================")
-            break
         except Exception:
             logger.info("Fatal error in main loop", exc_info=True)
-            #logger.exception("Fatal error in main loop")
+            logger.exception("Fatal error in main loop")
         except OSError as err:
             logger.warning ("OS error: {0}".format(err))
     GPIO.cleanup()
