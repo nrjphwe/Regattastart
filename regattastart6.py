@@ -194,15 +194,6 @@ def main():
             logger.info ("========    Finished   =======")
             logger.info ("==============================")
             break
-        except KeyboardInterrupt:
-                logger.info ("======= Stopped by Ctrl-C =====")
-                break
-        except IOError as e:
-            logger.warning ("I/O error({0}): {1}".format(e.errno, e.strerror))
-        except ValueError:
-            logger.warning ("Could not convert data to an integer.")
-        #except Exception as e:
-        #    logging.warning ("Unexpected exception! %s",e)
         except Exception:
             logger.info("Fatal error in main loop", exc_info=True)
             #logger.exception("Fatal error in main loop")
