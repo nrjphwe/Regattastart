@@ -68,6 +68,7 @@ def convert_video_to_mp4(source_file, destination_file):
     subprocess.run(convert_video_str, shell=True)
 
 def main():
+    camera = None # Initialize the camera variable
     try:
         start_time = str(sys.argv[1])
         week_day = str(sys.argv[2])
@@ -204,9 +205,9 @@ def main():
     except Exception as e:
         logger.exception("Fatal error in main loop: %s", str(e))
     finally:
-         if camera is not None:
+        if camera is not None:
             camera.close()  # Release the camera resources
-            GPIO.cleanup()
+        GPIO.cleanup()
 if __name__ == "__main__":
     logging.basicConfig(level=logging.WARNING)  # Set log level to WARNING
     main()
