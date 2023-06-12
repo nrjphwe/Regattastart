@@ -95,7 +95,7 @@ execution_string =  "python3 " + "regattastart6.py " + str(start_time) + " " + w
 proc = subprocess.run([execution_string], shell = True)
 #proc.communicate()
 #print (cookme)
-print ("</body>")
+#print ("</body>")
 print ("</html>")
 if os.fork():
   print ("success")
