@@ -214,3 +214,5 @@ def main():
     except Exception as e:
         logger.exception("Fatal error in main loop: %s", str(e))
     GPIO.cleanup()
+    if __name__ == "__main__":
+    main()
