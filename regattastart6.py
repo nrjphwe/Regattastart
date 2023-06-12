@@ -11,8 +11,11 @@ import RPi.GPIO as GPIO
 from picamera import PiCamera, Color
 
 def setup_logging():
+    print("Before setup_logging")
     logging.config.fileConfig('logging.conf')
+    print("After setup_logging")
     logger = logging.getLogger('Start')
+    print(logger)
     logger.info("Start logging")
     return logger
 
