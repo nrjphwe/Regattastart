@@ -58,6 +58,8 @@ def capture_picture(camera, photo_path, file_name):
     camera.capture(os.path.join(photo_path, file_name), use_video_port=True)
 
 def start_video_recording(camera,mp4_path, file_name):
+    if camera.recording:
+        camera.stop_recording()
     camera.start_recording(os.path.join(mp4_path, file_name))
 
 def stop_video_recording(camera):
