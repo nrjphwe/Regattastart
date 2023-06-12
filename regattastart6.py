@@ -92,7 +92,7 @@ def main():
         print("Before setup_logging")
         logger = setup_logging()
         print("After setup_logging")
-        logger.info ('"After setup_logging")
+        logger.info ("After setup_logging")
 
         logger.info (" Start_time = %s", start_time)
         start_hour, start_minute = start_time.split(':')
