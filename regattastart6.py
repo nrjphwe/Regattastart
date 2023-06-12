@@ -182,7 +182,7 @@ def main():
                         logger.info (' video duration = %s', video_dur)
                         stop = num_videos+1
                         for i in range(1, stop):
-                            start_video_recording(camera, photo_path, "video0"+str(i) + ".h264")
+                            start_video_recording(camera, photo_path, "video" + str(i) + ".h264")
                             logger.info (' Started recording of video%s', i)
                             logger.info (' i = %s', i)
                             #------------------------------------------------------#
