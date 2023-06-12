@@ -19,6 +19,7 @@ def setup_logging():
     logger = logging.getLogger('Start')
     print(logger)
     logger.info("Start logging")
+    print("After Start_logging")
     return logger
 
 def setup_camera():
