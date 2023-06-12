@@ -3,10 +3,11 @@ import sys
 import cgitb
 cgitb.enable(display=0, logdir="/tmp/")
 import time
+from datetime import datetime
+import datetime as dt
 import logging
 import logging.config
 import subprocess
-from datetime import datetime
 import RPi.GPIO as GPIO
 from picamera import PiCamera, Color
 
@@ -55,14 +56,13 @@ def trigger_warning_signal():
     time.sleep(signal_dur)
     GPIO.output(signal, OFF)
 
-# Function to capture a picture with overlay
 def capture_picture(camera, file_name, text):
     camera.annotate_text = text
-    camera.capture(file_name, use_video_port=True)
+    camera.capture(os.path.join(photo_path, file_name), use_video_port=True)
 
 # Function to start video recording
 def start_video_recording(camera, file_name):
-    camera.start_recording(file_name)
+    camera.start_recording(os.path.join(mp4_path, file_name))
 
 # Function to stop video recording
 def stop_video_recording(camera):
@@ -99,9 +99,11 @@ def main():
     logger.info (' Weekday = %s', week_day)
     
     signal, lamp1, lamp2 = setup_gpio()
+    camera = setup_camera()
     
     remove_files(photo_path, "video")
     remove_files(photo_path, "pict")    
+    
     #-----------------------------------------------------------------#
     try: 
         
