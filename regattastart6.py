@@ -56,12 +56,11 @@ def trigger_warning_signal():
     time.sleep(signal_dur)
     GPIO.output(signal, OFF)
 
-def capture_picture(camera, file_name, text):
-    camera.annotate_text = text
+def capture_picture(camera, photo_path, file_name):
     camera.capture(os.path.join(photo_path, file_name), use_video_port=True)
 
 # Function to start video recording
-def start_video_recording(camera, file_name):
+def start_video_recording(camera,mp4_path, file_name):
     camera.start_recording(os.path.join(mp4_path, file_name))
 
 # Function to stop video recording
@@ -112,7 +111,7 @@ def main():
                     time_now = t.strftime('%H:%M:%S')   # 18:48:33
                     nh, nm, ns = time_now.split(':')
                     seconds_now =  60 * (int(nm) + 60 * int(nh)) + int(ns) 
-                    start_video_recording(camera, "video0.h264") 
+                    start_video_recording(camera, photo_path, "video0.h264") 
                     camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                     #-------------------------------------------------------------#
                     #    Varningssignal === 5 minute signal before start
@@ -187,7 +186,7 @@ def main():
                         logger.info (' video duration = %s', video_dur)
                         stop = num_videos+1
                         for i in range(1, stop):
-                            start_video_recording(camera, "video0"+str(i) + ".h264") 
+                            start_video_recording(camera, photo_path, "video0"+str(i) + ".h264") 
                             logger.info (' Started recording of video%s', i)
                             logger.info (' i = %s', i)
                             #------------------------------------------------------#
