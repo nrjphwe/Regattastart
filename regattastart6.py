@@ -73,7 +73,7 @@ def stop_video_recording(camera):
 def convert_video_to_mp4(source_file, destination_file):
     convert_video_str = "MP4Box -add {} -new {}".format(source_file, destination_file)
     subprocess.run(convert_video_str, shell=True)
-   
+
 # Main function
 def main():
     try:
@@ -82,11 +82,11 @@ def main():
         video_delay = int(sys.argv[3])
         num_videos = int(sys.argv[4])
         video_dur = int(sys.argv[5])
-        # Set up initial data  
+        # Set up initial data
         photo_path = '/var/www/html/images/'
         mp4_path = '/var/www/html/images/'
         signal_dur = 0.3 # 0.3 sec
-        
+
         # set up logging
         global logger  # Make logger variable global
         print("Before setup_logging")
@@ -103,18 +103,18 @@ def main():
         camera = setup_camera()
 
         remove_files(photo_path, "video")
-        remove_files(photo_path, "pict")    
+        remove_files(photo_path, "pict")
 
         while ( True ):
-            try:      
+            try:
                 now = dt.datetime.now()
                 wd = dt.datetime.today().strftime("%A")
                 if wd == week_day :            # example Wednesday = 3
                     t = dt.datetime.now() # ex: 2015-01-04 18:48:33.255145
                     time_now = t.strftime('%H:%M:%S')   # 18:48:33
                     nh, nm, ns = time_now.split(':')
-                    seconds_now =  60 * (int(nm) + 60 * int(nh)) + int(ns) 
-                    start_video_recording(camera, photo_path, "video0.h264") 
+                    seconds_now =  60 * (int(nm) + 60 * int(nh)) + int(ns)
+                    start_video_recording(camera, photo_path, "video0.h264")
                     camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                     #-------------------------------------------------------------#
                     #    Varningssignal === 5 minute signal before start
@@ -189,7 +189,7 @@ def main():
                         logger.info (' video duration = %s', video_dur)
                         stop = num_videos+1
                         for i in range(1, stop):
-                            start_video_recording(camera, photo_path, "video0"+str(i) + ".h264") 
+                            start_video_recording(camera, photo_path, "video0"+str(i) + ".h264")y
                             logger.info (' Started recording of video%s', i)
                             logger.info (' i = %s', i)
                             #------------------------------------------------------#
