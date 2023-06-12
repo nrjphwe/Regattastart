@@ -15,7 +15,6 @@ from picamera import PiCamera, Color
 def setup_logging():
     logging.config.fileConfig('logging.conf')
     logger = logging.getLogger('Start')
-    logger.setLevel(logging.INFO)  # Replace INFO with the desired log level
     logger.info("Start logging")
     return logger
 
@@ -207,4 +206,5 @@ def main():
     finally:
         GPIO.cleanup()
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.WARNING)  # Set log level to WARNING
     main()
