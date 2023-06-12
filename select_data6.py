@@ -98,5 +98,5 @@ proc = subprocess.run([execution_string], shell = True)
 #print ("</body>")
 #print ("</html>")
 if os.fork():
-  print ("success")
+  #print ("success")
   sys.exit(0)
