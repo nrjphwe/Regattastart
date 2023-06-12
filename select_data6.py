@@ -96,7 +96,7 @@ proc = subprocess.run([execution_string], shell = True)
 #proc.communicate()
 #print (cookme)
 #print ("</body>")
-print ("</html>")
+#print ("</html>")
 if os.fork():
   print ("success")
   sys.exit(0)
