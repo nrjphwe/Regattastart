@@ -213,6 +213,7 @@ def main():
                 logger.warning ("OS error: {0}".format(err))
     except Exception as e:
         logger.exception("Fatal error in main loop: %s", str(e))
-    GPIO.cleanup()
-    if __name__ == "__main__":
+    finally:
+        GPIO.cleanup()
+if __name__ == "__main__":
     main()
