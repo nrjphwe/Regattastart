@@ -12,6 +12,7 @@ import subprocess
 import RPi.GPIO as GPIO
 from picamera import PiCamera, Color
 signal_dur = 0.3 # 0.3 sec
+mp4_path = '/var/www/html/images/'
 
 def setup_logging():
     logging.config.fileConfig('logging.conf')
@@ -49,8 +50,6 @@ def remove_files(directory, pattern):
             file_path = os.path.join(directory, file)
             os.remove(file_path)
 
-            
-# Function to trigger the warning signal
 def trigger_warning_signal(signal):
     GPIO.output(signal, ON)
     time.sleep(signal_dur)
@@ -82,11 +81,9 @@ def main():
         video_dur = int(sys.argv[5])
         # Set up initial data
         photo_path = '/var/www/html/images/'
-        mp4_path = '/var/www/html/images/'
         
         global logger  # Make logger variable global
         logger = setup_logging()
-        
         logger.info (" Start_time = %s", start_time)
         start_hour, start_minute = start_time.split(':')
         start_time_sec = 60 * (int(start_minute) + 60 * int(start_hour)) # 6660
@@ -161,7 +158,7 @@ def main():
                         #-------------------------------------------------------#
                         # convert video0 format from h264 to mp4
                         #-------------------------------------------------------#
-                        convert_video_to_mp4("video0.h264", "video0.mp4")
+                        convert_video_to_mp4(mp4_path, "video0.h264", "video0.mp4")
                         logger.info (" video 0 converted to mp4 format")
                         #----------------------------------------------------------#
                         # Wait for finish, when next video1 will start, video_delay
@@ -201,7 +198,7 @@ def main():
                                 t = dt.datetime.now()
                                 logger.info (" Time now: %s", t.strftime('%H:%M:%S'))
                                 logger.info (" convert video %s to mp4 format", i)
-                                convert_video_to_mp4("video" + str(i) + ".h264",  "video" + str(i) + ".mp4")
+                                convert_video_to_mp4(mp4_path, "video" + str(i) + ".h264",  "video" + str(i) + ".mp4")
             except Exception as e:
                 logger.exception("Exception in inner loop: %s", str(e))
             except OSError as err:
