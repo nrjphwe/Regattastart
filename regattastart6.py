@@ -4,6 +4,7 @@ import cgitb
 cgitb.enable(display=0, logdir="/tmp/")
 import time
 import logging
+import logging.config
 import subprocess
 from datetime import datetime
 import RPi.GPIO as GPIO
