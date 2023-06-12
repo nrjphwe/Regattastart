@@ -62,21 +62,18 @@ def trigger_warning_signal():
 def capture_picture(camera, photo_path, file_name):
     camera.capture(os.path.join(photo_path, file_name), use_video_port=True)
 
-# Function to start video recording
 def start_video_recording(camera,mp4_path, file_name):
     camera.start_recording(os.path.join(mp4_path, file_name))
 
-# Function to stop video recording
 def stop_video_recording(camera):
     camera.stop_recording()
 
-# Function to convert the video format from h264 to mp4
 def convert_video_to_mp4(source_file, destination_file):
     convert_video_str = "MP4Box -add {} -new {}".format(source_file, destination_file)
     subprocess.run(convert_video_str, shell=True)
 
-# Main function
 def main():
+    print ("main")
     try:
         start_time = str(sys.argv[1])
         week_day = str(sys.argv[2])
@@ -87,8 +84,6 @@ def main():
         photo_path = '/var/www/html/images/'
         mp4_path = '/var/www/html/images/'
         signal_dur = 0.3 # 0.3 sec
-
-        # set up logging
         logging.config.fileConfig('logging.conf')
         #global logger  # Make logger variable global
         print("Before setup_logging")
