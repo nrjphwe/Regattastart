@@ -73,7 +73,6 @@ def convert_video_to_mp4(source_file, destination_file):
     subprocess.run(convert_video_str, shell=True)
 
 def main():
-    print("main")
     try:
         start_time = str(sys.argv[1])
         week_day = str(sys.argv[2])
@@ -85,6 +84,7 @@ def main():
         mp4_path = '/var/www/html/images/'
         signal_dur = 0.3 # 0.3 sec
         logging.config.fileConfig('logging.conf')
+        logger.setLevel(logging.INFO)  # Replace INFO with the desired log level
         #global logger  # Make logger variable global
         print("Before setup_logging")
         logger = logging.getLogger('Start')
