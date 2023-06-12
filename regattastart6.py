@@ -11,6 +11,7 @@ import logging.config
 import subprocess
 import RPi.GPIO as GPIO
 from picamera import PiCamera, Color
+signal_dur = 0.3 # 0.3 sec
 
 def setup_logging():
     logging.config.fileConfig('logging.conf')
@@ -48,6 +49,7 @@ def remove_files(directory, pattern):
             file_path = os.path.join(directory, file)
             os.remove(file_path)
 
+            
 # Function to trigger the warning signal
 def trigger_warning_signal(signal):
     GPIO.output(signal, ON)
@@ -81,7 +83,6 @@ def main():
         # Set up initial data
         photo_path = '/var/www/html/images/'
         mp4_path = '/var/www/html/images/'
-        signal_dur = 0.3 # 0.3 sec
         
         global logger  # Make logger variable global
         logger = setup_logging()
