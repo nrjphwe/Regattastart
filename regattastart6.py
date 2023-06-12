@@ -82,6 +82,7 @@ def main():
     photo_name = 'latest.jpg'
     signal_dur = 0.3 # 0.3 sec
     # set up logging
+    global logger  # Make logger variable global
     print("Before setup_logging")
     setup_logging()
     print("After setup_logging")
