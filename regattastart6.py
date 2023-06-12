@@ -49,7 +49,7 @@ def remove_files(directory, pattern):
             os.remove(file_path)
 
 # Function to trigger the warning signal
-def trigger_warning_signal():
+def trigger_warning_signal(signal):
     GPIO.output(signal, ON)
     time.sleep(signal_dur)
     GPIO.output(signal, OFF)
@@ -71,6 +71,7 @@ def convert_video_to_mp4(source_file, destination_file):
 
 def main():
     camera = None # Initialize the camera variable
+    signal = None # Initialize the signal relay/variable
     try:
         start_time = str(sys.argv[1])
         week_day = str(sys.argv[2])
@@ -111,7 +112,7 @@ def main():
                     #    Varningssignal === 5 minute signal before start
                     #-------------------------------------------------------------#
                     if seconds_now == (start_time_sec - 5*60) :
-                        trigger_warning_signal()
+                        trigger_warning_signal(signal)
                         capture_picture(camera, photo_path, "1st-5min_pict.jpg")
                         GPIO.output(lamp1, ON)    # Lamp1 On (Flag O)
                         logger.info (" 5 min Lamp-1 On -- Up with Flag O")
@@ -119,7 +120,7 @@ def main():
                     # $$$$  Forberedelsesignal 4 minutes
                     #-------------------------------------------------------------#
                     if seconds_now == (start_time_sec - 4*60):
-                        trigger_warning_signal()
+                        trigger_warning_signal(signal)
                         logger.info (" Prep-signal 4 min before start, for 1 sec")
                         capture_picture(camera, photo_path, "1st-4min_pict.jpg")
                         GPIO.output(lamp2, ON)    # Lamp 2 On (Flag P)
@@ -128,7 +129,7 @@ def main():
                     # $$$$ One-Minute-to-start signal
                     #------------------------------------------------------------#
                     if seconds_now == (start_time_sec - 1*60):
-                        trigger_warning_signal()
+                        trigger_warning_signal(signal)
                         logger.info (" 1 minute before start, signal on for 1 sec")
                         capture_picture(camera, photo_path, "1st-1min_pict.jpg")
                         logger.info (" 1 min  Lamp-2 Off -- Flag P down")
@@ -149,7 +150,7 @@ def main():
                         print ("  ===           =          =                =      =       =           =")
                         print (" ")
                         GPIO.output(lamp1, OFF)    # Lamp 1 Off (Flag O)
-                        trigger_warning_signal()
+                        trigger_warning_signal(signal)
                         capture_picture(camera, photo_path, "1st-start_pict.jpg")
                         logger.info (" Wait 2 minutes then stop video recording")
                         while (dt.datetime.now() - t).seconds < 118:
@@ -209,6 +210,8 @@ def main():
     finally:
         if camera is not None:
             camera.close()  # Release the camera resources
+        if signal is not None:
+            GPIO.output(signal, OFF)  # Turn off the signal output
         GPIO.cleanup()
 if __name__ == "__main__":
     logging.basicConfig(level=logging.WARNING)  # Set log level to WARNING
