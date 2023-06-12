@@ -90,13 +90,15 @@ def main():
     # set up logging
     global logger  # Make logger variable global
     print("Before setup_logging")
-    setup_logging()
+    logger = setup_logging()
     print("After setup_logging")
     
     logger.info (" Start_time = %s", start_time)
     start_hour, start_minute = start_time.split(':')
     start_time_sec = 60 * (int(start_minute) + 60 * int(start_hour)) # 6660
     logger.info (' Weekday = %s', week_day)
+    
+    signal, lamp1, lamp2 = setup_gpio()
     
     remove_files(photo_path, "video")
     remove_files(photo_path, "pict")    
