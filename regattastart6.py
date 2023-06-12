@@ -204,7 +204,9 @@ def main():
     except Exception as e:
         logger.exception("Fatal error in main loop: %s", str(e))
     finally:
-        GPIO.cleanup()
+         if camera is not None:
+            camera.close()  # Release the camera resources
+            GPIO.cleanup()
 if __name__ == "__main__":
     logging.basicConfig(level=logging.WARNING)  # Set log level to WARNING
     main()
