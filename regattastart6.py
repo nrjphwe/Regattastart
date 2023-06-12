@@ -59,7 +59,7 @@ def trigger_warning_signal(signal):
 def capture_picture(camera, photo_path, file_name):
     camera.capture(os.path.join(photo_path, file_name), use_video_port=True)
 
-def start_video_recording(camera,mp4_path, file_name):
+def start_video_recording(camera, mp4_path, file_name):
     if camera.recording:
         camera.stop_recording()
     camera.start_recording(os.path.join(mp4_path, file_name))
@@ -67,8 +67,8 @@ def start_video_recording(camera,mp4_path, file_name):
 def stop_video_recording(camera):
     camera.stop_recording()
 
-def convert_video_to_mp4(source_file, destination_file):
-    convert_video_str = "MP4Box -add {} -new {}".format(source_file, destination_file)
+def convert_video_to_mp4(mp4_path, source_file, destination_file):
+    convert_video_str = "MP4Box -add {} -new {}".format(os.path.join(mp4_path,source_file), os.path.join(mp4_path,destination_file))
     subprocess.run(convert_video_str, shell=True)
 
 def main():
