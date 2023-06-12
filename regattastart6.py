@@ -75,38 +75,34 @@ def convert_video_to_mp4(source_file, destination_file):
    
 # Main function
 def main():
-    
-    start_time = str(sys.argv[1])
-    week_day = str(sys.argv[2])
-    video_delay = int(sys.argv[3])
-    num_videos = int(sys.argv[4])
-    video_dur = int(sys.argv[5])
-    
-    # Set up initial data  
-    photo_path = '/var/www/html/images/'
-    mp4_path = '/var/www/html/images/'
-    photo_name = 'latest.jpg'
-    signal_dur = 0.3 # 0.3 sec
-    # set up logging
-    global logger  # Make logger variable global
-    print("Before setup_logging")
-    logger = setup_logging()
-    print("After setup_logging")
-    
-    logger.info (" Start_time = %s", start_time)
-    start_hour, start_minute = start_time.split(':')
-    start_time_sec = 60 * (int(start_minute) + 60 * int(start_hour)) # 6660
-    logger.info (' Weekday = %s', week_day)
-    
-    signal, lamp1, lamp2 = setup_gpio()
-    camera = setup_camera()
-    
-    remove_files(photo_path, "video")
-    remove_files(photo_path, "pict")    
-    
-    #-----------------------------------------------------------------#
-    try: 
+    try:
+        start_time = str(sys.argv[1])
+        week_day = str(sys.argv[2])
+        video_delay = int(sys.argv[3])
+        num_videos = int(sys.argv[4])
+        video_dur = int(sys.argv[5])
+        # Set up initial data  
+        photo_path = '/var/www/html/images/'
+        mp4_path = '/var/www/html/images/'
+        signal_dur = 0.3 # 0.3 sec
         
+        # set up logging
+        global logger  # Make logger variable global
+        print("Before setup_logging")
+        logger = setup_logging()
+        print("After setup_logging")
+
+        logger.info (" Start_time = %s", start_time)
+        start_hour, start_minute = start_time.split(':')
+        start_time_sec = 60 * (int(start_minute) + 60 * int(start_hour)) # 6660
+        logger.info (' Weekday = %s', week_day)
+
+        signal, lamp1, lamp2 = setup_gpio()
+        camera = setup_camera()
+
+        remove_files(photo_path, "video")
+        remove_files(photo_path, "pict")    
+
         while ( True ):
             try:      
                 now = dt.datetime.now()
