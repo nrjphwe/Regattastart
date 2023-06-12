@@ -13,15 +13,10 @@ import RPi.GPIO as GPIO
 from picamera import PiCamera, Color
 
 def setup_logging():
-    print("Before setup_logging")
-    global logger
     logging.config.fileConfig('logging.conf')
-    logger.setLevel(logging.INFO)  # Replace INFO with the desired log level
-    print("After setup_logging")
     logger = logging.getLogger('Start')
-    print(logger)
+    logger.setLevel(logging.INFO)  # Replace INFO with the desired log level
     logger.info("Start logging")
-    print("After Start_logging")
     return logger
 
 def setup_camera():
@@ -84,12 +79,10 @@ def main():
         photo_path = '/var/www/html/images/'
         mp4_path = '/var/www/html/images/'
         signal_dur = 0.3 # 0.3 sec
+        
         global logger  # Make logger variable global
-        print("Before setup_logging")
         logger = setup_logging()
-        print("After setup_logging")
-        logger.info ("After setup_logging")
-
+        
         logger.info (" Start_time = %s", start_time)
         start_hour, start_minute = start_time.split(':')
         start_time_sec = 60 * (int(start_minute) + 60 * int(start_hour)) # 6660
