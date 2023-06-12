@@ -165,7 +165,7 @@ def main():
                         #-------------------------------------------------------#
                         # convert video0 format from h264 to mp4
                         #-------------------------------------------------------#
-                        convert_video_to_MP4("video0.h264", "video0.mp4")
+                        convert_video_to_mp4("video0.h264", "video0.mp4")
                         logger.info (" video 0 converted to mp4 format")
                         #----------------------------------------------------------#
                         # Wait for finish, when next video1 will start, video_delay
@@ -205,7 +205,7 @@ def main():
                                 t = dt.datetime.now()
                                 logger.info (" Time now: %s", t.strftime('%H:%M:%S'))
                                 logger.info (" convert video %s to mp4 format", i)
-                                convert_video_to_MP4("video" + str(i) + ".h264",  "video" + str(i) + ".mp4")
+                                convert_video_to_mp4("video" + str(i) + ".h264",  "video" + str(i) + ".mp4")
             except Exception as e:
                 logger.exception("Exception in inner loop: %s", str(e))
             except OSError as err:
