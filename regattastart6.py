@@ -13,6 +13,7 @@ from picamera import PiCamera, Color
 
 def setup_logging():
     print("Before setup_logging")
+    global logger
     logging.config.fileConfig('logging.conf')
     print("After setup_logging")
     logger = logging.getLogger('Start')
