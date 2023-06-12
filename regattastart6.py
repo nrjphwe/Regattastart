@@ -81,8 +81,11 @@ def main():
     mp4_path = '/var/www/html/images/'
     photo_name = 'latest.jpg'
     signal_dur = 0.3 # 0.3 sec
+    # set up logging
+    print("Before setup_logging")
+    setup_logging()
+    print("After setup_logging")
     
-    logger = setup_logging()
     logger.info (" Start_time = %s", start_time)
     start_hour, start_minute = start_time.split(':')
     start_time_sec = 60 * (int(start_minute) + 60 * int(start_hour)) # 6660
