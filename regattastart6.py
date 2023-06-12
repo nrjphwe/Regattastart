@@ -73,7 +73,7 @@ def convert_video_to_mp4(source_file, destination_file):
     subprocess.run(convert_video_str, shell=True)
 
 def main():
-    print ("main")
+    print("main")
     try:
         start_time = str(sys.argv[1])
         week_day = str(sys.argv[2])
