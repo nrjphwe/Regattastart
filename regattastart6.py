@@ -28,6 +28,9 @@ def setup_camera():
     # camera.rotation = (180) # Depends on how camera is mounted
     return camera
 
+ON = GPIO.HIGH
+OFF = GPIO.LOW
+
 def setup_gpio():
     GPIO.setmode(GPIO.BCM)
     GPIO.setwarnings(True)
@@ -109,7 +112,7 @@ def main():
                     time_now = t.strftime('%H:%M:%S')   # 18:48:33
                     nh, nm, ns = time_now.split(':')
                     seconds_now =  60 * (int(nm) + 60 * int(nh)) + int(ns) 
-                    start_video_recording(camera, photo_path, "video0.h264") 
+                    start_video_recording(camera, "video0.h264") 
                     camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                     #-------------------------------------------------------------#
                     #    Varningssignal === 5 minute signal before start
@@ -158,12 +161,12 @@ def main():
                         logger.info (" Wait 2 minutes then stop video recording")
                         while (dt.datetime.now() - t).seconds < 118:
                             camera.wait_recording(1)
-                        stop_recording(camera)
+                        stop_video_recording(camera)
                         logger.info (" video 0 recording stopped")
                         #-------------------------------------------------------#
                         # convert video0 format from h264 to mp4
                         #-------------------------------------------------------#
-                        convert_video(video0.h264, video0.mp4)
+                        convert_video("video0.h264", "video0.mp4")
                         logger.info (" video 0 converted to mp4 format")
                         #----------------------------------------------------------#
                         # Wait for finish, when next video1 will start, video_delay
@@ -184,7 +187,7 @@ def main():
                         logger.info (' video duration = %s', video_dur)
                         stop = num_videos+1
                         for i in range(1, stop):
-                            start_video_recording(camera, photo_path, "video0"+str(i) + ".h264") 
+                            start_video_recording(camera, "video0"+str(i) + ".h264") 
                             logger.info (' Started recording of video%s', i)
                             logger.info (' i = %s', i)
                             #------------------------------------------------------#
@@ -196,14 +199,14 @@ def main():
                             while (dt.datetime.now() - t).seconds < (60 * video_dur):
                                 camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + "  " + str(int((time.time()-s_start)))
                                 camera.wait_recording(0.5)
-                            stop_recording(camera)
+                            stop_video_recording(camera)
                             logger.info (" This was the last video =====")
                             for i in range(1, stop):
                                 logger.info ('i = %s', i)
                                 t = dt.datetime.now()
                                 logger.info (" Time now: %s", t.strftime('%H:%M:%S'))
                                 logger.info (" convert video %s to mp4 format", i)
-                                convert_video ("video" + str(i) + ".h264",  "video" + str(i) + ".mp4 ")
+                                convert_video ("video" + str(i) + ".h264",  "video" + str(i) + ".mp4")
             except Exception as e:
                 logger.exception("Exception in inner loop: %s", str(e))
             except OSError as err:
