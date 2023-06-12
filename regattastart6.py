@@ -1,8 +1,9 @@
 import os
 import sys
 import cgitb
-cgitb.enable(display=0, logdir="/tmp/")
+#cgitb.enable(display=0, logdir="/tmp/")
 import time
+print("start")
 from datetime import datetime
 import datetime as dt
 import logging
