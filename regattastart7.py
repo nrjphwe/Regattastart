@@ -31,20 +31,20 @@ from datetime import date
 from datetime import datetime
 import datetime as dt
 logger = logging.getLogger('Start')     # create logger
-logger.info (" Start logging")
+logger.info(" Start logging")
 import subprocess
-#import picamera
+# import picamera
 from picamera import PiCamera, Color
 photo_path = '/var/www/html/images/'
 dropbox_path = '/usr/lib/cgi-bin/dropbox_uploader.sh upload ' + photo_path
 photo_name = 'latest.jpg'
 camera = PiCamera()
 camera.resolution = (1296, 730)
-#camera.brightness = 70
-#camera.hflip = True
-#camera.vflip = True
-#camera.rotation = (180) # Depends on how camera is mounted
-#ribbon down = 0, ribbon up = 180 
+# camera.brightness = 70
+# camera.hflip = True
+# camera.vflip = True
+# camera.rotation = (180) # Depends on how camera is mounted
+# ribbon down = 0, ribbon up = 180 
 #--------------------------------------------------------------#
 # Video made with different frame-rates, with 640,480:
 #  - 30 fps gives for 1 hour video 225 Mbyte
@@ -76,17 +76,17 @@ GPIO.setup(lamp2,  GPIO.OUT, initial=OFF)
 #---------------------------------------------------------------#
 # Setup duration of warning signal (signal horn).
 #---------------------------------------------------------------#
-signal_duration = 1 # 1sec
+signal_duration = 1  # 1sec
 #---------------------------------------------------------------#
 # Setup GUI
 #---------------------------------------------------------------#
-logger.info (" Start_time = %s", start_time)
+logger.info(" Start_time = %s", start_time)
 start_hour, start_minute = start_time.split(':')
-start_time_sec = 60 * (int(start_minute) + 60 * int(start_hour)) # 6660
-logger.info (' Weekday = %s', week_day)
-logger.info (" Time ok, now waiting to 5 minutes before start %d", start_time)
-logger.info (" Video_delay = %d", video_delay)
-logger.info (" video_dur = %d", video_dur)
+start_time_sec = 60 * (int(start_minute) + 60 * int(start_hour))  # 6660
+logger.info(' Weekday = %s', week_day)
+logger.info(" Time ok, now waiting to 5 minutes before start %d", start_time)
+logger.info(" Video_delay = %d", video_delay)
+logger.info(" video_dur = %d", video_dur)
 #-----------------------------------------------------------------#
 # remove video0.mp4 .. video7.mp4
 # sudo chmod a+w filename-or-full-filepath
@@ -94,8 +94,8 @@ logger.info (" video_dur = %d", video_dur)
 remove_video = "rm " + photo_path + "video*.*4"
 remove_pictures = "rm " + photo_path + "*pict.jpg"
 try:
-    subprocess.Popen([remove_video], shell = True)
-    subprocess.Popen([remove_pictures], shell = True)
+    subprocess.Popen([remove_video], shell=True)
+    subprocess.Popen([remove_pictures], shell=True)
 except OSError:
     logger.info (" OS error remove video*.*4 ")
     pass
@@ -105,8 +105,8 @@ while ( True ):
         #----------------------------------------------------------#
         # if the pin is connected to GND, shutdown the system
         #----------------------------------------------------------#
-        #input_value=GPIO.input(shutdown_pin)
-        #if (input_value == 0) :  # short circuit
+        # input_value=GPIO.input(shutdown_pin)
+        # if (input_value == 0) :  # short circuit
         #    logger.info (" pin to ground --> Shutdown")
         #    shutdown = "sudo shutdown -h now"
         #    subprocess.call ([shutdown], shell = True)
@@ -171,7 +171,7 @@ while ( True ):
             # $$$$  Forberedelsesignal 1st 4 minutes
             #----------------------------------------------------------#
             if seconds_now == (start_time_sec - 4*60 - 1):
-                logger.info (" Prep-signal 4 min before 1st start, for 3 sec")
+                logger.info(" Prep-signal 4 min before 1st start, for 3 sec")
                 GPIO.output(signal, ON)         # Signal On
                 time.sleep(signal_duration)     # 1 sec
                 GPIO.output(lamp2, ON)   # Lamp 2 On (Flag P)
