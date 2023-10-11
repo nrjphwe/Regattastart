@@ -192,13 +192,10 @@ def main():
                                 camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + "  " + str(int((time.time()-s_start)))
                                 camera.wait_recording(0.5)
                             stop_video_recording(camera)
-                            logger.info (" This was the last video =====")
-                            for i in range(1, stop):
-                                logger.info ('i = %s', i)
-                                t = dt.datetime.now()
-                                logger.info (" Time now: %s", t.strftime('%H:%M:%S'))
-                                logger.info (" convert video %s to mp4 format", i)
-                                convert_video_to_mp4(mp4_path, "video" + str(i) + ".h264",  "video" + str(i) + ".mp4")
+                            logger.info (" Time now: %s", t.strftime('%H:%M:%S'))
+                            logger.info (" convert video %s to mp4 format", i)
+                            convert_video_to_mp4(mp4_path, "video" + str(i) + ".h264",  "video" + str(i) + ".mp4")
+                        logger.info (" This was the last video =====")
             except Exception as e:
                 logger.exception("Exception in inner loop: %s", str(e))
             except OSError as err:
