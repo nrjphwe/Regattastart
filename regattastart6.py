@@ -63,9 +63,11 @@ def start_video_recording(camera, mp4_path, file_name):
     if camera.recording:
         camera.stop_recording()
     camera.start_recording(os.path.join(mp4_path, file_name))
+    logger.info (" video recording %s started", file_name)
 
 def stop_video_recording(camera):
     camera.stop_recording()
+    logger.info (" video recording stopped")
 
 def convert_video_to_mp4(mp4_path, source_file, destination_file):
     convert_video_str = "MP4Box -add {} -new {}".format(os.path.join(mp4_path,source_file), os.path.join(mp4_path,destination_file))
@@ -193,9 +195,11 @@ def main():
                                 camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + "  " + str(int((time.time()-s_start)))
                                 camera.wait_recording(0.5)
                             stop_video_recording(camera)
+                            logger.info (" video%s recording stopped", i)
                             logger.info (" Time now: %s", t.strftime('%H:%M:%S'))
                             logger.info (" convert video %s to mp4 format", i)
                             convert_video_to_mp4(mp4_path, "video" + str(i) + ".h264",  "video" + str(i) + ".mp4")
+                            logger.info (' converted h264 video to mp4 of video%s', i)
                         logger.info (" This was the last video =====")
             except Exception as e:
                 logger.exception("Exception in inner loop: %s", str(e))
