@@ -56,6 +56,7 @@ def trigger_warning_signal(signal):
     GPIO.output(signal, OFF)
 
 def capture_picture(camera, photo_path, file_name):
+    camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     camera.capture(os.path.join(photo_path, file_name), use_video_port=True)
 
 def start_video_recording(camera, mp4_path, file_name):
@@ -109,7 +110,7 @@ def main():
                     #-------------------------------------------------------------#
                     if seconds_now == (start_time_sec - 5*60) :
                         start_video_recording(camera, photo_path, "video0.h264")
-                        camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                        # camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                         trigger_warning_signal(signal)
                         capture_picture(camera, photo_path, "1st-5min_pict.jpg")
                         GPIO.output(lamp1, ON)    # Lamp1 On (Flag O)
