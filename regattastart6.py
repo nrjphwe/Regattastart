@@ -26,6 +26,7 @@ def setup_camera():
     camera.annotate_background = Color('black')
     camera.annotate_foreground = Color('white')
     # camera.rotation = (180) # Depends on how camera is mounted
+    camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     return camera
 
 ON = GPIO.HIGH
@@ -56,13 +57,13 @@ def trigger_warning_signal(signal):
 
 def capture_picture(camera, photo_path, file_name):
     camera.capture(os.path.join(photo_path, file_name), use_video_port=True)
-    camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    #camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
 def start_video_recording(camera, mp4_path, file_name):
     if camera.recording:
         camera.stop_recording()
     camera.start_recording(os.path.join(mp4_path, file_name))
-    camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    #camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     logger.info (" Recording of %s started", file_name)
 
 def stop_video_recording(camera):
