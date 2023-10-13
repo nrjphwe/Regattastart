@@ -57,7 +57,7 @@ def trigger_warning_signal(signal):
 
 def capture_picture(camera, photo_path, file_name):
     camera.capture(os.path.join(photo_path, file_name), use_video_port=True)
-    #camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
 def start_video_recording(camera, mp4_path, file_name):
     if camera.recording:
