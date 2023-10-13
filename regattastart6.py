@@ -62,7 +62,8 @@ def start_video_recording(camera, mp4_path, file_name):
     if camera.recording:
         camera.stop_recording()
     camera.start_recording(os.path.join(mp4_path, file_name))
-    logger.info (" Video recording %s started", file_name)
+    camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    logger.info (" Recording of %s started", file_name)
 
 def stop_video_recording(camera):
     camera.stop_recording()
@@ -71,6 +72,7 @@ def stop_video_recording(camera):
 def convert_video_to_mp4(mp4_path, source_file, destination_file):
     convert_video_str = "MP4Box -add {} -new {}".format(os.path.join(mp4_path,source_file), os.path.join(mp4_path,destination_file))
     subprocess.run(convert_video_str, shell=True)
+    logger.info (" Video recording %s converted ", destination_file)
 
 def main():
     camera = None # Initialize the camera variable
