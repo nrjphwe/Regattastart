@@ -3,7 +3,6 @@ import sys
 import cgitb
 cgitb.enable(display=0, logdir="/var/www/html/")
 import time
-print("start")
 from datetime import datetime
 import datetime as dt
 import logging
