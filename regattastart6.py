@@ -107,7 +107,6 @@ def main():
                 if wd == week_day :            # example Wednesday = 3
                     t = dt.datetime.now() # ex: 2015-01-04 18:48:33.255145
                     time_now = t.strftime('%H:%M:%S')   # 18:48:33
-                    logger.info (" Time now: %s", t.strftime('%H:%M:%S'))
                     nh, nm, ns = time_now.split(':')
                     seconds_now =  60 * (int(nm) + 60 * int(nh)) + int(ns)
                     #-------------------------------------------------------------#
