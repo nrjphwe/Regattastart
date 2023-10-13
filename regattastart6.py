@@ -56,9 +56,9 @@ def trigger_warning_signal(signal):
     GPIO.output(signal, OFF)
 
 def capture_picture(camera, photo_path, file_name):
-    camera.capture(os.path.join(photo_path, file_name), use_video_port=True)
     camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-
+    camera.capture(os.path.join(photo_path, file_name), use_video_port=True)
+    
 def start_video_recording(camera, mp4_path, file_name):
     if camera.recording:
         camera.stop_recording()
@@ -107,6 +107,7 @@ def main():
                 if wd == week_day :            # example Wednesday = 3
                     t = dt.datetime.now() # ex: 2015-01-04 18:48:33.255145
                     time_now = t.strftime('%H:%M:%S')   # 18:48:33
+                    logger.info (" Time now: %s", t.strftime('%H:%M:%S'))
                     nh, nm, ns = time_now.split(':')
                     seconds_now =  60 * (int(nm) + 60 * int(nh)) + int(ns)
                     #-------------------------------------------------------------#
