@@ -52,12 +52,14 @@ def remove_files(directory, pattern):
 
 def trigger_warning_signal(signal):
     GPIO.output(signal, ON)
+    logger.info (" Signal set for %s sec", signal_dur)
     time.sleep(signal_dur)
     GPIO.output(signal, OFF)
 
 def capture_picture(camera, photo_path, file_name):
     camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     camera.capture(os.path.join(photo_path, file_name), use_video_port=True)
+    logger.info (" capture picture %s ", file_name)
     
 def start_video_recording(camera, mp4_path, file_name):
     if camera.recording:
