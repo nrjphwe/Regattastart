@@ -11,7 +11,7 @@ import logging.config
 import subprocess
 import RPi.GPIO as GPIO
 from picamera import PiCamera, Color
-signal_dur = 0.3 # 0.3 sec
+signal_dur = 0.6 # 0.6 sec
 mp4_path = '/var/www/html/images/'
 
 def setup_logging():
