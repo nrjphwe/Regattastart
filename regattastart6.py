@@ -11,13 +11,13 @@ import logging.config
 import subprocess
 import RPi.GPIO as GPIO
 from picamera import PiCamera, Color
-signal_dur = 0.6 # 0.6 sec
+signal_dur = 1 # 1 sec
 mp4_path = '/var/www/html/images/'
 
 def setup_logging():
     logging.config.fileConfig('logging.conf')
     logger = logging.getLogger('Start')
-    logger.info("Start logging")
+    logger.info(" Start logging")
     return logger
 
 def setup_camera():
@@ -63,7 +63,7 @@ def start_video_recording(camera, mp4_path, file_name):
     if camera.recording:
         camera.stop_recording()
     camera.start_recording(os.path.join(mp4_path, file_name))
-    logger.info (" video recording %s started", file_name)
+    logger.info (" Video recording %s started", file_name)
 
 def stop_video_recording(camera):
     camera.stop_recording()
