@@ -196,7 +196,7 @@ def main():
                             logger.info (" convert video %s to mp4 format", i)
                             convert_video_to_mp4(mp4_path, "video" + str(i) + ".h264",  "video" + str(i) + ".mp4")
                             logger.info (' converted h264 video to mp4 of video%s', i)
-                        logger.info (" This was the last video =====")
+                            logger.info (" This was the last video =====")
                 except Exception as e:
                     logger.exception("Exception in inner loop: %s", str(e))
                 except OSError as err:
