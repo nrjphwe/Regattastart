@@ -78,6 +78,8 @@ def main():
     camera = None # Initialize the camera variable
     signal = None # Initialize the signal relay/variable
     try:
+        camera = setup_camera()
+        logger.info (' printcamera = %s', camera)
         start_time = str(sys.argv[1])
         week_day = str(sys.argv[2])
         video_delay = int(sys.argv[3])
@@ -96,7 +98,7 @@ def main():
         remove_files(photo_path, "pict")
         while ( True ):
             camera = setup_camera()
-            logger.info (" setuo_camera  =======")
+            logger.info (" setup_camera  =======")
             try:
                 now = dt.datetime.now()
                 wd = dt.datetime.today().strftime("%A")
