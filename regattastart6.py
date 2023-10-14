@@ -65,7 +65,6 @@ def start_video_recording(camera, mp4_path, file_name):
     if camera.recording:
         camera.stop_recording()
     camera.start_recording(os.path.join(mp4_path, file_name))
-    camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     logger.info (" Recording of %s started", file_name)
 
 def stop_video_recording(camera):
@@ -115,8 +114,8 @@ def main():
                     #    Varningssignal === 5 minute signal before start
                     #-------------------------------------------------------------#
                     if seconds_now == (start_time_sec - 5*60) :
+                        camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                         start_video_recording(camera, photo_path, "video0.h264")
-                        # camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                         trigger_warning_signal(signal)
                         capture_picture(camera, photo_path, "1st-5min_pict.jpg")
                         GPIO.output(lamp1, ON)    # Lamp1 On (Flag O)
