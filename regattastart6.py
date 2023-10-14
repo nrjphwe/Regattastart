@@ -86,9 +86,9 @@ def main():
         # Set up initial data
         photo_path = '/var/www/html/images/'
         global logger  # Make logger variable global
-        logger = setup_logging()
-        camera = setup_camera()
-        logger.info (' printcamera = %s', camera)
+        logger = setup_logging() 
+        camera = setup_camera() # test
+        logger.info (' printcamera = %s', camera) # test
         logger.info (" Start_time = %s", start_time)
         start_hour, start_minute = start_time.split(':')
         start_time_sec = 60 * (int(start_minute) + 60 * int(start_hour)) # 6660
@@ -97,8 +97,8 @@ def main():
         remove_files(photo_path, "video")
         remove_files(photo_path, "pict")
         while ( True ):
-            camera = setup_camera()
-            logger.info (" setup_camera  =======")
+            #camera = setup_camera()
+            #logger.info (' setup_camera %s', camera)
             try:
                 now = dt.datetime.now()
                 wd = dt.datetime.today().strftime("%A")
