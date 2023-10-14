@@ -114,6 +114,7 @@ def main():
                     #-------------------------------------------------------------#
                     if seconds_now == (start_time_sec - 5*60) :
                         camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                        logger.info (" annotate text %s" , dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S )
                         start_video_recording(camera, photo_path, "video0.h264")
                         trigger_warning_signal(signal)
                         capture_picture(camera, photo_path, "1st-5min_pict.jpg")
@@ -126,6 +127,7 @@ def main():
                         trigger_warning_signal(signal)
                         logger.info (" Prep-signal 4 min before start, for 1 sec")
                         camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                        logger.info (" annotate text %s" , dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S )
                         capture_picture(camera, photo_path, "1st-4min_pict.jpg")
                         GPIO.output(lamp2, ON)    # Lamp 2 On (Flag P)
                         logger.info (" 4 min Lamp-2 On  --- Up with Flag P ")
@@ -136,6 +138,7 @@ def main():
                         trigger_warning_signal(signal)
                         logger.info (" 1 minute before start, signal on for 1 sec")
                         camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                        logger.info (" annotate text %s" , dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S )
                         capture_picture(camera, photo_path, "1st-1min_pict.jpg")
                         logger.info (" 1 min  Lamp-2 Off -- Flag P down")
                         GPIO.output(lamp2, OFF)    # Lamp 2 Off (Flag P)
@@ -157,6 +160,7 @@ def main():
                         GPIO.output(lamp1, OFF)    # Lamp 1 Off (Flag O)
                         trigger_warning_signal(signal)
                         camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                        logger.info (" annotate text %s" , dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S )
                         capture_picture(camera, photo_path, "1st-start_pict.jpg")
                         logger.info (" Wait 2 minutes then stop video recording")
                         while (dt.datetime.now() - t).seconds < 118:
