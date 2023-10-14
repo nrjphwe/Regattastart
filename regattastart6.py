@@ -75,7 +75,7 @@ def convert_video_to_mp4(mp4_path, source_file, destination_file):
     logger.info (" Video recording %s converted ", destination_file)
 
 def main():
-    #camera = None # Initialize the camera variable
+    camera = None # Initialize the camera variable
     signal = None # Initialize the signal relay/variable
     try:
         start_time = str(sys.argv[1])
