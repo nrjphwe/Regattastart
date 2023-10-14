@@ -57,7 +57,6 @@ def trigger_warning_signal(signal):
     GPIO.output(signal, OFF)
 
 def capture_picture(camera, photo_path, file_name):
-    camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     camera.capture(os.path.join(photo_path, file_name), use_video_port=True)
     logger.info (" capture picture %s ", file_name)
     
@@ -216,6 +215,7 @@ def main():
     finally:
         if camera is not None:
             camera.close()  # Release the camera resources
+            logger.info (" camera.close  =======")
         if signal is not None:
             GPIO.output(signal, OFF)  # Turn off the signal output
         GPIO.cleanup()
