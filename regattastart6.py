@@ -93,7 +93,7 @@ def main():
         start_time_sec = 60 * (int(start_minute) + 60 * int(start_hour)) # 6660
         logger.info (' Weekday = %s', week_day)
         signal, lamp1, lamp2 = setup_gpio()
-        camera = setup_camera()
+        #camera = setup_camera()
         remove_files(photo_path, "video")
         remove_files(photo_path, "pict")
         while ( True ):
@@ -105,6 +105,7 @@ def main():
                     time_now = t.strftime('%H:%M:%S')   # 18:48:33
                     nh, nm, ns = time_now.split(':')
                     seconds_now =  60 * (int(nm) + 60 * int(nh)) + int(ns)
+                    camera = setup_camera()
                     camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                     #-------------------------------------------------------------#
                     #    Varningssignal === 5 minute signal before start
