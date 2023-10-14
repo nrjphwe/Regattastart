@@ -97,8 +97,6 @@ def main():
         remove_files(photo_path, "video")
         remove_files(photo_path, "pict")
         while ( True ):
-            #camera = setup_camera()
-            #logger.info (' setup_camera %s', camera)
             try:
                 now = dt.datetime.now()
                 wd = dt.datetime.today().strftime("%A")
