@@ -202,7 +202,7 @@ def main():
                 except OSError as err:
                     logger.warning ("OS error: {0}".format(err))
             except Exception as e:
-                    logger.exception("Fatal error in main loop: %s", str(e))
+                logger.exception("Fatal error in main loop: %s", str(e))
             finally:
                 if camera is not None:
                     camera.close()  # Release the camera resources
