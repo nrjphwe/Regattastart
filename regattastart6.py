@@ -96,6 +96,7 @@ def main():
         remove_files(photo_path, "pict")
         while ( True ):
             camera = setup_camera()
+            logger.info (" setuo_camera  =======")
             try:
                 now = dt.datetime.now()
                 wd = dt.datetime.today().strftime("%A")
@@ -197,6 +198,7 @@ def main():
                 #pass
             except Exception as e:
                 logger.exception("Exception in inner loop: %s", str(e))
+                logger.info (" exception =======")
             finally:
                 #camera.close()  # Release the camera resources
                 logger.info (" camera.close  =======")
