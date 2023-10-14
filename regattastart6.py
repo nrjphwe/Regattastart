@@ -78,8 +78,6 @@ def main():
     camera = None # Initialize the camera variable
     signal = None # Initialize the signal relay/variable
     try:
-        camera = setup_camera()
-        logger.info (' printcamera = %s', camera)
         start_time = str(sys.argv[1])
         week_day = str(sys.argv[2])
         video_delay = int(sys.argv[3])
@@ -89,6 +87,8 @@ def main():
         photo_path = '/var/www/html/images/'
         global logger  # Make logger variable global
         logger = setup_logging()
+        camera = setup_camera()
+        logger.info (' printcamera = %s', camera)
         logger.info (" Start_time = %s", start_time)
         start_hour, start_minute = start_time.split(':')
         start_time_sec = 60 * (int(start_minute) + 60 * int(start_hour)) # 6660
