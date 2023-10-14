@@ -195,8 +195,8 @@ def main():
                             logger.info (' converted h264 video to mp4 of video%s', i)
                         logger.info (" This was the last video =====")
                 pass
-            except Exception as e:
-                logger.exception("Exception in inner loop: %s", str(e))
+            #except Exception as e:
+                #logger.exception("Exception in inner loop: %s", str(e))
             finally:
                 if camera is not None:
                     camera.close()  # Release the camera resources
