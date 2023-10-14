@@ -208,7 +208,7 @@ def main():
                     camera.close()  # Release the camera resources
                 if signal is not None:
                     GPIO.output(signal, OFF)  # Turn off the signal output
-                GPIO.cleanup()
+                    GPIO.cleanup()
 if __name__ == "__main__":
     logging.basicConfig(level=logging.WARNING)  # Set log level to WARNING
     main()
