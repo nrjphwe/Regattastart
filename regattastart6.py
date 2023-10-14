@@ -92,13 +92,10 @@ def main():
         start_hour, start_minute = start_time.split(':')
         start_time_sec = 60 * (int(start_minute) + 60 * int(start_hour)) # 6660
         logger.info (' Weekday = %s', week_day)
-
         signal, lamp1, lamp2 = setup_gpio()
         camera = setup_camera()
-
         remove_files(photo_path, "video")
         remove_files(photo_path, "pict")
-
         while ( True ):
             try:
                 now = dt.datetime.now()
@@ -200,10 +197,6 @@ def main():
                         logger.info (" This was the last video =====")
             except Exception as e:
                 logger.exception("Exception in inner loop: %s", str(e))
-            except OSError as err:
-                logger.warning ("OS error: {0}".format(err))
-        except Exception as e:
-            logger.exception("Fatal error in main loop: %s", str(e))
         finally:
             if camera is not None:
                 camera.close()  # Release the camera resources
@@ -211,6 +204,10 @@ def main():
             if signal is not None:
                 GPIO.output(signal, OFF)  # Turn off the signal output
             GPIO.cleanup()
+        except OSError as err:
+            logger.warning ("OS error: {0}".format(err))
+        #except Exception as e:
+        #    logger.exception("Fatal error in main loop: %s", str(e)) 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.WARNING)  # Set log level to WARNING
     main()
