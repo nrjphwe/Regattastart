@@ -196,12 +196,12 @@ def main():
                             logger.info (' converted h264 video to mp4 of video%s', i)
                         logger.info (" This was the last video =====")
                         finally:
-                        if camera is not None:
-                            camera.close()  # Release the camera resources
-                            logger.info (" camera.close  =======")
-                        if signal is not None:
-                            GPIO.output(signal, OFF)  # Turn off the signal output
-                            GPIO.cleanup()
+                            if camera is not None:
+                                camera.close()  # Release the camera resources
+                                logger.info (" camera.close  =======")
+                            if signal is not None:
+                                GPIO.output(signal, OFF)  # Turn off the signal output
+                                GPIO.cleanup()
             except Exception as e:
                 logger.exception("Exception in inner loop: %s", str(e))
 
