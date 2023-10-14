@@ -204,10 +204,10 @@ def main():
                 if signal is not None:
                     GPIO.output(signal, OFF)  # Turn off the signal output
                     GPIO.cleanup()
-        except OSError as err:
-            logger.warning ("OS error: {0}".format(err))
-        #except Exception as e:
-        #    logger.exception("Fatal error in main loop: %s", str(e)) 
+    except OSError as err:
+        logger.warning ("OS error: {0}".format(err))
+    #except Exception as e:
+    #    logger.exception("Fatal error in main loop: %s", str(e)) 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.WARNING)  # Set log level to WARNING
     main()
