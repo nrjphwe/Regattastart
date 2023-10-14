@@ -75,7 +75,8 @@ def convert_video_to_mp4(mp4_path, source_file, destination_file):
     logger.info (" Video recording %s converted ", destination_file)
 
 def main():
-    camera = None # Initialize the camera variable
+    camera = setup_camera()
+    #camera = None # Initialize the camera variable
     signal = None # Initialize the signal relay/variable
     try:
         start_time = str(sys.argv[1])
@@ -85,7 +86,6 @@ def main():
         video_dur = int(sys.argv[5])
         # Set up initial data
         photo_path = '/var/www/html/images/'
-        
         global logger  # Make logger variable global
         logger = setup_logging()
         logger.info (" Start_time = %s", start_time)
@@ -105,7 +105,6 @@ def main():
                     time_now = t.strftime('%H:%M:%S')   # 18:48:33
                     nh, nm, ns = time_now.split(':')
                     seconds_now =  60 * (int(nm) + 60 * int(nh)) + int(ns)
-                    camera = setup_camera()
                     camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                     #-------------------------------------------------------------#
                     #    Varningssignal === 5 minute signal before start
