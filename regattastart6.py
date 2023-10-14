@@ -109,7 +109,7 @@ def main():
                     t = dt.datetime.now() # ex: 2015-01-04 18:48:33.255145
                     time_now = t.strftime('%H:%M:%S')   # 18:48:33
                     nh, nm, ns = time_now.split(':')
-                    seconds_now =  60 * (int(nh) + 60 * int(nm)) + int(ns)
+                    seconds_now =  60 * (int(nm) + 60 * int(nh)) + int(ns)
                     #-------------------------------------------------------------#
                     #    Varningssignal === 5 minute signal before start
                     #-------------------------------------------------------------#
