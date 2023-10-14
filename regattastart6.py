@@ -198,7 +198,7 @@ def main():
             except Exception as e:
                 logger.exception("Exception in inner loop: %s", str(e))
             finally:
-                camera.close()  # Release the camera resources
+                #camera.close()  # Release the camera resources
                 logger.info (" camera.close  =======")
                 if signal is not None:
                     GPIO.output(signal, OFF)  # Turn off the signal output
