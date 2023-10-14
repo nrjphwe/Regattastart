@@ -205,7 +205,7 @@ def main():
                 #camera.close()  # Release the camera resources
                 logger.info (" camera.close  =======")
                 if signal is not None:
-                    GPIO.output(signal, OFF)  # Turn off the signal output
+                    #GPIO.output(signal, OFF)  # Turn off the signal output
                     GPIO.cleanup()
     except OSError as err:
         logger.warning ("OS error: {0}".format(err))
