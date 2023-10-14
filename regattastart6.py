@@ -58,7 +58,7 @@ def trigger_warning_signal(signal):
 def capture_picture(camera, photo_path, file_name):
     camera.capture(os.path.join(photo_path, file_name), use_video_port=True)
     logger.info (" capture picture %s ", file_name)
-    
+
 def start_video_recording(camera, mp4_path, file_name):
     if camera.recording:
         camera.stop_recording()
@@ -201,14 +201,14 @@ def main():
                 #    logger.exception("Exception in inner loop: %s", str(e))
                 # except OSError as err:
                 #    logger.warning ("OS error: {0}".format(err))
-            #except Exception as e:
-            #    logger.exception("Fatal error in main loop: %s", str(e))
-        finally:
-            if camera is not None:
-                camera.close()  # Release the camera resources
-            if signal is not None:
-                GPIO.output(signal, OFF)  # Turn off the signal output
-                GPIO.cleanup()
-if __name__ == "__main__":
-    logging.basicConfig(level=logging.WARNING)  # Set log level to WARNING
-    main()
+            except Exception as e:
+                logger.exception("Fatal error in main loop: %s", str(e))
+            finally:
+                if camera is not None:
+                    camera.close()  # Release the camera resources
+                if signal is not None:
+                    GPIO.output(signal, OFF)  # Turn off the signal output
+                    GPIO.cleanup()
+    if __name__ == "__main__":
+        logging.basicConfig(level=logging.WARNING)  # Set log level to WARNING
+        main()
