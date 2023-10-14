@@ -209,6 +209,6 @@ def main():
                 if signal is not None:
                     GPIO.output(signal, OFF)  # Turn off the signal output
                     GPIO.cleanup()
-    if __name__ == "__main__":
-        logging.basicConfig(level=logging.WARNING)  # Set log level to WARNING
-        main()
+if __name__ == "__main__":
+    logging.basicConfig(level=logging.WARNING)  # Set log level to WARNING
+    main()
