@@ -197,12 +197,12 @@ def main():
                             convert_video_to_mp4(mp4_path, "video" + str(i) + ".h264",  "video" + str(i) + ".mp4")
                             logger.info (' converted h264 video to mp4 of video%s', i)
                             logger.info (" This was the last video =====")
-                except Exception as e:
-                    logger.exception("Exception in inner loop: %s", str(e))
-                except OSError as err:
-                    logger.warning ("OS error: {0}".format(err))
-            except Exception as e:
-                logger.exception("Fatal error in main loop: %s", str(e))
+                # except Exception as e:
+                #    logger.exception("Exception in inner loop: %s", str(e))
+                # except OSError as err:
+                #    logger.warning ("OS error: {0}".format(err))
+            #except Exception as e:
+            #    logger.exception("Fatal error in main loop: %s", str(e))
             finally:
                 if camera is not None:
                     camera.close()  # Release the camera resources
