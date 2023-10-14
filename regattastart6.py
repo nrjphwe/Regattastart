@@ -26,8 +26,6 @@ def setup_camera():
     camera.annotate_background = Color('black')
     camera.annotate_foreground = Color('white')
     # camera.rotation = (180) # Depends on how camera is mounted
-    #camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    logger.info (" setup_camera annotate text %s" , dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
     return camera
 
 ON = GPIO.HIGH
@@ -156,18 +154,14 @@ def main():
                         GPIO.output(lamp1, OFF)    # Lamp 1 Off (Flag O)
                         trigger_warning_signal(signal)
                         capture_picture(camera, photo_path, "1st-start_pict.jpg")
-                        logger.info (" Wait 2 minutes then stop video recording")
-                        while (dt.datetime.now() - t).seconds < 118:
-                            camera.wait_recording(1)
+                        logger.info (" Wait 2 minutes after start, then stop video recording")
+                        camera.wait_recording(118)
                         stop_video_recording(camera)
                         logger.info (" video 0 recording stopped")
-                        #-------------------------------------------------------#
-                        # convert video0 format from h264 to mp4
-                        #-------------------------------------------------------#
                         convert_video_to_mp4(mp4_path, "video0.h264", "video0.mp4")
                         logger.info (" video 0 converted to mp4 format")
                         #----------------------------------------------------------#
-                        # Wait for finish, when next video1 will start, video_delay
+                        # Wait for delay/finish, when next video1 will start, video_delay
                         #----------------------------------------------------------#
                         t = dt.datetime.now()
                         logger.info (" Time now: %s", t.strftime('%H:%M:%S'))
