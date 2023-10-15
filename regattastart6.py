@@ -93,7 +93,6 @@ def main():
         start_time_sec = 60 * (int(start_minute) + 60 * int(start_hour)) # 6660
         logger.info (' Weekday = %s', week_day)
         signal, lamp1, lamp2 = setup_gpio()
-        camera = setup_camera()
         remove_files(photo_path, "video")
         remove_files(photo_path, "pict")
 
