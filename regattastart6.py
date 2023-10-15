@@ -59,7 +59,7 @@ def trigger_warning_signal(signal):
 
 def capture_picture(camera, photo_path, file_name):
     camera.capture(os.path.join(photo_path, file_name), use_video_port=True)
-    logger.info (" capture picture %s ", file_name)
+    logger.info (" Capture picture = %s ", file_name)
 
 def start_video_recording(camera, mp4_path, file_name):
     if camera.recording:
