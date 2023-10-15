@@ -54,6 +54,8 @@ def trigger_warning_signal(signal):
     GPIO.output(signal, ON)
     time.sleep(signal_dur)
     GPIO.output(signal, OFF)
+    time.sleep(1 - signal_dur)
+    logger.info (" For one sec, first trigger signal %s sec, then wait for 1 - %s sec", signal_dur)
 
 def capture_picture(camera, photo_path, file_name):
     camera.capture(os.path.join(photo_path, file_name), use_video_port=True)
