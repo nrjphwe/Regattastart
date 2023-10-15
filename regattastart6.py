@@ -177,7 +177,7 @@ def main():
                         #----------------------------------------------------------#
                         logger.info (" num_videos = %s",num_videos)
                         logger.info (' video duration = %s', video_dur)
-                        stop = num_videos+1
+                        stop = num_videos + 1
                         for i in range(1, stop):
                             start_video_recording(camera, photo_path, "video" + str(i) + ".h264")
                             logger.info (' Started recording of video%s', i)
@@ -198,6 +198,7 @@ def main():
                             convert_video_to_mp4(mp4_path, "video" + str(i) + ".h264",  "video" + str(i) + ".mp4")
                             logger.info (' converted h264 video to mp4 of video%s', i)
                             logger.info (" This was the last video =====")
+                            logger.info (' stop: %s', stop)
             except Exception as e:
                 logger.exception("Exception in inner loop: %s", str(e))
             except OSError as err:
@@ -205,6 +206,7 @@ def main():
     except Exception as e:
         logger.exception("Fatal error in main loop: %s", str(e))
     finally:
+        logger.info (" This is finally section =")
         if camera is not None:
             camera.close()  # Release the camera resources
         if signal is not None:
