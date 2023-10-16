@@ -165,14 +165,14 @@ def main():
                                 logger.info (" Time now: %s", t.strftime('%H:%M:%S'))
                                 #------------------------------------------------------#
                                 # video running, duration at "video_dur"
-                            #------------------------------------------------------#
-                            while (dt.datetime.now() - t).seconds < (60 * video_dur):
-                                camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + "  " + str((dt.datetime.now() - t).seconds)
-                                camera.wait_recording(0.5)
-                            stop_video_recording(camera)
-                            convert_video_to_mp4(mp4_path, "video" + str(i) + ".h264",  "video" + str(i) + ".mp4")
-                        logger.info (" This was the last video =====")
-                        return # Exit the function
+                                #------------------------------------------------------#
+                                while (dt.datetime.now() - t).seconds < (60 * video_dur):
+                                    camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + "  " + str((dt.datetime.now() - t).seconds)
+                                    camera.wait_recording(0.5)
+                                stop_video_recording(camera)
+                                convert_video_to_mp4(mp4_path, "video" + str(i) + ".h264",  "video" + str(i) + ".mp4")
+                            logger.info (" This was the last video =====")
+                            return # Exit the function
             except Exception as e:
                 logger.exception("Exception in inner loop: %s", str(e))
             except OSError as err:
@@ -186,6 +186,8 @@ def main():
         if signal is not None:
             GPIO.output(signal, OFF)  # Turn off the signal output
         GPIO.cleanup()
+
+
 if __name__ == "__main__":
     logging.basicConfig(level=logging.WARNING)  # Set log level to WARNING
     main()
