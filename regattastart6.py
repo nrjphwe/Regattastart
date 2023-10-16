@@ -110,7 +110,6 @@ def main():
 
         for seconds, action, capture_file, log_message in time_intervals:
             try:
-                logger.info ("after try")
                 now = dt.datetime.now()
                 wd = dt.datetime.today().strftime("%A")
                 if wd == week_day :            # example Wednesday = 3
@@ -125,6 +124,8 @@ def main():
                     # Start video0 recording at 5.01 minutes before start
                     if video_recording_started == False:
                         if seconds_now == start_time_sec - 5 * 60 - 1:
+                            logger.info ("after ifseconds_now") ###
+                            time.sleep(1)
                             start_video_recording(camera, photo_path, "video0.h264")
                             video_recording_started = True
                     
