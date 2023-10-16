@@ -115,15 +115,20 @@ def main():
                     seconds_now =  60 * (int(nm) + 60 * int(nh)) + int(ns)
                     logger.info("seconds_now = %s   ----------", seconds_now )
                     camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                    #------------
-                    start_video_recording(camera, photo_path, "video0.h264")
+                    
+                    # Iterate through time intervals
                     for seconds, action, capture_file, log_message in time_intervals:
                         if seconds_now == seconds:
                             if action:
                                 action()
                             capture_picture(camera, photo_path, capture_file)
                             logger.info(log_message)
-                    #------------
+                            
+                            # Start video recording at the specified time
+                            if not video_recording_started:
+                                start_video_recording(camera, photo_path, "video0.h264")
+                                video_recording_started = True
+                    #..
                     logger.info (" Wait 2 minutes then stop video recording")
                     t = dt.datetime.now()
                     while (dt.datetime.now() - t).seconds < (118):
