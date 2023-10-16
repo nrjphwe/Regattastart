@@ -113,7 +113,6 @@ def main():
                     time_now = t.strftime('%H:%M:%S')   # 18:48:33
                     nh, nm, ns = time_now.split(':')
                     seconds_now =  60 * (int(nm) + 60 * int(nh)) + int(ns)
-                    logger.info("seconds_now = %s   ----------", seconds_now )
                     camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                     # Start video0 recording at 5.01 minutes before start
                     if seconds_now == start_time_sec - 5*60-1:
