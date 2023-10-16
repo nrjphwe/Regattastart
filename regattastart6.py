@@ -134,6 +134,8 @@ def main():
                         capture_picture(camera, photo_path, capture_file)
                         logger.info(log_message)
 
+                        time.sleep(1)
+
                         # Check if this is the last time interval
                         if seconds == time_intervals[-1][0]:
                             last_video_recorded = True
