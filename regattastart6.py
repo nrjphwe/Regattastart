@@ -154,8 +154,10 @@ def main():
                         trigger_warning_signal(signal)
                         capture_picture(camera, photo_path, "1st-start_pict.jpg")
                         logger.info (" Wait 2 minutes then stop video recording")
-                        #camera.wait_recording(118)
-                        time.sleep(118)
+                        t = dt.datetime.now()
+                        while (dt.datetime.now() - t).seconds < (118):
+                                camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + "  " + str(int((time.time()-s_start)))
+                                camera.wait_recording(0.5)
                         stop_video_recording(camera)
                         logger.info (" video 0 recording stopped")
                         convert_video_to_mp4(mp4_path, "video0.h264", "video0.mp4")
