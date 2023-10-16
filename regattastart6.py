@@ -185,14 +185,14 @@ def main():
                         logger.info (" This was the last video =====")
                         return # Exit the function
                             
-                    except Exception as e:
-                        logger.info ("exception as e") ###
-                        time.sleep(1)
-                        logger.exception("Exception in inner loop: %s", str(e))
-                    except OSError as err:
-                        logger.info ("exception OSerror") ###
-                        time.sleep(1)
-                        logger.warning ("OS error: {0}".format(err))     
+            except Exception as e:
+                logger.info ("exception as e") ###
+                time.sleep(1)
+                logger.exception("Exception in inner loop: %s", str(e))
+            except OSError as err:
+                logger.info ("exception OSerror") ###
+                time.sleep(1)
+                logger.warning ("OS error: {0}".format(err))     
 
     except Exception as e:
         logger.exception("Fatal error in main loop: %s", str(e))
@@ -203,7 +203,6 @@ def main():
         if signal is not None:
             GPIO.output(signal, OFF)  # Turn off the signal output
         GPIO.cleanup()
-
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.WARNING)  # Set log level to WARNING
