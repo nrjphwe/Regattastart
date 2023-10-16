@@ -135,10 +135,10 @@ def main():
                         capture_picture(camera, photo_path, capture_file)
                         logger.info(log_message)
 
-                # Check if this is the last time interval
-                if seconds == time_intervals[-1][0]:
-                    last_video_recorded = True
-                    logger.info("Last time interval reached, exiting the loop.")
+                    # Check if this is the last time interval
+                    if seconds == time_intervals[-1][0]:
+                        last_video_recorded = True
+                        logger.info("Last time interval reached, exiting the loop.")
                     
             except Exception as e:
                 logger.exception("Exception in inner loop: %s", str(e))
