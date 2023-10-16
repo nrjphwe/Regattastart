@@ -108,7 +108,7 @@ def main():
         remove_files(photo_path, "video")
         remove_files(photo_path, "pict")
 
-        while ( True ):
+        for seconds, action, capture_file, log_message in time_intervals:
             try:
                 now = dt.datetime.now()
                 wd = dt.datetime.today().strftime("%A")
