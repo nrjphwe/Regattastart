@@ -11,8 +11,11 @@ import logging.config
 import subprocess
 import RPi.GPIO as GPIO
 from picamera import PiCamera, Color
+
 signal_dur = 0.3 # 0.3 sec
 mp4_path = '/var/www/html/images/'
+photo_path = '/var/www/html/images/'
+logger = None  # Declare the logger variable at the top
 
 def setup_logging():
     logging.config.fileConfig('logging.conf')
@@ -87,9 +90,8 @@ def main():
         num_videos = int(sys.argv[4])
         video_dur = int(sys.argv[5])
         # Set up initial data
-        photo_path = '/var/www/html/images/'
-        global logger  # Make logger variable global
         logger = setup_logging()
+        global logger  # Make logger variable global
         camera = setup_camera() # test
         logger.info (" Start_time = %s", start_time)
         start_hour, start_minute = start_time.split(':')
