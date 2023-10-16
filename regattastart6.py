@@ -16,14 +16,6 @@ signal_dur = 0.3 # 0.3 sec
 mp4_path = '/var/www/html/images/'
 photo_path = '/var/www/html/images/'
 logger = None  # Declare the logger variable at the top
-start_time_sec = 0  # Define start_time_sec at a higher scope
-
-time_intervals = [
-            (start_time_sec - 5*60, lambda: trigger_warning_signal(signal), "1st-5min_pict.jpg", "5 min Lamp-1 On -- Up with Flag O"),
-            (start_time_sec - 4*60, lambda: trigger_warning_signal(signal), "1st-4min_pict.jpg", "4 min Lamp-2 On  --- Up with Flag P"),
-            (start_time_sec - 1*60, lambda: trigger_warning_signal(signal), "1st-1min_pict.jpg", "1 min  Lamp-2 Off -- Flag P down"),
-            (start_time_sec, None, "1st-start_pict.jpg", "Wait 2 minutes then stop video recording"),
-]
 
 def setup_logging():
     logging.config.fileConfig('logging.conf')
@@ -104,6 +96,12 @@ def main():
         logger.info (" Start_time = %s", start_time)
         start_hour, start_minute = start_time.split(':')
         start_time_sec = 60 * (int(start_minute) + 60 * int(start_hour)) # 6660
+        time_intervals = [
+            (start_time_sec - 5*60, lambda: trigger_warning_signal(signal), "1st-5min_pict.jpg", "5 min Lamp-1 On -- Up with Flag O"),
+            (start_time_sec - 4*60, lambda: trigger_warning_signal(signal), "1st-4min_pict.jpg", "4 min Lamp-2 On  --- Up with Flag P"),
+            (start_time_sec - 1*60, lambda: trigger_warning_signal(signal), "1st-1min_pict.jpg", "1 min  Lamp-2 Off -- Flag P down"),
+            (start_time_sec, None, "1st-start_pict.jpg", "Wait 2 minutes then stop video recording"),
+         ]
         
         logger.info (' Weekday = %s', week_day)
         signal, lamp1, lamp2 = setup_gpio()
