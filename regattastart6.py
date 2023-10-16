@@ -112,7 +112,6 @@ def main():
             try:
                 now = dt.datetime.now()
                 wd = dt.datetime.today().strftime("%A")
-
                 if wd == week_day :            # example Wednesday = 3
                     t = dt.datetime.now() # ex: 2015-01-04 18:48:33.255145
                     time_now = t.strftime('%H:%M:%S')   # 18:48:33
@@ -145,9 +144,6 @@ def main():
             except OSError as err:
                 logger.warning ("OS error: {0}".format(err))
 
-        # After the loop, wait 118 seconds and stop video recording (if it was started)
-
-        #..
         logger.info (" Wait 2 minutes then stop video recording")
         t = dt.datetime.now()
         while (dt.datetime.now() - t).seconds < (118):
