@@ -139,11 +139,6 @@ def main():
                         logger.info(log_message)
                         time.sleep(1) ##
 
-                    # Check if this is the last time interval
-                    if seconds == time_intervals[-1][0]:
-                        last_video_recorded = True
-                        logger.info("Last time interval reached, exiting the loop.")
-
                         logger.info (" Wait 2 minutes then stop video recording")
                         t = dt.datetime.now()
                         while (dt.datetime.now() - t).seconds < (118):
