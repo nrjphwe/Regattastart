@@ -113,6 +113,7 @@ def main():
                     time_now = t.strftime('%H:%M:%S')   # 18:48:33
                     nh, nm, ns = time_now.split(':')
                     seconds_now =  60 * (int(nm) + 60 * int(nh)) + int(ns)
+                    logger.info("seconds_now = %s   ----------", seconds_now )
                     camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                     #------------
                     start_video_recording(camera, photo_path, "video0.h264")
