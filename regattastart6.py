@@ -125,7 +125,7 @@ def main():
                     if video_recording_started == False:
                         if seconds_now == start_time_sec - 5 * 60 - 1:
                             logger.info ("after if seconds_now") ###
-                            time.sleep(1)
+                            time.sleep(1) ##
                             start_video_recording(camera, photo_path, "video0.h264")
                             video_recording_started = True
                     
@@ -137,8 +137,7 @@ def main():
                             action()
                         capture_picture(camera, photo_path, capture_file)
                         logger.info(log_message)
-
-                        time.sleep(1)
+                        time.sleep(1) ##
 
                         # Check if this is the last time interval
                         if seconds == time_intervals[-1][0]:
@@ -146,8 +145,12 @@ def main():
                             logger.info("Last time interval reached, exiting the loop.")
                     
             except Exception as e:
+                logger.info ("exception as e") ###
+                time.sleep(1)
                 logger.exception("Exception in inner loop: %s", str(e))
             except OSError as err:
+                logger.info ("exception OSerror") ###
+                time.sleep(1)
                 logger.warning ("OS error: {0}".format(err))
 
         logger.info (" Wait 2 minutes then stop video recording")
