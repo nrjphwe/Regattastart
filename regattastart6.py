@@ -100,7 +100,7 @@ def main():
             (start_time_sec - 5*60, lambda: trigger_warning_signal(signal), "1st-5min_pict.jpg", "5 min Lamp-1 On -- Up with Flag O"),
             (start_time_sec - 4*60, lambda: trigger_warning_signal(signal), "1st-4min_pict.jpg", "4 min Lamp-2 On  --- Up with Flag P"),
             (start_time_sec - 1*60, lambda: trigger_warning_signal(signal), "1st-1min_pict.jpg", "1 min  Lamp-2 Off -- Flag P down"),
-            (start_time_sec, None, "1st-start_pict.jpg", "Wait 2 minutes then stop video recording"),
+            (start_time_sec, None, "1st-start_pict.jpg", "Start signal"),
          ]
         
         logger.info (' Weekday = %s', week_day)
@@ -140,9 +140,9 @@ def main():
                         time.sleep(1) ##
 
                         # Check if this is the last time interval
-                        if seconds == time_intervals[-1][0]:
-                            last_video_recorded = True
-                            logger.info("Last time interval reached, exiting the loop.")
+                        #if seconds == time_intervals[-1][0]:
+                        #    last_video_recorded = True
+                        #    logger.info("Last time interval reached, exiting the loop.")
                     
             except Exception as e:
                 logger.info ("exception as e") ###
