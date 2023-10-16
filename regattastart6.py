@@ -112,26 +112,28 @@ def main():
             try:
                 now = dt.datetime.now()
                 wd = dt.datetime.today().strftime("%A")
+
                 if wd == week_day :            # example Wednesday = 3
                     t = dt.datetime.now() # ex: 2015-01-04 18:48:33.255145
                     time_now = t.strftime('%H:%M:%S')   # 18:48:33
                     nh, nm, ns = time_now.split(':')
                     seconds_now =  60 * (int(nm) + 60 * int(nh)) + int(ns)
                     camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                
                     # Start video0 recording at 5.01 minutes before start
                     if video_recording_started == False:
                         if seconds_now == start_time_sec - 5 * 60 - 1:
                             start_video_recording(camera, photo_path, "video0.h264")
                             video_recording_started = True
+                    
                     # Iterate through time intervals
-                    for seconds, action, capture_file, log_message in time_intervals:
+                    if seconds_now == seconds:
                         logger.info("Checking seconds_now: %s against trigger time: %s", seconds_now, seconds)
-                        if seconds_now == seconds:
-                            logger.info("Triggering event at seconds_now: %s", seconds_now)
-                            if action:
-                                action()
-                            capture_picture(camera, photo_path, capture_file)
-                            logger.info(log_message)
+                        logger.info("Triggering event at seconds_now: %s", seconds_now)
+                        if action:
+                            action()
+                        capture_picture(camera, photo_path, capture_file)
+                        logger.info(log_message)
 
                 # Check if this is the last time interval
                 if seconds == time_intervals[-1][0]:
