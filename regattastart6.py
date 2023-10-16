@@ -125,7 +125,9 @@ def main():
                             video_recording_started = True
                     # Iterate through time intervals
                     for seconds, action, capture_file, log_message in time_intervals:
+                        logger.info("Checking seconds_now: %s against trigger time: %s", seconds_now, seconds)
                         if seconds_now == seconds:
+                            logger.info("Triggering event at seconds_now: %s", seconds_now)
                             if action:
                                 action()
                             capture_picture(camera, photo_path, capture_file)
