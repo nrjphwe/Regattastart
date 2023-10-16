@@ -87,6 +87,7 @@ def convert_video_to_mp4(mp4_path, source_file, destination_file):
     logger.info (" Video recording %s converted ", destination_file)
 
 def main():
+    global logger  # Make logger variable global
     camera = None # Initialize the camera variable
     signal = None # Initialize the signal relay/variable
     video_recording_started = False
@@ -98,7 +99,6 @@ def main():
         video_dur = int(sys.argv[5])
         # Set up initial data
         logger = setup_logging()
-        global logger  # Make logger variable global
         camera = setup_camera() # test
         logger.info (" Start_time = %s", start_time)
         start_hour, start_minute = start_time.split(':')
