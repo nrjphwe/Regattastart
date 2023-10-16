@@ -14,13 +14,6 @@ from picamera import PiCamera, Color
 signal_dur = 0.3 # 0.3 sec
 mp4_path = '/var/www/html/images/'
 
-time_intervals = [
-    (start_time_sec - 5*60, lambda: trigger_warning_signal(signal), "1st-5min_pict.jpg", "5 min Lamp-1 On -- Up with Flag O"),
-    (start_time_sec - 4*60, lambda: trigger_warning_signal(signal), "1st-4min_pict.jpg", "4 min Lamp-2 On  --- Up with Flag P"),
-    (start_time_sec - 1*60, lambda: trigger_warning_signal(signal), "1st-1min_pict.jpg", "1 min  Lamp-2 Off -- Flag P down"),
-    (start_time_sec, None, "1st-start_pict.jpg", "Wait 2 minutes then stop video recording"),
-]
-
 def setup_logging():
     logging.config.fileConfig('logging.conf')
     logger = logging.getLogger('Start')
@@ -93,6 +86,12 @@ def main():
         num_videos = int(sys.argv[4])
         video_dur = int(sys.argv[5])
         # Set up initial data
+        time_intervals = [
+            (start_time_sec - 5*60, lambda: trigger_warning_signal(signal), "1st-5min_pict.jpg", "5 min Lamp-1 On -- Up with Flag O"),
+            (start_time_sec - 4*60, lambda: trigger_warning_signal(signal), "1st-4min_pict.jpg", "4 min Lamp-2 On  --- Up with Flag P"),
+            (start_time_sec - 1*60, lambda: trigger_warning_signal(signal), "1st-1min_pict.jpg", "1 min  Lamp-2 Off -- Flag P down"),
+            (start_time_sec, None, "1st-start_pict.jpg", "Wait 2 minutes then stop video recording"),
+        ]
         photo_path = '/var/www/html/images/'
         global logger  # Make logger variable global
         logger = setup_logging()
