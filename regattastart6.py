@@ -16,6 +16,7 @@ signal_dur = 0.3 # 0.3 sec
 mp4_path = '/var/www/html/images/'
 photo_path = '/var/www/html/images/'
 logger = None  # Declare the logger variable at the top
+start_time_sec = 0  # Define start_time_sec at a higher scope
 
 time_intervals = [
             (start_time_sec - 5*60, lambda: trigger_warning_signal(signal), "1st-5min_pict.jpg", "5 min Lamp-1 On -- Up with Flag O"),
