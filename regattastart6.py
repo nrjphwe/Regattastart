@@ -90,6 +90,7 @@ def main():
         global logger  # Make logger variable global
         logger = setup_logging()
         camera = setup_camera() # test
+        video_recording_started = False
         logger.info (" Start_time = %s", start_time)
         start_hour, start_minute = start_time.split(':')
         start_time_sec = 60 * (int(start_minute) + 60 * int(start_hour)) # 6660
