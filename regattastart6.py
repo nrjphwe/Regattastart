@@ -114,6 +114,8 @@ def main():
                 now = dt.datetime.now()
                 wd = dt.datetime.today().strftime("%A")
                 if wd == week_day :            # example Wednesday = 3
+                    logger.info ("after if wd") ###
+                    time.sleep(1) ###
                     t = dt.datetime.now() # ex: 2015-01-04 18:48:33.255145
                     time_now = t.strftime('%H:%M:%S')   # 18:48:33
                     nh, nm, ns = time_now.split(':')
