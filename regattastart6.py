@@ -110,6 +110,7 @@ def main():
 
         for seconds, action, capture_file, log_message in time_intervals:
             try:
+                logger.info ("after try")
                 now = dt.datetime.now()
                 wd = dt.datetime.today().strftime("%A")
                 if wd == week_day :            # example Wednesday = 3
