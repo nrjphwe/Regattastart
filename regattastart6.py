@@ -79,6 +79,7 @@ def convert_video_to_mp4(mp4_path, source_file, destination_file):
 def main():
     camera = None # Initialize the camera variable
     signal = None # Initialize the signal relay/variable
+    video_recording_started = False
     try:
         start_time = str(sys.argv[1])
         week_day = str(sys.argv[2])
