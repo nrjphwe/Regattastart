@@ -111,7 +111,7 @@ def main():
         now = dt.datetime.now()
         wd = dt.datetime.today().strftime("%A")
         if wd == week_day :            # example Wednesday = 3
-            while seconds_now < start_time_sec
+            while seconds_now < start_time_sec:
                 for seconds, action, capture_file, log_message in time_intervals:
                     t = dt.datetime.now() # ex: 2015-01-04 18:48:33.255145
                     time_now = t.strftime('%H:%M:%S')   # 18:48:33
