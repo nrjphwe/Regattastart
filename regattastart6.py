@@ -131,43 +131,43 @@ def main():
                         capture_picture(camera, photo_path, capture_file)
                         logger.info(log_message)
 
-        if seconds_now == start_time_sec + 1:
-            logger.info (" Wait 2 minutes then stop video recording")
-            t = dt.datetime.now() # should be nearly same as starttime
-            while (dt.datetime.now() - t).seconds < (118):
-                camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + "  " + str((dt.datetime.now() - t).seconds)
-                camera.wait_recording(0.5)
-            stop_video_recording(camera)
-            convert_video_to_mp4(mp4_path, "video0.h264", "video0.mp4")
-            #----------------------------------------------------------#
-            # Wait for finish, when next video1 will start, video_delay
-            #----------------------------------------------------------#
-            logger.info (" Time now: %s", t.strftime('%H:%M:%S'))
-            sum = video_delay - 2  # Delay in minutes
-            while sum > 0:
-                sum = sum - 1
-                time.sleep(60)
-                logger.info (' sum: %s', sum)
-            #----------------------------------------------------------#
-            # Result video, duration at "video_dur"
-            #----------------------------------------------------------#
-            logger.info (" num_videos = %s",num_videos)
-            logger.info (' video duration = %s', video_dur)
-            stop = num_videos + 1
-            for i in range(1, stop):
-                start_video_recording(camera, photo_path, "video" + str(i) + ".h264")
-                logger.info (' Started recording of video%s', i)
-                logger.info (' i = %s', i)
-                #------------------------------------------------------#
-                # video running, duration at "video_dur"
-                #------------------------------------------------------#
-                while (dt.datetime.now() - t).seconds < (60 * video_dur):
+            else:
+                logger.info (" Wait 2 minutes then stop video recording")
+                t = dt.datetime.now() # should be nearly same as starttime
+                while (dt.datetime.now() - t).seconds < (118):
                     camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + "  " + str((dt.datetime.now() - t).seconds)
                     camera.wait_recording(0.5)
                 stop_video_recording(camera)
-                convert_video_to_mp4(mp4_path, "video" + str(i) + ".h264",  "video" + str(i) + ".mp4")
-            logger.info (" This was the last video =====")
-            return # Exit the function
+                convert_video_to_mp4(mp4_path, "video0.h264", "video0.mp4")
+                #----------------------------------------------------------#
+                # Wait for finish, when next video1 will start, video_delay
+                #----------------------------------------------------------#
+                logger.info (" Time now: %s", t.strftime('%H:%M:%S'))
+                sum = video_delay - 2  # Delay in minutes
+                while sum > 0:
+                    sum = sum - 1
+                    time.sleep(60)
+                    logger.info (' sum: %s', sum)
+                #----------------------------------------------------------#
+                # Result video, duration at "video_dur"
+                #----------------------------------------------------------#
+                logger.info (" num_videos = %s",num_videos)
+                logger.info (' video duration = %s', video_dur)
+                stop = num_videos + 1
+                for i in range(1, stop):
+                    start_video_recording(camera, photo_path, "video" + str(i) + ".h264")
+                    logger.info (' Started recording of video%s', i)
+                    logger.info (' i = %s', i)
+                    #------------------------------------------------------#
+                    # video running, duration at "video_dur"
+                    #------------------------------------------------------#
+                    while (dt.datetime.now() - t).seconds < (60 * video_dur):
+                        camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + "  " + str((dt.datetime.now() - t).seconds)
+                        camera.wait_recording(0.5)
+                    stop_video_recording(camera)
+                    convert_video_to_mp4(mp4_path, "video" + str(i) + ".h264",  "video" + str(i) + ".mp4")
+                logger.info (" This was the last video =====")
+                return # Exit the function
     except Exception as e:
         logger.exception("Fatal error in main loop: %s", str(e))
     finally:
