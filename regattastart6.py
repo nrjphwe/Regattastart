@@ -133,7 +133,7 @@ def main():
 
         if seconds_now == start_time_sec + 1:
             logger.info (" Wait 2 minutes then stop video recording")
-            t = dt.datetime.now()
+            t = dt.datetime.now() # should be nearly same as starttime
             while (dt.datetime.now() - t).seconds < (118):
                 camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + "  " + str((dt.datetime.now() - t).seconds)
                 camera.wait_recording(0.5)
@@ -142,7 +142,6 @@ def main():
             #----------------------------------------------------------#
             # Wait for finish, when next video1 will start, video_delay
             #----------------------------------------------------------#
-            t = dt.datetime.now()
             logger.info (" Time now: %s", t.strftime('%H:%M:%S'))
             sum = video_delay - 2  # Delay in minutes
             while sum > 0:
@@ -159,9 +158,6 @@ def main():
                 start_video_recording(camera, photo_path, "video" + str(i) + ".h264")
                 logger.info (' Started recording of video%s', i)
                 logger.info (' i = %s', i)
-                #------------------------------------------------------#
-                t = dt.datetime.now()
-                logger.info (" Time now: %s", t.strftime('%H:%M:%S'))
                 #------------------------------------------------------#
                 # video running, duration at "video_dur"
                 #------------------------------------------------------#
