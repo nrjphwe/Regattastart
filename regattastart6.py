@@ -85,6 +85,7 @@ def main():
     signal = None # Initialize the signal relay/variable
     video_recording_started = False
     try:
+        seconds_now = 0
         start_time = str(sys.argv[1])
         week_day = str(sys.argv[2])
         video_delay = int(sys.argv[3])
@@ -107,26 +108,22 @@ def main():
         signal, lamp1, lamp2 = setup_gpio()
         remove_files(photo_path, "video")
         remove_files(photo_path, "pict")
-
-        for seconds, action, capture_file, log_message in time_intervals:
-            try:
-                now = dt.datetime.now()
-                wd = dt.datetime.today().strftime("%A")
-                if wd == week_day :            # example Wednesday = 3
-                    logger.info ("after if wd") ###
+        now = dt.datetime.now()
+        wd = dt.datetime.today().strftime("%A")
+        if wd == week_day :            # example Wednesday = 3
+            while seconds_now < start_time_sec
+                for seconds, action, capture_file, log_message in time_intervals:
                     t = dt.datetime.now() # ex: 2015-01-04 18:48:33.255145
                     time_now = t.strftime('%H:%M:%S')   # 18:48:33
                     nh, nm, ns = time_now.split(':')
                     seconds_now =  60 * (int(nm) + 60 * int(nh)) + int(ns)
                     camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                
                     # Start video0 recording at 5.01 minutes before start
                     if video_recording_started == False:
                         if seconds_now == start_time_sec - 5 * 60 - 1:
                             logger.info ("after if seconds_now") ###
                             start_video_recording(camera, photo_path, "video0.h264")
                             video_recording_started = True
-                    
                     # Iterate through time intervals
                     if seconds_now == seconds:
                         logger.info("Checking seconds_now: %s against trigger time: %s", seconds_now, seconds)
@@ -136,59 +133,48 @@ def main():
                         capture_picture(camera, photo_path, capture_file)
                         logger.info(log_message)
 
-                    if seconds_now == start_time_sec + 1:
-                        logger.info (" Wait 2 minutes then stop video recording")
+                if seconds_now == start_time_sec + 1:
+                    logger.info (" Wait 2 minutes then stop video recording")
+                    t = dt.datetime.now()
+                    while (dt.datetime.now() - t).seconds < (118):
+                        camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + "  " + str((dt.datetime.now() - t).seconds)
+                        camera.wait_recording(0.5)
+                    stop_video_recording(camera)
+                    convert_video_to_mp4(mp4_path, "video0.h264", "video0.mp4")
+
+                    #----------------------------------------------------------#
+                    # Wait for finish, when next video1 will start, video_delay
+                    #----------------------------------------------------------#
+                    t = dt.datetime.now()
+                    logger.info (" Time now: %s", t.strftime('%H:%M:%S'))
+                    sum = video_delay - 2  # Delay in minutes
+                    while sum > 0:
+                        sum = sum - 1
+                        time.sleep(60)
+                        logger.info (' sum: %s', sum)
+                    #----------------------------------------------------------#
+                    # Result video, duration at "video_dur"
+                    #----------------------------------------------------------#
+                    logger.info (" num_videos = %s",num_videos)
+                    logger.info (' video duration = %s', video_dur)
+                    stop = num_videos + 1
+                    for i in range(1, stop):
+                        start_video_recording(camera, photo_path, "video" + str(i) + ".h264")
+                        logger.info (' Started recording of video%s', i)
+                        logger.info (' i = %s', i)
+                        #------------------------------------------------------#
                         t = dt.datetime.now()
-                        while (dt.datetime.now() - t).seconds < (118):
+                        logger.info (" Time now: %s", t.strftime('%H:%M:%S'))
+                        #------------------------------------------------------#
+                        # video running, duration at "video_dur"
+                        #------------------------------------------------------#
+                        while (dt.datetime.now() - t).seconds < (60 * video_dur):
                             camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + "  " + str((dt.datetime.now() - t).seconds)
                             camera.wait_recording(0.5)
                         stop_video_recording(camera)
-                        convert_video_to_mp4(mp4_path, "video0.h264", "video0.mp4")
-
-                    
-                        #----------------------------------------------------------#
-                        # Wait for finish, when next video1 will start, video_delay
-                        #----------------------------------------------------------#
-                        t = dt.datetime.now()
-                        logger.info (" Time now: %s", t.strftime('%H:%M:%S'))
-                        sum = video_delay - 2  # Delay in minutes
-                        while sum > 0:
-                            sum = sum - 1
-                            time.sleep(60)
-                            logger.info (' sum: %s', sum)
-                        #----------------------------------------------------------#
-                        # Result video, duration at "video_dur"
-                        #----------------------------------------------------------#
-                        logger.info (" num_videos = %s",num_videos)
-                        logger.info (' video duration = %s', video_dur)
-                        stop = num_videos + 1
-                        for i in range(1, stop):
-                            start_video_recording(camera, photo_path, "video" + str(i) + ".h264")
-                            logger.info (' Started recording of video%s', i)
-                            logger.info (' i = %s', i)
-                            #------------------------------------------------------#
-                            t = dt.datetime.now()
-                            logger.info (" Time now: %s", t.strftime('%H:%M:%S'))
-                            #------------------------------------------------------#
-                            # video running, duration at "video_dur"
-                            #------------------------------------------------------#
-                            while (dt.datetime.now() - t).seconds < (60 * video_dur):
-                                camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + "  " + str((dt.datetime.now() - t).seconds)
-                                camera.wait_recording(0.5)
-                            stop_video_recording(camera)
-                            convert_video_to_mp4(mp4_path, "video" + str(i) + ".h264",  "video" + str(i) + ".mp4")
-                        logger.info (" This was the last video =====")
-                        return # Exit the function
-                            
-            except Exception as e:
-                logger.info ("exception as e") ###
-                time.sleep(1)
-                logger.exception("Exception in inner loop: %s", str(e))
-            except OSError as err:
-                logger.info ("exception OSerror") ###
-                time.sleep(1)
-                logger.warning ("OS error: {0}".format(err))     
-
+                        convert_video_to_mp4(mp4_path, "video" + str(i) + ".h264",  "video" + str(i) + ".mp4")
+                    logger.info (" This was the last video =====")
+                    return # Exit the function
     except Exception as e:
         logger.exception("Fatal error in main loop: %s", str(e))
     finally:
@@ -198,7 +184,7 @@ def main():
         if signal is not None:
             GPIO.output(signal, OFF)  # Turn off the signal output
         GPIO.cleanup()
-
+        
 if __name__ == "__main__":
     logging.basicConfig(level=logging.WARNING)  # Set log level to WARNING
     main()
