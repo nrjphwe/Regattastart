@@ -124,6 +124,7 @@ def main():
                             logger.info ("after if seconds_now") ###
                             start_video_recording(camera, photo_path, "video0.h264")
                             video_recording_started = True
+                    
                     # Iterate through time intervals
                     if seconds_now == seconds:
                         logger.info("Checking seconds_now: %s against trigger time: %s", seconds_now, seconds)
