@@ -58,7 +58,7 @@ def trigger_warning_signal(signal):
     time.sleep(signal_dur)
     GPIO.output(signal, OFF)
     time.sleep(1 - signal_dur)
-    logger.info (" For one sec, first trigger signal %s sec, then wait for 1 - %s sec", signal_dur)
+    logger.info (" For one sec, first trigger signal %s sec, then wait for 1 - %s sec", signal_dur, signal_dur)
 
 def capture_picture(camera, photo_path, file_name):
     camera.capture(os.path.join(photo_path, file_name), use_video_port=True)
@@ -93,8 +93,8 @@ def main():
         video_dur = int(sys.argv[5])
         # Set up initial data
         logger = setup_logging()
-        camera = setup_camera() # test
-        logger.info (" Start_time = %s", start_time)
+        camera = setup_camera()
+        logger.info (" Start_time = %s, Weekday = %s ", start_time, week_day)
         start_hour, start_minute = start_time.split(':')
         start_time_sec = 60 * (int(start_minute) + 60 * int(start_hour)) # 6660
         time_intervals = [
@@ -103,8 +103,6 @@ def main():
             (start_time_sec - 1*60, lambda: trigger_warning_signal(signal), "1st-1min_pict.jpg", "1 min  Lamp-2 Off -- Flag P down"),
             (start_time_sec, lambda: trigger_warning_signal(signal), "1st-start_pict.jpg", "Start signal"),
          ]
-        
-        logger.info (' Weekday = %s', week_day)
         signal, lamp1, lamp2 = setup_gpio()
         remove_files(photo_path, "video")
         remove_files(photo_path, "pict")
