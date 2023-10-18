@@ -68,7 +68,7 @@ def start_video_recording(camera, mp4_path, file_name):
     if camera.recording:
         camera.stop_recording()
     camera.start_recording(os.path.join(mp4_path, file_name))
-    logger.info (" Recording of %s started", file_name)
+    logger.info (" Started recording of %s ", file_name)
 
 def stop_video_recording(camera):
     camera.stop_recording()
@@ -142,25 +142,25 @@ def main():
                 #----------------------------------------------------------#
                 # Wait for finish, when next video1 will start, video_delay
                 #----------------------------------------------------------#
-                logger.info (" Time now: %s", t.strftime('%H:%M:%S'))
                 sum = video_delay - 2  # Delay in minutes
                 while sum > 0:
                     sum = sum - 1
                     time.sleep(60)
                     logger.info (' sum: %s', sum)
                 #----------------------------------------------------------#
-                # Result video, duration at "video_dur"
+                # Result video, chopped into numeral videos with duration at "video_dur"
                 #----------------------------------------------------------#
                 logger.info (" num_videos = %s",num_videos)
                 logger.info (' video duration = %s', video_dur)
                 stop = num_videos + 1
                 for i in range(1, stop):
-                    start_video_recording(camera, photo_path, "video" + str(i) + ".h264")
-                    logger.info (' Started recording of video%s', i)
                     logger.info (' i = %s', i)
+                    start_video_recording(camera, photo_path, "video" + str(i) + ".h264")
                     #------------------------------------------------------#
                     # video running, duration at "video_dur"
                     #------------------------------------------------------#
+                    logger.info (' dt.datetime.now()= %s t= %s', dt.datetime.now(),t)  ###
+                    time.sleep(1) ###
                     while (dt.datetime.now() - t).seconds < (60 * video_dur):
                         camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + "  " + str((dt.datetime.now() - t).seconds)
                         camera.wait_recording(0.5)
