@@ -118,8 +118,7 @@ def main():
                     camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                     # Start video0 recording at 5.01 minutes before start
                     if video_recording_started == False:
-                        if seconds_now == start_time_sec - 5 * 60 - 1:
-                            logger.info ("after if seconds_now") ###
+                        if seconds_now == start_time_sec - 5 * 60 - 0.5:
                             start_video_recording(camera, photo_path, "video0.h264")
                             video_recording_started = True
                     
@@ -134,7 +133,7 @@ def main():
             else:
                 logger.info (" Wait 2 minutes then stop video recording")
                 t0 = dt.datetime.now() # should be nearly same as starttime
-                while (dt.datetime.now() - t).seconds < (118):
+                while (dt.datetime.now() - t0).seconds < (119):
                     camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + "  " + str((dt.datetime.now() - t).seconds)
                     camera.wait_recording(0.5)
                 stop_video_recording(camera)
@@ -161,7 +160,6 @@ def main():
                     # video running, duration at "video_dur"
                     #------------------------------------------------------#
                     logger.info (' dt.datetime.now()= %s t= %s', dt.datetime.now(),t)  ###
-                    time.sleep(1) ###
                     while (dt.datetime.now() - t1).seconds < (60 * video_dur):
                         camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + "  " + str((dt.datetime.now() - t).seconds)
                         camera.wait_recording(0.5)
