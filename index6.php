@@ -1,9 +1,10 @@
 <?php
 session_id("regattastart");
 session_start();
-echo "Session id = " . Session_id() . " ";
-print_r($_SESSION);
-echo "<br/>";
+$_SESSION['start_time'] = $selectedStartTime;
+$_SESSION['video_delay'] = $selectedVideoDelay;
+$_SESSION['video_duration'] = $selectedVideoDuration;
+$_SESSION['num_videos'] = $selectedNumVideos;
 ?>
 <?php
 if(isset($_POST['video_delay'])) {
@@ -18,7 +19,6 @@ if(isset($_POST['video_delay'])) {
 $cookie_name1 = "video_delay";
 $cookie_name2 = "video_dur";
 $cookie_name3 = "num_video";
-$cookie_name4 = "start_time";
 ?>
 <?php
 if(isset($_COOKIE[$cookie_name2])) {
