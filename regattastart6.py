@@ -133,7 +133,7 @@ def main():
 
             else:
                 logger.info (" Wait 2 minutes then stop video recording")
-                t = dt.datetime.now() # should be nearly same as starttime
+                t0 = dt.datetime.now() # should be nearly same as starttime
                 while (dt.datetime.now() - t).seconds < (118):
                     camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + "  " + str((dt.datetime.now() - t).seconds)
                     camera.wait_recording(0.5)
@@ -153,6 +153,7 @@ def main():
                 logger.info (" num_videos = %s",num_videos)
                 logger.info (' video duration = %s', video_dur)
                 stop = num_videos + 1
+                t1 = dt.datetime.now() # should be time after delay
                 for i in range(1, stop):
                     logger.info (' i = %s', i)
                     start_video_recording(camera, photo_path, "video" + str(i) + ".h264")
@@ -161,7 +162,7 @@ def main():
                     #------------------------------------------------------#
                     logger.info (' dt.datetime.now()= %s t= %s', dt.datetime.now(),t)  ###
                     time.sleep(1) ###
-                    while (dt.datetime.now() - t).seconds < (60 * video_dur):
+                    while (dt.datetime.now() - t1).seconds < (60 * video_dur):
                         camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + "  " + str((dt.datetime.now() - t).seconds)
                         camera.wait_recording(0.5)
                     stop_video_recording(camera)
