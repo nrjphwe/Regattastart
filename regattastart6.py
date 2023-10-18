@@ -94,7 +94,7 @@ def main():
         # Set up initial data
         logger = setup_logging()
         camera = setup_camera()
-        logger.info (" Start_time = %s, Weekday = %s ", start_time, week_day)
+        logger.info (" Weekday= %s, Start_time= %s,video_delay= %, num_videos= %s,video_dur= %s", week_day, start_time, video_delay, num_videos, video_dur)
         start_hour, start_minute = start_time.split(':')
         start_time_sec = 60 * (int(start_minute) + 60 * int(start_hour)) # 6660
         time_intervals = [
@@ -112,7 +112,7 @@ def main():
             while seconds_now < start_time_sec:
                 for seconds, action, capture_file, log_message in time_intervals:
                     t = dt.datetime.now() # ex: 2015-01-04 18:48:33.255145
-                    time_now = t.strftime('%H:%M:%S')   # 18:48:33
+                    time_now = t.strftime('%H:%M:%S')   # ex: 18:48:33
                     nh, nm, ns = time_now.split(':')
                     seconds_now =  60 * (int(nm) + 60 * int(nh)) + int(ns)
                     camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
@@ -132,7 +132,7 @@ def main():
 
             else:
                 logger.info (" Wait 2 minutes then stop video recording")
-                t0 = dt.datetime.now() # should be nearly same as starttime
+                t0 = dt.datetime.now() # should be nearly same as start_time_sec
                 while (dt.datetime.now() - t0).seconds < (119):
                     camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + "  " + str((dt.datetime.now() - t).seconds)
                     camera.wait_recording(0.5)
