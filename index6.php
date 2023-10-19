@@ -39,8 +39,8 @@ if(isset($_COOKIE[$cookie_name1])) {
 // Set session variables
 $_SESSION['start_time'] = $selectedStartTime;
 $_SESSION['video_delay'] = $_COOKIE['video_delay'] ?? 30;  // Default value if not set
-$_SESSION['video_duration'] = $_POST['video_dur'] ?? 10;  // Default value if not set
-$_SESSION['num_videos'] = $_POST['num_video'] ?? 7;  // Default value if not set
+$_SESSION['video_duration'] = $_COOKIE['video_dur'] ?? 10;  // Default value if not set
+$_SESSION['num_videos'] = $_COOKIE['num_video'] ?? 7;  // Default value if not set
 ?>
 
 
