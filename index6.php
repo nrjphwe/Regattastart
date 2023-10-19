@@ -1,21 +1,45 @@
 <?php
 session_start();
 session_id("regattastart");
+?>
+
+<?php
+$cookie_name1 = "video_delay";
+$cookie_name2 = "video_dur";
+$cookie_name3 = "num_video";
+$cookie_name4 = "start_time"; // Add 'start_time' here
+?>
 
 if(isset($_POST['video_delay'])) {
+    // Set or update cookies
     $expires = time() + 3600 * 24 * 365;
     setcookie('video_delay', $_POST['video_delay'], $expires, '/');
     setcookie('video_dur', $_POST['video_dur'], $expires, '/');
     setcookie('num_video', $_POST['num_video'], $expires, '/');
+    setcookie('start_time', $_POST['start_time'], $expires, '/'); // Set 'start_time'
 }
 
-$selectedStartTime = $_POST['start_time'] ?? date('H:i');  // Default to current time if not set
+if(isset($_COOKIE[$cookie_name1])) {
+    $video_delay = $_COOKIE['video_delay'];
+    $video_dur = $_COOKIE['video_dur'];
+    $num_video = $_COOKIE['num_video'];
+    $start_time = $_COOKIE['start_time']; // Retrieve 'start_time'
+
+    echo "Your old cookie video_delay = " . $video_delay . "<br>";
+    echo "and video_dur = " . $video_dur . "<br>";
+    echo "and num_video = " . $num_video . "<br>";
+    echo "and start_time = " . $start_time . "<br>";
+} else {
+    echo "no cookie data";
+}
+
+//$selectedStartTime = $_POST['start_time'] ?? date('H:i');  // Default to current time if not set
 
 // Set session variables
-$_SESSION['start_time'] = $selectedStartTime;
-$_SESSION['video_delay'] = $_COOKIE['video_delay'] ?? 30;  // Default value if not set
-$_SESSION['video_duration'] = $_POST['video_dur'] ?? 10;  // Default value if not set
-$_SESSION['num_videos'] = $_POST['num_video'] ?? 7;  // Default value if not set
+//$_SESSION['start_time'] = $selectedStartTime;
+//$_SESSION['video_delay'] = $_COOKIE['video_delay'] ?? 30;  // Default value if not set
+//$_SESSION['video_duration'] = $_POST['video_dur'] ?? 10;  // Default value if not set
+//$_SESSION['num_videos'] = $_POST['num_video'] ?? 7;  // Default value if not set
 ?>
 
 
