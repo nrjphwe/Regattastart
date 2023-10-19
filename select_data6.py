@@ -52,7 +52,7 @@ try:
       video_delay = int(form.getvalue('video_delay'))
       video_dur = int(form.getvalue('video_dur'))
       print ("<h2> Start is set to : %s ,time: %d:%d</h2>" % (week_day, start_time, num_video, video_delay, video_dur))
-except ValueError:
+except:
       print ("<p>Sorry, we cannot turn your input to numbers.<p/>")
 ###
 try:
