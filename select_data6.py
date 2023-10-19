@@ -1,12 +1,12 @@
-#!/usr/bin/python3 -u
+#!/usr/bin/python3
 #Before running program, change mode of file using chmod 755 UNIX command to make file executable.
 import time, subprocess, sys, os 
 from http import cookies
-# Import modules for CGI handling 
 import cgi, cgitb,datetime
 cgitb.enable(display=0, logdir="/var/log") #for debugging
 # Create instance of FieldStorage 
 form = cgi.FieldStorage() 
+
 # Get data from drop down fields
 if form.getvalue('day'):
    week_day = form.getvalue('day')
@@ -37,7 +37,7 @@ if ('video_delay'or 'video_dur') in FormData:
     test = 1
     print (cooked)
 # Get data from fields
-print ("Content-type: text/html\r\n\r\n")
+print("Content-type: text/html\r\n\r\n")
 print ()
 print ("<html>")
 print ("<head>")
@@ -86,17 +86,12 @@ print ("</form>")
 print ("<h2> <a href=""/index.php"">  Resultat sida  </a></h2>")
 sys.stdout.flush()
 os.close(sys.stdout.fileno()) # Break web pipe
-if os.fork(): # Get out parent process
-   sys.exit()
+
 # Continue with new child process
 time.sleep(1)  # Be sure the parent process reach exit command.
+
 os.setsid()
 execution_string =  "python3 " + "regattastart6.py " + str(start_time) + " " + week_day + " " + str(video_delay) + " " + str(num_video) + " " + str(video_dur) + " " + " &"
 proc = subprocess.run([execution_string], shell = True)
-#proc.communicate()
-#print (cookme)
-#print ("</body>")
-#print ("</html>")
 if os.fork():
-  #print ("success")
   sys.exit(0)
