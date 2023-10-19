@@ -43,6 +43,7 @@ print ("<html>")
 print ("<head>")
 print ("<title> select_data6.py Regattastart6 sessions </title>")
 print ("<body>")
+print("Debug: Script is running")  # Add this line
 #print ("<meta http-equiv='refresh' content='60; URL=/cgi-bin/select_data6.py'>")
 try:
       #week_day = (form.getvalue('day'))
@@ -54,9 +55,16 @@ try:
 except ValueError:
       print ("<p>Sorry, we cannot turn your input to numbers.<p/>")
 ###
-print("Debug: video_delay =", form.getvalue('video_delay'), "Type:", type(form.getvalue('video_delay')))
-print("Debug: video_dur =", form.getvalue('video_dur'), "Type:", type(form.getvalue('video_dur')))
-print("Debug: num_video =", form.getvalue('num_video'), "Type:", type(form.getvalue('num_video')))
+try:
+    # Parsing and other logic
+    # Debugging output for values obtained from the form data
+   print("Debug: video_delay =", form.getvalue('video_delay'), "Type:", type(form.getvalue('video_delay')))
+   print("Debug: video_dur =", form.getvalue('video_dur'), "Type:", type(form.getvalue('video_dur')))
+   print("Debug: num_video =", form.getvalue('num_video'), "Type:", type(form.getvalue('num_video')))
+except ValueError:
+    print("<p>Sorry, we cannot turn your input to numbers.<p/>")
+# ...
+print("Debug: Reached the end of the script")  # Add this line at the end of the script
 
 if ('video_delay' or 'video_dur') in cookme:
     print ("<h4>Previous or current video_delay:")
