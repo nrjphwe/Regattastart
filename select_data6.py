@@ -88,6 +88,8 @@ print ("then we we'll set a cookie and everybody is happy.<br/>")
 print ("<input type='submit'/>")
 print ("</form>")
 print ("<h2> <a href=""/index.php"">  Resultat sida  </a></h2>")
+print("</body>")
+print("</html>")
 sys.stdout.flush()
 os.close(sys.stdout.fileno()) # Break web pipe
 
