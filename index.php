@@ -1,7 +1,7 @@
 <?php
+session_start();
 // after "git pull", "sudo cp /home/pi/Regattastart/index.php /var/www/html/"
 //session_id("regattastart");
-//session_start();
 //echo " 4: session-id= " . session_id() . " ";
 //echo " 5: efter session id ";
 //print_r($_SESSION);
