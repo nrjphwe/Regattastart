@@ -10,6 +10,7 @@ $cookie_name3 = "num_video";
 $cookie_name4 = "start_time"; // Add 'start_time' here
 ?>
 
+<?php
 if(isset($_POST['video_delay'])) {
     // Set or update cookies
     $expires = time() + 3600 * 24 * 365;
