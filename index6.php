@@ -1,6 +1,6 @@
 <?php
-session_id("regattastart");
 session_start();
+session_id("regattastart");
 $_SESSION['start_time'] = $selectedStartTime;
 $_SESSION['video_delay'] = $selectedVideoDelay;
 $_SESSION['video_duration'] = $selectedVideoDuration;
