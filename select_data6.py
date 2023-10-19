@@ -45,15 +45,19 @@ print ("<title> select_data6.py Regattastart6 sessions </title>")
 print ("<body>")
 #print ("<meta http-equiv='refresh' content='60; URL=/cgi-bin/select_data6.py'>")
 try:
-      week_day = (form.getvalue('day'))
+      #week_day = (form.getvalue('day'))
       start_time = (form.getvalue('start_time'))
       num_video = int(form.getvalue('num_video'))
       video_delay = int(form.getvalue('video_delay'))
       video_dur = int(form.getvalue('video_dur'))
       print ("<h2> Start is set to : %s ,time: %d:%d</h2>" % (week_day, start_time, num_video, video_delay, video_dur))
-except:
+except ValueError:
       print ("<p>Sorry, we cannot turn your input to numbers.<p/>")
 ###
+print("Debug: video_delay =", form.getvalue('video_delay'), "Type:", type(form.getvalue('video_delay')))
+print("Debug: video_dur =", form.getvalue('video_dur'), "Type:", type(form.getvalue('video_dur')))
+print("Debug: num_video =", form.getvalue('num_video'), "Type:", type(form.getvalue('num_video')))
+
 if ('video_delay' or 'video_dur') in cookme:
     print ("<h4>Previous or current video_delay:")
     print (cookme.get('video_delay').value)
@@ -90,7 +94,6 @@ os.close(sys.stdout.fileno()) # Break web pipe
 # Continue with new child process
 time.sleep(1)  # Be sure the parent process reach exit command.
 
-os.setsid()
 execution_string =  "python3 " + "regattastart6.py " + str(start_time) + " " + week_day + " " + str(video_delay) + " " + str(num_video) + " " + str(video_dur) + " " + " &"
 proc = subprocess.run([execution_string], shell = True)
 if os.fork():
