@@ -8,22 +8,10 @@ if (isset($_POST['video_delay'])) {
 }
 ?>
 <?php
-$cookie_name1 = "video_delay";
-$cookie_name2 = "video_dur";
-$cookie_name3 = "num_video";
-$cookie_name4 = "start_time"; // Add 'start_time' here
-?>
-<?php
-if(isset($_COOKIE[$cookie_name1])) {
-    $video_delay = $_COOKIE['video_delay'];
-    $video_dur = $_COOKIE['video_dur'];
-    $num_video = $_COOKIE['num_video'];
-    $start_time = $_COOKIE['start_time']; // Retrieve 'start_time'
-
-    echo "Your old cookie video_delay = " . $video_delay . "<br>";
-    echo "and video_dur = " . $video_dur . "<br>";
-    echo "and num_video = " . $num_video . "<br>";
-    echo "and start_time = " . $start_time . "<br>";
+if(isset($_COOKIE['video_delay'])) {
+    echo "Your old cookie video_delay = " . $_COOKIE['video_delay'] . "<br>";
+    echo "and video_dur = " . $_COOKIE['video_dur'] . "<br>";
+    echo "and num_video = " . $_COOKIE['num_video'] . "<br>";
 } else {
     echo "no cookie data";
 }
@@ -132,10 +120,10 @@ if (file_exists($filename))
      </form>
 <?php
 // Set session variables
-$_SESSION['start_time'] = $StartTime;
 $_SESSION['video_delay'] = $video_delay ?? 30;  // Default value if not set
 $_SESSION['video_dur'] = $video_dur ?? 10;  // Default value if not set
 $_SESSION['num_video'] = $num_video ?? 7;  // Default value if not set
+$_SESSION['start_time'] = $start_time;
 ?>
      <!-- Here is our page's main content -->
      <main>
