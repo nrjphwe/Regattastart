@@ -1,5 +1,11 @@
 <?php
 session_start();
+if (isset($_POST['video_delay'])) {
+    $_SESSION['video_delay'] = $_POST['video_delay'];
+    $_SESSION['video_dur'] = $_POST['video_dur'];
+    $_SESSION['num_video'] = $_POST['num_video'];
+    $_SESSION['start_time'] = $_POST['start_time'];
+}
 ?>
 <?php
 $cookie_name1 = "video_delay";
@@ -7,16 +13,6 @@ $cookie_name2 = "video_dur";
 $cookie_name3 = "num_video";
 $cookie_name4 = "start_time"; // Add 'start_time' here
 ?>
-
-<?php
-if(isset($_POST['video_delay'])) {
-    // Set or update cookies
-    $expires = time() + 3600 * 24 * 365;
-    setcookie('video_delay', $_POST['video_delay'], $expires, '/');
-    setcookie('video_dur', $_POST['video_dur'], $expires, '/');
-    setcookie('num_video', $_POST['num_video'], $expires, '/');
-    setcookie('start_time', $_POST['start_time'], $expires, '/'); // Set 'start_time'
-}
 
 if(isset($_COOKIE[$cookie_name1])) {
     $video_delay = $_COOKIE['video_delay'];
