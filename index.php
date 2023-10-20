@@ -12,28 +12,29 @@ print_r($_SESSION);
 echo "efter print_r";
 echo "<br/>";
 ?>
+
 <?php
 $cookie_name1 = "video_delay";
 $cookie_name2 = "video_dur";
 $cookie_name3 = "num_video";
 $cookie_name4 = "start_time";
 ?>
+
 <!DOCTYPE html>
 <html>
 
 <?php
 // Echo session variables that were set on previous page
 if(!empty($_SESSION)
-#if(!empty($_SESSION[$cookie_name1]))
 {
-echo 'the session is empty <br>';
+   echo 'the session is empty <br>';
 } else {
-echo "session variables set on previous page: ";
-echo "video_delay = " . $_SESSION["video_delay"] . ", ";
-echo "video_dur =  " . $_SESSION["video_dur"] . ", ";
-echo "num_video = " . $_SESSION["num_video"] . ", ";
-echo "start_time = " . $_SESSION["start_time"] . ", ";
-echo "<br/>";
+   echo "session variables set on previous page: ";
+   echo "video_delay = " . $_SESSION["video_delay"] . ", ";
+   echo "video_dur =  " . $_SESSION["video_dur"] . ", ";
+   echo "num_video = " . $_SESSION["num_video"] . ", ";
+   echo "start_time = " . $_SESSION["start_time"] . ", ";
+   echo "<br/>";
 } 
 ?>
 <?php
