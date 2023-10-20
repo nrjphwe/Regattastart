@@ -79,9 +79,10 @@ if (file_exists($filename))
     </select>
     </div>
     <p>
-    // A JavaScript block within the HTML to capture the selection and send it to the server when the form is submitted. 
-    // This script will capture the selected value and assign it to an input element so that it's sent to the server when the
-    // form is submitted. Using JavaScript and a hidden input field for this purpose:
+    <!-- A JavaScript block within the HTML to capture the selection and send it to the server when   -->
+    <!-- the form is submitted. This script will capture the selected value and assign it to an input -->
+    <!-- element so that it's sent to the server when the form is submitted. Using JavaScript and a   -->
+    <!-- hidden input field for this purpose -->
     <script type="text/javascript">
         function captureSelectedValue() {
             var selectedValue = document.getElementById("start_time").value;
