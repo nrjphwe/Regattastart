@@ -19,6 +19,7 @@ Passing cookies between a .cgi and php program
 """
 cookme = cookies.SimpleCookie()
 cookme.load(os.environ.get('HTTP_COOKIE',''))
+print (cookme)
 
 # Create a new FieldStorage instance
 FormData = cgi.FieldStorage()
@@ -40,21 +41,9 @@ if 'video_delay' in FormData or 'video_dur' in FormData:
     if 'start_time' in FormData:
         cooked['start_time'] = FormData.getvalue('start_time')
         cooked['start_time']['path'] = '/'
+ test = 1
+ print (cooked)
 
-#if ('video_delay'or 'video_dur') in FormData:
-#    cooked = cookies.SimpleCookie()
-#    cooked['video_delay']=FormData.getvalue('video_delay')
-#    cooked['video_delay']['path']='/'
-#    cooked['video_dur']=FormData.getvalue('video_dur')
-#    cooked['video_dur']['path']='/'
-#    cooked['num_video']=FormData.getvalue('num_video')
-#    cooked['num_video']['path']='/'
-#    cooked['start_time']=FormData.getvalue('start_time')
-#    cooked['start_time']['path']='/'
-
-
-    test = 1
-    print (cooked)
 # Get data from fields
 print("Content-type: text/html\r\n\r\n")
 print ()
@@ -63,7 +52,6 @@ print ("<head>")
 print ("<title> select_data6.py Regattastart6 sessions </title>")
 print("</head>")
 print ("<body>")
-
 try:
       week_day = (form.getvalue('day'))
       start_time = (form.getvalue('start_time'))
@@ -76,13 +64,13 @@ except:
 ###
 print("Debug: Script is running")  # Add this line
 try:
-    # Parsing and other logic
-    # Debugging output for values obtained from the form data
+   # Parsing and other logic
+   # Debugging output for values obtained from the form data
    print("Debug: video_delay =", form.getvalue('video_delay'), "Type:", type(form.getvalue('video_delay')))
    print("Debug: video_dur =", form.getvalue('video_dur'), "Type:", type(form.getvalue('video_dur')))
    print("Debug: num_video =", form.getvalue('num_video'), "Type:", type(form.getvalue('num_video')))
 except ValueError:
-    print("<p>Sorry, we cannot turn your input to numbers.<p/>")
+    print("<p>Sorry, after debug, we cannot turn your input to numbers.<p/>")
 # ...
 print("Debug: Reached the end of the script")  # Add this line at the end of the script
 
