@@ -2,6 +2,10 @@
 session_start();
 ?>
 <?php
+ini_set('display_errors', 1); 
+error_reporting(E_ALL);
+?>
+<?php
 echo "print_r post: ";
 print_r($_POST);
 echo "print_r SESSION: ";
