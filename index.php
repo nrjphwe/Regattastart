@@ -1,6 +1,12 @@
 <?php
-// after "git pull", "sudo cp /home/pi/Regattastart/index.php /var/www/html/"
 session_start();
+// after "git pull", "sudo cp /home/pi/Regattastart/index.php /var/www/html/"
+?>
+<?php
+ini_set('display_errors', 1); 
+error_reporting(E_ALL);
+?>
+<?php
 if (isset($_POST['video_delay'])) {
     $_SESSION['video_delay'] = $_POST['video_delay'];
 }
