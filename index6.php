@@ -2,6 +2,8 @@
 session_start();
 ?>
 <?php
+print_r($_POST);
+echo "efter print_post";
 print_r($_SESSION);
 echo "efter print_r";
 echo "<br/>";
@@ -15,6 +17,9 @@ if (isset($_POST['video_delay'])) {
 }
 ?>
 <?php
+// "If isset" checks if the key "video_delay" exists in the $_POST superglobal array. 
+// In PHP, $_POST contains data sent to the server via an HTTP POST request. 
+// The isset() function checks if a specific variable or array key is set and not null.
 if(isset($_COOKIE['video_delay'])) {
     echo "Your old cookie video_delay = " . $_COOKIE['video_delay'] . "<br>";
     echo "and video_dur = " . $_COOKIE['video_dur'] . "<br>";
