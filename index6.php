@@ -157,6 +157,7 @@ $_SESSION['start_time'] = $start_time;
 ?>
     <!-- Here is our page's main content -->
     <main>
+    <br>
     <div class="w3" align="center">
         <h5> <a href="/index.php">  Resultat sida  </a></h5>
     </div>
