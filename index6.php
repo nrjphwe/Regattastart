@@ -77,8 +77,8 @@ if (file_exists($filename))
      //for ($i = $hour*(60/$steps); $i < $loops; $i++) {
      for ($i = 0; $i < $loops; $i++) {
      //    $time = sprintf('%02d:%02d', $i/(60/$steps), $current%60);
-         $time = sprintf('%02d:%02d', $i/(60/$steps), $current%60);
-         echo '<option>' . $time . '</option>';
+         $start_time = sprintf('%02d:%02d', $i/(60/$steps), $current%60);
+         echo '<option>' . $start_time . '</option>';
          $current += $steps;
      }
      ?>
