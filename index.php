@@ -16,8 +16,10 @@ if (isset($_POST['start_time'])) {
 ?>
 
 <?php
+echo "print_r post: ";
+print_r($_POST);
+echo "print_r SESSION: ";
 print_r($_SESSION);
-echo "efter print_r";
 echo "<br/>";
 ?>
 
