@@ -1,5 +1,12 @@
 <?php
 session_start();
+?>
+<?php
+print_r($_SESSION);
+echo "efter print_r";
+echo "<br/>";
+?>
+<?php
 if (isset($_POST['video_delay'])) {
     $_SESSION['video_delay'] = $_POST['video_delay'];
     $_SESSION['video_dur'] = $_POST['video_dur'];
