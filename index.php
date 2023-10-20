@@ -1,10 +1,18 @@
 <?php
 // after "git pull", "sudo cp /home/pi/Regattastart/index.php /var/www/html/"
 session_start();
-$_SESSION['video_delay'] = $_POST['video_delay'];
-$_SESSION['video_dur'] = $_POST['video_dur'];
-$_SESSION['num_video'] = $_POST['num_video'];
-$_SESSION['start_time'] = $_POST['start_time'];
+if (isset($_POST['video_delay'])) {
+    $_SESSION['video_delay'] = $_POST['video_delay'];
+}
+if (isset($_POST['video_dur'])) {
+    $_SESSION['video_dur'] = $_POST['video_dur'];
+}
+if (isset($_POST['num_video'])) {
+    $_SESSION['num_video'] = $_POST['num_video'];
+}
+if (isset($_POST['start_time'])) {
+    $_SESSION['start_time'] = $_POST['start_time'];
+}
 ?>
 
 <?php
