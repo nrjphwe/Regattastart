@@ -17,7 +17,6 @@ if (isset($_POST['video_delay'])) {
     $_SESSION['video_delay'] = $_POST['video_delay'];
     $_SESSION['video_dur'] = $_POST['video_dur'];
     $_SESSION['num_video'] = $_POST['num_video'];
-    $_SESSION['start_time'] = $_POST['start_time'];
 }
 ?>
 <?php
