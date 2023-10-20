@@ -65,7 +65,7 @@ if(!isset($_COOKIE[$cookie_name2]))
    $num_video = $_COOKIE["num_video"];
    $start_time = $_COOKIE["start_time"];
    echo "Number of finish videos vill be " . $num_video, " and each have a duration of ". $_COOKIE[$cookie_name2], " min. ";
-   echo "Start time is " . $start_time, . $_COOKIE[$cookie_name4];
+   echo "Start time is " . $start_time;
 }
 ?>
 <body>
