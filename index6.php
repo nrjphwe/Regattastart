@@ -29,9 +29,6 @@ if(isset($_COOKIE[$cookie_name1])) {
 }
 ?>
 
-//$selectedStartTime = $_POST['start_time'] ?? date('H:i');  // Default to current time if not set
-
-
 <!DOCTYPE html>
 <html>
 <div align="center">
