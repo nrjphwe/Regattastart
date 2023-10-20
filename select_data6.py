@@ -60,9 +60,9 @@ try:
       video_dur = int(form.getvalue('video_dur'))
       print ("<h2> Start is set to : %s ,time: %d:%d</h2>" % (week_day, start_time, num_video, video_delay, video_dur))
 except:
-      print ("<p>Sorry, we cannot turn your input to numbers.<p/>")
+      print ("<p> 63 Sorry, we cannot turn your input to numbers.</p>")
 ###
-print("Debug: Script is running")  # Add this line
+print("65 Debug: Script is running")  # Add this line
 try:
    # Parsing and other logic
    # Debugging output for values obtained from the form data
@@ -70,9 +70,9 @@ try:
    print("Debug: video_dur =", form.getvalue('video_dur'), "Type:", type(form.getvalue('video_dur')))
    print("Debug: num_video =", form.getvalue('num_video'), "Type:", type(form.getvalue('num_video')))
 except ValueError:
-    print("<p>Sorry, after debug, we cannot turn your input to numbers.<p/>")
+    print("<p> 73 Sorry, after debug, we cannot turn your input to numbers.</p>")
 # ...
-print("Debug: Reached the end of the script")  # Add this line at the end of the script
+print("<p>75 Debug: Reached the end of the script </p>")  # Add this line at the end of the script
 
 if ('video_delay') in cookme:
     print ("<h4>Previous or current video_delay:")
