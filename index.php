@@ -25,7 +25,7 @@ $cookie_name4 = "start_time";
 
 <?php
 // Echo session variables that were set on previous page
-if(!empty($_SESSION))
+if (empty($_SESSION['video_delay']) && empty($_SESSION['video_dur']) && empty($_SESSION['num_video']) && empty($_SESSION['start_time']))
 {
    echo 'the session is empty <br>';
 } else {
