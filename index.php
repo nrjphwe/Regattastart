@@ -20,8 +20,6 @@ $cookie_name3 = "num_video";
 $cookie_name4 = "start_time";
 ?>
 
-<!DOCTYPE html>
-<html>
 
 <?php
 // Echo session variables that were set on previous page
@@ -68,6 +66,9 @@ if(!isset($_COOKIE[$cookie_name2]))
    echo "Start time is " . $start_time;
 }
 ?>
+<!DOCTYPE html>
+<html>
+
 <body>
 <head>
 <title>Regattastart</title>
