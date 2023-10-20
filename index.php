@@ -1,5 +1,12 @@
 <?php
 session_start();
+$_SESSION['video_delay'] = $_POST['video_delay'];
+$_SESSION['video_dur'] = $_POST['video_dur'];
+$_SESSION['num_video'] = $_POST['num_video'];
+$_SESSION['start_time'] = $_POST['start_time'];
+?>
+
+<?php
 // after "git pull", "sudo cp /home/pi/Regattastart/index.php /var/www/html/"
 //session_id("regattastart");
 //echo " 4: session-id= " . session_id() . " ";
