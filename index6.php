@@ -52,7 +52,10 @@ if (file_exists($filename))
 {echo "This page: $filename was modified: " . date ("Y-m-d H:i:s.", filemtime($filename));}
 ?>
 <?php echo "  Time now: " .date("H:i:s") ?>
-<form method="post" action = "/cgi-bin/select_data6.py" name='myform'>
+// call the captureSelectedValue function when it's submitted
+<!-- HTML form -->
+<form method="post" action="/cgi-bin/select_data6.py" name="myform" onsubmit="captureSelectedValue()">
+    <!-- Your form fields and other elements -->
     <div class="w3-row-padding" align="center">
     <div class="w3-half" align="center">
     <fieldset>
@@ -60,22 +63,34 @@ if (file_exists($filename))
     <div data-tap-disabled="true">
     Start Time: <select name = "start_time" id = "start_time">
     <?php
-    $hour = date('H');
-    $steps   = 10; // only edit the minutes value
-    $current = 0;
-    $loops   = 24*(60/$steps);
-    //$loops   = (24-$hour)*(60/$steps);
-    //for ($i = $hour*(60/$steps); $i < $loops; $i++) {
-    for ($i = 0; $i < $loops; $i++) {
-    //    $time = sprintf('%02d:%02d', $i/(60/$steps), $current%60);
-    $start_time = sprintf('%02d:%02d', $i/(60/$steps), $current%60);
-    echo '<option>' . $start_time . '</option>';
-    $current += $steps;
-    }
+        $hour = date('H');
+        $steps   = 10; // only edit the minutes value
+        $current = 0;
+        $loops   = 24*(60/$steps);
+        //$loops   = (24-$hour)*(60/$steps);
+        //for ($i = $hour*(60/$steps); $i < $loops; $i++) {
+        for ($i = 0; $i < $loops; $i++) {
+        //    $time = sprintf('%02d:%02d', $i/(60/$steps), $current%60);
+        $start_time = sprintf('%02d:%02d', $i/(60/$steps), $current%60);
+        echo '<option>' . $start_time . '</option>';
+        $current += $steps;
+        }
     ?>
     </select>
     </div>
     <p>
+    // A JavaScript block within the HTML to capture the selection and send it to the server when the form is submitted. 
+    // This script will capture the selected value and assign it to an input element so that it's sent to the server when the
+    // form is submitted. Using JavaScript and a hidden input field for this purpose:
+    <script type="text/javascript">
+        function captureSelectedValue() {
+            var selectedValue = document.getElementById("start_time").value;
+            document.getElementById("start_time_hidden").value = selectedValue;
+        }
+    </script>
+    <!-- Hidden input field to capture the selected start time -->
+    <input type="hidden" name="start_time" id="start_time_hidden" value="" />
+        
     <?php $idag = date("l") ?>
     Day for race <select name = "day" id="day">
     <option <?php if(isset($idag) && $idag == "Monday"){echo "selected=\"selected\"";} ?> value="Monday">Monday</option>
