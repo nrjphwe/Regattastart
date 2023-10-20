@@ -1,8 +1,6 @@
 <?php
 session_start();
-session_id("regattastart");
 ?>
-
 <?php
 $cookie_name1 = "video_delay";
 $cookie_name2 = "video_dur";
