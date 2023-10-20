@@ -52,7 +52,7 @@ if (file_exists($filename))
 {echo "This page: $filename was modified: " . date ("Y-m-d H:i:s.", filemtime($filename));}
 ?>
 <?php echo "  Time now: " .date("H:i:s") ?>
-// call the captureSelectedValue function when it's submitted
+<!-- call the captureSelectedValue function when it's submitted -->
 <!-- HTML form -->
 <form method="post" action="/cgi-bin/select_data6.py" name="myform" onsubmit="captureSelectedValue()">
     <!-- Your form fields and other elements -->
@@ -157,7 +157,7 @@ $_SESSION['start_time'] = $start_time;
 ?>
     <!-- Here is our page's main content -->
     <main>
-    <br>
+    <br><p></p>
     <div class="w3" align="center">
         <h5> <a href="/index.php">  Resultat sida  </a></h5>
     </div>
