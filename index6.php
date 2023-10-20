@@ -127,19 +127,24 @@ if (file_exists($filename))
      <option <?php if(isset($num_video) && $num_video == "1"){echo "selected=\"selected\"";} ?> value="1">1</option>
      </select>
      </fieldset>
+     </div>
      <p></p>
      <input type = "submit" value = "Submit"/>
      </form>
 <?php
 // Set session variables
-$_SESSION['video_delay'] = $video_delay ?? 30;  // Default value if not set
-$_SESSION['video_dur'] = $video_dur ?? 10;  // Default value if not set
-$_SESSION['num_video'] = $num_video ?? 7;  // Default value if not set
+// If they are set, it will use their values. If they are not set, it will use the 
+// default values (30, 10, and 7, respectively) for the session variables.
+$_SESSION['video_delay'] = isset($video_delay) ? $video_delay : 30;
+$_SESSION['video_dur'] = isset($video_dur) ? $video_dur : 10;
+$_SESSION['num_video'] = isset($num_video) ? $num_video : 7;
 $_SESSION['start_time'] = $start_time;
 ?>
-     <!-- Here is our page's main content -->
-     <main>
-          <h5> <a href="/index.php">  Resultat sida  </a></h5>
-     </main>
+    <!-- Here is our page's main content -->
+    <main>
+    <div class="w3-half" align="center">
+        <h5> <a href="/index.php">  Resultat sida  </a></h5>
+    </div>
+    </main>
 </body>
 </html>
