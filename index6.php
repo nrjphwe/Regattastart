@@ -2,10 +2,10 @@
 session_start();
 ?>
 <?php
+echo "print_r post: ";
 print_r($_POST);
-echo "efter print_post";
+echo "print_r SESSION: ";
 print_r($_SESSION);
-echo "efter print_r";
 echo "<br/>";
 ?>
 <?php
