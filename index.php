@@ -25,7 +25,7 @@ $cookie_name4 = "start_time";
 
 <?php
 // Echo session variables that were set on previous page
-if(!empty($_SESSION)
+if(!empty($_SESSION))
 {
    echo 'the session is empty <br>';
 } else {
