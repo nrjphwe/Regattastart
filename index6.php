@@ -31,15 +31,9 @@ if(isset($_COOKIE[$cookie_name1])) {
 } else {
     echo "no cookie data";
 }
+?>
 
 //$selectedStartTime = $_POST['start_time'] ?? date('H:i');  // Default to current time if not set
-
-// Set session variables
-$_SESSION['start_time'] = $selectedStartTime;
-$_SESSION['video_delay'] = $_COOKIE['video_delay'] ?? 30;  // Default value if not set
-$_SESSION['video_dur'] = $_COOKIE['video_dur'] ?? 10;  // Default value if not set
-$_SESSION['num_video'] = $_COOKIE['num_video'] ?? 7;  // Default value if not set
-?>
 
 
 <!DOCTYPE html>
@@ -143,6 +137,13 @@ if (file_exists($filename))
      <p></p>
      <input type = "submit" value = "Submit"/>
      </form>
+<?php
+// Set session variables
+$_SESSION['start_time'] = $selectedStartTime;
+$_SESSION['video_delay'] = $_COOKIE['video_delay'] ?? 30;  // Default value if not set
+$_SESSION['video_dur'] = $_COOKIE['video_dur'] ?? 10;  // Default value if not set
+$_SESSION['num_video'] = $_COOKIE['num_video'] ?? 7;  // Default value if not set
+?>
      <!-- Here is our page's main content -->
      <main>
           <h5> <a href="/index.php">  Resultat sida  </a></h5>
