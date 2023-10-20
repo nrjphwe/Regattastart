@@ -59,13 +59,13 @@ if(!isset($_COOKIE[$cookie_name2]))
    echo " cookie data exists with: ";
    echo " video_delay=" . $_COOKIE["video_delay"];
    echo ", video_dur=" . $_COOKIE["video_dur"];
-   echo ", cookie num_video=" . $_COOKIE["num_video"];
-   echo ", cookie start_time=" . $_COOKIE["start_time"];
+   echo ", num_video=" . $_COOKIE["num_video"];
+   echo ", start_time=" . $_COOKIE["start_time"];
    echo "<br/>";
    $num_video = $_COOKIE["num_video"];
    $start_time = $_COOKIE["start_time"];
    echo "Number of finish videos vill be " . $num_video, " and each have a duration of ". $_COOKIE[$cookie_name2], " min. ";
-   echo "Start time is " . $start_time;
+   echo "Start time is " . $start_time, . $_COOKIE[$cookie_name4];
 }
 ?>
 <body>
