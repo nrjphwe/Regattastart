@@ -1,4 +1,5 @@
 <?php
+// after "git pull", "sudo cp /home/pi/Regattastart/index.php /var/www/html/"
 session_start();
 $_SESSION['video_delay'] = $_POST['video_delay'];
 $_SESSION['video_dur'] = $_POST['video_dur'];
@@ -7,13 +8,9 @@ $_SESSION['start_time'] = $_POST['start_time'];
 ?>
 
 <?php
-// after "git pull", "sudo cp /home/pi/Regattastart/index.php /var/www/html/"
-//session_id("regattastart");
-//echo " 4: session-id= " . session_id() . " ";
-//echo " 5: efter session id ";
-//print_r($_SESSION);
-//echo " 7: efter print_r";
-//echo "<br/>";
+print_r($_SESSION);
+echo "efter print_r";
+echo "<br/>";
 ?>
 <?php
 $cookie_name1 = "video_delay";
