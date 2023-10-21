@@ -150,26 +150,25 @@ if (file_exists($filename))
     </select>
     </fieldset>
     </div>
-    <p></p>
+    <p></p><br>
     <div class="w3" align="center">
     <input type = "submit" value = "Submit"/>
+    <?php
+        // Set session variables
+        // If they are set, it will use their values. If they are not set, it will use the
+        // default values (30, 10, and 7, respectively) for the session variables.
+        $_SESSION['video_delay'] = isset($video_delay) ? $video_delay : 30;
+        $_SESSION['video_dur'] = isset($video_dur) ? $video_dur : 10;
+        $_SESSION['num_video'] = isset($num_video) ? $num_video : 7;
+        $_SESSION['start_time'] = $start_time;
+    ?>
 </form>
-
-    <!-- Here is our page's main content -->
-    <main>
-    <br><p></p>
-    <div class="w3" align="center">
-        <h5> <a href="/index.php">  Resultat sida  </a></h5>
-    </div>
-<?php
-// Set session variables
-// If they are set, it will use their values. If they are not set, it will use the
-// default values (30, 10, and 7, respectively) for the session variables.
-$_SESSION['video_delay'] = isset($video_delay) ? $video_delay : 30;
-$_SESSION['video_dur'] = isset($video_dur) ? $video_dur : 10;
-$_SESSION['num_video'] = isset($num_video) ? $num_video : 7;
-$_SESSION['start_time'] = $start_time;
-?>
-    </main>
+<!-- Here is our page's main content -->
+<main>
+<br><p></p>
+<div class="w3" align="center">
+    <h5> <a href="/index.php">  Resultat sida  </a></h5>
+</div>
+</main>
 </body>
 </html>
