@@ -53,7 +53,7 @@ print("</head>")
 print ("<body>")
 print (cookme)
 try:
-      week_day = (form.getvalue('day'))
+      week_day = (form.getvalue('dag'))
       start_time = (form.getvalue('start_time'))
       num_video = int(form.getvalue('num_video'))
       video_delay = int(form.getvalue('video_delay'))
@@ -65,7 +65,7 @@ except:
 try:
    # Parsing and other logic
    # Debugging output for values obtained from the form data
-   print("Debug:  week_day = ", form.getvalue('week_day'), "Type:", type(form.getvalue('week_day')))
+   print("Debug:  week_day = ", form.getvalue('dag'), "Type:", type(form.getvalue('dag')))
    print("Debug: video_delay =", form.getvalue('video_delay'), "Type:", type(form.getvalue('video_delay')))
    print("Debug: video_dur =", form.getvalue('video_dur'), "Type:", type(form.getvalue('video_dur')))
    print("Debug: num_video =", form.getvalue('num_video'), "Type:", type(form.getvalue('num_video')))
