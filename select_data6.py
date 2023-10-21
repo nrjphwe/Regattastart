@@ -10,7 +10,7 @@ cgitb.enable(display=0, logdir="/var/www/html") #for debugging
 form = cgi.FieldStorage()
 
 # Get data from drop down fields
-if form.getvalue('day'):
+if form.getvalue('dag'):
    week_day = form.getvalue('dag')
 else:
    week_day = "Wednesday" 
