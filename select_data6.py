@@ -6,8 +6,8 @@ import cgi, cgitb,datetime
 
 cgitb.enable(display=0, logdir="/var/log") #for debugging
 
-# Create instance of FieldStorage 
-form = cgi.FieldStorage() 
+# Create instance of FieldStorage
+form = cgi.FieldStorage()
 
 # Get data from drop down fields
 if form.getvalue('day'):
