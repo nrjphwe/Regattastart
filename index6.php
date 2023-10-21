@@ -1,5 +1,11 @@
 <?php
 session_start();
+?>
+<?php
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+?>
+<?php
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Check if POST request was made
     if (isset($_POST['video_delay'])) {
@@ -15,10 +21,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['start_time'] = $_POST['start_time'];
     }
 }
-?>
-<?php
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
 ?>
 <?php
 echo "print_r post: ";
