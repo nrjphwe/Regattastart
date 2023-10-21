@@ -1,8 +1,6 @@
 #!/usr/bin/python3
 #Before running program, change mode of file using chmod 755 UNIX command to make file executable.
 import time, subprocess, sys, os 
-print ("Number of arguments:", len(sys.argv), "arguments")
-print ("Argument List:", str(sys.argv))
 from http import cookies
 import cgi, cgitb,datetime
 
