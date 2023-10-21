@@ -74,7 +74,8 @@ if (file_exists($filename))
 <?php echo "  Time now: " .date("H:i:s") ?>
 <!-- call the captureSelectedValue function when it's submitted -->
 <!-- HTML form -->
-<form method="post" action="/cgi-bin/select_data6.py" name="myform" onsubmit="captureSelectedValue()">
+<!--form method="post" action="/cgi-bin/select_data6.py" name="myform" onsubmit="captureSelectedValue()">
+<form method="post" action="/cgi-bin/select_data6.py" name="myform">
     <!-- Your form fields and other elements -->
     <div class="w3-row-padding" align="center">
     <div class="w3-half" align="center">
@@ -99,19 +100,7 @@ if (file_exists($filename))
     </select>
     </div>
     <p>
-    <!-- A JavaScript block within the HTML to capture the selection and send it to the server when   -->
-    <!-- the form is submitted. This script will capture the selected value and assign it to an input -->
-    <!-- element so that it's sent to the server when the form is submitted. Using JavaScript and a   -->
-    <!-- hidden input field for this purpose -->
-    <script type="text/javascript">
-        function captureSelectedValue() {
-            var selectedValue = document.getElementById("start_time").value;
-            document.getElementById("start_time_hidden").value = selectedValue;
-        }
-    </script>
-    <!-- Hidden input field to capture the selected start time -->
-    <input type="hidden" name="start_time" id="start_time_hidden" value="" />
-        
+
     <?php $dag = date("l") ?>
     Day for race <select name = "day" id="day">
     <option <?php if(isset($dag) && $dag == "Monday"){echo "selected=\"selected\"";} ?> value="Monday">Monday</option>
