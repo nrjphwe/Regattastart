@@ -86,6 +86,7 @@ def main():
     video_recording_started = False
     try:
         seconds_now = 0
+        logger.info (' 1: %s 2: %s 3: %s 4: %s 5: %s', sys.argv[1],sys.argv[2],sys.argv[3],sys.argv[4],sys.argv[5])
         start_time = str(sys.argv[1])
         week_day = str(sys.argv[2])
         video_delay = int(sys.argv[3])
