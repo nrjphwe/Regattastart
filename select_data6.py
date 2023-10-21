@@ -41,9 +41,9 @@ if 'video_delay' in FormData or 'video_dur' in FormData:
     if 'start_time' in FormData:
         cooked['start_time'] = FormData.getvalue('start_time')
         cooked['start_time']['path'] = '/'
- test = 1
- print (cooked)
-
+    test = 1
+    print (cooked)
+#
 # Get data from fields
 print("Content-type: text/html\r\n\r\n")
 print ()
