@@ -61,8 +61,7 @@ try:
       print ("<h2> Start is set to : %s ,time: %d:%d</h2>" % (week_day, start_time, num_video, video_delay, video_dur))
 except:
       print ("<p> 63 Sorry, we cannot turn your input to numbers.</p>")
-###
-print("65 Debug: Script is running")  # Add this line
+##
 try:
    # Parsing and other logic
    # Debugging output for values obtained from the form data
@@ -71,9 +70,7 @@ try:
    print("Debug: num_video =", form.getvalue('num_video'), "Type:", type(form.getvalue('num_video')))
 except ValueError:
     print("<p> 73 Sorry, after debug, we cannot turn your input to numbers.</p>")
-# ...
-print("<p>75 Debug: Reached the end of the script </p>")  # Add this line at the end of the script
-
+##
 if ('video_delay') in cookme:
     print ("<h4>Previous or current video_delay:")
     print (cookme.get('video_delay').value)
@@ -87,7 +84,7 @@ if ('video_delay') in cookme:
     print ("</h4>")
 else:
     print ("<h4>no video_delay/video_dur set yet.</h4>")
-   
+#
 if test==1:
     print ("<h4>your cookies have been changed just now.</h4><br/>")
     print ("<h4>new video_delay = ")
@@ -97,7 +94,7 @@ if test==1:
     print ("</h3><br/>")
 else:
     print ("No video_delay or video_dur were specified so it is not being changed.<br/>")
-   
+#
 print ("<form method=\"post\" action = \"/index6.php\" name='myform1'>")
 print ("video_delay: <input name='video_delay' size=3 /><br/>")
 print ("video_dur....: <input name='video_dur' size=3 /><br/>")
@@ -105,18 +102,16 @@ print ("num_video....: <input name='num_video' size=3 /><br/>")
 print ("then we we'll set a cookie and everybody is happy.<br/>")
 print ("<input type='submit'/>")
 print ("</form>")
-
 print ("<h2> <a href=""/index.php"">  Resultat sida  </a></h2>")
-
 print("</body>")
 print("</html>")
-
+#
 sys.stdout.flush()
 os.close(sys.stdout.fileno()) # Break web pipe
-
+#
 # Continue with new child process
 time.sleep(1)  # Be sure the parent process reach exit command.
-
+#
 execution_string =  "python3 " + "regattastart6.py " + str(start_time) + " " + week_day + " " + str(video_delay) + " " + str(num_video) + " " + str(video_dur) + " " + " &"
 proc = subprocess.run([execution_string], shell = True)
 if os.fork():
