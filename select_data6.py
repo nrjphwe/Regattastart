@@ -22,11 +22,11 @@ cookme.load(os.environ.get('HTTP_COOKIE',''))
 
 # Create a new FieldStorage instance
 FormData = cgi.FieldStorage()
-entered_name=FormData.getvalue('video_delay')
+entered_name = FormData.getvalue('video_delay')
 test = 0
 
 # To set a cookie this has to be your first output.
-if 'video_delay' in FormData or 'video_dur' in FormData:
+if 'video_delay' in FormData:
     cooked = cookies.SimpleCookie()
     if 'video_delay' in FormData:
         cooked['video_delay'] = FormData.getvalue('video_delay')
