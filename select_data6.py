@@ -52,6 +52,8 @@ print ("<title> select_data6.py Regattastart6 sessions </title>")
 print("</head>")
 print ("<body>")
 print (cookme)
+<?php echo $_POST["week_day"]; ?><br>
+time is: <?php echo $_POST["start_time"]; ?>
 try:
       week_day = (form.getvalue('day'))
       start_time = (form.getvalue('start_time'))
