@@ -112,7 +112,7 @@ if (file_exists($filename))
     <!-- Hidden input field to capture the selected start time -->
     <input type="hidden" name="start_time" id="start_time_hidden" value="" />
         
-    <?php $idag = date("l") ?>
+    <?php $dag = date("l") ?>
     Day for race <select name = "day" id="day">
     <option <?php if(isset($dag) && $dag == "Monday"){echo "selected=\"selected\"";} ?> value="Monday">Monday</option>
     <option <?php if(isset($dag) && $dag == "Tuesday"){echo "selected=\"selected\"";} ?> value="Tuesday">Tuesday</option>
