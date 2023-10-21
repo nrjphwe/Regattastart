@@ -81,7 +81,6 @@ if (file_exists($filename))
     <fieldset>
     <h4>Day and time setup</h4>
     <div data-tap-disabled="true">
-    <?php $start_time = (strftime("%H:00")) ?>
     Start Time: <select name = "start_time" id = "start_time">
     <?php
         $hour = date('H');
