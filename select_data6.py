@@ -52,7 +52,6 @@ print ("<title> select_data6.py Regattastart6 sessions </title>")
 print("</head>")
 print ("<body>")
 print (cookme)
-print (cooked)
 try:
       week_day = (form.getvalue('day'))
       start_time = (form.getvalue('start_time'))
