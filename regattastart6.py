@@ -86,6 +86,7 @@ def main():
     video_recording_started = False
     try:
         seconds_now = 0
+        logger = setup_logging()
         logger.info ("Number of arguments: %s arguments", len(sys.argv))
         logger.info ("Argument List: %s ", str(sys.argv))
         #logger.info (' 1: %s 2: %s 3: %s 4: %s 5: %s', sys.argv[1],sys.argv[2],sys.argv[3],sys.argv[4],sys.argv[5])
@@ -95,7 +96,6 @@ def main():
         num_videos = int(sys.argv[4])
         video_dur = int(sys.argv[5])
         # Set up initial data
-        logger = setup_logging()
         camera = setup_camera()
         logger.info (" Weekday= %s, Start_time= %s,video_delay= %s, num_videos= %s,video_dur= %s", week_day, start_time, video_delay, num_videos, video_dur)
         start_hour, start_minute = start_time.split(':')
