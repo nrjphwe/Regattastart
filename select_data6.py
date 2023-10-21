@@ -18,6 +18,7 @@ else:
 Passing cookies between a .cgi and php program
 """
 cookme = cookies.SimpleCookie()
+print (cookme)
 cookme.load(os.environ.get('HTTP_COOKIE',''))
 print (cookme)
 
@@ -44,6 +45,7 @@ if 'video_delay' in FormData or 'video_dur' in FormData:
     test = 1
     print (cooked)
 #
+cookievalue = cookies.SimpleCookie(os.environ["HTTP_COOKIE"])
 # Get data from fields
 print("Content-type: text/html\r\n\r\n")
 print ()
@@ -52,6 +54,7 @@ print ("<head>")
 print ("<title> select_data6.py Regattastart6 sessions </title>")
 print("</head>")
 print ("<body>")
+print (cookievalue)
 try:
       week_day = (form.getvalue('day'))
       start_time = (form.getvalue('start_time'))
