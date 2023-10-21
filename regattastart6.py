@@ -1,5 +1,7 @@
 import os
 import sys
+print ("Number of arguments:", len(sys.argv), "arguments")
+print ("Argument List:", str(sys.argv))
 import cgitb
 #cgitb.enable(display=0, logdir="/var/www/html/")
 import time
