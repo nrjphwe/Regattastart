@@ -4,7 +4,7 @@ import time, subprocess, sys, os
 from http import cookies
 import cgi, cgitb,datetime
 
-cgitb.enable(display=0, logdir="/var/log") #for debugging
+cgitb.enable(display=0, logdir="/var/www/html") #for debugging
 
 # Create instance of FieldStorage
 form = cgi.FieldStorage()
