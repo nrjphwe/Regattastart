@@ -102,13 +102,13 @@ if (file_exists($filename))
 
     <?php $dag = date("l") ?>
     Day for race <select name = "day" id="day">
-    <option <?php if(isset($dag) && $dag == "Monday"){echo "selected=\"selected\"";} ?> value="Monday">Monday</option>
-    <option <?php if(isset($dag) && $dag == "Tuesday"){echo "selected=\"selected\"";} ?> value="Tuesday">Tuesday</option>
-    <option <?php if(isset($dag) && $dag == "Wednesday"){echo "selected=\"selected\"";} ?> value="Wednesday">Wednesday</option>
-    <option <?php if(isset($dag) && $dag == "Thursday"){echo "selected=\"selected\"";} ?> value="Thursday">Thursday</option>
-    <option <?php if(isset($dag) && $dag == "Friday"){echo "selected=\"selected\"";} ?> value="Friday">Friday</option>
-    <option <?php if(isset($dag) && $dag == "Saturday"){echo "selected=\"selected\"";} ?> value="Saturday">Saturday</option>
-    <option <?php if(isset($dag) && $dag == "Sunday"){echo "selected=\"selected\"";} ?> value="Sunday">Sunday</option>
+    <option <?php if(isset($day) && $day == "Monday"){echo "selected=\"selected\"";} ?> value="Monday">Monday</option>
+    <option <?php if(isset($day) && $day == "Tuesday"){echo "selected=\"selected\"";} ?> value="Tuesday">Tuesday</option>
+    <option <?php if(isset($day) && $day == "Wednesday"){echo "selected=\"selected\"";} ?> value="Wednesday">Wednesday</option>
+    <option <?php if(isset($day) && $day == "Thursday"){echo "selected=\"selected\"";} ?> value="Thursday">Thursday</option>
+    <option <?php if(isset($day) && $day == "Friday"){echo "selected=\"selected\"";} ?> value="Friday">Friday</option>
+    <option <?php if(isset($day) && $day == "Saturday"){echo "selected=\"selected\"";} ?> value="Saturday">Saturday</option>
+    <option <?php if(isset($day) && $day == "Sunday"){echo "selected=\"selected\"";} ?> value="Sunday">Sunday</option>
     </select>
     </fieldset>
     </div>
@@ -168,12 +168,6 @@ if (file_exists($filename))
 <br><p></p>
 <div class="w3" align="center">
     <h5> <a href="/index.php">  Resultat sida  </a></h5>
-    <?php
-    if (isset($video_delay)){
-        echo "video_delay= "; 
-        print($video_delay);
-    }
-    ?>
 </div>
 </main>
 </body>
