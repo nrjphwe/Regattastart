@@ -1,7 +1,5 @@
 import os
 import sys
-print ("Number of arguments:", len(sys.argv), "arguments")
-print ("Argument List:", str(sys.argv))
 import cgitb
 #cgitb.enable(display=0, logdir="/var/www/html/")
 import time
@@ -88,7 +86,9 @@ def main():
     video_recording_started = False
     try:
         seconds_now = 0
-        logger.info (' 1: %s 2: %s 3: %s 4: %s 5: %s', sys.argv[1],sys.argv[2],sys.argv[3],sys.argv[4],sys.argv[5])
+        logger.info ("Number of arguments: %s arguments", len(sys.argv))
+        logger.info ("Argument List: %s ", str(sys.argv))
+        #logger.info (' 1: %s 2: %s 3: %s 4: %s 5: %s', sys.argv[1],sys.argv[2],sys.argv[3],sys.argv[4],sys.argv[5])
         start_time = str(sys.argv[1])
         week_day = str(sys.argv[2])
         video_delay = int(sys.argv[3])
