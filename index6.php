@@ -100,7 +100,7 @@ if (file_exists($filename))
     </div>
     <p>
 
-    <?php $dag = date("l") ?>
+    <?php $day = date("l") ?>
     Day for race <select name = "day" id="day">
     <option <?php if(isset($day) && $day == "Monday"){echo "selected=\"selected\"";} ?> value="Monday">Monday</option>
     <option <?php if(isset($day) && $day == "Tuesday"){echo "selected=\"selected\"";} ?> value="Tuesday">Tuesday</option>
