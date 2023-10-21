@@ -2,7 +2,7 @@
 session_start();
 ?>
 <?php
-ini_set('display_errors', 1); 
+ini_set('display_errors', 1);
 error_reporting(E_ALL);
 ?>
 <?php
@@ -20,8 +20,8 @@ if (isset($_POST['video_delay'])) {
 }
 ?>
 <?php
-// "If isset" checks if the key "video_delay" exists in the $_POST superglobal array. 
-// In PHP, $_POST contains data sent to the server via an HTTP POST request. 
+// "If isset" checks if the key "video_delay" exists in the $_POST superglobal array.
+// In PHP, $_POST contains data sent to the server via an HTTP POST request.
 // The isset() function checks if a specific variable or array key is set and not null.
 if(isset($_COOKIE['video_delay'])) {
     echo "Your old cookie video_delay = " . $_COOKIE['video_delay'] . "<br>";
@@ -151,7 +151,7 @@ if (file_exists($filename))
     </form>
 <?php
 // Set session variables
-// If they are set, it will use their values. If they are not set, it will use the 
+// If they are set, it will use their values. If they are not set, it will use the
 // default values (30, 10, and 7, respectively) for the session variables.
 $_SESSION['video_delay'] = isset($video_delay) ? $video_delay : 30;
 $_SESSION['video_dur'] = isset($video_dur) ? $video_dur : 10;
