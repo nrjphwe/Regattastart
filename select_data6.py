@@ -9,11 +9,9 @@ cgitb.enable(display=0, logdir="/var/www/html") #for debugging
 # Create instance of FieldStorage
 form = cgi.FieldStorage()
 
-week_day = form["week_day"].value
-
 # Get data from drop down fields
 if form.getvalue('day'):
-   week_day = form.getvalue('day')
+   week_day = form.getvalue('dag')
 else:
    week_day = "Wednesday" 
 """
