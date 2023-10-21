@@ -97,13 +97,13 @@ if (file_exists($filename))
         
     <?php $idag = date("l") ?>
     Day for race <select name = "day" id="day">
-    <option <?php if(isset($idag) && $idag == "Monday"){echo "selected=\"selected\"";} ?> value="Monday">Monday</option>
-    <option <?php if(isset($idag) && $idag == "Tuesday"){echo "selected=\"selected\"";} ?> value="Tuesday">Tuesday</option>
-    <option <?php if(isset($idag) && $idag == "Wednesday"){echo "selected=\"selected\"";} ?> value="Wednesday">Wednesday</option>
-    <option <?php if(isset($idag) && $idag == "Thursday"){echo "selected=\"selected\"";} ?> value="Thursday">Thursday</option>
-    <option <?php if(isset($idag) && $idag == "Friday"){echo "selected=\"selected\"";} ?> value="Friday">Friday</option>
-    <option <?php if(isset($idag) && $idag == "Saturday"){echo "selected=\"selected\"";} ?> value="Saturday">Saturday</option>
-    <option <?php if(isset($idag) && $idag == "Sunday"){echo "selected=\"selected\"";} ?> value="Sunday">Sunday</option>
+    <option <?php if(isset($dag) && $dag == "Monday"){echo "selected=\"selected\"";} ?> value="Monday">Monday</option>
+    <option <?php if(isset($dag) && $dag == "Tuesday"){echo "selected=\"selected\"";} ?> value="Tuesday">Tuesday</option>
+    <option <?php if(isset($dag) && $dag == "Wednesday"){echo "selected=\"selected\"";} ?> value="Wednesday">Wednesday</option>
+    <option <?php if(isset($dag) && $dag == "Thursday"){echo "selected=\"selected\"";} ?> value="Thursday">Thursday</option>
+    <option <?php if(isset($dag) && $dag == "Friday"){echo "selected=\"selected\"";} ?> value="Friday">Friday</option>
+    <option <?php if(isset($dag) && $dag == "Saturday"){echo "selected=\"selected\"";} ?> value="Saturday">Saturday</option>
+    <option <?php if(isset($dag) && $dag == "Sunday"){echo "selected=\"selected\"";} ?> value="Sunday">Sunday</option>
     </select>
     </fieldset>
     </div>
@@ -148,7 +148,7 @@ if (file_exists($filename))
     <p></p>
     <div class="w3" align="center">
     <input type = "submit" value = "Submit"/>
-    </form>
+</form>
 <?php
 // Set session variables
 // If they are set, it will use their values. If they are not set, it will use the
