@@ -112,8 +112,7 @@ os.close(sys.stdout.fileno()) # Break web pipe
 # Continue with new child process
 time.sleep(1)  # Be sure the parent process reach exit command.
 #
-#execution_string =  "python3 " + "regattastart6.py " + str(start_time) + " " + week_day + " " + str(video_delay) + " " + str(num_video) + " " + str(video_dur) + " " + " &"
-execution_string =  "python3 " + "regattastart6.py " + str(start_time) + " " + str(week_day) + " " + str(video_delay) + " " + str(num_video) + " " + str(video_dur) + " " + " &"
+execution_string =  "python3 " + "regattastart6.py " + str(start_time) + " " + week_day + " " + str(video_delay) + " " + str(num_video) + " " + str(video_dur) + " " + " &"
 proc = subprocess.run([execution_string], shell = True)
 if os.fork():
   sys.exit(0)
