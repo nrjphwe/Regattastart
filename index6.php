@@ -74,8 +74,7 @@ if (file_exists($filename))
 <?php echo "  Time now: " .date("H:i:s") ?>
 <!-- call the captureSelectedValue function when it's submitted -->
 <!-- HTML form -->
-<!--form method="post" action="/cgi-bin/select_data6.py" name="myform" onsubmit="captureSelectedValue()">
-<form method="post" action="/cgi-bin/select_data6.py" name="myform">
+<form method="post" action="/cgi-bin/select_data6.py" name="myform" onsubmit="captureSelectedValue()">
     <!-- Your form fields and other elements -->
     <div class="w3-row-padding" align="center">
     <div class="w3-half" align="center">
