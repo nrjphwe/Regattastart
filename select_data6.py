@@ -19,7 +19,6 @@ Passing cookies between a .cgi and php program
 """
 cookme = cookies.SimpleCookie()
 cookme.load(os.environ.get('HTTP_COOKIE',''))
-print (cookme)
 
 # Create a new FieldStorage instance
 FormData = cgi.FieldStorage()
@@ -42,7 +41,7 @@ if 'video_delay' in FormData or 'video_dur' in FormData:
         cooked['start_time'] = FormData.getvalue('start_time')
         cooked['start_time']['path'] = '/'
     test = 1
-    print (cooked)
+    
 #
 # Get data from fields
 print("Content-type: text/html\r\n\r\n")
@@ -52,6 +51,8 @@ print ("<head>")
 print ("<title> select_data6.py Regattastart6 sessions </title>")
 print("</head>")
 print ("<body>")
+print (cookme)
+print (cooked)
 try:
       week_day = (form.getvalue('day'))
       start_time = (form.getvalue('start_time'))
