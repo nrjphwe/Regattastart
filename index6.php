@@ -81,6 +81,7 @@ if (file_exists($filename))
     <fieldset>
     <h4>Day and time setup</h4>
     <div data-tap-disabled="true">
+    <?php $start_time = (strftime("%H:00")) ?>
     Start Time: <select name = "start_time" id = "start_time">
     <?php
         $hour = date('H');
@@ -140,13 +141,13 @@ if (file_exists($filename))
     </select>
     <p></p>
     Duration for each video: <select name = "video_dur" id = "video_dur">
-    <option <?php if(isset($video_delay) && $video_dur == "2"){echo "selected=\"selected\"";} ?> value="2">2</option>
-    <option <?php if(isset($video_delay) && $video_dur == "10"){echo "selected=\"selected\"";} ?> value="10">10</option>
-    <option <?php if(isset($video_delay) && $video_dur == "15"){echo "selected=\"selected\"";} ?> value="15">15</option>
-    <option <?php if(isset($video_delay) && $video_dur == "20"){echo "selected=\"selected\"";} ?> value="20">20</option>
-    <option <?php if(isset($video_delay) && $video_dur == "30"){echo "selected=\"selected\"";} ?> value="30">30</option>
-    <option <?php if(isset($video_delay) && $video_dur == "50"){echo "selected=\"selected\"";} ?> value="50">50</option>
-    <option <?php if(isset($video_delay) && $video_dur == "60"){echo "selected=\"selected\"";} ?> value="60">60</option>
+    <option <?php if(isset($video_dur) && $video_dur == "2"){echo "selected=\"selected\"";} ?> value="2">2</option>
+    <option <?php if(isset($video_dur) && $video_dur == "10"){echo "selected=\"selected\"";} ?> value="10">10</option>
+    <option <?php if(isset($video_dur) && $video_dur == "15"){echo "selected=\"selected\"";} ?> value="15">15</option>
+    <option <?php if(isset($video_dur) && $video_dur == "20"){echo "selected=\"selected\"";} ?> value="20">20</option>
+    <option <?php if(isset($video_dur) && $video_dur == "30"){echo "selected=\"selected\"";} ?> value="30">30</option>
+    <option <?php if(isset($video_dur) && $video_dur == "50"){echo "selected=\"selected\"";} ?> value="50">50</option>
+    <option <?php if(isset($video_dur) && $video_dur == "60"){echo "selected=\"selected\"";} ?> value="60">60</option>
     </select>
     <p></p>
     Number of video's: <select name = "num_video" id = "num_video">
