@@ -154,6 +154,13 @@ if (file_exists($filename))
     <div class="w3" align="center">
     <input type = "submit" value = "Submit"/>
 </form>
+
+    <!-- Here is our page's main content -->
+    <main>
+    <br><p></p>
+    <div class="w3" align="center">
+        <h5> <a href="/index.php">  Resultat sida  </a></h5>
+    </div>
 <?php
 // Set session variables
 // If they are set, it will use their values. If they are not set, it will use the
@@ -163,12 +170,6 @@ $_SESSION['video_dur'] = isset($video_dur) ? $video_dur : 10;
 $_SESSION['num_video'] = isset($num_video) ? $num_video : 7;
 $_SESSION['start_time'] = $start_time;
 ?>
-    <!-- Here is our page's main content -->
-    <main>
-    <br><p></p>
-    <div class="w3" align="center">
-        <h5> <a href="/index.php">  Resultat sida  </a></h5>
-    </div>
     </main>
 </body>
 </html>
