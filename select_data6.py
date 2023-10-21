@@ -12,7 +12,6 @@ form = cgi.FieldStorage()
 # Get data from drop down fields
 if form.getvalue('day'):
    week_day = form.getvalue('day')
-   print (week_day)
 else:
    week_day = "Wednesday" 
 """
