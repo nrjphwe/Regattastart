@@ -9,6 +9,9 @@ cgitb.enable(display=0, logdir="/var/www/html") #for debugging
 # Create instance of FieldStorage
 form = cgi.FieldStorage()
 
+week_day=form["week_day"].value
+start_time=form["start_time"].value
+
 # Get data from drop down fields
 if form.getvalue('day'):
    week_day = form.getvalue('day')
@@ -52,8 +55,6 @@ print ("<title> select_data6.py Regattastart6 sessions </title>")
 print("</head>")
 print ("<body>")
 print (cookme)
-<?php echo $_POST["week_day"]; ?><br>
-time is: <?php echo $_POST["start_time"]; ?>
 try:
       week_day = (form.getvalue('day'))
       start_time = (form.getvalue('start_time'))
