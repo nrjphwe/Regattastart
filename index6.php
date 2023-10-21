@@ -168,7 +168,7 @@ if (file_exists($filename))
 <br><p></p>
 <div class="w3" align="center">
     <h5> <a href="/index.php">  Resultat sida  </a></h5>
-    "video_delay =" isset($video_delay)
+    "video_delay =" isset($video_delay)  $video_delay
 </div>
 </main>
 </body>
