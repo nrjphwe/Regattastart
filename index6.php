@@ -170,7 +170,8 @@ if (file_exists($filename))
     <h5> <a href="/index.php">  Resultat sida  </a></h5>
     <?php
     if (isset($video_delay)){
-        echo "video_delay= " $video_delay;
+        echo "video_delay= "; 
+        print($video_delay);
     }
     ?>
 </div>
