@@ -18,7 +18,6 @@ else:
 Passing cookies between a .cgi and php program
 """
 cookme = cookies.SimpleCookie()
-print (cookme)
 cookme.load(os.environ.get('HTTP_COOKIE',''))
 print (cookme)
 
