@@ -158,7 +158,6 @@ if (file_exists($filename))
         // If they are set, it will use their values. If they are not set, it will use the
         // default values (30, 10, and 7, respectively) for the session variables.
         $_SESSION['video_delay'] = isset($video_delay) ? $video_delay : 30;
-        echo "video_delay= isset($video_delay)
         $_SESSION['video_dur'] = isset($video_dur) ? $video_dur : 10;
         $_SESSION['num_video'] = isset($num_video) ? $num_video : 7;
         $_SESSION['start_time'] = $start_time;
@@ -169,6 +168,7 @@ if (file_exists($filename))
 <br><p></p>
 <div class="w3" align="center">
     <h5> <a href="/index.php">  Resultat sida  </a></h5>
+    "video_delay =" isset($video_delay)
 </div>
 </main>
 </body>
