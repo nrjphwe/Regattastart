@@ -6,7 +6,6 @@ ini_set('display_errors', 1);
 error_reporting(E_ALL);
 ?>
 
-
 <!DOCTYPE html>
 <html>
 <div align="center">
@@ -54,16 +53,6 @@ error_reporting(E_ALL);
         xhr.send(formData);
     }
 </script>
-
-<?php
-// Store the selected form data in the session
-$_SESSION['selected_data'] = [
-    'video_delay' => $_POST['video_delay'],
-    'video_dur' => $_POST['video_dur'],
-    'num_video' => $_POST['num_video'],
-    'start_time' => $_POST['start_video'],
-];
-?>
 
 <!-- HTML form -->
 <div align="center">
@@ -148,6 +137,15 @@ $_SESSION['selected_data'] = [
         <input type = "submit" value = "Submit"/>
     </form>
 </div>
+<?php
+// Store the selected form data in the session
+$_SESSION['selected_data'] = [
+    'video_delay' => $_POST['video_delay'],
+    'video_dur' => $_POST['video_dur'],
+    'num_video' => $_POST['num_video'],
+    'start_time' => $_POST['start_video'],
+];
+?>
 <!-- Here is our page's main content -->
 <main>
 <br><p></p>
