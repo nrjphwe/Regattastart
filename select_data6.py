@@ -1,119 +1,32 @@
 #!/usr/bin/python3
 #Before running program, change mode of file using chmod 755 UNIX command to make file executable.
-import time, subprocess, sys, os 
-from http import cookies
-import cgi, cgitb,datetime
 
-cgitb.enable(display=0, logdir="/var/www/html") #for debugging
+import cgi
+import cgitb
 
-# Create instance of FieldStorage
+cgitb.enable()  # Enable CGI error reporting
+
+# Print the Content-Type header
+print("Content-Type: text/html\n")
+
+# Read user data from the request
+import sys
+import os
+
 form = cgi.FieldStorage()
-
 # Get data from drop down fields
-if form.getvalue('day'):
-   week_day = form.getvalue('day')
-else:
-   week_day = "Wednesday" 
-"""
-Passing cookies between a .cgi and php program
-"""
-cookme = cookies.SimpleCookie()
-cookme.load(os.environ.get('HTTP_COOKIE',''))
+week_day = form.getvalue('day')
+start_time = (form.getvalue('start_time'))
+num_video = int(form.getvalue('num_video'))
+video_delay = int(form.getvalue('video_delay'))
+video_dur = int(form.getvalue('video_dur'))
 
-# Create a new FieldStorage instance
-FormData = cgi.FieldStorage()
-entered_name = FormData.getvalue('video_delay')
-test = 0
-
-# To set a cookie this has to be your first output.
-if 'video_delay' in FormData:
-    cooked = cookies.SimpleCookie()
-    if 'video_delay' in FormData:
-        cooked['video_delay'] = FormData.getvalue('video_delay')
-        cooked['video_delay']['path'] = '/'
-    if 'video_dur' in FormData:
-        cooked['video_dur'] = FormData.getvalue('video_dur')
-        cooked['video_dur']['path'] = '/'
-    if 'num_video' in FormData:
-        cooked['num_video'] = FormData.getvalue('num_video')
-        cooked['num_video']['path'] = '/'
-    if 'start_time' in FormData:
-        cooked['start_time'] = FormData.getvalue('start_time')
-        cooked['start_time']['path'] = '/'
-    test = 1
-    
-#
-# Get data from fields
-print("Content-type: text/html\r\n\r\n")
-print ()
-print ("<html>")
-print ("<head>")
-print ("<title> select_data6.py Regattastart6 sessions </title>")
-print("</head>")
-print ("<body>")
-print (cookme)
-try:
-      week_day = (form.getvalue('day'))
-      start_time = (form.getvalue('start_time'))
-      num_video = int(form.getvalue('num_video'))
-      video_delay = int(form.getvalue('video_delay'))
-      video_dur = int(form.getvalue('video_dur'))
-      print ("<h2> Start is set to : %s ,time: %d:%d</h2>" % (week_day, start_time, num_video, video_delay, video_dur))
-except:
-      print ("<p> 63 Sorry, we cannot turn your input to numbers.</p>")
-##
-try:
-   # Parsing and other logic
-   # Debugging output for values obtained from the form data
-   print("Debug:  week_day = ", form.getvalue('day'), "Type:", type(form.getvalue('day')))
-   print("Debug: video_delay =", form.getvalue('video_delay'), "Type:", type(form.getvalue('video_delay')))
-   print("Debug: video_dur =", form.getvalue('video_dur'), "Type:", type(form.getvalue('video_dur')))
-   print("Debug: num_video =", form.getvalue('num_video'), "Type:", type(form.getvalue('num_video')))
-except ValueError:
-    print("<p> 73 Sorry, after debug, we cannot turn your input to numbers.</p>")
-##
-if ('video_delay') in cookme:
-    print ("<h4>Previous or current video_delay:")
-    print (cookme.get('video_delay').value)
-    print ("Current video_dur:")
-    print (cookme.get('video_dur').value)
-    print ("Current num_video: ")
-    print (cookme.get('num_video').value)
-##    print ("Current start_time: ")
-##    print (cookme.get('start_time').value)
-    print (cookme)
-    print ("</h4>")
+if week_day:
+   print(f"<html><body>")
+   print(f"User's Name (from request): {user_name}")
+   print (f"Start is set to: {start_time}")
+   print(f"</body></html>")
 else:
-    print ("<h4>no video_delay/video_dur set yet.</h4>")
-#
-if test==1:
-    print ("<h4>your cookies have been changed just now.</h4><br/>")
-    print ("<h4>new video_delay = ")
-    print (FormData.getvalue('video_delay'))
-    print ("</h4><h3>new video_dur = ")
-    print (FormData.getvalue('video_dur'))
-    print ("</h3><br/>")
-else:
-    print ("No video_delay or video_dur were specified so it is not being changed.<br/>")
-#
-print ("<form method=\"post\" action = \"/index6.php\" name='myform1'>")
-print ("video_delay: <input name='video_delay' size=3 /><br/>")
-print ("video_dur....: <input name='video_dur' size=3 /><br/>")
-print ("num_video....: <input name='num_video' size=3 /><br/>")
-print ("then we we'll set a cookie and everybody is happy.<br/>")
-print ("<input type='submit'/>")
-print ("</form>")
-print ("<h2> <a href=""/index.php"">  Resultat sida  </a></h2>")
-print("</body>")
-print("</html>")
-#
-sys.stdout.flush()
-os.close(sys.stdout.fileno()) # Break web pipe
-#
-# Continue with new child process
-time.sleep(1)  # Be sure the parent process reach exit command.
-#
-execution_string =  "python3 " + "regattastart6.py " + str(start_time) + " " + week_day + " " + str(video_delay) + " " + str(num_video) + " " + str(video_dur) + " " + " &"
-proc = subprocess.run([execution_string], shell = True)
-if os.fork():
-  sys.exit(0)
+    print(f"<html><body>")
+    print (f"31 Sorry, we cannot turn your input to numbers.</p>")
+    print(f"</body></html>")
