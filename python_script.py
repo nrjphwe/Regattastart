@@ -10,13 +10,15 @@ print("Content-Type: text/html\n")
 import os
 from http import cookies
 
-cookie = cookies.SimpleCookie(os.environ.get("HTTP_COOKIE"))
-user_name = cookie.get('user_name').value if 'user_name' in cookie else "Name not set"
-
-#Debug:
 print(f"Cookie Data: {os.environ.get('HTTP_COOKIE')}")
 print(f"User's Name (from session): {user_name}")
 # Process the user data
 print(f"<html><body>")
 print(f"User's Name: {user_name}")
+
+
+#Debug:
+cookie = cookies.SimpleCookie(os.environ.get("HTTP_COOKIE"))
+user_name = cookie.get('user_name').value if 'user_name' in cookie else "Name not set"
+print(f"debug_User's Name") 
 print(f"</body></html>")
