@@ -27,5 +27,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         echo "<p>User's Name: $user_name</p>";
     }
     ?>
+    <?php
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $_SESSION['user_name'] = $_POST['name'];
+            // ...
+        }
+    ?>
 </body>
 </html>
