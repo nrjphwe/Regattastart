@@ -7,7 +7,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     header('Location: /cgi-bin/python_script.py'); // Redirect to the Python script
     exit();
 }
-
+?>
 <!DOCTYPE html>
 <html>
 <head>
