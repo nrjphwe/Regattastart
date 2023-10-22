@@ -13,6 +13,15 @@ error_reporting(E_ALL);
     print_r($_SESSION);
     echo "<br/>";
 ?>
+<?php
+if (isset($_SESSION['selected_data'])) {
+    $selectedData = $_SESSION['selected_data'];
+    echo "Selected Video Delay: " . $selectedData['video_delay'];
+    echo "Selected Video Duration: " . $selectedData['video_dur'];
+    // Display other form fields as needed
+}
+?>
+
 <!DOCTYPE html>
 <html>
 
