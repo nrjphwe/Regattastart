@@ -1,37 +1,40 @@
-<?php
-session_start(); // Start the session
-?>
-<?php
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $_SESSION['user_name'] = $_POST['name'];
-    echo "User's Name (in PHP): " . $_SESSION['user_name']; // Debugging output
-    header('Location: /cgi-bin/python_script.py'); // Redirect to the Python script
-    exit();
-}
-?>
 <!DOCTYPE html>
 <html>
 <head>
-    <title>PHP to Python</title>
+    <title>PHP to Python with AJAX</title>
 </head>
 <body>
-    <form method="post" action="">
+    <form id="data-form">
         <label for="name">Name:</label>
         <input type="text" name="name" id="name">
         <input type="submit" value="Submit">
     </form>
-    <?php
-    // Check if user_name is set in the session
-    if (isset($_SESSION['user_name'])) {
-        $user_name = $_SESSION['user_name'];
-        echo "<p>User's Name: $user_name</p>";
-    }
-    ?>
-    <?php
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $_SESSION['user_name'] = $_POST['name'];
-            // ...
-        }
-    ?>
+
+    <div id="result"></div>
+
+    <script>
+        document.getElementById("data-form").addEventListener("submit", function (e) {
+            e.preventDefault();
+            
+            var name = document.getElementById("name").value;
+
+            // Create an XMLHttpRequest object
+            var xhr = new XMLHttpRequest();
+
+            // Define the callback function to handle the response
+            xhr.onload = function () {
+                if (xhr.status === 200) {
+                    document.getElementById("result").innerHTML = xhr.responseText;
+                } else {
+                    document.getElementById("result").innerHTML = "Error: " + xhr.status;
+                }
+            };
+
+            // Prepare and send the request
+            xhr.open("POST", "/cgi-bin/python_script.py", true);
+            xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            xhr.send("name=" + name);
+        });
+    </script>
 </body>
 </html>
