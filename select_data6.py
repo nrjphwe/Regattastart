@@ -23,7 +23,6 @@ video_dur = int(form.getvalue('video_dur'))
 
 if week_day:
    print(f"<html><body>")
-   print(f"User's Name (from request): {user_name}")
    print (f"Start is set to: {start_time}")
    print(f"</body></html>")
 else:
