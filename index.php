@@ -7,81 +7,33 @@ ini_set('display_errors', 1);
 error_reporting(E_ALL);
 ?>
 <?php
-if (isset($_POST['video_delay'])) {
-    $_SESSION['video_delay'] = $_POST['video_delay'];
-}
-if (isset($_POST['video_dur'])) {
-    $_SESSION['video_dur'] = $_POST['video_dur'];
-}
-if (isset($_POST['num_video'])) {
-    $_SESSION['num_video'] = $_POST['num_video'];
-}
-if (isset($_POST['start_time'])) {
-    $_SESSION['start_time'] = $_POST['start_time'];
-}
+    echo "print_r post: ";
+    print_r($_POST);
+    echo "print_r SESSION: ";
+    print_r($_SESSION);
+    echo "<br/>";
 ?>
 
 <?php
-echo "print_r post: ";
-print_r($_POST);
-echo "print_r SESSION: ";
-print_r($_SESSION);
-echo "<br/>";
-?>
-
-<?php
-$cookie_name1 = "video_delay";
-$cookie_name2 = "video_dur";
-$cookie_name3 = "num_video";
-$cookie_name4 = "start_time";
-?>
-
-
-<?php
-// Echo session variables that were set on previous page
-if (empty($_SESSION['video_delay']) && empty($_SESSION['video_dur']) && empty($_SESSION['num_video']) && empty($_SESSION['start_time']))
-{
-   echo 'the session is empty <br>';
-} else {
-   echo "session variables set on previous page: ";
-   echo "video_delay = " . $_SESSION["video_delay"] . ", ";
-   echo "video_dur =  " . $_SESSION["video_dur"] . ", ";
-   echo "num_video = " . $_SESSION["num_video"] . ", ";
-   echo "start_time = " . $_SESSION["start_time"] . ", ";
-   echo "<br/>";
-} 
+    form = cgi.FieldStorage()
+    # Get data from drop down fields
+    week_day = form.getvalue('day')
+    start_time = (form.getvalue('start_time'))
+    num_video = int(form.getvalue('num_video'))
+    video_delay = int(form.getvalue('video_delay'))
+    video_dur = int(form.getvalue('video_dur'))
 ?>
 <?php
-if(!isset($_COOKIE[$cookie_name2]))
-{
-   echo "no cookie data";
-   if(empty($_SESSION[$cookie_name1]))
-   {
-       echo "no session data";
-       $num_video = 7;
-    } else {
-       // Session  data exists
-       echo "Video duration in minutes is set to = " . $_SESSION[$cookie_name1];
-       echo " and ";
-       echo "Video delay in minutes is: " . $_SESSION[$cookie_name2];
-       echo "</br>";
-       echo "Number of consecutive videos are: " . $_SESSION[$cookie_name3];
-       echo "Start time is : " . $_SESSION[$cookie_name4];
-       $num_video = $_SESSION["num_video"];
-     }
-} else {
-   echo " cookie data exists with: ";
-   echo " video_delay=" . $_COOKIE["video_delay"];
-   echo ", video_dur=" . $_COOKIE["video_dur"];
-   echo ", num_video=" . $_COOKIE["num_video"];
-   echo ", start_time=" . $_COOKIE["start_time"];
-   echo "<br/>";
-   $num_video = $_COOKIE["num_video"];
-   $start_time = $_COOKIE["start_time"];
-   echo "Number of finish videos vill be " . $num_video, " and each have a duration of ". $_COOKIE[$cookie_name2], " min. ";
-   echo "Start time is " . $start_time;
-}
+if num_vide:
+   print(f"<html><body>")
+   print(f"Number of videos: {num_video}")
+   print(f"</body></html>")
+else:
+    print(f"<html><body>")
+    print (f"31 Sorry, we cannot turn your input to numbers.</p>")
+    print(f"</body></html>")
 ?>
+
 <!DOCTYPE html>
 <html>
 
