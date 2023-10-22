@@ -7,19 +7,19 @@ ini_set('display_errors', 1);
 error_reporting(E_ALL);
 ?>
 <?php
-    echo "print_r post: ";
-    print_r($_POST);
-    echo "print_r SESSION: ";
-    print_r($_SESSION);
-    echo "<br/>";
-?>
-<?php
 if (isset($_SESSION['selected_data'])) {
     $selectedData = $_SESSION['selected_data'];
     echo "Selected Video Delay: " . $selectedData['video_delay'];
     echo "Selected Video Duration: " . $selectedData['video_dur'];
     // Display other form fields as needed
 }
+?>
+<?php
+    echo "print_r post: ";
+    print_r($_POST);
+    echo "print_r SESSION: ";
+    print_r($_SESSION);
+    echo "<br/>";
 ?>
 
 <!DOCTYPE html>
