@@ -13,16 +13,16 @@ error_reporting(E_ALL);
     print_r($_SESSION);
     echo "<br/>";
 ?>
-
 <?php
-if num_video:
-   print(f"<html><body>")
-   print(f"Number of videos: {num_video}")
-   print(f"</body></html>")
+if num_video {
+    print(f"<html><body>")
+    print(f"Number of videos: {num_video}")
+    print(f"</body></html>")
 else:
     print(f"<html><body>")
     print (f"24 Sorry, we cannot turn your input to numbers.</p>")
     print(f"</body></html>")
+}
 ?>
 
 <!DOCTYPE html>
