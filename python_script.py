@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 import requests
 
 php_url = 'http://regattastart.local/php_web.php'
