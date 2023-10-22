@@ -136,8 +136,8 @@ error_reporting(E_ALL);
         </div>
         <p></p><br>
         <div class="w3" align="center">
+        <br><p></p>
         <input type = "submit" value = "Submit"/>
-    
     </form>
 </div>
 <!-- Here is our page's main content -->
