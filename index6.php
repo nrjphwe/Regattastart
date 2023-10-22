@@ -143,8 +143,10 @@ error_reporting(E_ALL);
 <!-- Here is our page's main content -->
 <main>
 <br><p></p>
+<div id="result" align="center"></div>
+<br><p></p>
 <div class="w3" align="center">
-    <h5> <a href="/index.php">  Resultat sida  </a></h5>
+<h5> <a href="/index.php">  Resultat sida  </a></h5>
 </div>
 </main>
 </body>
