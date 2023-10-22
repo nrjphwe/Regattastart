@@ -14,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>PHP to Python</title>
 </head>
 <body>
-    <form method="post" action="">
+    <form method="post" action="/cgi-bin/python_script.php">
         <label for="name">Name:</label>
         <input type="text" name="name" id="name">
         <input type="submit" value="Submit">
