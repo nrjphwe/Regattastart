@@ -15,22 +15,13 @@ error_reporting(E_ALL);
 ?>
 
 <?php
-    form = cgi.FieldStorage()
-    # Get data from drop down fields
-    week_day = form.getvalue('day')
-    start_time = (form.getvalue('start_time'))
-    num_video = int(form.getvalue('num_video'))
-    video_delay = int(form.getvalue('video_delay'))
-    video_dur = int(form.getvalue('video_dur'))
-?>
-<?php
-if num_vide:
+if num_video:
    print(f"<html><body>")
    print(f"Number of videos: {num_video}")
    print(f"</body></html>")
 else:
     print(f"<html><body>")
-    print (f"31 Sorry, we cannot turn your input to numbers.</p>")
+    print (f"24 Sorry, we cannot turn your input to numbers.</p>")
     print(f"</body></html>")
 ?>
 
