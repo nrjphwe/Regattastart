@@ -55,7 +55,15 @@ error_reporting(E_ALL);
     }
 </script>
 
-
+<?php
+// Store the selected form data in the session
+$_SESSION['selected_data'] = [
+    'video_delay' => $_POST['video_delay'],
+    'video_dur' => $_POST['video_dur'],
+    'num_video' => $_POST['num_video'],
+    'start_time' => $_POST['start_video'],
+];
+?>
 
 <!-- HTML form -->
 <div align="center">
