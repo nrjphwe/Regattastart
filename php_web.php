@@ -1,7 +1,8 @@
 <?php
 session_start(); // Start the session
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+?>
+<?php
+f ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $_SESSION['user_name'] = $_POST['name'];
     echo "User's Name (in PHP): " . $_SESSION['user_name']; // Debugging output
     header('Location: /cgi-bin/python_script.py'); // Redirect to the Python script
