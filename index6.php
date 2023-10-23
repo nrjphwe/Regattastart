@@ -74,7 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <!-- HTML form -->
 <div align="center">
-    <form id="myform" action="/cgi-bin/select_data6.py" method="post">
+    <form id="myform" onsubmit="event.preventDefault(); submitForm();">
         <!-- Your form fields here -->
         <div class="w3-row-padding" align="center">
         <div class="w3-half" align="center">
@@ -156,12 +156,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </div>
 <!-- Here is our page's main content -->
 <main>
-<br><p></p>
-<div id="result" align="center"></div>
-<br><p></p>
-<div class="w3" align="center">
-<h5> <a href="/index.php">  Resultat sida  </a></h5>
-</div>
+    <br>
+    <div id="result" align="center"></div>
+    <div class="w3" align="center">
+    <br>
+    <h5> <a href="/index.php">  Resultat sida  </a></h5>
+    </div>
 </main>
 </body>
 </html>
