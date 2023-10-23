@@ -1,5 +1,7 @@
 <?php
 session_start();
+?>
+
 // after "git pull", "sudo cp /home/pi/Regattastart/index.php /var/www/html/"
 if (isset($_POST['video_delay'])) {
     // Store selected form data in session
@@ -34,50 +36,55 @@ if (isset($_SESSION['selected_data'])) {
     // Display other form fields as needed
 }
 ?>
-<body>
 <head>
-<title>Regattastart</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<style>
-img {
-    max-width: 100%;
-    height: auto;
-}
-</style>
-<style>
-video {
-    max-width: 100%;
-    height: auto;
-}
-</style>
-<link rel="stylesheet" href="/w3.css"
-</head>
+    <title>Regattastart</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+    img {
+        max-width: 100%;
+        height: auto;
+    }
+    </style>
+    <style>
+    video {
+        max-width: 100%;
+        height: auto;
+    }
+    </style>
+    <link rel="stylesheet" href="/w3.css"
+    </head>
 <body>
-<!-- Here is our main header that is used across all the pages of our website -->
-<header>
-<?php
-// output index.php was last modified.
-$filename = 'index.php';
-if (file_exists($filename)) {
-   $version_date = date ("Y-m-d", filemtime($filename)); 
-}
-?>
-
-<div align="center">
-<div class="w3-panel w3-blue">
-<h2> Regattastart result page version: <?php echo $version_date ?> </h2>
-</div>
-   
-<?php
-// output index.php was last modified.
-$filename = 'index.php';
-if (file_exists($filename))
-{
-   echo "This web-page was last modified: \n" . date ("Y-m-d H:i:s.", filemtime($filename));
-}
-?>
-<?php echo " Time now: " .date("H:i:s")?>
-<br>
+    <?php
+    // output index.php was last modified.
+    $filename = 'index.php';
+    if (file_exists($filename)) {
+       $version_date = date ("Y-m-d", filemtime($filename)); 
+    }
+    ?>  
+    <div align="center">
+    <div class="w3-panel w3-blue">
+    <h2> Regattastart result page version: <?php echo $version_date ?> </h2>
+    </div>
+    <?php
+    // output index.php was last modified.
+    $filename = 'index.php';
+    if (file_exists($filename))
+    {
+       echo "This web-page was last modified: \n" . date ("Y-m-d H:i:s.", filemtime($filename));
+    }
+    ?>
+    <?php echo " Time now: " .date("H:i:s")?>
+    <br>
+    <?php
+        if (isset($_SESSION['video_delay'])) {echo "<p>Selected Video Delay: " . $_SESSION['video_delay'] . "</p>";
+        }
+        if (isset($_SESSION['video_dur'])) {echo "<p>Selected Video Duration: " . $_SESSION['video_dur'] . "</p>";
+        }
+        if (isset($_SESSION['num_video'])) {echo "<p>Selected Number of Videos: " . $_SESSION['num_video'] . "</p>";
+        }
+        if (isset($_SESSION['start_time'])) {echo "<p>Selected Start Time: " . $_SESSION['start_time'] . "</p>";
+        }
+    ?>
 <!-- Here is our page's main content -->
 <main>
 <div align="center">
