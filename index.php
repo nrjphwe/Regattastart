@@ -1,7 +1,7 @@
 <?php
 session_start();
 ?>
-
+<?php
 // after "git pull", "sudo cp /home/pi/Regattastart/index.php /var/www/html/"
 if (isset($_POST['video_delay'])) {
     // Store selected form data in session
@@ -12,7 +12,6 @@ if (isset($_POST['video_delay'])) {
          'start_time' => $_POST['start_time']
     ];
 }
-
 ini_set('display_errors', 1); 
 error_reporting(E_ALL);
 ?>
