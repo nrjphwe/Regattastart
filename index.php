@@ -17,8 +17,9 @@ error_reporting(E_ALL);
 ?>
 
 <?php
-$num_video = isset($_SESSION['num_video']) ? $_SESSION['num_video'] : '';
-print ($num_video);
+    $num_video = isset($_SESSION['num_video']) ? $_SESSION['num_video'] : '';
+    echo "$num_video";
+    print ($num_video);
 ?>
 
 <?php
