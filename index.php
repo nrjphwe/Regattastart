@@ -9,7 +9,7 @@ if (isset($_POST['video_delay'])) {
         'video_delay' => $_POST['video_delay'],
         'video_dur' => $_POST['video_dur'],
         'num_video' => $_POST['num_video'],
-         'start_time' => $_POST['start_time']
+        'start_time' => $_POST['start_time']
     ];
 }
 ini_set('display_errors', 1); 
