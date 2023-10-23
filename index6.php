@@ -56,7 +56,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <script>
     function submitForm() {
         var formData = new FormData(document.getElementById("myform"));
-
         var xhr = new XMLHttpRequest();
         xhr.open("POST", "/cgi-bin/select_data6.py", true);
         xhr.onload = function () {
@@ -71,7 +70,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         xhr.send(formData);
     }
 </script>
-
 <!-- HTML form -->
 <div align="center">
     <form id="myform" onsubmit="event.preventDefault(); submitForm();">
@@ -148,9 +146,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </select>
             </fieldset>
         </div>
-        <p></p><br>
+        <br>
         <div class="w3" align="center">
-        <br><p></p>
+        <br>
         <input type = "submit" value = "Submit"/>
     </form>
 </div>
