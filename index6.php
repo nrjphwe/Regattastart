@@ -55,6 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <!-- Use JavaScript to submit the form via AJAX -->
 <script>
     function submitForm() {
+        console.log("Form is being submitted");
         var formData = new FormData(document.getElementById("myform"));
         var xhr = new XMLHttpRequest();
         xhr.open("POST", "/cgi-bin/select_data6.py", true);
@@ -73,7 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <!-- HTML form -->
 <div align="center">
     <form id="myform" onsubmit="event.preventDefault(); submitForm();">
-        <!-- Your form fields here -->
+        <!-- Your  fields here -->
         <div class="w3-row-padding" align="center">
         <div class="w3-half" align="center">
             <fieldset>
@@ -150,7 +151,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="w3" align="center">
         <br>
         <input type = "submit" value = "Submit"/>
-    </form>
+    </>
 </div>
 <!-- Here is our page's main content -->
 <main>
