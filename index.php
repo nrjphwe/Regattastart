@@ -132,7 +132,7 @@ $video_name = '/images/video0.mp4';
 ?>
 </div>
 <?php
-for ($x = 1; $x <= $num_video; $x++)
+for ($x = 1; $x <= num_video; $x++)
 {
     echo "<h2> Finish video, this is video $x for the finish</h2><br>";
     $video_name =  "/images/video" . $x . ".mp4";
