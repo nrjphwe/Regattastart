@@ -16,6 +16,9 @@ ini_set('display_errors', 1);
 error_reporting(E_ALL);
 ?>
 
+<?php
+$num_video = isset($_SESSION['num_video']) ? $_SESSION['num_video'] : '';
+?>
 
 <?php
     echo "print_r post: ";
