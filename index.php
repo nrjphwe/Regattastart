@@ -32,8 +32,11 @@ if (isset($_SESSION['selected_data'])) {
     $selectedData = $_SESSION['selected_data'];
     echo "Selected Video Delay: " . $selectedData['video_delay'];
     echo "Selected Video Duration: " . $selectedData['video_dur'];
+    echo "Selected Video Duration: " . $selectedData['num_video'];
     // Display other form fields as needed
 }
+$num_video = isset($_SESSION['num_video']) ? $_SESSION['num_video'] : '';
+
 ?>
 <head>
     <title>Regattastart</title>
