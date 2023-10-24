@@ -16,7 +16,7 @@ error_reporting(E_ALL);
     $video_dur = htmlspecialchars($_POST['video_dur']);
     $num_video = htmlspecialchars($_POST['num_video']);
     $start_time = htmlspecialchars($_POST['start_time']);
-echo  $video_delay, ' ', $video_dur, ' ',$num_video, ' ',$start_time;    
+    echo  $video_delay, ' ', $video_dur, ' ',$num_video, ' ',$start_time;    
 ?>
 
 <?php
