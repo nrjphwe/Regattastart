@@ -21,14 +21,15 @@ start_time = (form.getvalue('start_time'))
 num_video = int(form.getvalue('num_video'))
 video_delay = int(form.getvalue('video_delay'))
 video_dur = int(form.getvalue('video_dur'))
+time.sleep(1)
+execution_string =  "python3 " + "regattastart6.py " + str(start_time) + " " + week_day + " " + str(video_delay) + " " + str(num_video) + " " + str(video_dur) + " " + " &"
+proc = subprocess.run([execution_string], shell = True)
 
 if week_day:
    print(f"<html><body>")
    print (f"Start is set to: {start_time}")
    print (f"Number of videos: {num_video}")
    print(f"</body></html>")
-   execution_string =  "python3 " + "regattastart6.py " + str(start_time) + " " + week_day + " " + str(video_delay) + " " + str(num_video) + " " + str(video_dur) + " " + " &"
-   proc = subprocess.run([execution_string], shell = True)
 else:
     print(f"<html><body>")
     print (f"31 Sorry, we cannot turn your input to numbers.</p>")
