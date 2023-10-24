@@ -67,8 +67,7 @@ error_log("Check if the form has been submitted");
             } else {
                 // Handle errors or failed request
                 document.getElementById("result").innerHTML = "Error: " + xhr.status;
-            }
-        window.location.href = "/index.php";    
+            } 
         };
         xhr.send(formData);
     }
