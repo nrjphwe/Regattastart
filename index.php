@@ -36,9 +36,9 @@ error_reporting(E_ALL);
 <?php
 if (isset($_SESSION['selected_data'])) {
     $selectedData = $_SESSION['selected_data'];
-    echo "Selected Video Delay: " . $selectedData['video_delay'];
-    echo "Selected Video Duration: " . $selectedData['video_dur'];
-    echo "Selected Video Duration: " . $selectedData['num_video'];
+    echo " Selected Video Delay: " . $selectedData['video_delay'];
+    echo ", Selected Video Duration: " . $selectedData['video_dur'];
+    echo ", Selected Number of Videos: " . $selectedData['num_video'];
     // Display other form fields as needed
 }
 $num_video = isset($_SESSION['num_video']) ? $_SESSION['num_video'] : '';
@@ -71,13 +71,12 @@ $num_video = isset($_SESSION['num_video']) ? $_SESSION['num_video'] : '';
     ?>  
     <div align="center">
     <div class="w3-panel w3-blue">
-    <h2> Regattastart result page version: <?php echo $version_date ?> </h2>
+        <h2> Regattastart result page version: <?php echo $version_date ?> </h2>
     </div>
     <?php
     // output index.php was last modified.
     $filename = 'index.php';
-    if (file_exists($filename))
-    {
+    if (file_exists($filename)) {
        echo "This web-page was last modified: \n" . date ("Y-m-d H:i:s.", filemtime($filename));
     }
     ?>
@@ -92,6 +91,7 @@ $num_video = isset($_SESSION['num_video']) ? $_SESSION['num_video'] : '';
         }
         if (isset($_SESSION['start_time'])) {echo "<p>Selected Start Time: " . $_SESSION['start_time'] . "</p>";
         }
+        echo " num_video debug: " .num_video";
     ?>
 <!-- Here is our page's main content -->
 <main>
