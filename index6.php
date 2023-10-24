@@ -24,6 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['start_time'] = $_POST['start_time'];
     }
 }
+error_log("Check if the form has been submitted");
 ?>
 
 <!DOCTYPE html>
