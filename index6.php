@@ -59,7 +59,7 @@ error_log("Check if the form has been submitted");
         console.log("Form is being submitted");
         var formData = new FormData(document.getElementById("myform"));
         var xhr = new XMLHttpRequest();
-        xhr.open("POST", "index.php", true);
+        xhr.open("POST", "/cgi-bin/select_data6.py", true);
         xhr.onload = function () {
             if (xhr.status === 200) {
                 // Handle the response from the Python script (xhr.responseText)
