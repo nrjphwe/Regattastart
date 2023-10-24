@@ -1,8 +1,16 @@
 <?php
 session_start();
+// after "git pull", "sudo cp /home/pi/Regattastart/index.php /var/www/html/"
 ?>
 <?php
-// after "git pull", "sudo cp /home/pi/Regattastart/index.php /var/www/html/"
+    echo "print_r post: ";
+    print_r($_POST);
+    echo "print_r SESSION: ";
+    print_r($_SESSION);
+    echo "<br/>";
+?>
+<?php
+
 if (isset($_POST['video_delay'])) {
     // Store selected form data in session
     $_SESSION['selected_data'] = [
@@ -15,20 +23,13 @@ if (isset($_POST['video_delay'])) {
 ini_set('display_errors', 1); 
 error_reporting(E_ALL);
 ?>
-
 <?php
     $num_video = isset($_SESSION['num_video']) ? $_SESSION['num_video'] : '';
     echo "$num_video";
     print ($num_video);
 ?>
 
-<?php
-    echo "print_r post: ";
-    print_r($_POST);
-    echo "print_r SESSION: ";
-    print_r($_SESSION);
-    echo "<br/>";
-?>
+
 
 <!DOCTYPE html>
 <html>
