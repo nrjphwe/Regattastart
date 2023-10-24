@@ -148,9 +148,6 @@ error_log("Check if the form has been submitted");
                 </select>
             </fieldset>
         </div>
-        <br><p></p>
-        <div class="w3" align="center">
-        <br>
         <input type = "submit" value = "Submit"/>
     </form>
 </div>
