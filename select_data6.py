@@ -25,6 +25,7 @@ execution_string =  "python3 " + "regattastart6.py " + str(start_time) + " " + w
 proc = subprocess.run([execution_string], shell = True)
 
 if week_day:
+   print("Content-type:text/html")
    print(f"<html><body>")
    print (f"Start is set to: {start_time}")
    print (f"Number of videos: {num_video}")
