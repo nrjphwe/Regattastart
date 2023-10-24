@@ -155,11 +155,9 @@ $num_video = isset($_SESSION['num_video']) ? $_SESSION['num_video'] : '';
 </div>
 <div class="w3-panel w3-pale-red">
 <?php
-    for ($x = 1; $x <= $num_video; $x++)
-    {
+    for ($x = 1; $x <= $num_video; $x++) {
         echo "<h2> Finish video, this is video $x for the finish</h2><br>";
-        $video_name =  "/images/video" . $x . ".mp4";
-    //    echo "<video src=" . $video_name . " controls ></video><p>";
+        $video_name =  "images/video" . $x . ".mp4";
         echo '<video width = "720" height="480" controls><source src= ' . $video_name . ' type="video/mp4"></video><p>';
     }
 ?>
