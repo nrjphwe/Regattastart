@@ -12,7 +12,14 @@ error_reporting(E_ALL);
     echo "<br/>";
 ?>
 <?php
+    $video_delay = htmlspecialchars($_POST['video_delay']);
+    $video_dur = htmlspecialchars($_POST['video_dur']);
+    $num_video = htmlspecialchars($_POST['num_video']);
+    $start_time = htmlspecialchars($_POST['start_time']);
+echo  $video_delay, ' ', $video_dur, ' ',$num_video, ' ',$start_time;    
+?>
 
+<?php
 if (isset($_POST['video_delay'])) {
     // Store selected form data in session
     $_SESSION['selected_data'] = [
