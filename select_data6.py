@@ -21,6 +21,9 @@ num_video = int(form.getvalue('num_video'))
 video_delay = int(form.getvalue('video_delay'))
 video_dur = int(form.getvalue('video_dur'))
 
+execution_string =  "python3 " + "regattastart6.py " + str(start_time) + " " + week_day + " " + str(video_delay) + " " + str(num_video) + " " + str(video_dur) + " " + " &"
+proc = subprocess.run([execution_string], shell = True)
+
 if week_day:
    print(f"<html><body>")
    print (f"Start is set to: {start_time}")
