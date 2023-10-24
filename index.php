@@ -91,7 +91,6 @@ $num_video = isset($_SESSION['num_video']) ? $_SESSION['num_video'] : '';
         }
         if (isset($_SESSION['start_time'])) {echo "<p>Selected Start Time: " . $_SESSION['start_time'] . "</p>";
         }
-        echo " num_video debug: " .num_video";
     ?>
 <!-- Here is our page's main content -->
 <main>
