@@ -57,17 +57,17 @@ error_log("Check if the form has been submitted");
 <script>
     function submitForm() {
         console.log("Form is being submitted");
-        //var formData = new FormData(document.getElementById("myform"));
-        //var xhr = new XMLHttpRequest();
-        //xhr.open("POST", "index.php", true);
-        //xhr.onload = function () {
-        //    if (xhr.status === 200) {
-        //        // Handle the response from the Python script (xhr.responseText)
-        //        document.getElementById("result").innerHTML = xhr.responseText;
-        //    } else {
-        //        // Handle errors or failed request
-        //        document.getElementById("result").innerHTML = "Error: " + xhr.status;
-        //    }
+        var formData = new FormData(document.getElementById("myform"));
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "index.php", true);
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                // Handle the response from the Python script (xhr.responseText)
+                document.getElementById("result").innerHTML = xhr.responseText;
+            } else {
+                // Handle errors or failed request
+                document.getElementById("result").innerHTML = "Error: " + xhr.status;
+            }
         window.location.href = "/index.php";    
         };
         xhr.send(formData);
