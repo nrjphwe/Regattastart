@@ -24,6 +24,23 @@ ini_set('display_errors', 1);
 error_reporting(E_ALL);
 ?>
 <?php
+session_start();
+
+// Check if the session data exists
+if (isset($_SESSION['selected_data'])) {
+    $selectedData = $_SESSION['selected_data'];
+    
+    $video_delay = $selectedData['video_delay'];
+    $video_duration = $selectedData['video_dur'];
+    $num_video = $selectedData['num_video'];
+    $start_time = $selectedData['start_time'];
+
+    // Now, you can use these variables as needed
+}
+?>
+
+
+<?php
     $num_video = isset($_SESSION['num_video']) ? $_SESSION['num_video'] : '';
     echo "$num_video";
     print ($num_video);
