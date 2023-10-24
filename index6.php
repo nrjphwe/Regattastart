@@ -2,7 +2,6 @@
 session_start();
 ?>
 <?php
-num_video = num_video;
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 ?>
