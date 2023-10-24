@@ -24,8 +24,6 @@ ini_set('display_errors', 1);
 error_reporting(E_ALL);
 ?>
 <?php
-session_start();
-
 // Check if the session data exists
 if (isset($_SESSION['selected_data'])) {
     $selectedData = $_SESSION['selected_data'];
