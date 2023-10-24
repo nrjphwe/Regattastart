@@ -150,7 +150,7 @@ error_log("Check if the form has been submitted");
         </div>
         <br>
         <div class="w3" align="center">
-        <br>
+        <br><p></p>
         <input type = "submit" value = "Submit"/>
     </form>
 </div>
