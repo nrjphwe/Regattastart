@@ -61,7 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <h2>Regattastart 1 för setup av en start</h2>
 </div>
 <!-- Here is our main header that is used across all the pages of our website -->
- <meta http-equiv="refresh" content="200" >
+<meta http-equiv="refresh" content="200" >
 <header>
 </div>
 <div align="center">
@@ -177,19 +177,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="w3" align="center">
         <br>
         <input type = "submit" value = "Submit"/>
+        $input = $_POST['myInput'];
     </form>
 </div>
 <?php
 echo "<h2>Your Input:</h2>";
-echo $num_video;
 echo "<br>";
-echo $video_delay;
-echo "<br>";
-echo $video_dur;
-echo "<br>";
-echo $start_time;
-echo "<br>";
-echo $week_day;
+echo $input;
 ?>
 
 
