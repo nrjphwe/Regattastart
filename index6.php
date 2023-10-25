@@ -64,7 +64,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?>
-
+<?php
 # Check for None values and convert to the appropriate types
 if not (week_day and start_time and num_video and video_delay and video_dur):
     print("<html><body>")
@@ -84,8 +84,7 @@ else:
         proc = subprocess.run([execution_string], shell=True)
         # Process the form data
         # ...
-
-
+?>
 
 
 <!DOCTYPE html>
