@@ -34,8 +34,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['start_time'])) {
         $_SESSION['start_time'] = $_POST['start_time'];
     }
-}
-error_log("Check if the form has been submitted $_SESSION['num_video']");
+} else {
+error_log("Check if the form has been submitted");
+echo "<p> Check if the form has been submitted</p>";
+}    
 ?>
 <?php
 // php code
