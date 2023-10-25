@@ -123,7 +123,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ?>
                 </select>
                 </div><p>
-                <?php $day = date("l") ?>
+                <?php $day = date("l") 
+                ?>
                 Day for race <select name = "day" id="day">
                 <option <?php if(isset($day) && $day == "Monday"){echo "selected=\"selected\"";} ?> value="Monday">Monday</option>
                 <option <?php if(isset($day) && $day == "Tuesday"){echo "selected=\"selected\"";} ?> value="Tuesday">Tuesday</option>
@@ -176,16 +177,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <input type = "submit" value = "Submit"/>
     </form>
 </div>
-<?php
+//<?php
 // Check if the form field 'num_video' is set and has a value
-if (isset($_POST['num_video'])) {
-    $num_video = $_POST['num_video'];
-    echo "<p> Number of videos line 157: $num_video</p>";
-    $_SESSION['sess_num_video'] = $num_video;
-} else {
-    echo "<p> Number of videos is not set in the form</p>";
-}
-?>
+//if (isset($_POST['num_video'])) {
+//    $num_video = $_POST['num_video'];
+//    echo "<p> Number of videos line 157: $num_video</p>";
+//    $_SESSION['sess_num_video'] = $num_video;
+//} else {
+//    echo "<p> Number of videos is not set in the form</p>";
+//}
+//?>
 <!-- Here is our page's main content -->
 <main>
     <br>
