@@ -153,7 +153,7 @@ error_log("Check if the form has been submitted");
     <form action="http://regattastart.local/" method="POST">
           <div>
             <label for="num_video">Number of videos?</label>
-            <input name="num_video" id="num_video" value="$num_video" />
+            <input name="num_video" id="num_video" value="num_video" />
           </div>
           <div>
             <label for="video_dur">Duration iof Video?</label>
