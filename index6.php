@@ -62,24 +62,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $num_video = $_POST['num_video'];
         $_SESSION['sess_num_video'] = $num_video;
     }
+    try {
+        // Convert data to appropriate types
+        $start_time = $_POST['start_time'];
+        $week_day = $_POST['day'];
+        $num_video = intval($_POST['num_video']);
+        $video_delay = intval($_POST['video_delay']);
+        $video_dur = intval($_POST['video_dur']);
+
+        // Build the execution string for your Python script
+        $execution_string = "python3 regattastart6.py $start_time $week_day $video_delay $num_video $video_dur";
+        
+        // Execute the Python script
+        exec($execution_string, $output, $return_code);
+
+        // Check if the execution was successful
+        if ($return_code === 0) {
+            $response = ["message" => "Data processed successfully"];
+        } else {
+            $response = ["message" => "Error: Failed to process data"];
+        }
+
+        // Respond with a JSON message
+        header("Content-Type: application/json");
+        echo json_encode($response);
+    } catch (Exception $e) {
+        echo "<html><body>";
+        echo "Error: Some fields contain invalid values.";
+        echo "</body></html>";
+    }
 }
 ?>
-    
-<?php
-    start_time = str(start_time);
-    num_video = int(num_video);
-    video_delay = int(video_delay);
-    video_dur = int(video_dur);
-    execution_string = (
-        "python3 "
-        "regattastart6.py "
-        f"{start_time} {week_day} {video_delay} {num_video} {video_dur} &"
-    )
-    proc = subprocess.run([execution_string], shell=True)
-    # Process the form data
-    # ...
-?>
-
 
 <!DOCTYPE html>
 <html>
