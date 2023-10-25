@@ -64,6 +64,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?>
+
+# Check for None values and convert to the appropriate types
+if not (week_day and start_time and num_video and video_delay and video_dur):
+    print("<html><body>")
+    print("Error: Some fields are missing.")
+    print("</body></html>")
+else:
+    try:
+        start_time = str(start_time)
+        num_video = int(num_video)
+        video_delay = int(video_delay)
+        video_dur = int(video_dur)
+        execution_string = (
+            "python3 "
+            "regattastart6.py "
+            f"{start_time} {week_day} {video_delay} {num_video} {video_dur} &"
+        )
+        proc = subprocess.run([execution_string], shell=True)
+        # Process the form data
+        # ...
+
+
+
+
 <!DOCTYPE html>
 <html>
 <div align="center">
