@@ -85,6 +85,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         xhr.open("POST", "/cgi-bin/select_data6.py", true);
         xhr.onload = function () {
             if (xhr.status === 200) {
+                console.log("xhr.responseText");
                 var response = JSON.parse(xhr.responseText);
                 // Handle the response from the Python script (xhr.responseText)
                 document.getElementById("result").innerHTML = xhr.responseText;
