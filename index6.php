@@ -153,9 +153,13 @@ error_log("Check if the form has been submitted");
 </div>
 <?php
 // php code
-    echo "<p> Number of videos line 157: $num_video </p>";
-    $_SESSION['sess_num_video'] = $num_video;
-?>
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Check if POST request was made and the form fields are set
+    if (isset($_POST['num_video'])) {
+        $num_video = $_POST['num_video'];
+        $_SESSION['sess_num_video'] = $num_video;
+    }
+}
 <!-- Here is our page's main content -->
 <main>
     <br>
