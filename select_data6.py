@@ -3,6 +3,7 @@
 
 import cgi
 import cgitb
+import json
 
 cgitb.enable()  # Enable CGI error reporting
 
