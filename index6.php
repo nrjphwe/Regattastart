@@ -1,7 +1,7 @@
 <?php
-if (isset($_POST['num_video'] ,$_POST['start_time'], $_POST['video_dur'], $_POST['video_delay])) {
+if (isset($_POST['num_video'] ,$_POST['start_time'], $_POST['video_dur'], $_POST['video_delay'])) {
 session_start();
-}
+
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
@@ -16,12 +16,12 @@ $_SESSION['video_dur'] = $video_dur;
 $_SESSION['num_video'] = $num_video;
 $_SESSION['start_time'] = $start_time;
 
-
 echo "print_r post: ";
 print_r($_POST);
 echo "print_r SESSION: ";
 print_r($_SESSION);
 echo "<br/>";
+}
 ?>
 
 <?php
