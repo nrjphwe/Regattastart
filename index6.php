@@ -5,7 +5,13 @@ session_start();
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 ?>
-
+<?php
+    echo "print_r post: ";
+    print_r($_POST);
+    echo "print_r SESSION: ";
+    print_r($_SESSION);
+    echo "<br/>";
+?>
 <?php
 // Set the initial values for PHP variables (on each page load)
 $num_video = null;
