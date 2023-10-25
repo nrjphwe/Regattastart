@@ -71,7 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $video_dur = intval($_POST['video_dur']);
 
         // Build the execution string for your Python script
-        $execution_string = "python3 regattastart6.py $start_time $week_day $video_delay $num_video $video_dur";
+        $execution_string = "python3 /usr/lib/cgi-bin/regattastart6.py $start_time $week_day $video_delay $num_video $video_dur";
         
         // Execute the Python script
         exec($execution_string, $output, $return_code);
