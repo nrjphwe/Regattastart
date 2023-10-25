@@ -176,10 +176,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div id="submit" align="center"></div>
         <div class="w3" align="center">
         <br>
-        <input type = "submit" name="submit" value = "Submit"/>
+        <input type = "submit" value = "Submit"/>
     </form>
 </div>
+<?php
+echo "<h2>Your Input:</h2>";
+echo $num_video;
+echo "<br>";
+echo $video_delay;
+echo "<br>";
+echo $video_dur;
+echo "<br>";
+echo $start_time;
+echo "<br>";
+echo $week_day;
+?>
 
+
+            
 <!-- Here is our page's main content -->
 <main>
     <br>
