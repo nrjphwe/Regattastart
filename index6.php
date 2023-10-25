@@ -162,7 +162,7 @@ error_log("Check if the form has been submitted");
           <div>
             <button>Send data</button>
           </div>
-        </form>
+    </form>
 </div>
 <!-- Here is our page's main content -->
 <main>
