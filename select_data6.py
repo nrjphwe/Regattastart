@@ -24,6 +24,15 @@ video_dur = int(form.getvalue('video_dur'))
 execution_string =  "python3 " + "regattastart6.py " + str(start_time) + " " + week_day + " " + str(video_delay) + " " + str(num_video) + " " + str(video_dur) + " " + " &"
 proc = subprocess.run([execution_string], shell = True)
 
+# Process the form data
+# ...
+# Send a response back to index6.php
+response = {"message": "Data processed successfully"}
+print("Content-Type: application/json")
+print()
+print(json.dumps(response))
+
+
 if week_day:
    print(f"<html><body>")
    print (f"Start is set to: {start_time}")
