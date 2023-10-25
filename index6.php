@@ -26,7 +26,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 error_log("Check if the form has been submitted");
 ?>
-
+<?php
+// php code
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Check if POST request was made and the form fields are set
+    if (isset($_POST['num_video'])) {
+        $num_video = $_POST['num_video'];
+        $_SESSION['sess_num_video'] = $num_video;
+    }
+}
+?>
 <!DOCTYPE html>
 <html>
 <div align="center">
@@ -151,16 +160,6 @@ error_log("Check if the form has been submitted");
         <input type = "submit" value = "Submit"/>
     </form>
 </div>
-<?php
-// php code
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Check if POST request was made and the form fields are set
-    if (isset($_POST['num_video'])) {
-        $num_video = $_POST['num_video'];
-        $_SESSION['sess_num_video'] = $num_video;
-    }
-}
-?>
 <!-- Here is our page's main content -->
 <main>
     <br>
