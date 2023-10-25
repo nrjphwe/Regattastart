@@ -177,7 +177,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="w3" align="center">
         <br>
         <input type = "submit" value = "Submit"/>
-        $input = $_POST['myInput'];
+        $input = $_POST['num_video'];
     </form>
 </div>
 <?php
