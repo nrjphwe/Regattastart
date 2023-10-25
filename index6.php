@@ -150,6 +150,19 @@ error_log("Check if the form has been submitted");
         </div>
         <input type = "submit" value = "Submit"/>
     </form>
+    <form action="http://regattastart.local/" method="POST">
+          <div>
+            <label for="num_video">Number of videos?</label>
+            <input name="num_video" id="num_video" value="7" />
+          </div>
+          <div>
+            <label for="video_dur">Duration iof Video?</label>
+            <input name="video_dur" id="video_dur" value="10" />
+          </div>
+          <div>
+            <button>Send data</button>
+          </div>
+        </form>
 </div>
 <!-- Here is our page's main content -->
 <main>
