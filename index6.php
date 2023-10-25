@@ -63,6 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <!-- Other HTML and PHP code here -->
 <!-- Here is our main header that is used across all the pages of our website -->
 <meta http-equiv="refresh" content="200" >
+</head>
 <header>
 <div align="center">
 <?php
@@ -94,7 +95,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         xhr.send(formData);
     }
 </script>
-</head>
 <body>
 <!-- HTML form -->
 <div align="center">
