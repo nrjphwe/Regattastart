@@ -150,21 +150,10 @@ error_log("Check if the form has been submitted");
         </div>
         <input type = "submit" value = "Submit"/>
     </form>
-    <form action="http://regattastart.local/" method="POST">
-        <div>
-            <?php echo "<pre>";print_r($_POST);echo "</pre>";?>
-            <label for="num_video">Number of videos?</label>
-            <input type="hidden" name="num_video" id="hidden_field_num_video" value="<?php $num_video ?>" />
-        </div>
-        <div>
-            <label for="video_dur">Duration iof Video?</label>
-            <input name="video_dur" id="video_dur" value="10" />
-        </div>
-        <div>
-            <button>go to result page</button>
-        </div>
-    </form>
 </div>
+<?php
+    $_SESSION['sess_num_video'] = $num_video;
+?>
 <!-- Here is our page's main content -->
 <main>
     <br>
