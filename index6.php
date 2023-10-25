@@ -7,7 +7,15 @@ error_reporting(E_ALL);
 ?>
 
 <?php
-// Store the selected form data in the session
+// Set the initial values for PHP variables (on each page load)
+$num_video = null;
+// Check if the form has been submitted
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Check if POST request was made and the form fields are set
+    if (isset($_POST['num_video'])) {
+        $num_video = $_POST['num_video'];
+    }
+}
 // Check if the form has been submitted
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Check if POST request was made and the form fields are set
