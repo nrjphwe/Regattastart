@@ -56,8 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title> Regattastart 1 för setup av en start </title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="/w3.css"
-</head>
-<body>
+
 <div class="w3-container w3-green">
      <h2>Regattastart 1 för setup av en start</h2>
 </div>
@@ -95,6 +94,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         xhr.send(formData);
     }
 </script>
+</head>
+<body>
 <!-- HTML form -->
 <div align="center">
     <form id="myform" onsubmit="event.preventDefault(); submitForm();">
