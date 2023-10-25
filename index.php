@@ -13,13 +13,6 @@ error_reporting(E_ALL);
     print_r($_SESSION);
     echo "<br/>";
 ?>
-<?php
-    $video_delay = htmlspecialchars($_POST['video_delay']);
-    $video_dur = htmlspecialchars($_POST['video_dur']);
-    $num_video = htmlspecialchars($_POST['num_video']);
-    $start_time = htmlspecialchars($_POST['start_time']);
-    echo  $video_delay, ' ', $video_dur, ' ',$num_video, ' ',$start_time;    
-?>
 
 <?php
 if (isset($_POST['video_delay'])) {
@@ -45,15 +38,6 @@ if (isset($_SESSION['selected_data'])) {
     // Now, you can use these variables as needed
 }
 ?>
-
-
-<?php
-    $num_video = isset($_SESSION['num_video']) ? $_SESSION['num_video'] : '';
-    echo "$num_video";
-    print ($num_video);
-?>
-
-
 
 <!DOCTYPE html>
 <html>
