@@ -153,7 +153,7 @@ error_log("Check if the form has been submitted");
 </div>
 <?php
 // php code
-    echo "<p> Number of videos line 157: $num_video</p>";
+    echo "<p> Number of videos line 157: $num_video </p>";
     $_SESSION['sess_num_video'] = $num_video;
 ?>
 <!-- Here is our page's main content -->
