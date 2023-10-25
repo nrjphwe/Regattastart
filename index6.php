@@ -153,14 +153,14 @@ error_log("Check if the form has been submitted");
     <form action="http://regattastart.local/" method="POST">
           <div>
             <label for="num_video">Number of videos?</label>
-            <input name="num_video" id="num_video" value="num_video" />
+            <input type="hidden" name="num_video" id="hidden_field_num_video" value="<?php echo $_POST['num_video'] ?>" />
           </div>
           <div>
             <label for="video_dur">Duration iof Video?</label>
             <input name="video_dur" id="video_dur" value="10" />
           </div>
           <div>
-            <button>Send data</button>
+            <button>go to result page</button>
           </div>
     </form>
 </div>
