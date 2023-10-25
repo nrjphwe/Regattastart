@@ -172,20 +172,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </select>
             </fieldset>
         </div>
+        <?php
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            // collect value of input field
+            $num_video = $_POST['num_video']; 
+            if (empty($num_video)) {
+                echo "Num_video is empty";
+            } else {
+                echo $num_video;
+            }
+        }
+        ?>
         <input type = "submit" value = "Submit"/>
     </form>
 </div>
-<?php
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // collect value of input field
-    $num_video = $_POST['num_video']; 
-    if (empty($num_video)) {
-        echo "Num_video is empty";
-    } else {
-        echo $num_video;
-    }
-}
-?>
+
 <!-- Here is our page's main content -->
 <main>
     <br>
