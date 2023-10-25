@@ -151,18 +151,18 @@ error_log("Check if the form has been submitted");
         <input type = "submit" value = "Submit"/>
     </form>
     <form action="http://regattastart.local/" method="POST">
-          <div>
-            echo "<pre>";print_r($_POST);echo "</pre>";
+        <div>
+            <?php echo "<pre>";print_r($_POST);echo "</pre>";?>
             <label for="num_video">Number of videos?</label>
-            <input type="hidden" name="num_video" id="hidden_field_num_video" value="<?php echo $_POST['num_video'] ?>" />
-          </div>
-          <div>
+            <input type="hidden" name="num_video" id="hidden_field_num_video" value="<?php $num_video ?>" />
+        </div>
+        <div>
             <label for="video_dur">Duration iof Video?</label>
             <input name="video_dur" id="video_dur" value="10" />
-          </div>
-          <div>
+        </div>
+        <div>
             <button>go to result page</button>
-          </div>
+        </div>
     </form>
 </div>
 <!-- Here is our page's main content -->
