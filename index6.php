@@ -169,6 +169,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <input type = "submit" value = "Submit"/>
     </form>
 </div>
+<?php
+// Check if the form field 'num_video' is set and has a value
+if (isset($_POST['num_video'])) {
+    $num_video = $_POST['num_video'];
+    echo "<p> Number of videos line 157: $num_video</p>";
+    $_SESSION['sess_num_video'] = $num_video;
+} else {
+    echo "<p> Number of videos is not set in the form</p>";
+}
+?>
 <!-- Here is our page's main content -->
 <main>
     <br>
