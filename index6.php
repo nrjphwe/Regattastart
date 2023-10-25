@@ -176,7 +176,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div id="submit" align="center"></div>
         <div class="w3" align="center">
         <br>
-        <input type = "submit" value = "Submit"/>
+        <input type = "submit" name="submit" value = "Submit"/>
     </form>
 </div>
 
