@@ -1,6 +1,7 @@
 <?php
 if (isset($_POST['num_video'] ,$_POST['start_time'], $_POST['video_dur'], $_POST['video_delay])) {
 session_start();
+}
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
