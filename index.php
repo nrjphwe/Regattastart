@@ -1,6 +1,7 @@
 <?php
 session_start();
 $num_video = $_SESSION['sess_num_video'];
+echo "<p>num_video from sessiondata: $num_video</p>";
 // after "git pull", "sudo cp /home/pi/Regattastart/index.php /var/www/html/"
 ini_set('display_errors', 1); 
 error_reporting(E_ALL);
