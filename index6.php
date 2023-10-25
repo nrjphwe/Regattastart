@@ -74,7 +74,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $execution_string = "python3 /usr/lib/cgi-bin/regattastart6.py $start_time $week_day $video_delay $num_video $video_dur &";
         exec($execution_string);
         // Execute the Python script
-        exec($execution_string, $output, $return_code);
+        
+        //exec($execution_string, $output, $return_code);
         // $output will contain the output of the executed script
         // $return_code will contain the return code of the executed script
 
