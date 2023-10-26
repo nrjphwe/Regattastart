@@ -81,14 +81,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         xhr.open("POST", "/index6.php", true);
         xhr.onload = function () {
             if (xhr.status === 200) {
-                console.log("Response from server: ", xhr.responseText);
-                var response = JSON.parse(xhr.responseText);
-                // Handle the response from the Python script (xhr.responseText)
+                var responseText = xhr.responseText;
+
+                // Split the response by new line character
+                var responseParts = responseText.split('\n');
+
+                // First part is the JSON data
+                var jsonPart = responseParts[0].trim();
+
+                // Parse the JSON data
+                var response = JSON.parse(jsonPart);
+
+                // Handle the response from the JSON data
                 document.getElementById("result").innerHTML = response.message;
+
+                // Second part is the HTML content
+                var htmlPart = responseParts.slice(1).join('\n');
+         
+                // You can handle the HTML content separately if needed
+                // For example, insert it into a different element on the page
+                document.getElementById("htmlContent").innerHTML = htmlPart;
             } else {
                 // Handle errors or failed request
                 document.getElementById("result").innerHTML = "Error: " + xhr.status;
-            } 
+            }
         };
         xhr.send(formData);
     }
