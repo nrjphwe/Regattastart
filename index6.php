@@ -14,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $_SESSION["form_data"] = $_POST;
 
     // Execute the Python script
-    exec('python3 regattastart6.py ' . escapeshellarg(json_encode($_POST)));
+    exec('python3 /usr/lib/cgi-bin/regattastart6.py ' . escapeshellarg(json_encode($_POST)));
 
     // Redirect to index.php
     header("Location: index.php");
