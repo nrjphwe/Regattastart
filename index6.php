@@ -1,4 +1,4 @@
-<?php
+ponse<?php
 session_start();
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
@@ -83,7 +83,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         xhr.open("POST", "index6.php", true);
         xhr.onload = function () {
             if (xhr.status === 200) {
-                console.log("xhr.responseText");
+                console.log("Response from server: ", xhr.responseText);
                 var response = JSON.parse(xhr.responseText);
                 // Handle the response from the Python script (xhr.responseText)
                 document.getElementById("result").innerHTML = xhr.responseText;
