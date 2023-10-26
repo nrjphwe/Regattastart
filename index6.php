@@ -21,12 +21,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Convert data to appropriate types
         $start_time = $_POST['start_time'];
         $week_day = $_POST['day'];
-        //$num_video = intval($_POST['num_video']);
-        //$video_delay = intval($_POST['video_delay']);
-        //$video_dur = intval($_POST['video_dur']);
-        $num_video = str($_POST['num_video']);
-        $video_delay = str($_POST['video_delay']);
-        $video_dur = str($_POST['video_dur']);
+        $num_video = intval($_POST['num_video']);
+        $video_delay = intval($_POST['video_delay']);
+        $video_dur = intval($_POST['video_dur']);
 
         // Build the execution string for your Python script
         $execution_string = "python3 /usr/lib/cgi-bin/regattastart6.py $start_time $week_day $video_delay $num_video $video_dur &";
