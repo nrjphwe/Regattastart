@@ -26,10 +26,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $video_dur = intval($_POST['video_dur']);
 
         // Build the execution string for your Python script
+        
         $execution_string = "python3 /usr/lib/cgi-bin/regattastart6.py $start_time $week_day $video_delay $num_video $video_dur &";
+        error_log("Execution String: " . $execution_string);
 
         // Execute the Python script
         exec($execution_string, $output, $return_code);
+        error_log("Return Code: " . $return_code);
         // $output will contain the output of the executed script
         // $return_code will contain the return code of the executed script
 
