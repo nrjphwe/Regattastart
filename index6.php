@@ -84,7 +84,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 console.log("Response from server: ", xhr.responseText);
                 var response = JSON.parse(xhr.responseText);
                 // Handle the response from the Python script (xhr.responseText)
-                document.getElementById("result").innerHTML = xhr.responseText;
+                document.getElementById("result").innerHTML = response.message;
             } else {
                 // Handle errors or failed request
                 document.getElementById("result").innerHTML = "Error: " + xhr.status;
