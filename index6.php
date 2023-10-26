@@ -2,11 +2,6 @@
 session_start();
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
-//echo "print_r post: ";
-//print_r($_POST);
-//echo "print_r SESSION: ";
-//(print_r($_SESSION);
-//echo "<br/>";
 ?>
 
 <?php
@@ -29,22 +24,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         $execution_string = "python3 /usr/lib/cgi-bin/regattastart6.py $start_time $week_day $video_delay $num_video $video_dur &";
         error_log("Execution String: " . $execution_string);
-
-        // Execute the Python script
+        
+        // Execute the Python script in the background
         exec($execution_string, $output, $return_code);
         error_log("Return Code: " . $return_code);
         // $output will contain the output of the executed script
         // $return_code will contain the return code of the executed script
+        
+        // Provide an immediate response to the user
+        echo "Your request is being processed.";
 
-        // Check if the execution was successful
-        if ($return_code === 0) {
-            $response = ["message" => "Data processed successfully"];
-        } else {
-            $response = ["message" => "Error: Failed to process data"];
-        }
-        // Respond with a JSON message
-        header("Content-Type: application/json");
-        echo json_encode($response);
     } catch (Exception $e) {
         $response = ["message" => "Error: Some fields contain invalid values"];
         header("Content-Type: application/json");
