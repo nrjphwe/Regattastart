@@ -91,13 +91,13 @@ def main():
         form_data = json.loads(sys.argv[1])
         logger.info ("form_data: %s, form_data)
         # Receive form data as a command-line argument
-        logger.info ("Number of arguments: %s arguments", len(json.loads(sys.argv)))
-        logger.info ("Argument List: %s ", str(json.loads(sys.argv)))
-        start_time = str(json.loads(sys.argv[1]))
-        week_day = str(json.loads(sys.argv[2]))
-        video_delay = int(json.loads(sys.argv[3]))
-        num_videos = int(json.loads(sys.argv[4]))
-        video_dur = int(json.loads(sys.argv[5]))
+        logger.info ("Number of arguments arguments")
+        start_time = str(form_data.get("field1", ""))
+        week_day = str(form_data.get("field2", ""))
+        video_delay = int(form_data.get("field3", ""))
+        video_dur = int(form_data.get("field4", ""))
+        num_video = int(form_data.get("field5", ""))
+        
         # Set up initial data
         camera = setup_camera()
         logger.info (" Weekday= %s, Start_time= %s,video_delay= %s, num_videos= %s,video_dur= %s", week_day, start_time, video_delay, num_videos, video_dur)
