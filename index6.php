@@ -2,11 +2,11 @@
 session_start();
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
-echo "print_r post: ";
-print_r($_POST);
-echo "print_r SESSION: ";
-print_r($_SESSION);
-echo "<br/>";
+//echo "print_r post: ";
+//print_r($_POST);
+//echo "print_r SESSION: ";
+//(print_r($_SESSION);
+//echo "<br/>";
 ?>
 
 <?php
