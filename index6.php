@@ -180,7 +180,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div id="submit" align="center"></div>
         <div class="w3" align="center">
         <br>
-        <input type = "submit" value = "Submit"</input>
+        <input type = "submit" value = "Submit">
     </form>
 </div>          
 <!-- Here is our page's main content -->
