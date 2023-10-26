@@ -5,46 +5,16 @@ error_reporting(E_ALL);
 ?>
 
 <?php
-// php code
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Check if POST request was made and the form fields are set
-    if (isset($_POST['num_video'])) {
-        $num_video = $_POST['num_video'];
-        $_SESSION['sess_num_video'] = $num_video;
-    }
+    // Process and store the form data
+    $_SESSION["form_data"] = $_POST;
 
-    $response = ["message" => "Your request is being processed."];
-    
-    try {
-        // Convert data to appropriate types
-        $start_time = $_POST['start_time'];
-        $week_day = $_POST['day'];
-        $num_video = intval($_POST['num_video']);
-        $video_delay = intval($_POST['video_delay']);
-        $video_dur = intval($_POST['video_dur']);
+    // Execute the Python script
+    exec('python3 regattastart6.py ' . escapeshellarg(json_encode($_POST)));
 
-        // Build the execution string for your Python script
-        
-        $execution_string = "python3 /usr/lib/cgi-bin/regattastart6.py $start_time $week_day $video_delay $num_video $video_dur &";
-        error_log("Execution String: " . $execution_string);
-        
-        // Execute the Python script in the background
-        exec($execution_string, $output, $return_code);
-        error_log("Return Code: " . $return_code);
-        // $output will contain the output of the executed script
-        // $return_code will contain the return code of the executed script
-
-        // Check if the execution was successful
-        if ($return_code !== 0) {
-            $response = ["message" => "Error: Failed to process data"];
-        }
-    } catch (Exception $e) {
-        $response = ["message" => "Error: Some fields contain invalid values"];
-    }
-
-    // Respond with a JSON message
-    header("Content-Type: application/json");
-    echo json_encode($response);
+    // Redirect to index.php
+    header("Location: index.php");
+    exit;
 }
 ?>
 
@@ -70,129 +40,93 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         echo "This page: $filename was modified: " . date ("Y-m-d H:i:s.", filemtime($filename));
     }
 ?>
-<?php echo "  Time now: " .date("H:i:s") ?>
-<!-- Use JavaScript to submit the form via AJAX -->
-<script>
-    function submitForm() {
-        console.log("Form is being submitted");
-        var formData = new FormData(document.getElementById("myform"));
-        var xhr = new XMLHttpRequest();
-        xhr.open("POST", "/index6.php", true);
-        xhr.onload = function () {
-            if (xhr.status === 200) {
-                var responseText = xhr.responseText;
-
-                // Split the response by new line character
-                var responseParts = responseText.split('\n');
-
-                // First part is the JSON data
-                var jsonPart = responseParts[0].trim();
-
-                // Parse the JSON data
-                var response = JSON.parse(jsonPart);
-
-                // Handle the response from the JSON data
-                document.getElementById("result").innerHTML = response.message;
-
-                // Second part is the HTML content
-                var htmlPart = responseParts.slice(1).join('\n');
-         
-                // You can handle the HTML content separately if needed
-                // For example, insert it into a different element on the page
-                document.getElementById("htmlContent").innerHTML = htmlPart;
-            } else {
-                // Handle errors or failed request
-                document.getElementById("result").innerHTML = "Error: " + xhr.status;
-            }
-        };
-        xhr.send(formData);
-    }
-</script>
-<body>
+        
 <!-- HTML form -->
+<body>
 <div align="center">
-    <form id="myform" onsubmit="event.preventDefault(); submitForm();">
-        <!-- Your  fields here -->
-        <div class="w3-row-padding" align="center">
-        <div class="w3-half" align="center">
-            <fieldset>
-                <h4>Day and time setup</h4>
-                <div data-tap-disabled="true">
-                Start Time: <select name = "start_time" id = "start_time">
-                <?php
-                    $hour = date('H');
-                    $steps   = 10; // only edit the minutes value
-                    $current = 0;
-                    $loops   = 24*(60/$steps);
-                    //$loops   = (24-$hour)*(60/$steps);
-                    //for ($i = $hour*(60/$steps); $i < $loops; $i++) {
-                    for ($i = 0; $i < $loops; $i++) {
-                    //    $time = sprintf('%02d:%02d', $i/(60/$steps), $current%60);
-                    $start_time = sprintf('%02d:%02d', $i/(60/$steps), $current%60);
-                    echo '<option>' . $start_time . '</option>';
-                    $current += $steps;
-                    }
-                ?>
-                </select>
-                </div><p>
-                <?php $day = date("l") 
-                ?>
-                Day for race <select name = "day" id="day">
-                <option <?php if(isset($day) && $day == "Monday"){echo "selected=\"selected\"";} ?> value="Monday">Monday</option>
-                <option <?php if(isset($day) && $day == "Tuesday"){echo "selected=\"selected\"";} ?> value="Tuesday">Tuesday</option>
-                <option <?php if(isset($day) && $day == "Wednesday"){echo "selected=\"selected\"";} ?> value="Wednesday">Wednesday</option>
-                <option <?php if(isset($day) && $day == "Thursday"){echo "selected=\"selected\"";} ?> value="Thursday">Thursday</option>
-                <option <?php if(isset($day) && $day == "Friday"){echo "selected=\"selected\"";} ?> value="Friday">Friday</option>
-                <option <?php if(isset($day) && $day == "Saturday"){echo "selected=\"selected\"";} ?> value="Saturday">Saturday</option>
-                <option <?php if(isset($day) && $day == "Sunday"){echo "selected=\"selected\"";} ?> value="Sunday">Sunday</option>
-                </select>
-            </fieldset>
-        </div>
-        <div class="w3-half" align="center">
-            <fieldset>
-                <h4>Video Setup</h4>
-                <p></p>
-                Duration between start and estimated finish: <select name = "video_delay" id = "video_delay">
-                <option <?php if(isset($video_delay) && $video_delay == "3"){echo "selected=\"selected\"";} ?> value="3">3</option>
-                <option <?php if(isset($video_delay) && $video_delay == "20"){echo "selected=\"selected\"";} ?> value="20">20</option>
-                <option <?php if(isset($video_delay) && $video_delay == "30"){echo "selected=\"selected\"";} ?> value="30">30</option>
-                <option <?php if(isset($video_delay) && $video_delay == "40"){echo "selected=\"selected\"";} ?> value="40">40</option>
-                <option <?php if(isset($video_delay) && $video_delay == "50"){echo "selected=\"selected\"";} ?> value="50">50</option>
-                <option <?php if(isset($video_delay) && $video_delay == "60"){echo "selected=\"selected\"";} ?> value="60">60</option>
-                <option <?php if(isset($video_delay) && $video_delay == "70"){echo "selected=\"selected\"";} ?> value="70">70</option>
-                <option <?php if(isset($video_delay) && $video_delay == "80"){echo "selected=\"selected\"";} ?> value="80">80</option>
-                </select>
-                <p></p>
-                Duration for each video: <select name = "video_dur" id = "video_dur">
-                <option <?php if(isset($video_dur) && $video_dur == "2"){echo "selected=\"selected\"";} ?> value="2">2</option>
-                <option <?php if(isset($video_dur) && $video_dur == "10"){echo "selected=\"selected\"";} ?> value="10">10</option>
-                <option <?php if(isset($video_dur) && $video_dur == "15"){echo "selected=\"selected\"";} ?> value="15">15</option>
-                <option <?php if(isset($video_dur) && $video_dur == "20"){echo "selected=\"selected\"";} ?> value="20">20</option>
-                <option <?php if(isset($video_dur) && $video_dur == "30"){echo "selected=\"selected\"";} ?> value="30">30</option>
-                <option <?php if(isset($video_dur) && $video_dur == "50"){echo "selected=\"selected\"";} ?> value="50">50</option>
-                <option <?php if(isset($video_dur) && $video_dur == "60"){echo "selected=\"selected\"";} ?> value="60">60</option>
-                </select>
-                <p></p>
-                Number of video's: <select name = "num_video" id = "num_video">
-                <option <?php if(isset($num_video) && $num_video == "9"){echo "selected=\"selected\"";} ?> value="9">9</option>
-                <option <?php if(isset($num_video) && $num_video == "8"){echo "selected=\"selected\"";} ?> value="8">8</option>
-                <option <?php if(isset($num_video) && $num_video == "7"){echo "selected=\"selected\"";} ?> value="7">7</option>
-                <option <?php if(isset($num_video) && $num_video == "6"){echo "selected=\"selected\"";} ?> value="6">6</option>
-                <option <?php if(isset($num_video) && $num_video == "5"){echo "selected=\"selected\"";} ?> value="5">5</option>
-                <option <?php if(isset($num_video) && $num_video == "4"){echo "selected=\"selected\"";} ?> value="4">4</option>
-                <option <?php if(isset($num_video) && $num_video == "3"){echo "selected=\"selected\"";} ?> value="3">3</option>
-                <option <?php if(isset($num_video) && $num_video == "2"){echo "selected=\"selected\"";} ?> value="2">2</option>
-                <option <?php if(isset($num_video) && $num_video == "1"){echo "selected=\"selected\"";} ?> value="1">1</option>
-                </select>
-            </fieldset>
-        </div>
-        <br><p></p>
-        <div id="submit" align="center"></div>
-        <div class="w3" align="center">
-        <br>
-        <input type = "submit" value = "Submit">
-    </form>
-</div>          
+<form action="index6.php" method="POST">
+     <!-- Your form fields -->
+    <div class="w3-row-padding" align="center">
+    <div class="w3-half" align="center">
+        <fieldset>
+            <h4>Day and time setup</h4>
+            <div data-tap-disabled="true">
+            Start Time: <select name = "start_time" id = "start_time">
+            <?php
+                $hour = date('H');
+                $steps   = 10; // only edit the minutes value
+                $current = 0;
+                $loops   = 24*(60/$steps);
+                //$loops   = (24-$hour)*(60/$steps);
+                //for ($i = $hour*(60/$steps); $i < $loops; $i++) {
+                for ($i = 0; $i < $loops; $i++) {
+                //    $time = sprintf('%02d:%02d', $i/(60/$steps), $current%60);
+                $start_time = sprintf('%02d:%02d', $i/(60/$steps), $current%60);
+                echo '<option>' . $start_time . '</option>';
+                $current += $steps;
+                }
+            ?>
+            </select>
+            </div><p>
+            <?php $day = date("l") 
+            ?>
+            Day for race <select name = "day" id="day">
+            <option <?php if(isset($day) && $day == "Monday"){echo "selected=\"selected\"";} ?> value="Monday">Monday</option>
+            <option <?php if(isset($day) && $day == "Tuesday"){echo "selected=\"selected\"";} ?> value="Tuesday">Tuesday</option>
+            <option <?php if(isset($day) && $day == "Wednesday"){echo "selected=\"selected\"";} ?> value="Wednesday">Wednesday</option>
+            <option <?php if(isset($day) && $day == "Thursday"){echo "selected=\"selected\"";} ?> value="Thursday">Thursday</option>
+            <option <?php if(isset($day) && $day == "Friday"){echo "selected=\"selected\"";} ?> value="Friday">Friday</option>
+            <option <?php if(isset($day) && $day == "Saturday"){echo "selected=\"selected\"";} ?> value="Saturday">Saturday</option>
+            <option <?php if(isset($day) && $day == "Sunday"){echo "selected=\"selected\"";} ?> value="Sunday">Sunday</option>
+            </select>
+        </fieldset>
+    </div>
+    <div class="w3-half" align="center">
+        <fieldset>
+            <h4>Video Setup</h4>
+            <p></p>
+            Duration between start and estimated finish: <select name = "video_delay" id = "video_delay">
+            <option <?php if(isset($video_delay) && $video_delay == "3"){echo "selected=\"selected\"";} ?> value="3">3</option>
+            <option <?php if(isset($video_delay) && $video_delay == "20"){echo "selected=\"selected\"";} ?> value="20">20</option>
+            <option <?php if(isset($video_delay) && $video_delay == "30"){echo "selected=\"selected\"";} ?> value="30">30</option>
+            <option <?php if(isset($video_delay) && $video_delay == "40"){echo "selected=\"selected\"";} ?> value="40">40</option>
+            <option <?php if(isset($video_delay) && $video_delay == "50"){echo "selected=\"selected\"";} ?> value="50">50</option>
+            <option <?php if(isset($video_delay) && $video_delay == "60"){echo "selected=\"selected\"";} ?> value="60">60</option>
+            <option <?php if(isset($video_delay) && $video_delay == "70"){echo "selected=\"selected\"";} ?> value="70">70</option>
+            <option <?php if(isset($video_delay) && $video_delay == "80"){echo "selected=\"selected\"";} ?> value="80">80</option>
+            </select>
+            <p></p>
+            Duration for each video: <select name = "video_dur" id = "video_dur">
+            <option <?php if(isset($video_dur) && $video_dur == "2"){echo "selected=\"selected\"";} ?> value="2">2</option>
+            <option <?php if(isset($video_dur) && $video_dur == "10"){echo "selected=\"selected\"";} ?> value="10">10</option>
+            <option <?php if(isset($video_dur) && $video_dur == "15"){echo "selected=\"selected\"";} ?> value="15">15</option>
+            <option <?php if(isset($video_dur) && $video_dur == "20"){echo "selected=\"selected\"";} ?> value="20">20</option>
+            <option <?php if(isset($video_dur) && $video_dur == "30"){echo "selected=\"selected\"";} ?> value="30">30</option>
+            <option <?php if(isset($video_dur) && $video_dur == "50"){echo "selected=\"selected\"";} ?> value="50">50</option>
+            <option <?php if(isset($video_dur) && $video_dur == "60"){echo "selected=\"selected\"";} ?> value="60">60</option>
+            </select>
+            <p></p>
+            Number of video's: <select name = "num_video" id = "num_video">
+            <option <?php if(isset($num_video) && $num_video == "9"){echo "selected=\"selected\"";} ?> value="9">9</option>
+            <option <?php if(isset($num_video) && $num_video == "8"){echo "selected=\"selected\"";} ?> value="8">8</option>
+            <option <?php if(isset($num_video) && $num_video == "7"){echo "selected=\"selected\"";} ?> value="7">7</option>
+            <option <?php if(isset($num_video) && $num_video == "6"){echo "selected=\"selected\"";} ?> value="6">6</option>
+            <option <?php if(isset($num_video) && $num_video == "5"){echo "selected=\"selected\"";} ?> value="5">5</option>
+            <option <?php if(isset($num_video) && $num_video == "4"){echo "selected=\"selected\"";} ?> value="4">4</option>
+            <option <?php if(isset($num_video) && $num_video == "3"){echo "selected=\"selected\"";} ?> value="3">3</option>
+            <option <?php if(isset($num_video) && $num_video == "2"){echo "selected=\"selected\"";} ?> value="2">2</option>
+            <option <?php if(isset($num_video) && $num_video == "1"){echo "selected=\"selected\"";} ?> value="1">1</option>
+            </select>
+        </fieldset>
+    </div>
+    <br><p></p>
+    <div id="submit" align="center"></div>
+    <div class="w3" align="center">
+    <br>
+    <button type="submit">Submit</button>
+</form>
+</div>     
+
 <!-- Here is our page's main content -->
 <main>
     <br>
