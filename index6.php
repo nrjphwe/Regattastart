@@ -45,10 +45,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Respond with a JSON message
         header("Content-Type: application/json");
         echo json_encode($response);
-   // } catch (Exception $e) {
-   //     echo "<html><body>";
-   //     echo "Error: Some fields contain invalid values.";
-   //     echo "</body></html>";
+    } catch (Exception $e) {
+        $response = ["message" => "Error: Some fields contain invalid values"];
+        header("Content-Type: application/json");
+        echo json_encode($response);
     }
 }
 ?>
