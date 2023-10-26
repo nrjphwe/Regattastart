@@ -1,38 +1,18 @@
 <?php
 session_start();
-$num_video = $_SESSION['sess_num_video'];
-echo "<p>num_video from sessiondata: $num_video</p>";
 // after "git pull", "sudo cp /home/pi/Regattastart/index.php /var/www/html/"
 ini_set('display_errors', 1); 
 error_reporting(E_ALL);
 ?>
-<?php
-    echo "print_r post: ";
-    print_r($_POST);
-    echo "print_r SESSION: ";
-    print_r($_SESSION);
-    echo "<br/>";
-?>
 
 <?php
-if (isset($_POST['video_delay'])) {
-    // Store selected form data in session
-    $_SESSION['selected_data'] = [
-        'video_delay' => $_POST['video_delay'],
-        'video_dur' => $_POST['video_dur'],
-        'num_video' => $_POST['num_video'],
-        'start_time' => $_POST['start_time']
-    ];
-}
-?>
-<?php
+// Retrieve and display data from the session
 // Check if the session data exists
-if (isset($_SESSION['selected_data'])) {
-    $selectedData = $_SESSION['selected_data'];
-    $video_delay = $selectedData['video_delay'];
-    $video_duration = $selectedData['video_dur'];
-    $num_video = $selectedData['num_video'];
-    $start_time = $selectedData['start_time'];
+if (isset($_SESSION['num_video'])) {
+    $video_delay = $_SESSION['video_delay'];
+    $video_duration = $_SESSION['video_dur'];
+    $num_video = $_SESSION['num_video'];
+    $start_time = $_SESSION['start_time'];
     // Now, you can use these variables as needed
 }
 ?>
