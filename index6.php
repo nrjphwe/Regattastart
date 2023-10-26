@@ -66,12 +66,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // $return_code will contain the return code of the executed script
 
         // Check if the execution was successful
-        //if ($return_code === 0) {
-        //    $response = ["message" => "Data processed successfully"];
-        //} else {
-        //    $response = ["message" => "Error: Failed to process data"];
-        //}
-
+        if ($return_code === 0) {
+            $response = ["message" => "Data processed successfully"];
+        } else {
+            $response = ["message" => "Error: Failed to process data"];
+        }
         // Respond with a JSON message
         header("Content-Type: application/json");
         echo json_encode($response);
