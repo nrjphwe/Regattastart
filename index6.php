@@ -83,7 +83,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         console.log("Form is being submitted");
         var formData = new FormData(document.getElementById("myform"));
         var xhr = new XMLHttpRequest();
-        xhr.open("POST", "index6.php", true);
+        xhr.open("POST", "/index6.php", true);
         xhr.onload = function () {
             if (xhr.status === 200) {
                 console.log("Response from server: ", xhr.responseText);
