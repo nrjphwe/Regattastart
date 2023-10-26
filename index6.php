@@ -10,37 +10,6 @@ error_reporting(E_ALL);
 ?>
 
 <?php
-// Set the initial values for PHP variables (on each page load)
-$num_video = null;
-
-// Check if the form has been submitted
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Check if POST request was made and the form fields are set
-    if (isset($_POST['num_video'])) {
-        $num_video = $_POST['num_video'];
-    }
-}
-// Check if the form has been submitted
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Check if POST request was made and the form fields are set
-    if (isset($_POST['video_delay'])) {
-        $_SESSION['video_delay'] = $_POST['video_delay'];
-    }
-    if (isset($_POST['video_dur'])) {
-        $_SESSION['video_dur'] = $_POST['video_dur'];
-    }
-    if (isset($_POST['num_video'])) {
-        $_SESSION['num_video'] = $_POST['num_video'];
-    }
-    if (isset($_POST['start_time'])) {
-        $_SESSION['start_time'] = $_POST['start_time'];
-    }
-} else {
-    error_log("Check if the form has been submitted");
-    echo "<p> Check if the form has been submitted</p>";
-}    
-?>
-<?php
 // php code
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Check if POST request was made and the form fields are set
