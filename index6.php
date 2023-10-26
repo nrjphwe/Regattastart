@@ -1,5 +1,9 @@
 <?php
 session_start();
+print_r($_SESSION);
+echo "<br/>";
+print_r($_POST);
+echo "<br/>";
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 ?>
