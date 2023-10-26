@@ -3,11 +3,12 @@ import sys
 import cgitb
 #cgitb.enable(display=0, logdir="/var/www/html/")
 import time
-print("start")
 from datetime import datetime
 import datetime as dt
 import logging
 import logging.config
+import json
+
 import subprocess
 import RPi.GPIO as GPIO
 from picamera import PiCamera, Color
@@ -87,14 +88,14 @@ def main():
     try:
         seconds_now = 0
         logger = setup_logging()
-        logger.info ("Number of arguments: %s arguments", len(sys.argv))
-        logger.info ("Argument List: %s ", str(sys.argv))
-        #logger.info (' 1: %s 2: %s 3: %s 4: %s 5: %s', sys.argv[1],sys.argv[2],sys.argv[3],sys.argv[4],sys.argv[5])
-        start_time = str(sys.argv[1])
-        week_day = str(sys.argv[2])
-        video_delay = int(sys.argv[3])
-        num_videos = int(sys.argv[4])
-        video_dur = int(sys.argv[5])
+        # Receive form data as a command-line argument
+        logger.info ("Number of arguments: %s arguments", len(json.loads(sys.argv)))
+        logger.info ("Argument List: %s ", str(json.loads(sys.argv)))
+        start_time = str(json.loads(sys.argv[1]))
+        week_day = str(json.loads(sys.argv[2]))
+        video_delay = int(json.loads(sys.argv[3]))
+        num_videos = int(json.loads(sys.argv[4]))
+        video_dur = int(json.loads(sys.argv[5]))
         # Set up initial data
         camera = setup_camera()
         logger.info (" Weekday= %s, Start_time= %s,video_delay= %s, num_videos= %s,video_dur= %s", week_day, start_time, video_delay, num_videos, video_dur)
