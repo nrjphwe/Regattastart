@@ -12,6 +12,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $num_video = $_POST['num_video'];
         $_SESSION['sess_num_video'] = $num_video;
     }
+
+    $response = ["message" => "Your request is being processed."];
+    
     try {
         // Convert data to appropriate types
         $start_time = $_POST['start_time'];
@@ -30,15 +33,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         error_log("Return Code: " . $return_code);
         // $output will contain the output of the executed script
         // $return_code will contain the return code of the executed script
-        
-        // Provide an immediate response to the user
-        echo "Your request is being processed.";
 
+        // Check if the execution was successful
+        if ($return_code !== 0) {
+            $response = ["message" => "Error: Failed to process data"];
+        }
     } catch (Exception $e) {
         $response = ["message" => "Error: Some fields contain invalid values"];
-        header("Content-Type: application/json");
-        echo json_encode($response);
     }
+
+    // Respond with a JSON message
+    header("Content-Type: application/json");
+    echo json_encode($response);
 }
 ?>
 
