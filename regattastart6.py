@@ -88,6 +88,8 @@ def main():
     try:
         seconds_now = 0
         logger = setup_logging()
+        form_data = json.loads(sys.argv[1])
+        logger.info ("form_data: %s, form_data)
         # Receive form data as a command-line argument
         logger.info ("Number of arguments: %s arguments", len(json.loads(sys.argv)))
         logger.info ("Argument List: %s ", str(json.loads(sys.argv)))
