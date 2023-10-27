@@ -15,9 +15,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Execute the Python script
     exec('python3 /usr/lib/cgi-bin/regattastart6.py ' . escapeshellarg(json_encode($_POST)) . ' &');
+    echo date('h:i:s') . "<br>";
     echo "execution started";
+    sleep(3);
     //exec('python3 /usr/lib/cgi-bin/regattastart6.py ' . escapeshellarg(json_encode($_POST)));
-
+    
     // Redirect to index.php
     header("Location: index.php");
     exit;
