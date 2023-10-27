@@ -10,6 +10,23 @@ echo "<br/>";
 ?>
 
 <?php
+// Echo session variables that were set on previous page
+if(!empty($_SESSION[$cookie_name1]))
+{
+echo "session variables set on previous page: ";
+echo "video_delay = " . $_SESSION["video_delay"] . ", ";
+echo "video_dur =  " . $_SESSION["video_dur"] . ", ";
+echo "num_video = " . $_SESSION["num_video"] . ", ";
+echo "start_time = " . $_SESSION["start_time"] . ", ";
+echo "<br/>";
+$num_video = $_SESSION["num_video"];
+} else {
+echo " No Session data <br>";
+}
+?>
+
+
+<?php
 // Retrieve and display data from the session
 // Check if the session data exists
 if (isset($_SESSION['num_video'])) {
