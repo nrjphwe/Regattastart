@@ -21,6 +21,7 @@ photo_path = '/var/www/html/images/'
 logger = None  # Declare the logger variable at the top
 
 def setup_logging():
+    global logger  # Make logger variable global
     logging.config.fileConfig('logging.conf')
     logger = logging.getLogger('Start')
     logger.info("Start logging")
@@ -83,7 +84,7 @@ def convert_video_to_mp4(mp4_path, source_file, destination_file):
     logger.info (" Video recording %s converted ", destination_file)
 
 def main():
-    global logger  # Make logger variable global
+    
     logger = setup_logging()
     camera = None # Initialize the camera variable
     signal = None # Initialize the signal relay/variable
@@ -99,9 +100,8 @@ def main():
         # Load JSON data from the first command-line argument
         form_data = json.loads(sys.argv[1])
         # Log the loaded form_data
-        # print("form_data:", form_data)
+        print("form_data:", form_data)
         logger.info ("form_data: %s", form_data)
-        
         # Receive form data as a command-line argument
         # Extract specific fields from the JSON data
         start_time = str(form_data.get("field1", ""))
