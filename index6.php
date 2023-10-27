@@ -8,14 +8,6 @@ ini_set('display_errors', 1);
 error_reporting(E_ALL);
 ?>
 <?php
-echo "Session variables are set. ";
-echo "video delay = " . $_SESSION["video_delay"] . ". ";
-echo "video_dur = " . $_SESSION["video_dur"] . ". " ;
-echo "num_video = " . $_SESSION["num_video"] . "." ;
-echo "start_time = " . $_SESSION["start_time"] . "." ;
-?>
-
-<?php
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Process and store the form data
     $_SESSION["form_data"] = $_POST;
