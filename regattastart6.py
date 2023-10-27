@@ -1,3 +1,4 @@
+#!/usr/bin/python3 -u
 import os
 import sys
 # Redirect stdout to a file
