@@ -17,9 +17,9 @@ echo "<br/>";
 if (isset($_SESSION["form_data"])) {
     $form_data = $_SESSION["form_data"];
     // Display the data or do whatever you need
-    echo ", Start time: " . $form_data['start_timer'];
+    echo ", Start time: " . $form_data['start_time'];
     echo ", Video Delay: " . $form_data['video_delay'];
-    echo ", Video Duration: " . $orm_data['video_dur'];
+    echo ", Video Duration: " . $form_data['video_dur'];
     echo ", Number of Videos: " . $form_data['num_video'];
 }
 ?>
