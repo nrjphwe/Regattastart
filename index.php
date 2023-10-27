@@ -10,17 +10,17 @@ echo "<br/>";
 ?>
 
 <?php
+session_start();
+
 // Retrieve and display data from the session
-// Check if the session data exists
-if (isset($_SESSION['num_video'])) {
-    $video_delay = $_SESSION['video_delay'];
-    $video_duration = $_SESSION['video_dur'];
-    $num_video = $_SESSION['num_video'];
-    echo ", Selected Number of Videos: " . $selectedData['num_video'];
-    $start_time = $_SESSION['start_time'];
-    // Now, you can use these variables as needed
+if (isset($_SESSION["form_data"])) {
+    $form_data = $_SESSION["form_data"];
+    // Display the data or do whatever you need
 }
 ?>
+
+<!-- Your HTML to display data from the session -->
+
 
 <!DOCTYPE html>
 <html>
