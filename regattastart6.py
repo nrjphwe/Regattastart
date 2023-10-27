@@ -19,6 +19,7 @@ signal_dur = 0.3 # 0.3 sec
 mp4_path = '/var/www/html/images/'
 photo_path = '/var/www/html/images/'
 logger = None  # Declare the logger variable at the top
+logger = setup_logging()
 
 def setup_logging():
     global logger  # Make logger variable global
@@ -88,7 +89,7 @@ def main():
     signal = None # Initialize the signal relay/variable
     video_recording_started = False
     global logger  # Make logger variable global within the main function
-    logger = setup_logging()
+    
 
     # Check if a command-line argument (JSON data) is provided
     if len(sys.argv) < 2:
