@@ -22,7 +22,7 @@ photo_path = '/var/www/html/images/'
 
 def setup_logging():
     global logger  # Make logger variable global
-    logging.config.fileConfig('logging.conf')
+    logging.config.fileConfig('/usr/lib/chi-bin/logging.conf')
     logger = logging.getLogger('Start')
     logger.info("Start logging")
     return logger
