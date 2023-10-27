@@ -1,7 +1,7 @@
 import os
 import sys
 import cgitb
-#cgitb.enable(display=0, logdir="/var/www/html/")
+cgitb.enable(display=0, logdir="/var/www/html/")
 import time
 from datetime import datetime
 import datetime as dt
