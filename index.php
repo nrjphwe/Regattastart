@@ -3,10 +3,6 @@ session_start();
 // after "git pull", "sudo cp /home/pi/Regattastart/index.php /var/www/html/"
 ini_set('display_errors', 1); 
 error_reporting(E_ALL);
-print_r($_SESSION);
-echo "<br/>";
-print_r($_POST);
-echo "<br/>";
 ?>
 
 <!-- Your HTML to display data from the session -->
@@ -17,7 +13,7 @@ echo "<br/>";
 if (isset($_SESSION["form_data"])) {
     $form_data = $_SESSION["form_data"];
     // Display the data or do whatever you need
-    echo ", Start time: " . $form_data['start_time'];
+    echo "Start time: " . $form_data['start_time'];
     echo ", Video Delay: " . $form_data['video_delay'];
     echo ", Video Duration: " . $form_data['video_dur'];
     echo ", Number of Videos: " . $form_data['num_video'];
