@@ -19,7 +19,6 @@ signal_dur = 0.3 # 0.3 sec
 mp4_path = '/var/www/html/images/'
 photo_path = '/var/www/html/images/'
 logger = None  # Declare the logger variable at the top
-logger = setup_logging()
 
 def setup_logging():
     global logger  # Make logger variable global
