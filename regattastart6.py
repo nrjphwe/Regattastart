@@ -1,5 +1,7 @@
 import os
 import sys
+# Redirect stdout to a file
+sys.stdout = open('/var/www/html//output.log', 'w')
 import cgitb
 cgitb.enable(display=0, logdir="/var/www/html/")
 import time
