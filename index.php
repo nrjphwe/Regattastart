@@ -10,12 +10,11 @@ echo "<br/>";
 ?>
 
 <?php
-session_start();
-
 // Retrieve and display data from the session
 if (isset($_SESSION["form_data"])) {
     $form_data = $_SESSION["form_data"];
     // Display the data or do whatever you need
+    echo $form_data
 }
 ?>
 
