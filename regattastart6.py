@@ -87,6 +87,8 @@ def main():
     camera = None # Initialize the camera variable
     signal = None # Initialize the signal relay/variable
     video_recording_started = False
+    global logger  # Make logger variable global within the main function
+    logger = setup_logging()
 
     # Check if a command-line argument (JSON data) is provided
     if len(sys.argv) < 2:
@@ -95,7 +97,6 @@ def main():
     
     try:
         seconds_now = 0
-        logger = setup_logging()
         # Load JSON data from the first command-line argument
         form_data = json.loads(sys.argv[1])
         # Log the loaded form_data
