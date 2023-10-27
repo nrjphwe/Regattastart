@@ -84,11 +84,10 @@ def convert_video_to_mp4(mp4_path, source_file, destination_file):
     logger.info (" Video recording %s converted ", destination_file)
 
 def main():
+    logger = setup_logging()  # Initialize the logger
     camera = None # Initialize the camera variable
     signal = None # Initialize the signal relay/variable
     video_recording_started = False
-    global logger  # Make logger variable global within the main function
-    
 
     # Check if a command-line argument (JSON data) is provided
     if len(sys.argv) < 2:
