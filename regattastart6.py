@@ -105,11 +105,17 @@ def main():
         # Receive form data as a command-line argument
         # Extract specific fields from the JSON data
         #start_time = str(form_data.get("field1", ""))
-        start_time = str(form_data["field1"])
-        week_day = str(form_data["field2"])
-        video_delay = int(form_data["field3"])
-        video_dur = int(form_data["field4"])
-        num_video = int(form_data["field5"])
+        start_time = str(form_data["start_time"])
+        week_day = str(form_data["day"])
+        video_delay = int(form_data["video_delay"])
+        video_dur = int(form_data["video_dur"])
+        num_video = int(form_data["num_video"])
+        
+        #start_time = str(form_data["field1"])
+        #week_day = str(form_data["field2"])
+        #video_delay = int(form_data["field3"])
+        #video_dur = int(form_data["field4"])
+        #num_video = int(form_data["field5"])
         print("112 start_time:", start_time)
         
         # Set up initial data
