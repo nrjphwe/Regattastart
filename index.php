@@ -11,7 +11,7 @@ echo "<br/>";
 
 <?php
 // Echo session variables that were set on previous page
-if(!empty($_SESSION[$cookie_name1]))
+if(!empty($_SESSION["num_video"])
 {
 echo "session variables set on previous page: ";
 echo "video_delay = " . $_SESSION["video_delay"] . ", ";
