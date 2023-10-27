@@ -14,7 +14,8 @@ echo "<br/>";
 if (isset($_SESSION["form_data"])) {
     $form_data = $_SESSION["form_data"];
     // Display the data or do whatever you need
-    echo $form_data;
+    
+    echo ", Selected Number of Videos: " . $form_data['num_video'];
 }
 ?>
 
