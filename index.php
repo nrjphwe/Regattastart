@@ -8,17 +8,7 @@ error_reporting(E_ALL);
 <!-- Your HTML to display data from the session -->
 <!DOCTYPE html>
 <html>
-<?php
-// Retrieve and display data from the session
-if (isset($_SESSION["form_data"])) {
-    $form_data = $_SESSION["form_data"];
-    // Display the data or do whatever you need
-    echo "Start time: " . $form_data['start_time'];
-    echo ", Video Delay: " . $form_data['video_delay'];
-    echo ", Video Duration: " . $form_data['video_dur'];
-    echo ", Number of Videos: " . $form_data['num_video'];
-}
-?>
+
 
 <head>
     <title>Regattastart</title>
@@ -57,17 +47,18 @@ if (isset($_SESSION["form_data"])) {
     }
     ?>
     <?php echo " Time now: " .date("H:i:s")?>
-    <br>
     <?php
-        if (isset($_SESSION['video_delay'])) {echo "<p>Selected Video Delay: " . $_SESSION['video_delay'] . "</p>";
-        }
-        if (isset($_SESSION['video_dur'])) {echo "<p>Selected Video Duration: " . $_SESSION['video_dur'] . "</p>";
-        }
-        if (isset($_SESSION['num_video'])) {echo "<p>Selected Number of Videos: " . $_SESSION['num_video'] . "</p>";
-        }
-        if (isset($_SESSION['start_time'])) {echo "<p>Selected Start Time: " . $_SESSION['start_time'] . "</p>";
-        }
+    // Retrieve and display data from the session
+    if (isset($_SESSION["form_data"])) {
+        $form_data = $_SESSION["form_data"];
+        // Display the data or do whatever you need
+        echo "Start time: " . $form_data['start_time'];
+        echo ", Video Delay: " . $form_data['video_delay'];
+        echo ", Video Duration: " . $form_data['video_dur'];
+        echo ", Number of Videos: " . $form_data['num_video'];
+    }
     ?>
+    <br>
 <!-- Here is our page's main content -->
 <main>
 <div align="center">
