@@ -46,7 +46,8 @@ error_reporting(E_ALL);
        echo "This web-page was last modified: \n" . date ("Y-m-d H:i:s.", filemtime($filename));
     }
     ?>
-    <?php echo " Time now: " .date("H:i:s")?>
+    <?php echo " Time now: " .date("H:i:s")?> 
+    <br>
     <?php
     // Retrieve and display data from the session
     if (isset($_SESSION["form_data"])) {
@@ -58,7 +59,7 @@ error_reporting(E_ALL);
         echo ", Number of Videos: " . $form_data['num_video'];
     }
     ?>
-    <br>
+   
 <!-- Here is our page's main content -->
 <main>
 <div align="center">
