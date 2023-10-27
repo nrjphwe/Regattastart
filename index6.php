@@ -72,7 +72,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 for ($i = 0; $i < $loops; $i++) {
                 //    $time = sprintf('%02d:%02d', $i/(60/$steps), $current%60);
                 $start_time = sprintf('%02d:%02d', $i/(60/$steps), $current%60);
-                echo '<option>' . $start_time . '</option>';
+                //echo '<option>' . $start_time . '</option>';
+                echo '<option value="' . $start_time . '">' . $start_time . '</option>';
                 $current += $steps;
                 }
             ?>
