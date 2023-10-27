@@ -100,23 +100,13 @@ def main():
         # Load JSON data from the first command-line argument
         form_data = json.loads(sys.argv[1])
         # Log the loaded form_data
-        print("form_data:", form_data)
         logger.info ("form_data: %s", form_data)
-        # Receive form data as a command-line argument
         # Extract specific fields from the JSON data
-        #start_time = str(form_data.get("field1", ""))
         start_time = str(form_data["start_time"])
         week_day = str(form_data["day"])
         video_delay = int(form_data["video_delay"])
         video_dur = int(form_data["video_dur"])
         num_video = int(form_data["num_video"])
-        
-        #start_time = str(form_data["field1"])
-        #week_day = str(form_data["field2"])
-        #video_delay = int(form_data["field3"])
-        #video_dur = int(form_data["field4"])
-        #num_video = int(form_data["field5"])
-        print("112 start_time:", start_time)
         
         # Set up initial data
         camera = setup_camera()
