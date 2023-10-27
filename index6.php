@@ -14,7 +14,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $_SESSION["form_data"] = $_POST;
 
     // Execute the Python script
-    exec('python3 /usr/lib/cgi-bin/regattastart6.py ' . escapeshellarg(json_encode($_POST)) . ' &');
+    //exec('python3 /usr/lib/cgi-bin/regattastart6.py ' . escapeshellarg(json_encode($_POST)) . ' &');
+    $command = 'python3 /usr/lib/cgi-bin/regattastart6.py ' . escapeshellarg(json_encode($_POST)) . ' > /var/www/html/output.txt 2>&1 &';
+    shell_exec($command);
     echo date('h:i:s') . "<br>";
     echo "execution started";
     sleep(3);
