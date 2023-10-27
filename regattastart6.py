@@ -85,18 +85,28 @@ def main():
     camera = None # Initialize the camera variable
     signal = None # Initialize the signal relay/variable
     video_recording_started = False
+
+    # Check if a command-line argument (JSON data) is provided
+    if len(sys.argv) < 2:
+        print("No JSON data provided as a command-line argument.")
+        sys.exit(1)
+    
     try:
         seconds_now = 0
         logger = setup_logging()
+        # Load JSON data from the first command-line argument
         form_data = json.loads(sys.argv[1])
+        # Log the loaded form_data
+        # print("form_data:", form_data)
         logger.info ("form_data: %s", form_data)
+        
         # Receive form data as a command-line argument
-        logger.info ("Number of arguments arguments")
+        # Extract specific fields from the JSON data
         start_time = str(form_data.get("field1", ""))
         week_day = str(form_data.get("field2", ""))
-        video_delay = int(form_data.get("field3", ""))
-        video_dur = int(form_data.get("field4", ""))
-        num_video = int(form_data.get("field5", ""))
+        video_delay = int(form_data.get("field3", 0))
+        video_dur = int(form_data.get("field4", 0))
+        num_video = int(form_data.get("field5", 0))
         
         # Set up initial data
         camera = setup_camera()
@@ -173,8 +183,9 @@ def main():
                     convert_video_to_mp4(mp4_path, "video" + str(i) + ".h264",  "video" + str(i) + ".mp4")
                 logger.info (" This was the last video =====")
                 return # Exit the function
-    except Exception as e:
-        logger.exception("Fatal error in main loop: %s", str(e))
+    except json.JSONDecodeError as e:
+        logger.info ("Failed to parse JSON: %", str(e))
+        sys.exit(1)
     finally:
         logger.info (" This is finally section =")
         if camera is not None:
