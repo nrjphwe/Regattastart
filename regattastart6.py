@@ -109,6 +109,7 @@ def main():
         video_delay = int(form_data.get("field3", 0))
         video_dur = int(form_data.get("field4", 0))
         num_video = int(form_data.get("field5", 0))
+        print("112 start_time:", start_time)
         
         # Set up initial data
         camera = setup_camera()
