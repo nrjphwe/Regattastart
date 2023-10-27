@@ -104,7 +104,8 @@ def main():
         logger.info ("form_data: %s", form_data)
         # Receive form data as a command-line argument
         # Extract specific fields from the JSON data
-        start_time = str(form_data.get("field1", ""))
+        #start_time = str(form_data.get("field1", ""))
+        start_time = str(form_data["field1"])
         week_day = str(form_data.get("field2", ""))
         video_delay = int(form_data.get("field3", 0))
         video_dur = int(form_data.get("field4", 0))
