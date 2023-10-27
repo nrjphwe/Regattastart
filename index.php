@@ -9,32 +9,21 @@ print_r($_POST);
 echo "<br/>";
 ?>
 
+<!-- Your HTML to display data from the session -->
+<!DOCTYPE html>
+<html>
 <?php
 // Retrieve and display data from the session
 if (isset($_SESSION["form_data"])) {
     $form_data = $_SESSION["form_data"];
     // Display the data or do whatever you need
-    
-    echo ", Selected Number of Videos: " . $form_data['num_video'];
+    echo ", Start time: " . $form_data['start_timer'];
+    echo ", Video Delay: " . $form_data['video_delay'];
+    echo ", Video Duration: " . $orm_data['video_dur'];
+    echo ", Number of Videos: " . $form_data['num_video'];
 }
 ?>
 
-<!-- Your HTML to display data from the session -->
-
-
-<!DOCTYPE html>
-<html>
-<?php
-if (isset($_SESSION['selected_data'])) {
-    $selectedData = $_SESSION['selected_data'];
-    echo " Selected Video Delay: " . $selectedData['video_delay'];
-    echo ", Selected Video Duration: " . $selectedData['video_dur'];
-    echo ", Selected Number of Videos: " . $selectedData['num_video'];
-    // Display other form fields as needed
-}
-$num_video = isset($_SESSION['num_video']) ? $_SESSION['num_video'] : '';
-
-?>
 <head>
     <title>Regattastart</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
