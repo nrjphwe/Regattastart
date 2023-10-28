@@ -5,7 +5,17 @@ ini_set('display_errors', 1);
 error_reporting(E_ALL);
 ?>
 <?php
-// Check if the race ID is present in the URL
+// Check if the race ID is present 
+$race_id_file = "/var/www/html/race_id.txt";
+
+if (file_exists($race_id_file)) {
+    $race_id = file_get_contents($race_id_file);
+    // Now you have the $race_id and can use it in your code
+    echo "Race ID: $race_id";
+} else {
+    // Handle the case when the race_id file doesn't exist (e.g., show an error message).
+}
+
 if (isset($_GET['race_id'])) {
     $race_id = $_GET['race_id'];
     // You now have the race ID and can use it in your code
@@ -13,16 +23,7 @@ if (isset($_GET['race_id'])) {
 } else {
     // Race ID is not present in the URL; handle this case accordingly
     echo "Race ID not found in the URL";
-}
-$file_path = "/var/www/html/{$race_id}.json"; // Adjust the file path
-
-if (file_exists($file_path)) {
-    $data_json = file_get_contents($file_path);
-    $data = json_decode($data_json, true);
-    // Now you can use $data to display or process the information.
-} else {
-     $num_video = 9;
-    // Handle the case when the data file doesn't exist (e.g., show an error message).
+    $num_video = 9;
 }
 ?>
 
