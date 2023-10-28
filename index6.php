@@ -1,5 +1,6 @@
 <?php
 session_start();
+// ini_set('session.gc_maxlifetime', 86400); is set in /etc/php/7.3/apache2/php.ini
 print_r($_SESSION);
 echo "<br/>";
 print_r($_POST);
