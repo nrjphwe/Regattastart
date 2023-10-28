@@ -14,15 +14,6 @@ if (file_exists($race_id_file)) {
     echo "Race ID: $race_id";
 } else {
     // Handle the case when the race_id file doesn't exist (e.g., show an error message).
-}
-
-if (isset($_GET['race_id'])) {
-    $race_id = $_GET['race_id'];
-    // You now have the race ID and can use it in your code
-    echo "Race ID: $race_id";
-} else {
-    // Race ID is not present in the URL; handle this case accordingly
-    echo "Race ID not found in the URL";
     $num_video = 9;
 }
 ?>
