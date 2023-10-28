@@ -22,6 +22,7 @@ function generateUniqueID() {
 <?php
     // using a file based approach, to be able to use several devices.
     $race_id = generateUniqueID(); // Function to generate a unique ID
+    $_SESSION['race_id'] = $race_id;
     $data = $_POST; // Data submitted by the user
     $data_json = json_encode($data);
     $file_path = "/var/www/html/{$race_id}.json"; // Adjust the file path
