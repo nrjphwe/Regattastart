@@ -165,7 +165,7 @@ def main():
                 #----------------------------------------------------------#
                 # Result video, chopped into numeral videos with duration at "video_dur"
                 #----------------------------------------------------------#
-                logger.info (" num_videos = %s",num_videos)
+                logger.info (" num_videos = %s",num_video)
                 logger.info (' video duration = %s', video_dur)
                 stop = num_videos + 1
                 t1 = dt.datetime.now() # should be time after delay
