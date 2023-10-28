@@ -8,6 +8,16 @@ echo "<br/>";
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 ?>
+!-- using a file based approach, to be able to use several devices.
+<?php
+    $race_id = generateUniqueID(); // Function to generate a unique ID
+    $data = $_POST; // Data submitted by the user
+    $data_json = json_encode($data);
+    $file_path = "/var/www/html/{$race_id}.json"; // Adjust the file path
+    file_put_contents($file_path, $data_json);
+?>
+
+
 <?php
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Process and store the form data
