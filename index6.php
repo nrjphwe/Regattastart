@@ -1,5 +1,6 @@
 <?php
 session_start();
+ini_set('session.gc_maxlifetime', 86400);
 print_r($_SESSION);
 echo "<br/>";
 print_r($_POST);
