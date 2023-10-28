@@ -7,7 +7,7 @@ error_reporting(E_ALL);
 <?php
 // To read the data from the JSON file based on the race ID or session identifier
 $race_id = $_GET['race_id']; // Retrieve the race ID from the URL or another source
-$file_path = "/path/to/data/{$race_id}.json"; // Adjust the file path
+$file_path = "/var/www/html/{$race_id}.json"; // Adjust the file path
 
 if (file_exists($file_path)) {
     $data_json = file_get_contents($file_path);
