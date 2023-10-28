@@ -4,6 +4,21 @@ session_start();
 ini_set('display_errors', 1); 
 error_reporting(E_ALL);
 ?>
+!-- To read the data from the JSON file based on the race ID or session identifier
+<?php
+$race_id = $_GET['race_id']; // Retrieve the race ID from the URL or another source
+$file_path = "/path/to/data/{$race_id}.json"; // Adjust the file path
+
+if (file_exists($file_path)) {
+    $data_json = file_get_contents($file_path);
+    $data = json_decode($data_json, true);
+
+    // Now you can use $data to display or process the information.
+} else {
+     $num_video = 9;
+    // Handle the case when the data file doesn't exist (e.g., show an error message).
+}
+?>
 
 <!-- Your HTML to display data from the session -->
 <!DOCTYPE html>
