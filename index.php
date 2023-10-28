@@ -5,6 +5,18 @@ ini_set('display_errors', 1);
 error_reporting(E_ALL);
 ?>
 <?php
+// Check if the race ID is present in the URL
+if (isset($_GET['race_id'])) {
+    $race_id = $_GET['race_id'];
+    // You now have the race ID and can use it in your code
+    echo "Race ID: $race_id";
+} else {
+    // Race ID is not present in the URL; handle this case accordingly
+    echo "Race ID not found in the URL";
+}
+?>
+<?php
+
 // To read the data from the JSON file based on the race ID or session identifier
 $race_id = $_GET['race_id']; // Retrieve the race ID from the URL or another source
 $file_path = "/var/www/html/{$race_id}.json"; // Adjust the file path
