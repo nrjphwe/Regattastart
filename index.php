@@ -3,6 +3,8 @@ session_start();
 // after "git pull", "sudo cp /home/pi/Regattastart/index.php /var/www/html/"
 ini_set('display_errors', 1); 
 error_reporting(E_ALL);
+print_r($_SESSION);
+echo "<br/>";
 ?>
 <?php
 // Check if the race ID is present 
