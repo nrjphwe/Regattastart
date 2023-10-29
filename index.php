@@ -1,111 +1,86 @@
 <?php
+session_id("regattastart");
+session_start();
 // after "git pull", "sudo cp /home/pi/Regattastart/index.php /var/www/html/"
-//session_id("regattastart");
-//session_start();
-//echo " 4: session-id= " . session_id() . " ";
-//echo " 5: efter session id ";
-//print_r($_SESSION);
-//echo " 7: efter print_r";
-//echo "<br/>";
-?>
-<?php
-$cookie_name1 = "video_delay";
-$cookie_name2 = "video_dur";
-$cookie_name3 = "num_video";
-$cookie_name4 = "start_time";
-?>
-<!DOCTYPE html>
-<html>
-<?php
-// Echo session variables that were set on previous page
-if(!empty($_SESSION[$cookie_name1]))
-{
-echo "session variables set on previous page: ";
-echo "video_delay = " . $_SESSION["video_delay"] . ", ";
-echo "video_dur =  " . $_SESSION["video_dur"] . ", ";
-echo "num_video = " . $_SESSION["num_video"] . ", ";
-echo "start_time = " . $_SESSION["start_time"] . ", ";
+ini_set('display_errors', 1); 
+error_reporting(E_ALL);
+echo "Session ID: " . session_id();
+echo "SESSION= ";
+print_r($_SESSION);
+echo "POST= ";
+print_r($_POST);
 echo "<br/>";
-$num_video = $_SESSION["num_video"];
-} else {
-echo " No Session data <br>";
-}
 ?>
 <?php
-if(!isset($_COOKIE[$cookie_name2]))
-{
-   echo "no cookie data";
-   if(empty($_SESSION[$cookie_name1]))
-   {
-       echo "no session data";
-       $num_video = 7;
-    } else {
-       // Session  data exists
-       echo "Video duration in minutes is set to = " . $_SESSION[$cookie_name1];
-       echo " and ";
-       echo "Video delay in minutes is: " . $_SESSION[$cookie_name2];
-       echo "</br>";
-       echo "Number of consecutive videos are: " . $_SESSION[$cookie_name3];
-       echo "Start time is : " . $_SESSION[$cookie_name4];
-       $num_video = $_SESSION["num_video"];
-     }
+// Check if the race ID is present 
+$race_id_file = "/var/www/html/race_id.txt";
+
+if (file_exists($race_id_file)) {
+    $race_id = file_get_contents($race_id_file);
+    // Now you have the $race_id and can use it in your code
+    echo "Race ID: $race_id";
 } else {
-   echo " cookie data exists with: ";
-   echo " video_delay=" . $_COOKIE["video_delay"];
-   echo ", video_dur=" . $_COOKIE["video_dur"];
-   echo ", cookie num_video=" . $_COOKIE["num_video"];
-   echo ", cookie start_time=" . $_COOKIE["start_time"];
-   echo "<br/>";
-   $num_video = $_COOKIE["num_video"];
-   $start_time = $_COOKIE["start_time"];
-   echo "Number of finish videos vill be " . $num_video, " and each have a duration of ". $_COOKIE[$cookie_name2], " min. ";
-   echo "Start time is " . $start_time;
-}
-?>
-<body>
-<head>
-<title>Regattastart</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<style>
-img {
-    max-width: 100%;
-    height: auto;
-}
-</style>
-<style>
-video {
-    max-width: 100%;
-    height: auto;
-}
-</style>
-<link rel="stylesheet" href="/w3.css"
-</head>
-<body>
-<!-- Here is our main header that is used across all the pages of our website -->
-<header>
-<?php
-// output index.php was last modified.
-$filename = 'index.php';
-if (file_exists($filename)) {
-   $version_date = date ("Y-m-d", filemtime($filename)); 
+    // Handle the case when the race_id file doesn't exist (e.g., show an error message).
+    $num_video = 9;
 }
 ?>
 
-<div align="center">
-<div class="w3-panel w3-blue">
-<h2> Regattastart result page version: <?php echo $version_date ?> </h2>
-</div>
+<!-- Your HTML to display data from the session -->
+<!DOCTYPE html>
+<html>
+
+
+<head>
+    <title>Regattastart</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+    img {
+        max-width: 100%;
+        height: auto;
+    }
+    </style>
+    <style>
+    video {
+        max-width: 100%;
+        height: auto;
+    }
+    </style>
+    <link rel="stylesheet" href="/w3.css"
+    </head>
+<body>
+    <?php
+    // output index.php was last modified.
+    $filename = 'index.php';
+    if (file_exists($filename)) {
+       $version_date = date ("Y-m-d", filemtime($filename)); 
+    }
+    ?>  
+    <div align="center">
+    <div class="w3-panel w3-blue">
+        <h2> Regattastart result page version: <?php echo $version_date ?> </h2>
+    </div>
+    <?php
+    // output index.php was last modified.
+    $filename = 'index.php';
+    if (file_exists($filename)) {
+       echo "This web-page was last modified: \n" . date ("Y-m-d H:i:s.", filemtime($filename));
+    }
+    ?>
+    <?php echo " Time now: " .date("H:i:s")?> 
+    <br>
+    <?php
+    // Retrieve and display data from the session
+    if (isset($_SESSION["form_data"])) {
+        $form_data = $_SESSION["form_data"];
+        // Display the data or do whatever you need
+        echo "Start time: " . $form_data['start_time'];
+        echo ", Video Delay: " . $form_data['video_delay'];
+        echo ", Video Duration: " . $form_data['video_dur'];
+        $num_video = $form_data['num_video'];
+        echo ", Number of Videos: " . $num_video;
+    }
+    ?>
    
-<?php
-// output index.php was last modified.
-$filename = 'index.php';
-if (file_exists($filename))
-{
-   echo "This web-page was last modified: \n" . date ("Y-m-d H:i:s.", filemtime($filename));
-}
-?>
-<?php echo " Time now: " .date("H:i:s")?>
-<br>
 <!-- Here is our page's main content -->
 <main>
 <div align="center">
@@ -125,42 +100,40 @@ if (file_exists($filename))
 <h3> Foto vid 1a start</h3>
 <img src="/images/1st-start_pict.jpg?<?php echo Date("Y.m.d.G.i.s")?>" alt="1st start  picture" width="720" height="480"  >
 <?php
-$path = '/images/';
-$filename = 'images/2nd-5min_pict.jpg';
-if (file_exists($filename)) {
-   echo "<h3> Bilder tagna vid varje signal innan 2a start  </h3> ";
-   $filename = '2nd-5min_pict.jpg';
-   echo "<h3> Bild vid varningssignal 5 minuter innan 2a start</h3>";
-   echo '<img src = "' . $path . $filename . '" / alt="1st 5 min picture" width="720" height="480"  >';
-   $filename = '2nd-4min_pict.jpg';
-   echo "<h3> Signal 4 minuter innan 2a start </h3>";
-   echo '<img src = "' . $path . $filename . '" / alt="1st 5 min picture" width="720" height="480"  >';
-   $filename = '2nd-1min_pict.jpg';
-   echo "<h3> Signal 1 minut innan 2a start </h3>";
-   echo '<img src = "' . $path . $filename . '" / alt="1st 5 min picture" width="720" height="480"  >';
-   $filename = '2nd-start_pict.jpg';
-   echo "<h3> Foto vid 2a start </h3>";
-   echo '<img src = "' . $path . $filename . '" / alt="1st 5 min picture" width="720" height="480"  >';
-}
+    $path = '/images/';
+    $filename = 'images/2nd-5min_pict.jpg';
+    if (file_exists($filename)) {
+       echo "<h3> Bilder tagna vid varje signal innan 2a start  </h3> ";
+       $filename = '2nd-5min_pict.jpg';
+       echo "<h3> Bild vid varningssignal 5 minuter innan 2a start</h3>";
+       echo '<img src = "' . $path . $filename . '" / alt="1st 5 min picture" width="720" height="480"  >';
+       $filename = '2nd-4min_pict.jpg';
+       echo "<h3> Signal 4 minuter innan 2a start </h3>";
+       echo '<img src = "' . $path . $filename . '" / alt="1st 5 min picture" width="720" height="480"  >';
+       $filename = '2nd-1min_pict.jpg';
+       echo "<h3> Signal 1 minut innan 2a start </h3>";
+       echo '<img src = "' . $path . $filename . '" / alt="1st 5 min picture" width="720" height="480"  >';
+       $filename = '2nd-start_pict.jpg';
+       echo "<h3> Foto vid 2a start </h3>";
+       echo '<img src = "' . $path . $filename . '" / alt="1st 5 min picture" width="720" height="480"  >';
+    }
 ?>
 <div class="w3-panel w3-pale-blue">
 <?php
-$video_name = '/images/video0.mp4';
-{
-   echo "<h3> Video 5 min före start och 2 min efter, eller vid 2 starter, till 2 min efter andra start </h3>";
- //  echo "<video src = " . $video_name . " controls ></video><p>";
-   echo '<video width = "720" height="480" controls><source src= ' . $video_name . ' type="video/mp4"></video><p>';
-}
+    $video_name = '/images/video0.mp4';
+    {
+       echo "<h3> Video 5 min före start och 2 min efter, eller vid 2 starter, till 2 min efter andra start </h3>";
+       echo '<video width = "720" height="480" controls><source src= ' . $video_name . ' type="video/mp4"></video><p>';
+    }
 ?>
 </div>
+<div class="w3-panel w3-pale-red">
 <?php
-for ($x = 1; $x <= $num_video; $x++)
-{
-    echo "<h2> Finish video, this is video $x for the finish</h2><br>";
-    $video_name =  "/images/video" . $x . ".mp4";
-//    echo "<video src=" . $video_name . " controls ></video><p>";
-    echo '<video width = "720" height="480" controls><source src= ' . $video_name . ' type="video/mp4"></video><p>';
-}
+    for ($x = 1; $x <= $num_video; $x++) {
+        echo "<h2> Finish video, this is video $x for the finish</h2><br>";
+        $video_name =  "/images/video" . $x . ".mp4";
+        echo '<video width = "720" height="480" controls><source src= ' . $video_name . ' type="video/mp4"></video><p>';
+    }
 ?>
 </div>
 </main>

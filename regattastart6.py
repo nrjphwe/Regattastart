@@ -1,24 +1,29 @@
+#!/usr/bin/python3 -u
 import os
 import sys
+# Redirect stdout to a file
+sys.stdout = open('/var/www/html//output.log', 'w')
 import cgitb
 cgitb.enable(display=0, logdir="/var/www/html/")
 import time
-print("start")
 from datetime import datetime
 import datetime as dt
 import logging
 import logging.config
+import json
+
 import subprocess
 import RPi.GPIO as GPIO
 from picamera import PiCamera, Color
 
 signal_dur = 0.3 # 0.3 sec
+log_path = '/usr/lib/cgi-bin/'
 mp4_path = '/var/www/html/images/'
 photo_path = '/var/www/html/images/'
-logger = None  # Declare the logger variable at the top
 
 def setup_logging():
-    logging.config.fileConfig('logging.conf')
+    global logger  # Make logger variable global
+    logging.config.fileConfig('/usr/lib/cgi-bin/logging.conf')
     logger = logging.getLogger('Start')
     logger.info("Start logging")
     return logger
@@ -80,21 +85,32 @@ def convert_video_to_mp4(mp4_path, source_file, destination_file):
     logger.info (" Video recording %s converted ", destination_file)
 
 def main():
-    global logger  # Make logger variable global
+    logger = setup_logging()  # Initialize the logger
     camera = None # Initialize the camera variable
     signal = None # Initialize the signal relay/variable
     video_recording_started = False
+
+    # Check if a command-line argument (JSON data) is provided
+    if len(sys.argv) < 2:
+        print("No JSON data provided as a command-line argument.")
+        sys.exit(1)
+    
     try:
         seconds_now = 0
-        start_time = str(sys.argv[1])
-        week_day = str(sys.argv[2])
-        video_delay = int(sys.argv[3])
-        num_videos = int(sys.argv[4])
-        video_dur = int(sys.argv[5])
+        # Load JSON data from the first command-line argument
+        form_data = json.loads(sys.argv[1])
+        # Log the loaded form_data
+        logger.info ("form_data: %s", form_data)
+        # Extract specific fields from the JSON data
+        start_time = str(form_data["start_time"])
+        week_day = str(form_data["day"])
+        video_delay = int(form_data["video_delay"])
+        video_dur = int(form_data["video_dur"])
+        num_video = int(form_data["num_video"])
+        
         # Set up initial data
-        logger = setup_logging()
         camera = setup_camera()
-        logger.info (" Weekday= %s, Start_time= %s,video_delay= %, num_videos= %s,video_dur= %s", week_day, start_time, video_delay, num_videos, video_dur)
+        logger.info (" Weekday= %s, Start_time= %s, video_delay= %s, num_video= %s, video_dur= %s", week_day, start_time, video_delay, num_video, video_dur)
         start_hour, start_minute = start_time.split(':')
         start_time_sec = 60 * (int(start_minute) + 60 * int(start_hour)) # 6660
         time_intervals = [
@@ -149,7 +165,7 @@ def main():
                 #----------------------------------------------------------#
                 # Result video, chopped into numeral videos with duration at "video_dur"
                 #----------------------------------------------------------#
-                logger.info (" num_videos = %s",num_videos)
+                logger.info (" num_videos = %s",num_video)
                 logger.info (' video duration = %s', video_dur)
                 stop = num_videos + 1
                 t1 = dt.datetime.now() # should be time after delay
@@ -167,8 +183,9 @@ def main():
                     convert_video_to_mp4(mp4_path, "video" + str(i) + ".h264",  "video" + str(i) + ".mp4")
                 logger.info (" This was the last video =====")
                 return # Exit the function
-    except Exception as e:
-        logger.exception("Fatal error in main loop: %s", str(e))
+    except json.JSONDecodeError as e:
+        logger.info ("Failed to parse JSON: %", str(e))
+        sys.exit(1)
     finally:
         logger.info (" This is finally section =")
         if camera is not None:
