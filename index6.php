@@ -6,12 +6,12 @@ function generateUniqueID() {
     $race_id = "{$timestamp}_{$random}";
     return $race_id;
 }
-    // using a file based approach, to be able to use several devices.
-    $race_id = generateUniqueID(); // Function to generate a unique ID
-    // Store the race_id in a file for later retrieval
-    file_put_contents("/var/www/html/race_id.txt", $race_id);
 ?>
+
 <?php
+$race_id = generateUniqueID(); // Function to generate a unique ID
+// Store the race_id in a file for later retrieval
+file_put_contents("/var/www/html/race_id.txt", $race_id);
 session_id($race_id);
 session_start();
 echo "Session id = " . Session_id() . " ";
