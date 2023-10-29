@@ -1,18 +1,19 @@
+//<?php
+//function generateUniqueID() {
+//    // Generate a unique ID based on the current timestamp and a random number
+//    $timestamp = time();
+//    $random = mt_rand(1000, 9999); // Generate a random 4-digit number
+//    $race_id = "{$timestamp}_{$random}";
+//    return $race_id;
+//}
+//    // using a file based approach, to be able to use several devices.
+//    $race_id = generateUniqueID(); // Function to generate a unique ID
+//    // Store the race_id in a file for later retrieval
+//    file_put_contents("/var/www/html/race_id.txt", $race_id);
+//?>
 <?php
-function generateUniqueID() {
-    // Generate a unique ID based on the current timestamp and a random number
-    $timestamp = time();
-    $random = mt_rand(1000, 9999); // Generate a random 4-digit number
-    $race_id = "{$timestamp}_{$random}";
-    return $race_id;
-}
-    // using a file based approach, to be able to use several devices.
-    $race_id = generateUniqueID(); // Function to generate a unique ID
-    // Store the race_id in a file for later retrieval
-    file_put_contents("/var/www/html/race_id.txt", $race_id);
-?>
-<?php
-session_id($race_id);
+//session_id($race_id);
+session_id("regattastart");
 session_start();
 // ini_set('session.gc_maxlifetime', 86400); is set in /etc/php/7.3/apache2/php.ini
 print_r($_SESSION);
