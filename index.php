@@ -3,6 +3,7 @@ session_start();
 // after "git pull", "sudo cp /home/pi/Regattastart/index.php /var/www/html/"
 ini_set('display_errors', 1); 
 error_reporting(E_ALL);
+echo "Session ID: " . session_id();
 echo "SESSION= ";
 print_r($_SESSION);
 echo "POST= ";
