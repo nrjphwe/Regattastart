@@ -5,7 +5,7 @@ ini_set('display_errors', 1);
 error_reporting(E_ALL);
 echo " $_SESSION= "
 print_r($_SESSION);
-echo "  $_POST= "
+echo "  $_POST= ";
 print_r($_POST);
 echo "<br/>";
 ?>
