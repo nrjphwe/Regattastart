@@ -175,8 +175,8 @@ def main():
                 logger.info (" num_videos = %s",num_video)
                 logger.info (' video duration = %s', video_dur)
                 stop = num_video + 1
-                t2 = dt.datetime.now() # should be time after video_delay (minus 2 min)
                 for i in range(1, stop):
+                    t2 = dt.datetime.now() # should be time after video_delay (minus 2 min)
                     logger.info (' i = %s', i)
                     start_video_recording(camera, photo_path, "video" + str(i) + ".h264")
                     #------------------------------------------------------#
