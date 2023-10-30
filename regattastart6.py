@@ -182,7 +182,11 @@ def main():
                     #------------------------------------------------------#
                     # video running, duration at "video_dur"
                     #------------------------------------------------------#
-                    logger.info (' dt.datetime.now()= %s, t0= %s, t1= %, t2= %s',dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),t0.strftime('%Y-%m-%d %H:%M:%S'),t1.strftime('%Y-%m-%d %H:%M:%S'),t2.strftime('%Y-%m-%d %H:%M:%S'))  ###
+                    logger.info (' dt.datetime.now()= %s ',dt.datetime.now())
+                    logger.info ('t0= %s,t0.strftime('%Y-%m-%d %H:%M:%S'))
+                    logger.info ('t1= %s,t1.strftime('%Y-%m-%d %H:%M:%S'))
+                    logger.info ('t2= %s,t2.strftime('%Y-%m-%d %H:%M:%S'))
+                    #logger.info (' dt.datetime.now()= %s, t0= %s, t1= %, t2= %s',dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), t0.strftime('%Y-%m-%d %H:%M:%S'), t1.strftime('%Y-%m-%d %H:%M:%S'), t2.strftime('%Y-%m-%d %H:%M:%S')) 
                     while (dt.datetime.now() - t2).seconds < (60 * video_dur):
                         camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + "  " + str((dt.datetime.now() - t0).seconds)
                         camera.wait_recording(0.5)
