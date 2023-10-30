@@ -150,11 +150,13 @@ def main():
                 logger.info (" Wait 2 minutes then stop video recording")
                 #--------------------------------------------------------------------------------#
                 # 5-min, 4-min ........1-min, Start.... 2min after start....... time after delay  
-                # 5-min, 4-min ........1-min,   t0  ....  t1
+                # 5-min, 4-min ........1-min,   t0  ....    t1    ............     t2
                 #--------------------------------------------------------------------------------#
                 t0 = dt.datetime.now() # should be nearly same as start_time_sec
+                # Continue with recording for 2 min (119 s), 
+                # And add annotations with seconds from start 
                 while (dt.datetime.now() - t0).seconds < (119):
-                    camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + "  " + str((dt.datetime.now() - t).seconds)
+                    camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + "  " + str((dt.datetime.now() - t0).seconds)
                     camera.wait_recording(0.5)
                 stop_video_recording(camera)
                 convert_video_to_mp4(mp4_path, "video0.h264", "video0.mp4")
@@ -179,9 +181,9 @@ def main():
                     #------------------------------------------------------#
                     # video running, duration at "video_dur"
                     #------------------------------------------------------#
-                    logger.info (' dt.datetime.now()= %s, t= %s, t1= %, t2= %s', dt.datetime.now(),t,t1,t2)  ###
+                    logger.info (' dt.datetime.now()= %s, t0= %s, t1= %, t2= %s', dt.datetime.now(),t,t1,t2)  ###
                     while (dt.datetime.now() - t2).seconds < (60 * video_dur):
-                        camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + "  " + str((dt.datetime.now() - t).seconds)
+                        camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + "  " + str((dt.datetime.now() - t0).seconds)
                         camera.wait_recording(0.5)
                     stop_video_recording(camera)
                     convert_video_to_mp4(mp4_path, "video" + str(i) + ".h264",  "video" + str(i) + ".mp4")
