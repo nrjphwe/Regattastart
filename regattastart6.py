@@ -124,7 +124,7 @@ def main():
         remove_files(photo_path, "pict")
         now = dt.datetime.now()
         wd = dt.datetime.today().strftime("%A")
-        if wd == week_day :            # example Wednesday = 3
+        if wd == week_day :   # Is todays day of the week same as selected week_day?
             while seconds_now < start_time_sec:
                 for seconds, action, capture_file, log_message in time_intervals:
                     t = dt.datetime.now() # ex: 2015-01-04 18:48:33.255145
@@ -148,12 +148,19 @@ def main():
 
             else:
                 logger.info (" Wait 2 minutes then stop video recording")
+                #--------------------------------------------------------------------------------#
+                # 5-min, 4-min ........1-min, Start.... 2min after start....... time after delay  
+                # 5-min, 4-min ........1-min,   t0  ....    t1    ............     t2
+                #--------------------------------------------------------------------------------#
                 t0 = dt.datetime.now() # should be nearly same as start_time_sec
+                # Continue with recording for 2 min (119 s), 
+                # And add annotations with seconds from start 
                 while (dt.datetime.now() - t0).seconds < (119):
-                    camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + "  " + str((dt.datetime.now() - t).seconds)
+                    camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + "  " + str((dt.datetime.now() - t0).seconds)
                     camera.wait_recording(0.5)
                 stop_video_recording(camera)
                 convert_video_to_mp4(mp4_path, "video0.h264", "video0.mp4")
+                t1 = dt.datetime.now() # should be time after 2 min delay
                 #----------------------------------------------------------#
                 # Wait for finish, when next video1 will start, video_delay
                 #----------------------------------------------------------#
@@ -162,22 +169,26 @@ def main():
                     sum = sum - 1
                     time.sleep(60)
                     logger.info (' sum: %s', sum)
-                #----------------------------------------------------------#
+                #-----------------------------------------------------------------------#
                 # Result video, chopped into numeral videos with duration at "video_dur"
-                #----------------------------------------------------------#
+                #-----------------------------------------------------------------------#
                 logger.info (" num_videos = %s",num_video)
                 logger.info (' video duration = %s', video_dur)
                 stop = num_video + 1
-                t1 = dt.datetime.now() # should be time after delay
                 for i in range(1, stop):
+                    t2 = dt.datetime.now() # should be time after video_delay (minus 2 min)
                     logger.info (' i = %s', i)
                     start_video_recording(camera, photo_path, "video" + str(i) + ".h264")
                     #------------------------------------------------------#
                     # video running, duration at "video_dur"
                     #------------------------------------------------------#
-                    logger.info (' dt.datetime.now()= %s t= %s', dt.datetime.now(),t)  ###
-                    while (dt.datetime.now() - t1).seconds < (60 * video_dur):
-                        camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + "  " + str((dt.datetime.now() - t).seconds)
+                    logger.info (' dt.datetime.now()= %s ',dt.datetime.now())
+                    logger.info (' t0= %s ',t0.strftime('%Y-%m-%d %H:%M:%S'))
+                    logger.info (' t1= %s ',t1.strftime('%Y-%m-%d %H:%M:%S'))
+                    logger.info (' t2= %s ',t2.strftime('%Y-%m-%d %H:%M:%S'))
+                    #logger.info (' dt.datetime.now()= %s, t0= %s, t1= %, t2= %s',dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), t0.strftime('%Y-%m-%d %H:%M:%S'), t1.strftime('%Y-%m-%d %H:%M:%S'), t2.strftime('%Y-%m-%d %H:%M:%S')) 
+                    while (dt.datetime.now() - t2).seconds < (60 * video_dur):
+                        camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + "  " + str((dt.datetime.now() - t0).seconds)
                         camera.wait_recording(0.5)
                     stop_video_recording(camera)
                     convert_video_to_mp4(mp4_path, "video" + str(i) + ".h264",  "video" + str(i) + ".mp4")
