@@ -160,6 +160,7 @@ def main():
                     camera.wait_recording(0.5)
                 stop_video_recording(camera)
                 convert_video_to_mp4(mp4_path, "video0.h264", "video0.mp4")
+                t1 = dt.datetime.now() # should be time after 2 min delay
                 #----------------------------------------------------------#
                 # Wait for finish, when next video1 will start, video_delay
                 #----------------------------------------------------------#
