@@ -132,11 +132,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </select>
         </fieldset>
     </div>
+    <p></p>
+        Number of starts: <select name="num_starts" id="num_starts">
+            <option value="1">1</option>
+            <option value="2">2</option>
+        </select>
+        
     <br><p></p>
     <div id="submit" align="center"></div>
     <div class="w3" align="center">
     <br>
     <button type="submit">Submit</button>
+    </div>
 </form>
 </div>     
 
