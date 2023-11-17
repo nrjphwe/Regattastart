@@ -200,10 +200,9 @@ def main():
                         convert_video_to_mp4(mp4_path, "video" + str(i) + ".h264",  "video" + str(i) + ".mp4")
                     logger.info (" This was the last video =====")
                     return # Exit the function
-
-            elif num_starts == 2:
-                # Handle logic for 2 starts
-                # ...
+        elif num_starts == 2:
+            # Handle logic for 2 starts
+            # ...
     except json.JSONDecodeError as e:
         logger.info ("Failed to parse JSON: %", str(e))
         sys.exit(1)
