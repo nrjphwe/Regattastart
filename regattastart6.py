@@ -214,7 +214,7 @@ def main():
                 (start_time_sec + 1, lambda: trigger_warning_signal(signal), "2nd-5min_pict.jpg", "5 min Lamp-1 On -- Up with Flag O"),
                 (start_time_sec + 1*60, lambda: trigger_warning_signal(signal), "2nd-4min_pict.jpg", "4 min Lamp-2 On  --- Up with Flag P"),
                 (start_time_sec + 4*60, lambda: trigger_warning_signal(signal), "2nd-1min_pict.jpg", "1 min  Lamp-2 Off -- Flag P down"),
-                (start_time_sec + 5*50, lambda: trigger_warning_signal(signal), "2nd-start_pict.jpg", "Start signal"),
+                (start_time_sec + 5*60, lambda: trigger_warning_signal(signal), "2nd-start_pict.jpg", "Start signal"),
                 ]
                 while seconds_now < start_time_sec + 5*60 :
                     for seconds, action, capture_file, log_message in time_intervals:
