@@ -47,17 +47,9 @@ error_reporting(E_ALL);
 <body>
     <div align="center">
     <div class="w3-panel w3-blue">
-        <h2> Regattastart result page, 2024 </h2>
+        <h2> Regattastart resultat  --  2024 </h2>
     </div>
-    <?php
-        // output index.php was last modified.
-        $filename = 'index.php';
-        if (file_exists($filename)) {
-           echo "This web-page was last modified: \n" . date ("Y-m-d H:i:s.", filemtime($filename));
-    }
-    ?>
-    <?php echo " Time now: " .date("H:i:s")?> 
-    <br>
+    
     <?php
     // Retrieve and display data from the session
     if (isset($_SESSION["form_data"])) {
@@ -130,3 +122,11 @@ error_reporting(E_ALL);
 </main>
 </body>
 </html>
+<?php
+    // output index.php was last modified.
+    $filename = 'index.php';
+    if (file_exists($filename)) {
+       echo "This web-page was last modified: \n" . date ("Y-m-d H:i:s.", filemtime($filename));
+}
+?>
+<?php echo " Time now: " .date("H:i:s")?> 
