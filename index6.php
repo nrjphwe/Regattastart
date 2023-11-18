@@ -137,6 +137,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <option value="1">1</option>
             <option value="2">2</option>
         </select>
+    </fieldset>
+    <fieldset>
+    <div class="w3-container w3-green w3-cell">
         <br><p></p>
         <div id="submit" align="center"></div>
             <div class="w3" align="center">
