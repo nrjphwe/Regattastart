@@ -45,22 +45,15 @@ error_reporting(E_ALL);
     <link rel="stylesheet" href="/w3.css"
     </head>
 <body>
-    <?php
-    // output index.php was last modified.
-    $filename = 'index.php';
-    if (file_exists($filename)) {
-       $version_date = date ("Y-m-d", filemtime($filename)); 
-    }
-    ?>  
     <div align="center">
     <div class="w3-panel w3-blue">
-        <h2> Regattastart result page version: <?php echo $version_date ?> </h2>
+        <h2> Regattastart result page, 2024 </h2>
     </div>
     <?php
-    // output index.php was last modified.
-    $filename = 'index.php';
-    if (file_exists($filename)) {
-       echo "This web-page was last modified: \n" . date ("Y-m-d H:i:s.", filemtime($filename));
+        // output index.php was last modified.
+        $filename = 'index.php';
+        if (file_exists($filename)) {
+           echo "This web-page was last modified: \n" . date ("Y-m-d H:i:s.", filemtime($filename));
     }
     ?>
     <?php echo " Time now: " .date("H:i:s")?> 
@@ -75,15 +68,15 @@ error_reporting(E_ALL);
         echo ", Video Duration: " . $form_data['video_dur'];
         $num_video = $form_data['num_video'];
         echo ", Number of Videos: " . $num_video;
-        $num_start = $form_data['num_start'];
-        echo ", Number of starts: " . $num_start;
+        $num_starts = $form_data['num_starts'];
+        echo ", Number of starts: " . $num_starts;
     }
     ?>
    
 <!-- Here is our page's main content -->
 <main>
 <div align="center">
-<h4><a href="/index6.php" title="Merged version"> Regattstart 6 </a></h4>
+<h4><a href="/index6.php" title="Merged 1 and 2 start versions together"> Setup Page </a></h4>
 <div align="center">
 <div class="w3-panel w3-pale-blue">
 <h3> Bilder tagna vid varje signal innan 1a start </h3>
