@@ -140,6 +140,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </fieldset>
             <p></p>
         </div>
+    </div>
+    <div class="w3-row-padding" align="center">
         <div class="w3-container w3-green w3-cell">
             <fieldset>
                 <legend> Execute </legend>
@@ -154,6 +156,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <p></p>
         </div>
     </div>
+</div>
 </form>
 </div>     
 <!-- Here is our page's main content -->
