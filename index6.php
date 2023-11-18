@@ -33,9 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="/w3.css"
 <style>
-fieldset {
-    border-color: black;
-}
+
 </style>
 </head>
 <div class="w3-container w3-blue">
