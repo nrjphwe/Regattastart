@@ -4,26 +4,7 @@ session_start();
 // after "git pull", "sudo cp /home/pi/Regattastart/index.php /var/www/html/"
 ini_set('display_errors', 1); 
 error_reporting(E_ALL);
-//echo "Session ID: " . session_id();
-//echo "SESSION= ";
-//print_r($_SESSION);
-//echo "POST= ";
-//print_r($_POST);
-//echo "<br/>";
-//?>
-//<?php
-// Check if the race ID is present 
-//$race_id_file = "/var/www/html/race_id.txt";
-//if (file_exists($race_id_file)) {
-//    $race_id = file_get_contents($race_id_file);
-    // Now you have the $race_id and can use it in your code
-    //echo "Race ID: $race_id";
-//} else {
-//    // Handle the case when the race_id file doesn't exist (e.g., show an error message).
-//    $num_video = 9;
-//}
-//?>
-
+?>
 <!-- Your HTML to display data from the session -->
 <!DOCTYPE html>
 <html>
