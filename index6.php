@@ -36,6 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 fieldset {
     border-color: black;
 }
+</style>
 </head>
 <div class="w3-container w3-blue">
     <h2>Regattastart 2024 för 1 eller 2 startgrupper </h2>
