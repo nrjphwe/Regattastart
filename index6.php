@@ -1,12 +1,12 @@
 <?php
     session_id("regattastart");
     session_start();
-    echo "Session id = " . Session_id() . " ";
+    //echo "Session id = " . Session_id() . " ";
     // ini_set('session.gc_maxlifetime', 86400); is set in /etc/php/7.3/apache2/php.ini
-    print_r($_SESSION);
-    echo "<br/>";
-    print_r($_POST);
-    echo "<br/>";
+    //print_r($_SESSION);
+    //echo "<br/>";
+    //print_r($_POST);
+    //echo "<br/>";
     ini_set('display_errors', 1);
     error_reporting(E_ALL);
 ?>
@@ -29,24 +29,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <!DOCTYPE html>
 <html>
 <div align="center">
-<head><title> Regattastart X för setup av en eller 2 starter </title>   
+<head><title> Regattastart 2024 för setup av en eller 2 starter </title>   
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 </head>
-<div class="w3-container w3-green">
-    <h2>Regattastart för setup av en eller 2 starter</h2>
+<div class="w3-container w3-blue">
+    <h2>Regattastart 2024 för 1 eller 2 startgrupper </h2>
 </div>
 <header>
 <div align="center">
-<br>
-<?php
-    // output when index6.php was last modified.
-    $filename = 'index6.php';
-    if (file_exists($filename)) {
-        echo "This page: $filename was modified: " . date ("Y-m-d H:i:s.", filemtime($filename));
-    }
-?>
-<br>
+
 <!-- HTML form -->
 <body>
 <div align="center">
@@ -170,5 +162,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <h5> <a href="/index.php">  Resultat sida  </a></h5>
     </div>
 </main>
+<footer>
+<p>footer</p>      
+</footer>
 </body>
 </html>
+<?php
+    // output when index6.php was last modified.
+    $filename = 'index6.php';
+    if (file_exists($filename)) {
+        echo "This web-page: $filename was modified: " . date ("Y-m-d H:i:s.", filemtime($filename));
+    }
+?>
