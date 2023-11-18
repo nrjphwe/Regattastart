@@ -216,7 +216,7 @@ def main():
                 (start_time_sec + 4*60, lambda: trigger_warning_signal(signal), "2nd-1min_pict.jpg", "1 min  Lamp-2 Off -- Flag P down"),
                 (start_time_sec + 5*50, lambda: trigger_warning_signal(signal), "2nd-start_pict.jpg", "Start signal"),
                 ]
-                while seconds_now < start_time_sec:
+                while seconds_now < start_time_sec + 5*60 :
                     for seconds, action, capture_file, log_message in time_intervals:
                         t = dt.datetime.now() # ex: 2015-01-04 18:48:33.255145
                         time_now = t.strftime('%H:%M:%S')   # ex: 18:48:33
@@ -230,7 +230,7 @@ def main():
                                 video_recording_started = True        
                         # Iterate through time intervals
                         if seconds_now == seconds:
-                            logger.info(" Triggering event at seconds_now: %s", seconds_now)
+                            logger.info(" Triggering event (for 2 starts) at seconds_now: %s", seconds_now)
                             if action:
                                 action()
                             capture_picture(camera, photo_path, capture_file)
