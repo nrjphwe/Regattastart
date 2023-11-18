@@ -129,25 +129,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
     <p></p>
     <div class="w3-row-padding" align="center">
-    <div class="w3-container w3-red w3-cell">
-    <fieldset>
-        <legend> Setup of 1 or 2 starts </legend>
-        <p></p>
-        Number of starts: <select name="num_starts" id="num_starts">
-            <option value="1">1</option>
-            <option value="2">2</option>
-        </select>
-    </fieldset>
-    <fieldset>
-    <div class="w3-container w3-green w3-cell">
-        <br><p></p>
-        <div id="submit" align="center"></div>
-            <div class="w3" align="center">
-                <br>
-                <button type="submit">Submit</button>
-            </div>
+        <div class="w3-container w3-red w3-cell">
+            <fieldset>
+                <legend> Setup of 1 or 2 starts </legend>
+                <p></p>
+                Number of starts: <select name="num_starts" id="num_starts">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                </select>
+            </fieldset>
         </div>
-    </fieldset>
+        <div class="w3-container w3-green w3-cell">
+            <fieldset>
+                <br><p></p>
+                <div id="submit" align="center"></div>
+                    <div class="w3" align="center">
+                        <br>
+                        <button type="submit">Submit</button>
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+    </div>
 </form>
 </div>     
 <!-- Here is our page's main content -->
