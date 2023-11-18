@@ -142,21 +142,17 @@ fieldset {
     <div class="w3-row-padding" align="center">
         <div class="w3-container w3-blue w3-cell">
             <fieldset>
-                <legend> Execute </legend>
-                <br><p></p>
+                <legend>Execute</legend>
                 <div id="submit" align="center"></div>
                     <div class="w3" align="center">
                         <p>
-                        <button type="submit">Submit</button>
-                    </div>
+                    <button type="submit">Submit</button>
                 </div>
-                <br><p></p>
+                <p></p>
             </fieldset>
-            <br><p></p>
+            <p></p>
         </div>
-        <br><p></p>
     </div>
-</div>
 </form>
 </div>     
 <!-- Here is our page's main content -->
