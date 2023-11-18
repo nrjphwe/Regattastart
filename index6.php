@@ -1,21 +1,19 @@
 <?php
-session_id("regattastart");
-session_start();
-echo "Session id = " . Session_id() . " ";
-// ini_set('session.gc_maxlifetime', 86400); is set in /etc/php/7.3/apache2/php.ini
-print_r($_SESSION);
-echo "<br/>";
-print_r($_POST);
-echo "<br/>";
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
+    session_id("regattastart");
+    session_start();
+    echo "Session id = " . Session_id() . " ";
+    // ini_set('session.gc_maxlifetime', 86400); is set in /etc/php/7.3/apache2/php.ini
+    print_r($_SESSION);
+    echo "<br/>";
+    print_r($_POST);
+    echo "<br/>";
+    ini_set('display_errors', 1);
+    error_reporting(E_ALL);
 ?>
-
 <?php
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Process and store the form data
     $_SESSION["form_data"] = $_POST;
-    
     // Execute the Python script
     $command = 'python3 /usr/lib/cgi-bin/regattastart6.py ' . escapeshellarg(json_encode($_POST)) . ' > /var/www/html/output.txt 2>&1 &';
     shell_exec($command);
@@ -23,13 +21,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     echo "execution started";
     sleep(3);
     //exec('python3 /usr/lib/cgi-bin/regattastart6.py ' . escapeshellarg(json_encode($_POST)));
-    
     // Redirect to index.php
     header("Location: index.php");
     exit;
 }
 ?>
-
 <!DOCTYPE html>
 <html>
 <div align="center">
@@ -40,16 +36,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <div class="w3-container w3-green">
     <h2>Regattastart för setup av en eller 2 starter</h2>
 </div>
-<meta http-equiv="refresh" content="200" >
 <header>
 <div align="center">
+<br>
 <?php
-    // output index6.php was last modified.
+    // output when index6.php was last modified.
     $filename = 'index6.php';
     if (file_exists($filename)) {
         echo "This page: $filename was modified: " . date ("Y-m-d H:i:s.", filemtime($filename));
     }
-?>  
+?>
+<br>
 <!-- HTML form -->
 <body>
 <div align="center">
@@ -59,6 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <fieldset>
             <legend>Day and time setup: </legend>
             <?php $day = date("l") ?>
+            <br>
             Day for race <select name = "day" id="day">
                 <option <?php if(isset($day) && $day == "Monday"){echo "selected=\"selected\"";} ?> value="Monday">Monday</option>
                 <option <?php if(isset($day) && $day == "Tuesday"){echo "selected=\"selected\"";} ?> value="Tuesday">Tuesday</option>
@@ -87,6 +85,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     }
                 ?>
             </select>
+            <br>
+            <br>
         </fieldset>
     </div>
     <div class="w3-container w3-red w3-cell">
