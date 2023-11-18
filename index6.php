@@ -128,6 +128,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </fieldset>
         <p></p>
     </div>
+    <br>
     <div class="w3-row-padding" align="center">
         <div class="w3-container w3-red w3-cell">
             <fieldset>
@@ -141,6 +142,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <p></p>
         </div>
     </div>
+    <br>
     <div class="w3-row-padding" align="center">
         <div class="w3-container w3-green w3-cell">
             <fieldset>
