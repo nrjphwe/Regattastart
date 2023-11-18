@@ -59,8 +59,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <form action="index6.php" method="POST">
      <!-- Your form fields -->
     <div class="w3-row-padding" align="center">
-        <div class="w3-half" align="center">
+        <!--div class="w3-half" align="center">    
             <fieldset>
+                <div class="w3-container w3-green w3-cell">
                 <h4>Day and time setup</h4>
                     <?php $day = date("l") 
                     ?>
@@ -94,7 +95,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </select>
             </fieldset>
         </div>
-        <div class="w3-half" align="center">
+        <!-- div class="w3-half" align="center">
+        <div class="w3-container w3-green w3-cell">
             <fieldset>
                 <h4>Video Setup</h4>
                 <p></p>
