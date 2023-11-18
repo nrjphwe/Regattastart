@@ -52,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <div align="center">
 <form action="index6.php" method="POST">
     <!-- Your form fields -->
-    <div class="w3-container w3-light-blue w3-cell">
+    <div class="w3-container w3-blue w3-cell">
         <fieldset>
             <legend>Day and time setup: </legend>
             <?php $day = date("l") ?>
