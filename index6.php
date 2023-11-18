@@ -59,95 +59,97 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <form action="index6.php" method="POST">
      <!-- Your form fields -->
     <div class="w3-row-padding" align="center">
-    <div class="w3-half" align="center">
-        <fieldset>
-            <h4>Day and time setup</h4>
-            <div data-tap-disabled="true">
-            Start Time: <select name = "start_time" id = "start_time">
-            <?php
-                $hour = date('H');
-                $steps   = 10; // only edit the minutes value
-                $current = 0;
-                $loops   = 24*(60/$steps);
-                //$loops   = (24-$hour)*(60/$steps);
-                //for ($i = $hour*(60/$steps); $i < $loops; $i++) {
-                for ($i = 0; $i < $loops; $i++) {
-                //    $time = sprintf('%02d:%02d', $i/(60/$steps), $current%60);
-                $start_time = sprintf('%02d:%02d', $i/(60/$steps), $current%60);
-                //echo '<option>' . $start_time . '</option>';
-                echo '<option value="' . $start_time . '">' . $start_time . '</option>';
-                $current += $steps;
-                }
-            ?>
-            </select>
-            </div><p>
-            <?php $day = date("l") 
-            ?>
-            Day for race <select name = "day" id="day">
-            <option <?php if(isset($day) && $day == "Monday"){echo "selected=\"selected\"";} ?> value="Monday">Monday</option>
-            <option <?php if(isset($day) && $day == "Tuesday"){echo "selected=\"selected\"";} ?> value="Tuesday">Tuesday</option>
-            <option <?php if(isset($day) && $day == "Wednesday"){echo "selected=\"selected\"";} ?> value="Wednesday">Wednesday</option>
-            <option <?php if(isset($day) && $day == "Thursday"){echo "selected=\"selected\"";} ?> value="Thursday">Thursday</option>
-            <option <?php if(isset($day) && $day == "Friday"){echo "selected=\"selected\"";} ?> value="Friday">Friday</option>
-            <option <?php if(isset($day) && $day == "Saturday"){echo "selected=\"selected\"";} ?> value="Saturday">Saturday</option>
-            <option <?php if(isset($day) && $day == "Sunday"){echo "selected=\"selected\"";} ?> value="Sunday">Sunday</option>
-            </select>
-        </fieldset>
-    </div>
-    <div class="w3-half" align="center">
-        <fieldset>
-            <h4>Video Setup</h4>
-            <p></p>
-            Duration between start and estimated finish: <select name = "video_delay" id = "video_delay">
-            <option <?php if(isset($video_delay) && $video_delay == "3"){echo "selected=\"selected\"";} ?> value="3">3</option>
-            <option <?php if(isset($video_delay) && $video_delay == "20"){echo "selected=\"selected\"";} ?> value="20">20</option>
-            <option <?php if(isset($video_delay) && $video_delay == "30"){echo "selected=\"selected\"";} ?> value="30">30</option>
-            <option <?php if(isset($video_delay) && $video_delay == "40"){echo "selected=\"selected\"";} ?> value="40">40</option>
-            <option <?php if(isset($video_delay) && $video_delay == "50"){echo "selected=\"selected\"";} ?> value="50">50</option>
-            <option <?php if(isset($video_delay) && $video_delay == "60"){echo "selected=\"selected\"";} ?> value="60">60</option>
-            <option <?php if(isset($video_delay) && $video_delay == "70"){echo "selected=\"selected\"";} ?> value="70">70</option>
-            <option <?php if(isset($video_delay) && $video_delay == "80"){echo "selected=\"selected\"";} ?> value="80">80</option>
-            </select>
-            <p></p>
-            Duration for each video: <select name = "video_dur" id = "video_dur">
-            <option <?php if(isset($video_dur) && $video_dur == "2"){echo "selected=\"selected\"";} ?> value="2">2</option>
-            <option <?php if(isset($video_dur) && $video_dur == "10"){echo "selected=\"selected\"";} ?> value="10">10</option>
-            <option <?php if(isset($video_dur) && $video_dur == "15"){echo "selected=\"selected\"";} ?> value="15">15</option>
-            <option <?php if(isset($video_dur) && $video_dur == "20"){echo "selected=\"selected\"";} ?> value="20">20</option>
-            <option <?php if(isset($video_dur) && $video_dur == "30"){echo "selected=\"selected\"";} ?> value="30">30</option>
-            <option <?php if(isset($video_dur) && $video_dur == "50"){echo "selected=\"selected\"";} ?> value="50">50</option>
-            <option <?php if(isset($video_dur) && $video_dur == "60"){echo "selected=\"selected\"";} ?> value="60">60</option>
-            </select>
-            <p></p>
-            Number of video's: <select name = "num_video" id = "num_video">
-            <option <?php if(isset($num_video) && $num_video == "9"){echo "selected=\"selected\"";} ?> value="9">9</option>
-            <option <?php if(isset($num_video) && $num_video == "8"){echo "selected=\"selected\"";} ?> value="8">8</option>
-            <option <?php if(isset($num_video) && $num_video == "7"){echo "selected=\"selected\"";} ?> value="7">7</option>
-            <option <?php if(isset($num_video) && $num_video == "6"){echo "selected=\"selected\"";} ?> value="6">6</option>
-            <option <?php if(isset($num_video) && $num_video == "5"){echo "selected=\"selected\"";} ?> value="5">5</option>
-            <option <?php if(isset($num_video) && $num_video == "4"){echo "selected=\"selected\"";} ?> value="4">4</option>
-            <option <?php if(isset($num_video) && $num_video == "3"){echo "selected=\"selected\"";} ?> value="3">3</option>
-            <option <?php if(isset($num_video) && $num_video == "2"){echo "selected=\"selected\"";} ?> value="2">2</option>
-            <option <?php if(isset($num_video) && $num_video == "1"){echo "selected=\"selected\"";} ?> value="1">1</option>
-            </select>
-        </fieldset>
-    </div>
-    <p></p>
-    <div class="w3-half" align="center">
-        <fieldset>
-            <h4> Number of starts </h4>
-            <p></p>
-            Number of starts: <select name="num_starts" id="num_starts">
-            <option value="1">1</option>
-            <option value="2">2</option>
-            </select>
-        </fieldset>
-    </div>
-    <br><p></p>
-    <div id="submit" align="center"></div>
-    <div class="w3" align="center">
-    <br>
-    <button type="submit">Submit</button>
+        <div class="w3-half" align="center">
+            <fieldset>
+                <h4>Day and time setup</h4>
+                <div data-tap-disabled="true">
+                Start Time: <select name = "start_time" id = "start_time">
+                <?php
+                    $hour = date('H');
+                    $steps   = 10; // only edit the minutes value
+                    $current = 0;
+                    $loops   = 24*(60/$steps);
+                    //$loops   = (24-$hour)*(60/$steps);
+                    //for ($i = $hour*(60/$steps); $i < $loops; $i++) {
+                    for ($i = 0; $i < $loops; $i++) {
+                    //    $time = sprintf('%02d:%02d', $i/(60/$steps), $current%60);
+                    $start_time = sprintf('%02d:%02d', $i/(60/$steps), $current%60);
+                    //echo '<option>' . $start_time . '</option>';
+                    echo '<option value="' . $start_time . '">' . $start_time . '</option>';
+                    $current += $steps;
+                    }
+                ?>
+                </select>
+                </div><p>
+                <?php $day = date("l") 
+                ?>
+                Day for race <select name = "day" id="day">
+                <option <?php if(isset($day) && $day == "Monday"){echo "selected=\"selected\"";} ?> value="Monday">Monday</option>
+                <option <?php if(isset($day) && $day == "Tuesday"){echo "selected=\"selected\"";} ?> value="Tuesday">Tuesday</option>
+                <option <?php if(isset($day) && $day == "Wednesday"){echo "selected=\"selected\"";} ?> value="Wednesday">Wednesday</option>
+                <option <?php if(isset($day) && $day == "Thursday"){echo "selected=\"selected\"";} ?> value="Thursday">Thursday</option>
+                <option <?php if(isset($day) && $day == "Friday"){echo "selected=\"selected\"";} ?> value="Friday">Friday</option>
+                <option <?php if(isset($day) && $day == "Saturday"){echo "selected=\"selected\"";} ?> value="Saturday">Saturday</option>
+                <option <?php if(isset($day) && $day == "Sunday"){echo "selected=\"selected\"";} ?> value="Sunday">Sunday</option>
+                </select>
+            </fieldset>
+        </div>
+        <div class="w3-half" align="center">
+            <fieldset>
+                <h4>Video Setup</h4>
+                <p></p>
+                Duration between start and estimated finish: <select name = "video_delay" id = "video_delay">
+                <option <?php if(isset($video_delay) && $video_delay == "3"){echo "selected=\"selected\"";} ?> value="3">3</option>
+                <option <?php if(isset($video_delay) && $video_delay == "20"){echo "selected=\"selected\"";} ?> value="20">20</option>
+                <option <?php if(isset($video_delay) && $video_delay == "30"){echo "selected=\"selected\"";} ?> value="30">30</option>
+                <option <?php if(isset($video_delay) && $video_delay == "40"){echo "selected=\"selected\"";} ?> value="40">40</option>
+                <option <?php if(isset($video_delay) && $video_delay == "50"){echo "selected=\"selected\"";} ?> value="50">50</option>
+                <option <?php if(isset($video_delay) && $video_delay == "60"){echo "selected=\"selected\"";} ?> value="60">60</option>
+                <option <?php if(isset($video_delay) && $video_delay == "70"){echo "selected=\"selected\"";} ?> value="70">70</option>
+                <option <?php if(isset($video_delay) && $video_delay == "80"){echo "selected=\"selected\"";} ?> value="80">80</option>
+                </select>
+                <p></p>
+                Duration for each video: <select name = "video_dur" id = "video_dur">
+                <option <?php if(isset($video_dur) && $video_dur == "2"){echo "selected=\"selected\"";} ?> value="2">2</option>
+                <option <?php if(isset($video_dur) && $video_dur == "10"){echo "selected=\"selected\"";} ?> value="10">10</option>
+                <option <?php if(isset($video_dur) && $video_dur == "15"){echo "selected=\"selected\"";} ?> value="15">15</option>
+                <option <?php if(isset($video_dur) && $video_dur == "20"){echo "selected=\"selected\"";} ?> value="20">20</option>
+                <option <?php if(isset($video_dur) && $video_dur == "30"){echo "selected=\"selected\"";} ?> value="30">30</option>
+                <option <?php if(isset($video_dur) && $video_dur == "50"){echo "selected=\"selected\"";} ?> value="50">50</option>
+                <option <?php if(isset($video_dur) && $video_dur == "60"){echo "selected=\"selected\"";} ?> value="60">60</option>
+                </select>
+                <p></p>
+                Number of video's: <select name = "num_video" id = "num_video">
+                <option <?php if(isset($num_video) && $num_video == "9"){echo "selected=\"selected\"";} ?> value="9">9</option>
+                <option <?php if(isset($num_video) && $num_video == "8"){echo "selected=\"selected\"";} ?> value="8">8</option>
+                <option <?php if(isset($num_video) && $num_video == "7"){echo "selected=\"selected\"";} ?> value="7">7</option>
+                <option <?php if(isset($num_video) && $num_video == "6"){echo "selected=\"selected\"";} ?> value="6">6</option>
+                <option <?php if(isset($num_video) && $num_video == "5"){echo "selected=\"selected\"";} ?> value="5">5</option>
+                <option <?php if(isset($num_video) && $num_video == "4"){echo "selected=\"selected\"";} ?> value="4">4</option>
+                <option <?php if(isset($num_video) && $num_video == "3"){echo "selected=\"selected\"";} ?> value="3">3</option>
+                <option <?php if(isset($num_video) && $num_video == "2"){echo "selected=\"selected\"";} ?> value="2">2</option>
+                <option <?php if(isset($num_video) && $num_video == "1"){echo "selected=\"selected\"";} ?> value="1">1</option>
+                </select>
+            </fieldset>
+        </div>
+        <p></p>
+        <div class="w3-row-padding" align="center">
+            <div class="w3-half" align="center">
+                <fieldset>
+                    <h4> Setup of 1 or 2 starts </h4>
+                    <p></p>
+                    Number of starts: <select name="num_starts" id="num_starts">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    </select>
+                </fieldset>
+                <br><p></p>
+            <div id="submit" align="center"></div>
+            <div class="w3" align="center">
+            <br>
+            <button type="submit">Submit</button>
+            </div>
+         </div>
     </div>
 </form>
 </div>     
