@@ -52,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <div align="center">
 <form action="index6.php" method="POST">
     <!-- Your form fields -->
-    <div class="w3-container w3-LightBlue w3-cell">
+    <div class="w3-container w3-light-blue w3-cell">
         <fieldset>
             <legend>Day and time setup: </legend>
             <?php $day = date("l") ?>
@@ -89,7 +89,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <br>
         </fieldset>
     </div>
-    <div class="w3-container w3-MidnightBlue w3-cell">
+    <div class="w3-container w3-Blue w3-cell">
         <fieldset>
             <legend>Video Setup: </legend>
             <p></p>
@@ -130,7 +130,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
     <br>
     <div class="w3-row-padding" align="center">
-        <div class="w3-container w3-linen w3-cell">
+        <div class="w3-container w3-sand w3-cell">
             <fieldset>
                 <legend> Setup of 1 or 2 starts </legend>
                 <p></p>
@@ -144,7 +144,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
     <br>
     <div class="w3-row-padding" align="center">
-        <div class="w3-container w3-LightBlue w3-cell">
+        <div class="w3-container w3-light-blue w3-cell">
             <fieldset>
                 <legend> Execute </legend>
                 <br><p></p>
