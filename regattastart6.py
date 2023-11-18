@@ -113,8 +113,7 @@ def main():
         camera = setup_camera()
         logger.info (" Weekday= %s, Start_time= %s, video_delay= %s, num_video= %s, video_dur= %s, num_starts=%s", week_day, start_time, video_delay, num_video, video_dur,num_starts)
         start_hour, start_minute = start_time.split(':')
-        start_time_sec = 60 * (int(start_minute) + 60 * int(start_hour)) # 6660
-        
+        start_time_sec = 60 * (int(start_minute) + 60 * int(start_hour)) # 6660     
         signal, lamp1, lamp2 = setup_gpio()
         remove_files(photo_path, "video")
         remove_files(photo_path, "pict")
@@ -123,9 +122,7 @@ def main():
         if wd == week_day :   # Is todays day of the week same as selected week_day?
             if num_starts == 1:
                 #-------------------------------------------------------#
-                #
                 # First START SEQUENCE
-                #
                 #-------------------------------------------------------#
                 time_intervals = [
                 (start_time_sec - 5*60, lambda: trigger_warning_signal(signal), "1st-5min_pict.jpg", "5 min Lamp-1 On -- Up with Flag O"),
@@ -202,9 +199,7 @@ def main():
                     return # Exit the function
             elif num_starts == 2:
             #-------------------------------------------------------#
-            #
             # SECOND START SEQUENCE
-            #
             #-------------------------------------------------------#
                 time_intervals = [
                 (start_time_sec - 5*60, lambda: trigger_warning_signal(signal), "1st-5min_pict.jpg", "5 min Lamp-1 On -- Up with Flag O"),
@@ -242,8 +237,7 @@ def main():
                     # 5-min, 4-min ........1-min,   t0  ....    t1    ............     t2
                     #--------------------------------------------------------------------------------#
                     t0 = dt.datetime.now() # should be nearly same as start_time_sec
-                    # Continue with recording for 2 min (119 s), 
-                    # And add annotations with seconds from start 
+                    # Continue with recording for 2 min (119 s), and add annotations with seconds from start 
                     while (dt.datetime.now() - t0).seconds < (119):
                         camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + "  " + str((dt.datetime.now() - t0).seconds)
                         camera.wait_recording(0.5)
@@ -275,7 +269,6 @@ def main():
                         logger.info (' t0= %s ',t0.strftime('%Y-%m-%d %H:%M:%S'))
                         logger.info (' t1= %s ',t1.strftime('%Y-%m-%d %H:%M:%S'))
                         logger.info (' t2= %s ',t2.strftime('%Y-%m-%d %H:%M:%S'))
-                        #logger.info (' dt.datetime.now()= %s, t0= %s, t1= %, t2= %s',dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), t0.strftime('%Y-%m-%d %H:%M:%S'), t1.strftime('%Y-%m-%d %H:%M:%S'), t2.strftime('%Y-%m-%d %H:%M:%S')) 
                         while (dt.datetime.now() - t2).seconds < (60 * video_dur):
                             camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + "  " + str((dt.datetime.now() - t0).seconds)
                             camera.wait_recording(0.5)
