@@ -108,28 +108,31 @@ def main():
         video_dur = int(form_data["video_dur"])
         num_video = int(form_data["num_video"])
         num_starts = int(form_data["num_starts"])  # New parameter 
-        
+
         # Set up initial data
         camera = setup_camera()
         logger.info (" Weekday= %s, Start_time= %s, video_delay= %s, num_video= %s, video_dur= %s, num_starts=%s", week_day, start_time, video_delay, num_video, video_dur,num_starts)
         start_hour, start_minute = start_time.split(':')
         start_time_sec = 60 * (int(start_minute) + 60 * int(start_hour)) # 6660
-        time_intervals = [
-            (start_time_sec - 5*60, lambda: trigger_warning_signal(signal), "1st-5min_pict.jpg", "5 min Lamp-1 On -- Up with Flag O"),
-            (start_time_sec - 4*60, lambda: trigger_warning_signal(signal), "1st-4min_pict.jpg", "4 min Lamp-2 On  --- Up with Flag P"),
-            (start_time_sec - 1*60, lambda: trigger_warning_signal(signal), "1st-1min_pict.jpg", "1 min  Lamp-2 Off -- Flag P down"),
-            (start_time_sec, lambda: trigger_warning_signal(signal), "1st-start_pict.jpg", "Start signal"),
-         ]
+        
         signal, lamp1, lamp2 = setup_gpio()
         remove_files(photo_path, "video")
         remove_files(photo_path, "pict")
-
-        if num_starts == 1:
-            # Handle logic for 1 start
-            # ...
-            now = dt.datetime.now()
-            wd = dt.datetime.today().strftime("%A")
-            if wd == week_day :   # Is todays day of the week same as selected week_day?
+        now = dt.datetime.now()
+        wd = dt.datetime.today().strftime("%A")
+        if wd == week_day :   # Is todays day of the week same as selected week_day?
+            if num_starts == 1:
+                #-------------------------------------------------------#
+                #
+                # First START SEQUENCE
+                #
+                #-------------------------------------------------------#
+                time_intervals = [
+                (start_time_sec - 5*60, lambda: trigger_warning_signal(signal), "1st-5min_pict.jpg", "5 min Lamp-1 On -- Up with Flag O"),
+                (start_time_sec - 4*60, lambda: trigger_warning_signal(signal), "1st-4min_pict.jpg", "4 min Lamp-2 On  --- Up with Flag P"),
+                (start_time_sec - 1*60, lambda: trigger_warning_signal(signal), "1st-1min_pict.jpg", "1 min  Lamp-2 Off -- Flag P down"),
+                (start_time_sec - 1, lambda: trigger_warning_signal(signal), "1st-start_pict.jpg", "Start signal"),
+                ]
                 while seconds_now < start_time_sec:
                     for seconds, action, capture_file, log_message in time_intervals:
                         t = dt.datetime.now() # ex: 2015-01-04 18:48:33.255145
@@ -141,8 +144,7 @@ def main():
                         if video_recording_started == False:
                             if seconds_now == start_time_sec - 5 * 60 - 1:
                                 start_video_recording(camera, photo_path, "video0.h264")
-                                video_recording_started = True
-                        
+                                video_recording_started = True                
                         # Iterate through time intervals
                         if seconds_now == seconds:
                             logger.info(" Triggering event at seconds_now: %s", seconds_now)
@@ -198,10 +200,22 @@ def main():
                         convert_video_to_mp4(mp4_path, "video" + str(i) + ".h264",  "video" + str(i) + ".mp4")
                     logger.info (" This was the last video =====")
                     return # Exit the function
-        elif num_starts == 2:
-            now = dt.datetime.now()
-            wd = dt.datetime.today().strftime("%A")
-            if wd == week_day :   # Is todays day of the week same as selected week_day?
+            elif num_starts == 2:
+            #-------------------------------------------------------#
+            #
+            # SECOND START SEQUENCE
+            #
+            #-------------------------------------------------------#
+                time_intervals = [
+                (start_time_sec - 5*60, lambda: trigger_warning_signal(signal), "1st-5min_pict.jpg", "5 min Lamp-1 On -- Up with Flag O"),
+                (start_time_sec - 4*60, lambda: trigger_warning_signal(signal), "1st-4min_pict.jpg", "4 min Lamp-2 On  --- Up with Flag P"),
+                (start_time_sec - 1*60, lambda: trigger_warning_signal(signal), "1st-1min_pict.jpg", "1 min  Lamp-2 Off -- Flag P down"),
+                (start_time_sec - 1, lambda: trigger_warning_signal(signal), "1st-start_pict.jpg", "Start signal"),
+                (start_time_sec + 1, lambda: trigger_warning_signal(signal), "2nd-5min_pict.jpg", "5 min Lamp-1 On -- Up with Flag O"),
+                (start_time_sec + 1*60, lambda: trigger_warning_signal(signal), "2nd-4min_pict.jpg", "4 min Lamp-2 On  --- Up with Flag P"),
+                (start_time_sec + 4*60, lambda: trigger_warning_signal(signal), "2nd-1min_pict.jpg", "1 min  Lamp-2 Off -- Flag P down"),
+                (start_time_sec + 5*50, lambda: trigger_warning_signal(signal), "2nd-start_pict.jpg", "Start signal"),
+                ]
                 while seconds_now < start_time_sec:
                     for seconds, action, capture_file, log_message in time_intervals:
                         t = dt.datetime.now() # ex: 2015-01-04 18:48:33.255145
@@ -213,8 +227,7 @@ def main():
                         if video_recording_started == False:
                             if seconds_now == start_time_sec - 5 * 60 - 1:
                                 start_video_recording(camera, photo_path, "video0.h264")
-                                video_recording_started = True
-                        
+                                video_recording_started = True        
                         # Iterate through time intervals
                         if seconds_now == seconds:
                             logger.info(" Triggering event at seconds_now: %s", seconds_now)
