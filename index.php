@@ -4,32 +4,29 @@ session_start();
 // after "git pull", "sudo cp /home/pi/Regattastart/index.php /var/www/html/"
 ini_set('display_errors', 1); 
 error_reporting(E_ALL);
-echo "Session ID: " . session_id();
-echo "SESSION= ";
-print_r($_SESSION);
-echo "POST= ";
-print_r($_POST);
-echo "<br/>";
-?>
-<?php
+//echo "Session ID: " . session_id();
+//echo "SESSION= ";
+//print_r($_SESSION);
+//echo "POST= ";
+//print_r($_POST);
+//echo "<br/>";
+//?>
+//<?php
 // Check if the race ID is present 
-$race_id_file = "/var/www/html/race_id.txt";
-
-if (file_exists($race_id_file)) {
-    $race_id = file_get_contents($race_id_file);
+//$race_id_file = "/var/www/html/race_id.txt";
+//if (file_exists($race_id_file)) {
+//    $race_id = file_get_contents($race_id_file);
     // Now you have the $race_id and can use it in your code
-    echo "Race ID: $race_id";
-} else {
-    // Handle the case when the race_id file doesn't exist (e.g., show an error message).
-    $num_video = 9;
-}
-?>
+    //echo "Race ID: $race_id";
+//} else {
+//    // Handle the case when the race_id file doesn't exist (e.g., show an error message).
+//    $num_video = 9;
+//}
+//?>
 
 <!-- Your HTML to display data from the session -->
 <!DOCTYPE html>
 <html>
-
-
 <head>
     <title>Regattastart</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -78,15 +75,15 @@ if (file_exists($race_id_file)) {
         echo ", Video Duration: " . $form_data['video_dur'];
         $num_video = $form_data['num_video'];
         echo ", Number of Videos: " . $num_video;
+        $num_start = $form_data['num_start'];
+        echo ", Number of starts: " . $num_start;
     }
     ?>
    
 <!-- Here is our page's main content -->
 <main>
 <div align="center">
-<h4><a href="/index6.php" title="Version using sessions"> Regattstart1 för 1 start</a></h4>
-<div align="center">
-<h4><a href="/index7.php" title="Version using sessions"> Regattstart2 för 2 starter, 2a start 5 min !! efter första</a></h4>
+<h4><a href="/index6.php" title="Merged version"> Regattstart 6 </a></h4>
 <div align="center">
 <div class="w3-panel w3-pale-blue">
 <h3> Bilder tagna vid varje signal innan 1a start </h3>
