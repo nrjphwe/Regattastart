@@ -149,10 +149,10 @@ fieldset {
                         <p>
                         <button type="submit">Submit</button>
                     </div>
-                <br><p></p>
                 </div>
+                <br><p></p>
             </fieldset>
-            <p></p>
+            <br><p></p>
         </div>
     </div>
 </div>
