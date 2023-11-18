@@ -30,12 +30,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html>
 <div align="center">
 <head><title> Regattastart 2024 för setup av en eller 2 starter </title>   
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-    <style>
-        fieldset {
-          border-color: black;
-        }
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<style>
+fieldset {
+    border-color: black;
+}
 </head>
 <div class="w3-container w3-blue">
     <h2>Regattastart 2024 för 1 eller 2 startgrupper </h2>
