@@ -163,7 +163,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 </main>
 <footer>
-<p>footer</p>      
+<div class="w3-row-padding" align="center">
+    <p>phwe</p>      
+</div>
 </footer>
 </body>
 </html>
@@ -171,6 +173,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // output when index6.php was last modified.
     $filename = 'index6.php';
     if (file_exists($filename)) {
-        echo "This web-page: $filename was modified: " . date ("Y-m-d H:i:s.", filemtime($filename));
+        echo "              This web-page: $filename was last modified: " . date ("Y-m-d H:i:s.", filemtime($filename));
     }
 ?>
