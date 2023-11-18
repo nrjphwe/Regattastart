@@ -119,14 +119,16 @@ error_reporting(E_ALL);
     }
 ?>
 </div>
-</main>
-</body>
-</html>
+<div class="w3-panel w3-grey">
 <?php
-    // output index.php was last modified.
-    $filename = 'index.php';
-    if (file_exists($filename)) {
-       echo "This web-page was last modified: \n" . date ("Y-m-d H:i:s.", filemtime($filename));
+// output index.php was last modified.
+$filename = 'index.php';
+if (file_exists($filename)) {
+    echo "This web-page was last modified: \n" . date ("Y-m-d H:i:s.", filemtime($filename));
 }
 ?>
 <?php echo " Time now: " .date("H:i:s")?> 
+</div>
+</main>
+</body>
+</html>
