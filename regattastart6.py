@@ -88,7 +88,7 @@ def convert_video_to_mp4(mp4_path, source_file, destination_file):
     subprocess.run(convert_video_str, shell=True)
     logger.info (" Video recording %s converted ", destination_file)
 
-def common_start_sequence(camera, signal, video_recording_started, start_time_sec, num_starts, photo_path, mp4_path, video_dur, start_prefix, video_delay)):
+def common_start_sequence(camera, signal, video_recording_started, start_time_sec, num_starts, photo_path, mp4_path, video_dur, start_prefix, video_delay):
     time_intervals = [
         (start_time_sec - 5 * 60, lambda: trigger_warning_signal(signal), f"{start_prefix}-5min_pict.jpg", "5 min Lamp-1 On -- Up with Flag O"),
         (start_time_sec - 4 * 60, lambda: trigger_warning_signal(signal), f"{start_prefix}-4min_pict.jpg", "4 min Lamp-2 On  --- Up with Flag P"),
