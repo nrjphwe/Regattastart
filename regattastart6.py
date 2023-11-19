@@ -180,10 +180,9 @@ def main():
         
         if wd == week_day:
             if num_starts == 1:
-                common_start_sequence(camera, signal, video_recording_started, start_time_sec, num_starts, photo_path, mp4_path, video_dur, "1st")
+                common_start_sequence(camera, signal, video_recording_started, start_time_sec, num_starts, photo_path, mp4_path, video_dur, "1st", video_delay)
             elif num_starts == 2:
-                common_start_sequence(camera, signal, video_recording_started, start_time_sec, num_starts, photo_path, mp4_path, video_dur, "2nd")
-
+                common_start_sequence(camera, signal, video_recording_started, start_time_sec, num_starts, photo_path, mp4_path, video_dur, "2nd", video_delay)
         
     except json.JSONDecodeError as e:
         logger.info ("Failed to parse JSON: %", str(e))
