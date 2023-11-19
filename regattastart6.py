@@ -157,34 +157,6 @@ def main():
     if len(sys.argv) < 2:
         print("No JSON data provided as a command-line argument.")
         sys.exit(1)
-    
-    try:
-        seconds_now = 0
-        form_data = json.loads(sys.argv[1])  # Load JSON data from the first command-line argument
-        logger.info ("form_data: %s", form_data)
-        start_time = str(form_data["start_time"])  # Extract specific fields from the JSON data
-        week_day = str(form_data["day"])
-        video_delay = int(form_data["video_delay"])
-        video_dur = int(form_data["video_dur"])
-        num_video = int(form_data["num_video"])
-        num_starts = int(form_data["num_starts"])  # New parameter 
-
-        # Set up initial data
-        camera = setup_camera()
-        logger.info (" Weekday= %s, Start_time= %s, video_delay= %s, num_video= %s, video_dur= %s, num_starts=%s", week_day, start_time, video_delay, num_video, video_dur,num_starts)
-        start_hour, start_minute = start_time.split(':')
-        start_time_sec = 60 * (int(start_minute) + 60 * int(start_hour)) # 6660     
-        signal, lamp1, lamp2 = setup_gpio()
-        remove_video_files(photo_path, "video")
-        remove_picture_files(photo_path, "pict.jpg")
-        now = dt.datetime.now()
-        wd = dt.datetime.today().strftime("%A")
-
-
-    # Check if a command-line argument (JSON data) is provided
-    if len(sys.argv) < 2:
-        print("No JSON data provided as a command-line argument.")
-        sys.exit(1)
 
     try:
         seconds_now = 0
