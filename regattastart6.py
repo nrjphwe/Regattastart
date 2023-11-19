@@ -107,93 +107,175 @@ def main():
         video_delay = int(form_data["video_delay"])
         video_dur = int(form_data["video_dur"])
         num_video = int(form_data["num_video"])
-        
+        num_starts = int(form_data["num_starts"])  # New parameter 
+
         # Set up initial data
         camera = setup_camera()
-        logger.info (" Weekday= %s, Start_time= %s, video_delay= %s, num_video= %s, video_dur= %s", week_day, start_time, video_delay, num_video, video_dur)
+        logger.info (" Weekday= %s, Start_time= %s, video_delay= %s, num_video= %s, video_dur= %s, num_starts=%s", week_day, start_time, video_delay, num_video, video_dur,num_starts)
         start_hour, start_minute = start_time.split(':')
-        start_time_sec = 60 * (int(start_minute) + 60 * int(start_hour)) # 6660
-        time_intervals = [
-            (start_time_sec - 5*60, lambda: trigger_warning_signal(signal), "1st-5min_pict.jpg", "5 min Lamp-1 On -- Up with Flag O"),
-            (start_time_sec - 4*60, lambda: trigger_warning_signal(signal), "1st-4min_pict.jpg", "4 min Lamp-2 On  --- Up with Flag P"),
-            (start_time_sec - 1*60, lambda: trigger_warning_signal(signal), "1st-1min_pict.jpg", "1 min  Lamp-2 Off -- Flag P down"),
-            (start_time_sec, lambda: trigger_warning_signal(signal), "1st-start_pict.jpg", "Start signal"),
-         ]
+        start_time_sec = 60 * (int(start_minute) + 60 * int(start_hour)) # 6660     
         signal, lamp1, lamp2 = setup_gpio()
         remove_files(photo_path, "video")
         remove_files(photo_path, "pict")
         now = dt.datetime.now()
         wd = dt.datetime.today().strftime("%A")
         if wd == week_day :   # Is todays day of the week same as selected week_day?
-            while seconds_now < start_time_sec:
-                for seconds, action, capture_file, log_message in time_intervals:
-                    t = dt.datetime.now() # ex: 2015-01-04 18:48:33.255145
-                    time_now = t.strftime('%H:%M:%S')   # ex: 18:48:33
-                    nh, nm, ns = time_now.split(':')
-                    seconds_now =  60 * (int(nm) + 60 * int(nh)) + int(ns)
-                    camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                    # Start video0 recording at 5.01 minutes before start
-                    if video_recording_started == False:
-                        if seconds_now == start_time_sec - 5 * 60 - 1:
-                            start_video_recording(camera, photo_path, "video0.h264")
-                            video_recording_started = True
-                    
-                    # Iterate through time intervals
-                    if seconds_now == seconds:
-                        logger.info(" Triggering event at seconds_now: %s", seconds_now)
-                        if action:
-                            action()
-                        capture_picture(camera, photo_path, capture_file)
-                        logger.info(log_message)
-
-            else:
-                logger.info (" Wait 2 minutes then stop video recording")
-                #--------------------------------------------------------------------------------#
-                # 5-min, 4-min ........1-min, Start.... 2min after start....... time after delay  
-                # 5-min, 4-min ........1-min,   t0  ....    t1    ............     t2
-                #--------------------------------------------------------------------------------#
-                t0 = dt.datetime.now() # should be nearly same as start_time_sec
-                # Continue with recording for 2 min (119 s), 
-                # And add annotations with seconds from start 
-                while (dt.datetime.now() - t0).seconds < (119):
-                    camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + "  " + str((dt.datetime.now() - t0).seconds)
-                    camera.wait_recording(0.5)
-                stop_video_recording(camera)
-                convert_video_to_mp4(mp4_path, "video0.h264", "video0.mp4")
-                t1 = dt.datetime.now() # should be time after 2 min delay
-                #----------------------------------------------------------#
-                # Wait for finish, when next video1 will start, video_delay
-                #----------------------------------------------------------#
-                sum = video_delay - 2  # Delay in minutes
-                while sum > 0:
-                    sum = sum - 1
-                    time.sleep(60)
-                    logger.info (' sum: %s', sum)
-                #-----------------------------------------------------------------------#
-                # Result video, chopped into numeral videos with duration at "video_dur"
-                #-----------------------------------------------------------------------#
-                logger.info (" num_videos = %s",num_video)
-                logger.info (' video duration = %s', video_dur)
-                stop = num_video + 1
-                for i in range(1, stop):
-                    t2 = dt.datetime.now() # should be time after video_delay (minus 2 min)
-                    logger.info (' i = %s', i)
-                    start_video_recording(camera, photo_path, "video" + str(i) + ".h264")
-                    #------------------------------------------------------#
-                    # video running, duration at "video_dur"
-                    #------------------------------------------------------#
-                    logger.info (' dt.datetime.now()= %s ',dt.datetime.now())
-                    logger.info (' t0= %s ',t0.strftime('%Y-%m-%d %H:%M:%S'))
-                    logger.info (' t1= %s ',t1.strftime('%Y-%m-%d %H:%M:%S'))
-                    logger.info (' t2= %s ',t2.strftime('%Y-%m-%d %H:%M:%S'))
-                    #logger.info (' dt.datetime.now()= %s, t0= %s, t1= %, t2= %s',dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), t0.strftime('%Y-%m-%d %H:%M:%S'), t1.strftime('%Y-%m-%d %H:%M:%S'), t2.strftime('%Y-%m-%d %H:%M:%S')) 
-                    while (dt.datetime.now() - t2).seconds < (60 * video_dur):
+            if num_starts == 1:
+                #-------------------------------------------------------#
+                # First START SEQUENCE
+                #-------------------------------------------------------#
+                time_intervals = [
+                (start_time_sec - 5*60, lambda: trigger_warning_signal(signal), "1st-5min_pict.jpg", "5 min Lamp-1 On -- Up with Flag O"),
+                (start_time_sec - 4*60, lambda: trigger_warning_signal(signal), "1st-4min_pict.jpg", "4 min Lamp-2 On  --- Up with Flag P"),
+                (start_time_sec - 1*60, lambda: trigger_warning_signal(signal), "1st-1min_pict.jpg", "1 min  Lamp-2 Off -- Flag P down"),
+                (start_time_sec - 1, lambda: trigger_warning_signal(signal), "1st-start_pict.jpg", "Start signal"),
+                ]
+                while seconds_now < start_time_sec:
+                    for seconds, action, capture_file, log_message in time_intervals:
+                        t = dt.datetime.now() # ex: 2015-01-04 18:48:33.255145
+                        time_now = t.strftime('%H:%M:%S')   # ex: 18:48:33
+                        nh, nm, ns = time_now.split(':')
+                        seconds_now =  60 * (int(nm) + 60 * int(nh)) + int(ns)
+                        camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                        # Start video0 recording at 5.01 minutes before start
+                        if video_recording_started == False:
+                            if seconds_now == start_time_sec - 5 * 60 - 1:
+                                start_video_recording(camera, photo_path, "video0.h264")
+                                video_recording_started = True                
+                        # Iterate through time intervals
+                        if seconds_now == seconds:
+                            logger.info(" Triggering event at seconds_now: %s", seconds_now)
+                            if action:
+                                action()
+                            capture_picture(camera, photo_path, capture_file)
+                            logger.info(log_message)
+                else:
+                    logger.info (" Wait 2 minutes then stop video recording")
+                    #--------------------------------------------------------------------------------#
+                    # 5-min, 4-min ........1-min, Start.... 2min after start....... time after delay  
+                    # 5-min, 4-min ........1-min,   t0  ....    t1    ............     t2
+                    #--------------------------------------------------------------------------------#
+                    t0 = dt.datetime.now() # should be nearly same as start_time_sec
+                    # Continue with recording for 2 min (119 s), 
+                    # And add annotations with seconds from start 
+                    while (dt.datetime.now() - t0).seconds < (119):
                         camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + "  " + str((dt.datetime.now() - t0).seconds)
                         camera.wait_recording(0.5)
                     stop_video_recording(camera)
-                    convert_video_to_mp4(mp4_path, "video" + str(i) + ".h264",  "video" + str(i) + ".mp4")
-                logger.info (" This was the last video =====")
-                return # Exit the function
+                    convert_video_to_mp4(mp4_path, "video0.h264", "video0.mp4")
+                    t1 = dt.datetime.now() # should be time after 2 min delay
+                    #----------------------------------------------------------#
+                    # Wait for finish, when next video1 will start, video_delay
+                    #----------------------------------------------------------#
+                    sum = video_delay - 2  # Delay in minutes
+                    while sum > 0:
+                        sum = sum - 1
+                        time.sleep(60)
+                        logger.info (' sum: %s', sum)
+                    #-----------------------------------------------------------------------#
+                    # Result video, chopped into numeral videos with duration at "video_dur"
+                    #-----------------------------------------------------------------------#
+                    logger.info (" num_videos = %s",num_video)
+                    logger.info (' video duration = %s', video_dur)
+                    stop = num_video + 1
+                    for i in range(1, stop):
+                        t2 = dt.datetime.now() # should be time after video_delay (minus 2 min)
+                        logger.info (' i = %s', i)
+                        start_video_recording(camera, photo_path, "video" + str(i) + ".h264")
+                        #------------------------------------------------------#
+                        # video running, duration at "video_dur"
+                        #------------------------------------------------------#
+                        logger.info (' dt.datetime.now()= %s ',dt.datetime.now())
+                        logger.info (' t0= %s ',t0.strftime('%Y-%m-%d %H:%M:%S'))
+                        logger.info (' t1= %s ',t1.strftime('%Y-%m-%d %H:%M:%S'))
+                        logger.info (' t2= %s ',t2.strftime('%Y-%m-%d %H:%M:%S'))
+                        #logger.info (' dt.datetime.now()= %s, t0= %s, t1= %, t2= %s',dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), t0.strftime('%Y-%m-%d %H:%M:%S'), t1.strftime('%Y-%m-%d %H:%M:%S'), t2.strftime('%Y-%m-%d %H:%M:%S')) 
+                        while (dt.datetime.now() - t2).seconds < (60 * video_dur):
+                            camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + "  " + str((dt.datetime.now() - t0).seconds)
+                            camera.wait_recording(0.5)
+                        stop_video_recording(camera)
+                        convert_video_to_mp4(mp4_path, "video" + str(i) + ".h264",  "video" + str(i) + ".mp4")
+                    logger.info (" This was the last video =====")
+                    return # Exit the function
+            elif num_starts == 2:
+            #-------------------------------------------------------#
+            # SECOND START SEQUENCE
+            #-------------------------------------------------------#
+                time_intervals = [
+                (start_time_sec - 5*60, lambda: trigger_warning_signal(signal), "1st-5min_pict.jpg", "5 min Lamp-1 On -- Up with Flag O"),
+                (start_time_sec - 4*60, lambda: trigger_warning_signal(signal), "1st-4min_pict.jpg", "4 min Lamp-2 On  --- Up with Flag P"),
+                (start_time_sec - 1*60, lambda: trigger_warning_signal(signal), "1st-1min_pict.jpg", "1 min  Lamp-2 Off -- Flag P down"),
+                (start_time_sec - 1, lambda: trigger_warning_signal(signal), "1st-start_pict.jpg", "Start signal"),
+                (start_time_sec + 1, lambda: trigger_warning_signal(signal), "2nd-5min_pict.jpg", "5 min Lamp-1 On -- Up with Flag O"),
+                (start_time_sec + 1*60, lambda: trigger_warning_signal(signal), "2nd-4min_pict.jpg", "4 min Lamp-2 On  --- Up with Flag P"),
+                (start_time_sec + 4*60, lambda: trigger_warning_signal(signal), "2nd-1min_pict.jpg", "1 min  Lamp-2 Off -- Flag P down"),
+                (start_time_sec + 5*60, lambda: trigger_warning_signal(signal), "2nd-start_pict.jpg", "Start signal"),
+                ]
+                while seconds_now < start_time_sec + 5*60 :
+                    for seconds, action, capture_file, log_message in time_intervals:
+                        t = dt.datetime.now() # ex: 2015-01-04 18:48:33.255145
+                        time_now = t.strftime('%H:%M:%S')   # ex: 18:48:33
+                        nh, nm, ns = time_now.split(':')
+                        seconds_now =  60 * (int(nm) + 60 * int(nh)) + int(ns)
+                        camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                        # Start video0 recording at 5.01 minutes before start
+                        if video_recording_started == False:
+                            if seconds_now == start_time_sec - 5 * 60 - 1:
+                                start_video_recording(camera, photo_path, "video0.h264")
+                                video_recording_started = True        
+                        # Iterate through time intervals
+                        if seconds_now == seconds:
+                            logger.info(" Triggering event (for 2 starts) at seconds_now: %s", seconds_now)
+                            if action:
+                                action()
+                            capture_picture(camera, photo_path, capture_file)
+                            logger.info(log_message)
+                else:
+                    logger.info (" Wait 2 minutes then stop video recording")
+                    #--------------------------------------------------------------------------------#
+                    # 5-min, 4-min ........1-min, Start.... 2min after start....... time after delay  
+                    # 5-min, 4-min ........1-min,   t0  ....    t1    ............     t2
+                    #--------------------------------------------------------------------------------#
+                    t0 = dt.datetime.now() # should be nearly same as start_time_sec
+                    # Continue with recording for 2 min (119 s), and add annotations with seconds from start 
+                    while (dt.datetime.now() - t0).seconds < (119):
+                        camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + "  " + str((dt.datetime.now() - t0).seconds)
+                        camera.wait_recording(0.5)
+                    stop_video_recording(camera)
+                    convert_video_to_mp4(mp4_path, "video0.h264", "video0.mp4")
+                    t1 = dt.datetime.now() # should be time after 2 min delay
+                    #----------------------------------------------------------#
+                    # Wait for finish, when next video1 will start, video_delay
+                    #----------------------------------------------------------#
+                    sum = video_delay - 2  # Delay in minutes
+                    while sum > 0:
+                        sum = sum - 1
+                        time.sleep(60)
+                        logger.info (' sum: %s', sum)
+                    #-----------------------------------------------------------------------#
+                    # Result video, chopped into numeral videos with duration at "video_dur"
+                    #-----------------------------------------------------------------------#
+                    logger.info (" num_videos = %s",num_video)
+                    logger.info (' video duration = %s', video_dur)
+                    stop = num_video + 1
+                    for i in range(1, stop):
+                        t2 = dt.datetime.now() # should be time after video_delay (minus 2 min)
+                        logger.info (' i = %s', i)
+                        start_video_recording(camera, photo_path, "video" + str(i) + ".h264")
+                        #------------------------------------------------------#
+                        # video running, duration at "video_dur"
+                        #------------------------------------------------------#
+                        logger.info (' dt.datetime.now()= %s ',dt.datetime.now())
+                        logger.info (' t0= %s ',t0.strftime('%Y-%m-%d %H:%M:%S'))
+                        logger.info (' t1= %s ',t1.strftime('%Y-%m-%d %H:%M:%S'))
+                        logger.info (' t2= %s ',t2.strftime('%Y-%m-%d %H:%M:%S'))
+                        while (dt.datetime.now() - t2).seconds < (60 * video_dur):
+                            camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + "  " + str((dt.datetime.now() - t0).seconds)
+                            camera.wait_recording(0.5)
+                        stop_video_recording(camera)
+                        convert_video_to_mp4(mp4_path, "video" + str(i) + ".h264",  "video" + str(i) + ".mp4")
+                    logger.info (" This was the last video =====")
+                    return # Exit the function
     except json.JSONDecodeError as e:
         logger.info ("Failed to parse JSON: %", str(e))
         sys.exit(1)
