@@ -27,26 +27,26 @@
     <link rel="stylesheet" href="/w3.css"
     </head>
 <body>
-    <div align="center">
+<div align="center">
     <div class="w3-panel w3-blue">
-        <h2> Regattastart  </h2><h3> <?php echo "     Version: " . APP_VERSION; ?> </h3>
+        <h2> Regattastart  </h2>
     </div>
-    
-    <?php
-    // Retrieve and display data from the session
-    if (isset($_SESSION["form_data"])) {
-        $form_data = $_SESSION["form_data"];
-        // Display the data or do whatever you need
-        echo "Start time: " . $form_data['start_time'];
-        echo ", Video Delay: " . $form_data['video_delay'];
-        echo ", Video Duration: " . $form_data['video_dur'];
-        $num_video = $form_data['num_video'];
-        echo ", Number of Videos: " . $num_video;
-        $num_starts = $form_data['num_starts'];
-        echo ", Number of starts: " . $num_starts;
-    }
-    ?>
-   
+<?php echo "     Version: " . APP_VERSION; ?>
+<?php
+// Retrieve and display data from the session
+if (isset($_SESSION["form_data"])) {
+    $form_data = $_SESSION["form_data"];
+    // Display the data or do whatever you need
+    echo "Start time: " . $form_data['start_time'];
+    echo ", Video Delay: " . $form_data['video_delay'];
+    echo ", Video Duration: " . $form_data['video_dur'];
+    $num_video = $form_data['num_video'];
+    echo ", Number of Videos: " . $num_video;
+    $num_starts = $form_data['num_starts'];
+    echo ", Number of starts: " . $num_starts;
+}
+?>
+</div>
 <!-- Here is our page's main content -->
 <main>
 <div align="center">
