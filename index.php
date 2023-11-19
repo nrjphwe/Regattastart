@@ -32,7 +32,7 @@
         <h2> Regattastart  </h2>
     </div>
 <?php 
-    echo "     Version: " . APP_VERSION . "<br><p></p>; 
+    echo "     Version: " . APP_VERSION . "<br><p></p>"; 
 ?>
 <?php
 // Retrieve and display data from the session
