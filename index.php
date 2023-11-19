@@ -31,7 +31,12 @@
     <div class="w3-panel w3-blue">
         <h2> Regattastart  </h2>
     </div>
-<?php echo "     Version: " . APP_VERSION;"<br>" ?>
+<?php 
+    echo "     Version: " . APP_VERSION; 
+?>
+<?php 
+    echo "     "
+?>
 <?php
 // Retrieve and display data from the session
 if (isset($_SESSION["form_data"])) {
