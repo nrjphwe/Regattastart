@@ -29,7 +29,7 @@
 <body>
     <div align="center">
     <div class="w3-panel w3-blue">
-        <h2> Regattastart resultat  --  2024 </h2>
+        <h2> Regattastart     <?php echo "Version: " . APP_VERSION; ?> </h2>
     </div>
     
     <?php
@@ -109,7 +109,6 @@
         echo "This web-page was last modified: \n" . date ("Y-m-d H:i:s.", filemtime($filename));
     }
     ?>
-    <?php echo "Version: " . APP_VERSION; ?>
 </div>
 <div class="w3-panel w3-grey">
     <?php 
