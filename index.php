@@ -29,7 +29,7 @@
 <body>
     <div align="center">
     <div class="w3-panel w3-blue">
-        <h2> Regattastart     <?php echo "Version: " . APP_VERSION; ?> </h2>
+        <h2> Regattastart  </h2><h3> <?php echo "     Version: " . APP_VERSION; ?> </h3>
     </div>
     
     <?php
