@@ -95,6 +95,7 @@ def common_start_sequence(camera, signal, video_recording_started, start_time_se
         (start_time_sec - 1 * 60, lambda: trigger_warning_signal(signal), f"{start_prefix}-1min_pict.jpg", "1 min  Lamp-2 Off -- Flag P down"),
         (start_time_sec - 1, lambda: trigger_warning_signal(signal), f"{start_prefix}-start_pict.jpg", "Start signal"),
     ]
+    seconds_now = 0 # Initialize with 0
     while seconds_now < start_time_sec + 5*60:
         for seconds, action, capture_file, log_message in time_intervals:
             t = dt.datetime.now()
