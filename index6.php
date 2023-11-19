@@ -38,10 +38,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </style>
 </head>
 <div class="w3-container w3-blue">
-    <h2>Regattastart for 1 or 2 starts; <?php echo "     Version: " . APP_VERSION; ?> </h2>
+    <h2>Regattastart for 1 or 2 starts </h2>
 </div>
 <br><p></p>
 <header>
+<?php echo "     Version: " . APP_VERSION; ?>
 <!-- HTML form -->
 <body>
 <div align="center">
