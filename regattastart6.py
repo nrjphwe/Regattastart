@@ -163,8 +163,7 @@ def main():
                     # 5-min, 4-min ........1-min,   t0  ....    t1    ............     t2
                     #--------------------------------------------------------------------------------#
                     t0 = dt.datetime.now() # should be nearly same as start_time_sec
-                    # Continue with recording for 2 min (119 s), 
-                    # And add annotations with seconds from start 
+                    # Continue with recording for 2 min (119 s),and add annotations with seconds from start 
                     while (dt.datetime.now() - t0).seconds < (119):
                         camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + "  " + str((dt.datetime.now() - t0).seconds)
                         camera.wait_recording(0.5)
@@ -196,7 +195,6 @@ def main():
                         logger.info (' t0= %s ',t0.strftime('%Y-%m-%d %H:%M:%S'))
                         logger.info (' t1= %s ',t1.strftime('%Y-%m-%d %H:%M:%S'))
                         logger.info (' t2= %s ',t2.strftime('%Y-%m-%d %H:%M:%S'))
-                        #logger.info (' dt.datetime.now()= %s, t0= %s, t1= %, t2= %s',dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), t0.strftime('%Y-%m-%d %H:%M:%S'), t1.strftime('%Y-%m-%d %H:%M:%S'), t2.strftime('%Y-%m-%d %H:%M:%S')) 
                         while (dt.datetime.now() - t2).seconds < (60 * video_dur):
                             camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + "  " + str((dt.datetime.now() - t0).seconds)
                             camera.wait_recording(0.5)
