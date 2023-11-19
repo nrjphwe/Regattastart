@@ -1,8 +1,6 @@
 #!/usr/bin/python3 -u
 import os
 import sys
-# Redirect stdout to a file
-sys.stdout = open('/var/www/html//output.log', 'w')
 import cgitb
 cgitb.enable(display=0, logdir="/var/www/html/")
 import time
@@ -11,11 +9,10 @@ import datetime as dt
 import logging
 import logging.config
 import json
-
 import subprocess
 import RPi.GPIO as GPIO
 from picamera import PiCamera, Color
-
+# parameter data
 signal_dur = 0.3 # 0.3 sec
 log_path = '/usr/lib/cgi-bin/'
 mp4_path = '/var/www/html/images/'
