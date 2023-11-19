@@ -51,7 +51,14 @@ def setup_gpio():
     GPIO.setup(lamp2, GPIO.OUT, initial=GPIO.HIGH)
     return signal, lamp1, lamp2
 
-def remove_files(directory, pattern):
+def remove_picture_files(directory, pattern):
+    files = os.listdir(directory)
+    for file in files:
+        if file.endswith(pattern):
+            file_path = os.path.join(directory, file)
+            os.remove(file_path)
+
+def remove_video_files(directory, pattern):
     files = os.listdir(directory)
     for file in files:
         if file.startswith(pattern):
@@ -115,8 +122,8 @@ def main():
         start_hour, start_minute = start_time.split(':')
         start_time_sec = 60 * (int(start_minute) + 60 * int(start_hour)) # 6660     
         signal, lamp1, lamp2 = setup_gpio()
-        remove_files(photo_path, "video")
-        remove_files(photo_path, "pict")
+        remove_video_files(photo_path, "video")
+        remove_picture_files(photo_path, "pict")
         now = dt.datetime.now()
         wd = dt.datetime.today().strftime("%A")
         if wd == week_day :   # Is todays day of the week same as selected week_day?
