@@ -109,6 +109,7 @@
         echo "This web-page was last modified: \n" . date ("Y-m-d H:i:s.", filemtime($filename));
     }
     ?>
+    <?php echo "Version: " . APP_VERSION; ?>
 </div>
 <div class="w3-panel w3-grey">
     <?php 
