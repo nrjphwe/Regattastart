@@ -111,12 +111,12 @@ def common_start_sequence(camera, signal, video_recording_started, start_time_se
                 seconds_now = 60 * (int(nm) + 60 * int(nh)) + int(ns)
                 camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
-              if not video_recording_started:
-                if seconds_now == start_time_sec - 5 * 60 - 1:
-                    sequence_number += 1
-                    start_video_recording(camera, photo_path, f"video{sequence_number}_{start_prefix}.h264")
-                    video_recording_started = True
-
+                if not video_recording_started:
+                    if seconds_now == start_time_sec - 5 * 60 - 1:
+                        sequence_number += 1
+                        start_video_recording(camera, photo_path, f"video{sequence_number}_{start_prefix}.h264")
+                        video_recording_started = True
+    
                 if seconds_now == seconds:
                     logger.info(" Triggering event at seconds_now: %s", seconds_now)
                     if action:
