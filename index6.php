@@ -38,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </style>
 </head>
 <div class="w3-container w3-blue">
-    <h2>Regattastart 2024 för 1 eller 2 startgrupper </h2>
+    <h2>Regattastart for 1 or 2 starts; <?php echo "     Version: " . APP_VERSION; ?> </h2>
 </div>
 <br><p></p>
 <header>
