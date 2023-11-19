@@ -88,12 +88,12 @@ def convert_video_to_mp4(mp4_path, source_file, destination_file):
     subprocess.run(convert_video_str, shell=True)
     logger.info (" Video recording %s converted ", destination_file)
 
-def common_start_sequence(camera, signal, video_recording_started, start_time_sec, num_starts, photo_path, mp4_path, video_dur):
+def common_start_sequence(camera, signal, video_recording_started, start_time_sec, num_starts, photo_path, mp4_path, video_dur, start_prefix):
     time_intervals = [
-        (start_time_sec - 5 * 60, lambda: trigger_warning_signal(signal), "1st-5min_pict.jpg", "5 min Lamp-1 On -- Up with Flag O"),
-        (start_time_sec - 4 * 60, lambda: trigger_warning_signal(signal), "1st-4min_pict.jpg", "4 min Lamp-2 On  --- Up with Flag P"),
-        (start_time_sec - 1 * 60, lambda: trigger_warning_signal(signal), "1st-1min_pict.jpg", "1 min  Lamp-2 Off -- Flag P down"),
-        (start_time_sec - 1, lambda: trigger_warning_signal(signal), "1st-start_pict.jpg", "Start signal"),
+        (start_time_sec - 5 * 60, lambda: trigger_warning_signal(signal), f"{start_prefix}-5min_pict.jpg", "5 min Lamp-1 On -- Up with Flag O"),
+        (start_time_sec - 4 * 60, lambda: trigger_warning_signal(signal), f"{start_prefix}-4min_pict.jpg", "4 min Lamp-2 On  --- Up with Flag P"),
+        (start_time_sec - 1 * 60, lambda: trigger_warning_signal(signal), f"{start_prefix}-1min_pict.jpg", "1 min  Lamp-2 Off -- Flag P down"),
+        (start_time_sec - 1, lambda: trigger_warning_signal(signal), f"{start_prefix}-start_pict.jpg", "Start signal"),
     ]
 
     for seconds, action, capture_file, log_message in time_intervals:
@@ -104,7 +104,7 @@ def common_start_sequence(camera, signal, video_recording_started, start_time_se
         camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         if video_recording_started == False:
             if seconds_now == start_time_sec - 5 * 60 - 1:
-                start_video_recording(camera, photo_path, "video0.h264")
+                start_video_recording(camera, photo_path, f"video0_{start_prefix}.h264")
                 video_recording_started = True
         if seconds_now == seconds:
             logger.info(" Triggering event at seconds_now: %s", seconds_now)
@@ -119,7 +119,7 @@ def common_start_sequence(camera, signal, video_recording_started, start_time_se
         camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + "  " + str((dt.datetime.now() - t0).seconds)
         camera.wait_recording(0.5)
     stop_video_recording(camera)
-    convert_video_to_mp4(mp4_path, "video0.h264", "video0.mp4")
+    convert_video_to_mp4(mp4_path, f"video0_{start_prefix}.h264", f"video0_{start_prefix}.mp4")
     t1 = dt.datetime.now()
     sum = video_delay - 2
     while sum > 0:
@@ -133,7 +133,7 @@ def common_start_sequence(camera, signal, video_recording_started, start_time_se
     for i in range(1, stop):
         t2 = dt.datetime.now()
         logger.info(' i = %s', i)
-        start_video_recording(camera, photo_path, f"video{i}.h264")
+        start_video_recording(camera, photo_path, f"video{i}_{start_prefix}.h264")
         logger.info(' dt.datetime.now()= %s ', dt.datetime.now())
         logger.info(' t0= %s ', t0.strftime('%Y-%m-%d %H:%M:%S'))
         logger.info(' t1= %s ', t1.strftime('%Y-%m-%d %H:%M:%S'))
@@ -143,7 +143,8 @@ def common_start_sequence(camera, signal, video_recording_started, start_time_se
                 (dt.datetime.now() - t0).seconds)
             camera.wait_recording(0.5)
         stop_video_recording(camera)
-        convert_video_to_mp4(mp4_path, f"video{i}.h264", f"video{i}.mp4")
+        convert_video_to_mp4(mp4_path, f"video{i}_{start_prefix}.h264", f"video{i}_{start_prefix}.mp4")
+
 
 
 def main():
@@ -209,11 +210,10 @@ def main():
         
         if wd == week_day:
             if num_starts == 1:
-                common_start_sequence(camera, signal, video_recording_started, start_time_sec, num_starts, photo_path,
-                                       mp4_path, video_dur)
+                common_start_sequence(camera, signal, video_recording_started, start_time_sec, num_starts, photo_path, mp4_path, video_dur, "1st")
             elif num_starts == 2:
-                common_start_sequence(camera, signal, video_recording_started, start_time_sec, num_starts, photo_path,
-                                       mp4_path, video_dur)
+                common_start_sequence(camera, signal, video_recording_started, start_time_sec, num_starts, photo_path, mp4_path, video_dur, "2nd")
+
         
     except json.JSONDecodeError as e:
         logger.info ("Failed to parse JSON: %", str(e))
