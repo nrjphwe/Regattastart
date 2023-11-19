@@ -43,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <p></p>
 <header>
 <?php 
-    echo "     Version: " . APP_VERSION . <p></p>; 
+    echo "     Version: " . APP_VERSION . "<p></p>"; 
 ?>
 <!-- HTML form -->
 <body>
