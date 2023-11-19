@@ -113,10 +113,10 @@ def common_start_sequence(camera, signal, video_recording_started, start_time_se
                     video_recording_started = True
 
             if seconds_now == seconds:
-                sequence_number += 1
                 logger.info(" Triggering event at seconds_now: %s", seconds_now)
                 if action:
                     action()
+                sequence_number += 1
                 capture_picture(camera, photo_path, f"pict{sequence_number}_{start_prefix}.jpg")
                 logger.info(log_message)
 
