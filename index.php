@@ -1,5 +1,4 @@
 <?php
-
     define('APP_VERSION', '23.11.0'); // You can replace '1.0.0' with your desired version number
     session_id("regattastart");
     session_start();
