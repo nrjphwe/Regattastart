@@ -145,7 +145,7 @@ def finish_recording(camera, mp4_path, video_delay, num_video, video_dur, start_
         # Video running, duration at "video_dur"
         t2 = dt.datetime.now()
         while (dt.datetime.now() - t2).seconds < (60 * video_dur):
-            camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + "  " + str((dt.datetime.now() - start_time_sec).seconds)
+            camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + "  " + str((dt.datetime.now() - start_time_sec.seconds)}
             camera.wait_recording(0.5)
 
         stop_video_recording(camera)
