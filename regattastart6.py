@@ -102,7 +102,7 @@ def common_start_sequence(camera, signal, video_recording_started, start_time_se
         seconds_now = 0  # Initialize with 0
 
         while seconds_now < start_time_sec + 5 * 60:
-            for seconds, action, log_message in time_intervals:
+    		for seconds, action, log_message in time_intervals:
                 t = dt.datetime.now()
                 time_now = t.strftime('%H:%M:%S')
                 nh, nm, ns = time_now.split(':')
@@ -115,12 +115,12 @@ def common_start_sequence(camera, signal, video_recording_started, start_time_se
                         start_video_recording(camera, mp4_path, f"video{sequence_number}_{start_prefix}.h264")
                         video_recording_started = True
 				
-                    if seconds_now == seconds:
-                        logger.info(" Triggering event at seconds_now: %s", seconds_now)
-                        if action:
-                            action()
-                        capture_picture(camera, photo_path, f"pict{sequence_number}_{start_prefix}.jpg")
-                        logger.info(log_message)
+	    		if seconds_now == seconds:
+                    logger.info(" Triggering event at seconds_now: %s", seconds_now)
+                    if action:
+                        action()
+                    capture_picture(camera, photo_path, f"pict{sequence_number}_{start_prefix}.jpg")
+                    logger.info(log_message)
 
 		# Wait for 2 minutes before stopping the video recording
         logger.info(" Wait 2 minutes then stop video recording")
