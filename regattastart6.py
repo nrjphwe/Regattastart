@@ -91,9 +91,9 @@ def convert_video_to_mp4(mp4_path, source_file, destination_file):
 
 def start_sequence(camera, signal, start_time_sec, num_starts, photo_path, mp4_path):
     time_intervals = [
-        (start_time_sec - 5 * 60, lambda: trigger_warning_signal(signal), "5 min Lamp-1 On -- Up with Flag O"),
-        (start_time_sec - 4 * 60, lambda: trigger_warning_signal(signal), "4 min Lamp-2 On  --- Up with Flag P"),
-        (start_time_sec - 1 * 60, lambda: trigger_warning_signal(signal), "1 min  Lamp-2 Off -- Flag P down"),
+        (start_time_sec - 5 * 60, lambda: trigger_warning_signal(signal), "5_min Lamp-1 On -- Up with Flag O"),
+        (start_time_sec - 4 * 60, lambda: trigger_warning_signal(signal), "4_min Lamp-2 On  --- Up with Flag P"),
+        (start_time_sec - 1 * 60, lambda: trigger_warning_signal(signal), "1_min  Lamp-2 Off -- Flag P down"),
         (start_time_sec - 1, lambda: trigger_warning_signal(signal), "Start signal"),
     ]
     
