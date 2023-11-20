@@ -95,46 +95,47 @@ def common_start_sequence(camera, signal, video_recording_started, start_time_se
         (start_time_sec - 1 * 60, lambda: trigger_warning_signal(signal), "1 min  Lamp-2 Off -- Flag P down"),
         (start_time_sec - 1, lambda: trigger_warning_signal(signal), "Start signal"),
     ]
-
-    sequence_numbers = 0 # Define the sequence numbers for each start
+	
+    sequence_number = 0 # Define the sequence numbers for each start
 
     for i in range(num_starts):
         seconds_now = 0  # Initialize with 0
 
         while seconds_now < start_time_sec + 5 * 60:
-			for seconds, action, log_message in time_intervals:
-				t = dt.datetime.now()
-				time_now = t.strftime('%H:%M:%S')
-				nh, nm, ns = time_now.split(':')
-						seconds_now = 60 * (int(nm) + 60 * int(nh)) + int(ns)
-				camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-						
-				if not video_recording_started:
-				    if seconds_now == start_time_sec - 5 * 60 - 1:
-					sequence_number += 1
-					start_video_recording(camera, mp4_path, f"video{sequence_number}_{start_prefix}.h264")
-					video_recording_started = True
-						
-				if seconds_now == seconds:
-					logger.info(" Triggering event at seconds_now: %s", seconds_now)
-					if action:
-						action()
-					capture_picture(camera, photo_path, f"pict{sequence_number}_{start_prefix}.jpg")
-					logger.info(log_message)
+            for seconds, action, log_message in time_intervals:
+                t = dt.datetime.now()
+                time_now = t.strftime('%H:%M:%S')
+                nh, nm, ns = time_now.split(':')
+                seconds_now = 60 * (int(nm) + 60 * int(nh)) + int(ns)
+                camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
-		# Wait for 2 minutes before stopping the video recording
-		logger.info(" Wait 2 minutes then stop video recording")
-		t0 = dt.datetime.now()
-		while (dt.datetime.now() - t0).seconds < (119):
-				camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + "  " + str((dt.datetime.now() - t0).seconds)
-				camera.wait_recording(0.5)
-		stop_video_recording(camera)
-		convert_video_to_mp4(mp4_path, f"video{sequence_number}_{start_prefix}.h264", f"video{sequence_number}_{start_prefix}.mp4")
-		t1 = dt.datetime.now()
+                if not video_recording_started:
+                    if seconds_now == start_time_sec - 5 * 60 - 1:
+                        sequence_number += 1
+                        start_video_recording(camera, mp4_path, f"video{sequence_number}_{start_prefix}.h264")
+                        video_recording_started = True
+    
+                if seconds_now == seconds:
+                    logger.info(" Triggering event at seconds_now: %s", seconds_now)
+                    if action:
+                        action()
+                    capture_picture(camera, photo_path, f"pict{sequence_number}_{start_prefix}.jpg")
+                    logger.info(log_message)
+
+        # Wait for 2 minutes before stopping the video recording
+        logger.info(" Wait 2 minutes then stop video recording")
+        t0 = dt.datetime.now()
+        while (dt.datetime.now() - t0).seconds < (119):
+            camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + "  " + str((dt.datetime.now() - t0).seconds)
+            camera.wait_recording(0.5)
+
+        stop_video_recording(camera)
+        convert_video_to_mp4(mp4_path, f"video{sequence_number}_{start_prefix}.h264", f"video{sequence_number}_{start_prefix}.mp4")
+        t1 = dt.datetime.now()
 
     # Wait for the specified delay before resuming the video recording
     logger.info(" Wait for video_delay minutes before starting the next recording")
-	t_delay = dt.datetime.now()
+    t_delay = dt.datetime.now()
     while (dt.datetime.now() - t_delay).seconds < (60 * video_delay):
         camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + "  " + str((dt.datetime.now() - t_delay).seconds)
         camera.wait_recording(0.5)
@@ -149,11 +150,12 @@ def common_start_sequence(camera, signal, video_recording_started, start_time_se
         logger.info(' t2= %s ', t2.strftime('%Y-%m-%d %H:%M:%S'))
 
         while (dt.datetime.now() - t2).seconds < (60 * video_dur):
-        	camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + "  " + str((dt.datetime.now() - t0).seconds)
+            camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + "  " + str((dt.datetime.now() - t0).seconds)
             camera.wait_recording(0.5)
 
-		stop_video_recording(camera)
-		convert_video_to_mp4(mp4_path, f"video{sequence_number}_{start_prefix}.h264", f"video{sequence_number}_{start_prefix}.mp4")
+        stop_video_recording(camera)
+        convert_video_to_mp4(mp4_path, f"video{sequence_number}_{start_prefix}.h264", f"video{sequence_number}_{start_prefix}.mp4")
+
 
 def main():
     logger = setup_logging()  # Initialize the logger
