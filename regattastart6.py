@@ -98,7 +98,12 @@ def start_sequence(camera, signal, start_time_sec, num_starts, photo_path, mp4_p
     ]
     
     seconds_now = 0  # Initialize with 0
-    video_recording_started = False
+    video_number = 0
+
+    # Start video recording 5 minutes before the first start
+    start_video_recording(camera, mp4_path, f"video{video_number}.h264")
+    video_recording_started = True
+
     for i in range(num_starts):
         logger.info(f"Start of iteration {i}")
         while seconds_now < start_time_sec + 5 * 60:
@@ -109,17 +114,11 @@ def start_sequence(camera, signal, start_time_sec, num_starts, photo_path, mp4_p
                 seconds_now = 60 * (int(nm) + 60 * int(nh)) + int(ns)
                 camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
-                if not video_recording_started:
-                    if seconds_now == start_time_sec - 5 * 60 - 1:
-                        video_number = 0
-                        start_video_recording(camera, mp4_path, f"video{video_number}.h264")
-                        video_recording_started = True
-    
                 if seconds_now == seconds:
                     logger.info(" Triggering event at seconds_now: %s", seconds_now)
                     if action:
                         action()
-                    picture_name = f"{num_starts}:a_start_{log_message[5:]}.jpg"
+                    picture_name = f"{i+1}:a_start_{log_message[:5]}.jpg"
                     capture_picture(camera, photo_path, picture_name)
                     logger.info(log_message)
     logger.info(f"End of iteration {i}")
@@ -134,7 +133,7 @@ def start_sequence(camera, signal, start_time_sec, num_starts, photo_path, mp4_p
     convert_video_to_mp4(mp4_path, f"video{video_number}.h264", f"video{video_number}.mp4")
 
 
-def finish_recording(camera, mp4_path, video_delay, num_video, video_dur):
+def finish_recording(camera, mp4_path, video_delay, num_video, video_dur, start_time_sec):
     # Wait for finish, when the next video will start (delay)
     time.sleep(video_delay * 60)  # Convert delay to seconds
 
@@ -146,7 +145,7 @@ def finish_recording(camera, mp4_path, video_delay, num_video, video_dur):
         # Video running, duration at "video_dur"
         t2 = dt.datetime.now()
         while (dt.datetime.now() - t2).seconds < (60 * video_dur):
-            camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + "  " + str((dt.datetime.now() - t0).seconds)
+            camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + "  " + str((dt.datetime.now() - start_time_sec).seconds)
             camera.wait_recording(0.5)
 
         stop_video_recording(camera)
@@ -192,7 +191,7 @@ def main():
             elif num_starts == 2:
                 start_sequence(camera, signal, start_time_sec, num_starts, photo_path, mp4_path)
         
-        finish_recording(camera, mp4_path, video_delay, num_video, video_dur)
+        finish_recording(camera, mp4_path, video_delay, num_video, video_dur,start_time_sec)
      
 
     except json.JSONDecodeError as e:
