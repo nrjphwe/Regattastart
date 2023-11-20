@@ -119,7 +119,7 @@ def start_sequence(camera, signal, start_time_sec, num_starts, photo_path, mp4_p
                     logger.info(" Triggering event at seconds_now: %s", seconds_now)
                     if action:
                         action()
-                    picture_name = f"{num_starts}:a_start_{mystring[5:log_message]}.jpg"
+                    picture_name = f"{num_starts}:a_start_{log_message[5:]}.jpg"
                     capture_picture(camera, photo_path, picture_name)
                     logger.info(log_message)
 
@@ -134,9 +134,9 @@ def start_sequence(camera, signal, start_time_sec, num_starts, photo_path, mp4_p
         convert_video_to_mp4(mp4_path, f"video{video_number}.h264", f"video{video_number}.mp4")
 
 
-def finish_recording(camera, mp4_path, delay, num_video, video_dur):
+def finish_recording(camera, mp4_path, video_delay, num_video, video_dur):
     # Wait for finish, when the next video will start (delay)
-    time.sleep(delay * 60)  # Convert delay to seconds
+    time.sleep(video_delay * 60)  # Convert delay to seconds
 
     # Result video, chopped into numeral videos with duration at "video_dur"
     stop = num_video + 1
@@ -192,7 +192,7 @@ def main():
             elif num_starts == 2:
                 start_sequence(camera, signal, start_time_sec, num_starts, photo_path, mp4_path)
         
-        finish_recording(camera, mp4_path, delay, num_video, video_dur)
+        finish_recording(camera, mp4_path, video_delay, num_video, video_dur)
      
 
     except json.JSONDecodeError as e:
