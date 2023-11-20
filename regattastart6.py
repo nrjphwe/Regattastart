@@ -2,16 +2,17 @@
 import os
 import sys
 import cgitb
-cgitb.enable(display=0, logdir="/var/www/html/")
 import time
 from datetime import datetime
 import datetime as dt
 import logging
 import logging.config
 import json
+
 import subprocess
 import RPi.GPIO as GPIO
 from picamera import PiCamera, Color
+
 # parameter data
 signal_dur = 0.3 # 0.3 sec
 log_path = '/usr/lib/cgi-bin/'
@@ -88,18 +89,16 @@ def convert_video_to_mp4(mp4_path, source_file, destination_file):
     subprocess.run(convert_video_str, shell=True)
     logger.info (" Video recording %s converted ", destination_file)
 
-def common_start_sequence(camera, signal, video_recording_started, start_time_sec, num_starts, photo_path, mp4_path, video_dur, start_prefix, video_delay):
+def start_sequence(camera, signal, start_time_sec, num_starts, photo_path, mp4_path):
     time_intervals = [
         (start_time_sec - 5 * 60, lambda: trigger_warning_signal(signal), "5 min Lamp-1 On -- Up with Flag O"),
         (start_time_sec - 4 * 60, lambda: trigger_warning_signal(signal), "4 min Lamp-2 On  --- Up with Flag P"),
         (start_time_sec - 1 * 60, lambda: trigger_warning_signal(signal), "1 min  Lamp-2 Off -- Flag P down"),
         (start_time_sec - 1, lambda: trigger_warning_signal(signal), "Start signal"),
     ]
-	
-    sequence_number = 0 # Define the sequence numbers for each start
-
+    
+    seconds_now = 0  # Initialize with 0
     for i in range(num_starts):
-        seconds_now = 0  # Initialize with 0
 
         while seconds_now < start_time_sec + 5 * 60:
             for seconds, action, log_message in time_intervals:
@@ -111,15 +110,16 @@ def common_start_sequence(camera, signal, video_recording_started, start_time_se
 
                 if not video_recording_started:
                     if seconds_now == start_time_sec - 5 * 60 - 1:
-                        sequence_number += 1
-                        start_video_recording(camera, mp4_path, f"video{sequence_number}_{start_prefix}.h264")
+                        video_number = 0
+                        start_video_recording(camera, mp4_path, f"video{video_number}.h264")
                         video_recording_started = True
     
                 if seconds_now == seconds:
                     logger.info(" Triggering event at seconds_now: %s", seconds_now)
                     if action:
                         action()
-                    capture_picture(camera, photo_path, f"pict{sequence_number}_{start_prefix}.jpg")
+                    picture_name = f"{num_starts}:a_start_{left(log_message,5)}.jpg"
+                    capture_picture(camera, photo_path, picture_name)
                     logger.info(log_message)
 
         # Wait for 2 minutes before stopping the video recording
@@ -130,32 +130,27 @@ def common_start_sequence(camera, signal, video_recording_started, start_time_se
             camera.wait_recording(0.5)
 
         stop_video_recording(camera)
-        convert_video_to_mp4(mp4_path, f"video{sequence_number}_{start_prefix}.h264", f"video{sequence_number}_{start_prefix}.mp4")
-        t1 = dt.datetime.now()
+        convert_video_to_mp4(mp4_path, f"video{video_number}.h264", f"video{video_number}.mp4")
 
-    # Wait for the specified delay before resuming the video recording
-    logger.info(" Wait for video_delay minutes before starting the next recording")
-    t_delay = dt.datetime.now()
-    while (dt.datetime.now() - t_delay).seconds < (60 * video_delay):
-        camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + "  " + str((dt.datetime.now() - t_delay).seconds)
-        camera.wait_recording(0.5)
 
-    # Continue recording video for the remaining starts
-    for j in range(1, num_starts):
-        sequence_number += 1
+def finish_recording(camera, mp4_path, delay, num_video, video_dur):
+    # Wait for finish, when the next video will start (delay)
+    time.sleep(delay * 60)  # Convert delay to seconds
+
+    # Result video, chopped into numeral videos with duration at "video_dur"
+    stop = num_video + 1
+    for i in range(1, stop):
+        start_video_recording(camera, mp4_path, f"video{i}.h264")
+
+        # Video running, duration at "video_dur"
         t2 = dt.datetime.now()
-        logger.info(' j = %s', j)
-        start_video_recording(camera, mp4_path, f"video{sequence_number}_{start_prefix}.h264")
-        logger.info(' dt.datetime.now()= %s ', dt.datetime.now())
-        logger.info(' t2= %s ', t2.strftime('%Y-%m-%d %H:%M:%S'))
-
         while (dt.datetime.now() - t2).seconds < (60 * video_dur):
             camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + "  " + str((dt.datetime.now() - t0).seconds)
             camera.wait_recording(0.5)
 
         stop_video_recording(camera)
-        convert_video_to_mp4(mp4_path, f"video{sequence_number}_{start_prefix}.h264", f"video{sequence_number}_{start_prefix}.mp4")
-
+        convert_video_to_mp4(mp4_path, f"video{i}.h264", f"video{i}.mp4")
+    logger.info("This was the last video =====")
 
 def main():
     logger = setup_logging()  # Initialize the logger
@@ -192,10 +187,13 @@ def main():
         
         if wd == week_day:
             if num_starts == 1:
-                common_start_sequence(camera, signal, video_recording_started, start_time_sec, num_starts, photo_path, mp4_path, video_dur, "1st", video_delay)
+                start_sequence(camera, signal, start_time_sec, num_starts, photo_path, mp4_path)
             elif num_starts == 2:
-                common_start_sequence(camera, signal, video_recording_started, start_time_sec, num_starts, photo_path, mp4_path, video_dur, "2nd", video_delay)
+                start_sequence(camera, signal, start_time_sec, num_starts, photo_path, mp4_path)
         
+        finish_recording(camera, mp4_path, delay, num_video, video_dur)
+     
+
     except json.JSONDecodeError as e:
         logger.info ("Failed to parse JSON: %", str(e))
         sys.exit(1)
