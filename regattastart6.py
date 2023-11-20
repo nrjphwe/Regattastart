@@ -98,6 +98,7 @@ def start_sequence(camera, signal, start_time_sec, num_starts, photo_path, mp4_p
     ]
     
     seconds_now = 0  # Initialize with 0
+    video_recording_started = False
     for i in range(num_starts):
 
         while seconds_now < start_time_sec + 5 * 60:
