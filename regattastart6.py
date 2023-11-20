@@ -119,7 +119,7 @@ def start_sequence(camera, signal, start_time_sec, num_starts, photo_path, mp4_p
                     logger.info(" Triggering event at seconds_now: %s", seconds_now)
                     if action:
                         action()
-                    picture_name = f"{num_starts}:a_start_{left(log_message,5)}.jpg"
+                    picture_name = f"{num_starts}:a_start_{mystring[5:log_message]}.jpg"
                     capture_picture(camera, photo_path, picture_name)
                     logger.info(log_message)
 
