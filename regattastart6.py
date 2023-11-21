@@ -100,6 +100,7 @@ def start_sequence(camera, signal, start_time_sec, num_starts, photo_path, mp4_p
     for i in range(num_starts):
         seconds_now = 0  # Initialize with 0
         logger.info(f"Start of iteration {i}")
+
         for seconds, action, log_message in time_intervals:
             while seconds_now < seconds:
                 t = dt.datetime.now()
@@ -114,7 +115,8 @@ def start_sequence(camera, signal, start_time_sec, num_starts, photo_path, mp4_p
             picture_name = f"{i + 1}:a_start_{log_message[:5]}.jpg"
             capture_picture(camera, photo_path, picture_name)
             logger.info(log_message)
-        logger.info(f"End of iteration {i}")
+        
+    logger.info(f"End of iteration {num_starts - 1}")
 
 def finish_recording(camera, mp4_path, video_delay, num_video, video_dur, start_time_sec):
     # Wait for finish, when the next video will start (delay)
