@@ -58,29 +58,29 @@ if (isset($_SESSION["form_data"])) {
 <h3> Bilder tagna vid varje signal innan 1a start </h3>
 </div> 
 <h3> Bild vid varningssignal 5 minuter innan 1a start</h3>
-<img src="/images/1st-5min_pict.jpg?<?php echo Date("Y.m.d.G.i.s")?>" alt="1st 5 min picture" width="720" height="480"  >
+<img src="/images/1:a_start_5_min.jpg?<?php echo Date("Y.m.d.G.i.s")?>" alt="1st 5 min picture" width="720" height="480"  >
 <h3> Bild vid signal 4 minuter innan 1a start</h3>
-<img src="/images/1st-4min_pict.jpg?<?php echo Date("Y.m.d.G.i.s")?>" alt="1st 4 min picture" width="720" height="480"  >
+<img src="/images/1:a_start_4_min.jpg?<?php echo Date("Y.m.d.G.i.s")?>" alt="1st 4 min picture" width="720" height="480"  >
 <h3> Bild vid signal 1 minut innan 1a start</h3>
-<img src="/images/1st-1min_pict.jpg?<?php echo Date("Y.m.d.G.i.s")?>" alt="1st 1 min picture" width="720" height="480"  >
+<img src="/images/1:a_start_1_min.jpg?<?php echo Date("Y.m.d.G.i.s")?>" alt="1st 1 min picture" width="720" height="480"  >
 <h3> Foto vid 1a start</h3>
-<img src="/images/1st-start_pict.jpg?<?php echo Date("Y.m.d.G.i.s")?>" alt="1st start  picture" width="720" height="480"  >
+<img src="/images/1:a_start_Start.jpg?<?php echo Date("Y.m.d.G.i.s")?>" alt="1st start  picture" width="720" height="480"  >
 <?php
     $path = '/images/';
-    $filename = 'images/2nd-5min_pict.jpg';
+    $filename = 'images/2:a_start_5_min.jpg';
     if (file_exists($filename)) {
        echo "<h3> Bilder tagna vid varje signal innan 2a start  </h3> ";
        echo "<br> ------------------------------------------------- <p></p> ";
-       $filename = '2nd-5min_pict.jpg';
+       $filename = '2:a_start_5_min.'.jpg';
        echo "<h3> Bild vid varningssignal 5 minuter innan 2a start</h3>";
        echo '<img src = "' . $path . $filename . '" / alt="1st 5 min picture" width="720" height="480"  >';
-       $filename = '2nd-4min_pict.jpg';
+       $filename = '2:a_start_4_min.jpg';
        echo "<h3> Signal 4 minuter innan 2a start </h3>";
        echo '<img src = "' . $path . $filename . '" / alt="1st 5 min picture" width="720" height="480"  >';
-       $filename = '2nd-1min_pict.jpg';
+       $filename = '2:a_start_1_min..jpg';
        echo "<h3> Signal 1 minut innan 2a start </h3>";
        echo '<img src = "' . $path . $filename . '" / alt="1st 5 min picture" width="720" height="480"  >';
-       $filename = '2nd-start_pict.jpg';
+       $filename = '2:a_start_Start.jpg';
        echo "<h3> Foto vid 2a start </h3>";
        echo '<img src = "' . $path . $filename . '" / alt="1st 5 min picture" width="720" height="480"  >';
     }
