@@ -121,7 +121,8 @@ def start_sequence(camera, signal, start_time_sec, num_starts, photo_path, mp4_p
                     picture_name = f"{i+1}:a_start_{log_message[:5]}.jpg"
                     capture_picture(camera, photo_path, picture_name)
                     logger.info(log_message)
-    logger.info(f"End of iteration {i}")
+        logger.info(f"End of iteration {i}")
+
     # Wait for 2 minutes before stopping the video recording
     logger.info(" Wait 2 minutes then stop video recording")
     t0 = dt.datetime.now()
