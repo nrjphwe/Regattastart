@@ -114,6 +114,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <option value="60" <?php if(isset($video_dur) && $video_dur == "60") ?> value="60">60</option> 
             </select>
             <p></p>
+            <?php echo "Num Video: " . $num_video; ?>
             Number of video's: <select name = "num_video" id = "num_video">
                 <option <?php if(isset($num_video) && $num_video == "9"){echo "selected=\"selected\"";} ?> value="9">9</option>
                 <option <?php if(isset($num_video) && $num_video == "8"){echo "selected=\"selected\"";} ?> value="8">8</option>
