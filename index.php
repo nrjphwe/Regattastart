@@ -41,7 +41,7 @@
         // Display the data or do whatever you need
         echo "Start time: " . $form_data['start_time'];
         echo ", Video Delay: " . $form_data['video_delay'];
-        echo ", Video Duration: " . $form_data['video_dur'];
+        echo ", Video Duration: " . $form_data['video_dur']; 
         $num_video = $form_data['num_video'];
         echo ", Number of Videos: " . $num_video;
         $num_starts = $form_data['num_starts'];
@@ -77,7 +77,7 @@
        $filename = '2:a_start_4_min.jpg';
        echo "<h3> Signal 4 minuter innan 2a start </h3>";
        echo '<img src = "' . $path . $filename . '" / alt="1st 5 min picture" width="720" height="480"  >';
-       $filename = '2:a_start_1_min..jpg';
+       $filename = '2:a_start_1_min.jpg';
        echo "<h3> Signal 1 minut innan 2a start </h3>";
        echo '<img src = "' . $path . $filename . '" / alt="1st 5 min picture" width="720" height="480"  >';
        $filename = '2:a_start_Start.jpg';
