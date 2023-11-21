@@ -15,12 +15,15 @@
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Process and store the form data
     $_SESSION["form_data"] = $_POST;
+
     // Execute the Python script
     $command = 'python3 /usr/lib/cgi-bin/regattastart6.py ' . escapeshellarg(json_encode($_POST)) . ' > /var/www/html/output.txt 2>&1 &';
     shell_exec($command);
+    
     echo date('h:i:s') . "<br>";
     echo "execution started";
     sleep(3);
+    
     //exec('python3 /usr/lib/cgi-bin/regattastart6.py ' . escapeshellarg(json_encode($_POST)));
     // Redirect to index.php
     header("Location: index.php");
@@ -77,18 +80,13 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
             <div data-tap-disabled="true">
             Start Time: <select name = "start_time" id = "start_time">
                 <?php
-                    $hour = date('H');
-                    $steps   = 10; // only edit the minutes value
-                    $current = 0;
-                    $loops   = 24*(60/$steps);
-                    //$loops   = (24-$hour)*(60/$steps);
-                    //for ($i = $hour*(60/$steps); $i < $loops; $i++) {
+                    $start_time = isset($_SESSION["form_data"]["start_time"]) ? $_SESSION["form_data"]["start_time"] : "";
+
                     for ($i = 0; $i < $loops; $i++) {
-                    //    $time = sprintf('%02d:%02d', $i/(60/$steps), $current%60);
-                    $start_time = sprintf('%02d:%02d', $i/(60/$steps), $current%60);
-                    //echo '<option>' . $start_time . '</option>';
-                    echo '<option value="' . $start_time . '">' . $start_time . '</option>';
-                    $current += $steps;
+                        $start_time_option = sprintf('%02d:%02d', $i / (60 / $steps), $current % 60);
+                        $selected = ($start_time == $start_time_option) ? "selected" : ""; // Check if this option should be selected
+                        echo '<option value="' . $start_time_option . '" ' . $selected . '>' . $start_time_option . '</option>';
+                        $current += $steps;
                     }
                 ?>
             </select>
