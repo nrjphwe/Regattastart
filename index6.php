@@ -26,6 +26,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     header("Location: index.php");
     exit;
 }
+
+$day = date("l");
+$start_time = ""; // You need to initialize $start_time
+$num_video = isset($_SESSION["form_data"]["num_video"]) ? $_SESSION["form_data"]["num_video"] : "";
+
+
+
 ?>
 <!DOCTYPE html>
 <html>
