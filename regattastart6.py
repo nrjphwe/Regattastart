@@ -98,11 +98,6 @@ def start_sequence(camera, signal, start_time_sec, num_starts, photo_path, mp4_p
     ]
     
     seconds_now = 0  # Initialize with 0
-    video_number = 0
-
-    # Start video recording 5 minutes before the first start
-    start_video_recording(camera, mp4_path, f"video{video_number}.h264")
-    video_recording_started = True
 
     for i in range(num_starts):
         logger.info(f"Start of iteration {i}")
@@ -122,17 +117,6 @@ def start_sequence(camera, signal, start_time_sec, num_starts, photo_path, mp4_p
                     capture_picture(camera, photo_path, picture_name)
                     logger.info(log_message)
         logger.info(f"End of iteration {i}")
-
-    # Wait for 2 minutes before stopping the video recording
-    logger.info(" Wait 2 minutes then stop video recording")
-    t0 = dt.datetime.now()
-    while (dt.datetime.now() - t0).seconds < (119):
-        camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + "  " + str((dt.datetime.now() - t0).seconds)
-        camera.wait_recording(0.5)
-
-    stop_video_recording(camera)
-    convert_video_to_mp4(mp4_path, f"video{video_number}.h264", f"video{video_number}.mp4")
-
 
 def finish_recording(camera, mp4_path, video_delay, num_video, video_dur, start_time_sec):
     # Wait for finish, when the next video will start (delay)
@@ -202,10 +186,8 @@ def main():
                 stop_video_recording(camera)
                 convert_video_to_mp4(mp4_path, f"video{video_number}.h264", f"video{video_number}.mp4")
 
-
         finish_recording(camera, mp4_path, video_delay, num_video, video_dur,start_time_sec)
      
-
     except json.JSONDecodeError as e:
         logger.info ("Failed to parse JSON: %", str(e))
         sys.exit(1)
