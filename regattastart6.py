@@ -117,7 +117,7 @@ def start_sequence(camera, signal, start_time_sec, num_starts, photo_path, mp4_p
             logger.info(log_message)
 
             # Reset seconds_now to 0 for the next iteration
-            start_time_sec = start_time_sec + 300
+        start_time_sec = start_time_sec + 300
         
     logger.info(f"End of iteration {num_starts - 1}")
 
