@@ -112,16 +112,15 @@ $num_video = isset($_SESSION["form_data"]["num_video"]) ? $_SESSION["form_data"]
             <p></p>
             Duration for each video: 
             <select name = "video_dur" id = "video_dur">
-                <option value="2"  <?php if(isset($video_dur) && $video_dur == "2")  ?> value="2">2</option> 
-                <option value="10" <?php if(isset($video_dur) && $video_dur == "10"){echo "selected";} ?> value="10">10</option>
-                <option value="15" <?php if(isset($video_dur) && $video_dur == "15") ?> value="15">15</option>
-                <option value="20" <?php if(isset($video_dur) && $video_dur == "20") ?> value="20">20</option>
-                <option value="30" <?php if(isset($video_dur) && $video_dur == "30") ?> value="30">30</option>
-                <option value="50" <?php if(isset($video_dur) && $video_dur == "50") ?> value="50">50</option>
-                <option value="60" <?php if(isset($video_dur) && $video_dur == "60") ?> value="60">60</option> 
+                <option value="2"  <?php if(isset($video_dur) && $video_dur == "2"){echo "selected=\"selected\"";} ?> value="2">2</option> 
+                <option value="10" <?php if(isset($video_dur) && $video_dur == "10"){echo "selected=\"selected\"";} ?> value="10">10</option>
+                <option value="15" <?php if(isset($video_dur) && $video_dur == "15"){echo "selected=\"selected\"";}?> value="15">15</option>
+                <option value="20" <?php if(isset($video_dur) && $video_dur == "20"){echo "selected=\"selected\"";} ?> value="20">20</option>
+                <option value="30" <?php if(isset($video_dur) && $video_dur == "30"){echo "selected=\"selected\"";} ?> value="30">30</option>
+                <option value="50" <?php if(isset($video_dur) && $video_dur == "50"){echo "selected=\"selected\"";} ?> value="50">50</option>
+                <option value="60" <?php if(isset($video_dur) && $video_dur == "60"){echo "selected=\"selected\"";} ?> value="60">60</option> 
             </select>
             <p></p>
-            <?php echo "Num Video: " . $num_video; ?>
             Number of video's: <select name = "num_video" id = "num_video">
                 <option <?php if(isset($num_video) && $num_video == "9"){echo "selected=\"selected\"";} ?> value="9">9</option>
                 <option <?php if(isset($num_video) && $num_video == "8"){echo "selected=\"selected\"";} ?> value="8">8</option>
@@ -143,8 +142,8 @@ $num_video = isset($_SESSION["form_data"]["num_video"]) ? $_SESSION["form_data"]
                 <legend> Setup of 1 or 2 starts </legend>
                 <p></p>
                 Number of starts: <select name="num_starts" id="num_starts">
-                    <option value="1">1</option>
-                    <option value="2">2</option>
+                    <option <?php if(isset($num_starts) && $num_starts == "1"){echo "selected=\"selected\"";} ?> value="1">1</option>
+                    <option <?php if(isset($num_starts) && $num_starts == "2"){echo "selected=\"selected\"";} ?> value="2">2</option>
                 </select>
             </fieldset>
             <p></p>
