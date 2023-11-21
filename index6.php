@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $day = date("l");
-$start_time = ""; // You need to initialize $start_time
+$start_time = "18:25"; // You need to initialize $start_time
 $num_video = isset($_SESSION["form_data"]["num_video"]) ? $_SESSION["form_data"]["num_video"] : "";
 
 
@@ -100,14 +100,14 @@ $num_video = isset($_SESSION["form_data"]["num_video"]) ? $_SESSION["form_data"]
             <p></p>
             Duration between start and estimated finish: 
             <select name = "video_delay" id = "video_delay">
-                <option value="5" <?php if(isset($video_delay) && $video_delay == "5")  ?>>5</option>
-                <option value="20" <?php if(isset($video_delay) && $video_delay == "20")  ?>>20</option>
-                <option value="30" <?php if(isset($video_delay) && $video_delay == "30") echo "selected"; ?>>30</option>
-                <option value="40" <?php if(isset($video_delay) && $video_delay == "40")  ?>>40</option>
-                <option value="50" <?php if(isset($video_delay) && $video_delay == "50")  ?>>50</option>
-                <option value="60" <?php if(isset($video_delay) && $video_delay == "60")  ?>>60</option>
-                <option value="70" <?php if(isset($video_delay) && $video_delay == "70")  ?>>70</option>
-                <option value="80" <?php if(isset($video_delay) && $video_delay == "80")  ?>>80</option>
+                <option value="5" <?php if(isset($video_delay) && $video_delay == "5"){echo "selected=\"selected\"";}  ?>>5</option>
+                <option value="20" <?php if(isset($video_delay) && $video_delay == "20"){echo "selected=\"selected\"";} ?>>20</option>
+                <option value="30" <?php if(isset($video_delay) && $video_delay == "30"){echo "selected=\"selected\"";} ?>>30</option>
+                <option value="40" <?php if(isset($video_delay) && $video_delay == "40"){echo "selected=\"selected\"";} ?>>40</option>
+                <option value="50" <?php if(isset($video_delay) && $video_delay == "50"){echo "selected=\"selected\"";} ?>>50</option>
+                <option value="60" <?php if(isset($video_delay) && $video_delay == "60"){echo "selected=\"selected\"";} ?>>60</option>
+                <option value="70" <?php if(isset($video_delay) && $video_delay == "70"){echo "selected=\"selected\"";} ?>>70</option>
+                <option value="80" <?php if(isset($video_delay) && $video_delay == "80"){echo "selected=\"selected\"";} ?>>80</option>
             </select>
             <p></p>
             Duration for each video: 
