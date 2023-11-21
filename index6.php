@@ -78,14 +78,16 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
             </select>
             <p></p>
             <div data-tap-disabled="true">
-            Start Time: <select name = "start_time" id = "start_time">
-                $start_time = isset($_SESSION["form_data"]["start_time"]) ? $_SESSION["form_data"]["start_time"] : "";
+            <?php
+            $start_time = isset($_SESSION["form_data"]["start_time"]) ? $_SESSION["form_data"]["start_time"] : "";
+            ?>
+            Start Time: <select name="start_time" id="start_time">
                 <?php
-                    for ($i = 0; $i < $loops; $i++) {
-                        $start_time_option = sprintf('%02d:%02d', $i / (60 / $steps), $current % 60);
-                        $selected = ($start_time == $start_time_option) ? "selected" : ""; // Check if this option should be selected
-                        echo '<option value="' . $start_time_option . '" ' . $selected . '>' . $start_time_option . '</option>';
-                        $current += $steps;
+                for ($i = 0; $i < $loops; $i++) {
+                    $start_time_option = sprintf('%02d:%02d', $i / (60 / $steps), $current % 60);
+                    $selected = ($start_time == $start_time_option) ? "selected" : ""; // Check if this option should be selected
+                    echo '<option value="' . $start_time_option . '" ' . $selected . '>' . $start_time_option . '</option>';
+                    $current += $steps;
                 }
                 ?>
             </select>
