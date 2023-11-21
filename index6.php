@@ -10,10 +10,6 @@
     echo "<br/>";
     ini_set('display_errors', 1);
     error_reporting(E_ALL);
-    // Clean out unwanted entries in the session
-    unset($_SESSION["video_delay"]);
-    unset($_SESSION["video_dur"]);
-    unset($_SESSION["num_video"]);
 ?>
 <?php
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
