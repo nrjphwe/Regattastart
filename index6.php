@@ -79,7 +79,8 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
             <p></p>
             <div data-tap-disabled="true">
             <?php
-            $start_time = isset($_SESSION["form_data"]["start_time"]) ? $_SESSION["form_data"]["start_time"] : "";
+                $start_time = isset($_SESSION["form_data"]["start_time"]) ? $_SESSION["form_data"]["start_time"] : "";
+                $loops = 24 * (60 / $steps); // Define $loops here or wherever it makes sense in your code
             ?>
             Start Time: <select name="start_time" id="start_time">
                 <?php
