@@ -127,8 +127,9 @@ def finish_recording(camera, mp4_path, video_delay, num_video, video_dur, start_
 
         # Video running, duration at "video_dur"
         t2 = dt.datetime.now()
+        start_time = dt.datetime.fromtimestamp(start_time_sec)
         while (dt.datetime.now() - t2).seconds < (60 * video_dur):
-            elapsed_time = (dt.datetime.now() - dt.datetime.fromtimestamp(start_time_sec))
+            elapsed_time = (dt.datetime.now() - start_time)
             camera.annotate_text = f"{dt.datetime.now().strftime('%Y-%m-%d %(H:%M:%S')} Elapsed time: {elapsed_time}"
             camera.wait_recording(0.5)
 
