@@ -35,18 +35,18 @@
     echo "     Version: " . APP_VERSION . "<br><p></p>"; 
 ?>
 <?php
-// Retrieve and display data from the session
-if (isset($_SESSION["form_data"])) {
-    $form_data = $_SESSION["form_data"];
-    // Display the data or do whatever you need
-    echo "Start time: " . $form_data['start_time'];
-    echo ", Video Delay: " . $form_data['video_delay'];
-    echo ", Video Duration: " . $form_data['video_dur'];
-    $num_video = $form_data['num_video'];
-    echo ", Number of Videos: " . $num_video;
-    $num_starts = $form_data['num_starts'];
-    echo ", Number of starts: " . $num_starts;
-}
+    // Retrieve and display data from the session
+    if (isset($_SESSION["form_data"])) {
+        $form_data = $_SESSION["form_data"];
+        // Display the data or do whatever you need
+        echo "Start time: " . $form_data['start_time'];
+        echo ", Video Delay: " . $form_data['video_delay'];
+        echo ", Video Duration: " . $form_data['video_dur'];
+        $num_video = $form_data['num_video'];
+        echo ", Number of Videos: " . $num_video;
+        $num_starts = $form_data['num_starts'];
+        echo ", Number of starts: " . $num_starts;
+    }
 ?>
 </div>
 <!-- Here is our page's main content -->
@@ -71,7 +71,7 @@ if (isset($_SESSION["form_data"])) {
     if (file_exists($filename)) {
        echo "<h3> Bilder tagna vid varje signal innan 2a start  </h3> ";
        echo "<br> ------------------------------------------------- <p></p> ";
-       $filename = '2:a_start_5_min.'.jpg';
+       $filename = '2:a_start_5_min.jpg';
        echo "<h3> Bild vid varningssignal 5 minuter innan 2a start</h3>";
        echo '<img src = "' . $path . $filename . '" / alt="1st 5 min picture" width="720" height="480"  >';
        $filename = '2:a_start_4_min.jpg';
