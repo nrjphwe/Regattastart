@@ -97,7 +97,11 @@ def start_sequence(camera, signal, start_time_sec, num_starts, photo_path, mp4_p
         (start_time_sec - 1, lambda: trigger_warning_signal(signal), "Start signal"),
     ]
 
-    seconds_now = 0
+    t = dt.datetime.now()
+    time_now = t.strftime('%H:%M:%S')
+    nh, nm, ns = time_now.split(':')
+    seconds_now = 60 * (int(nm) + 60 * int(nh)) + int(ns)
+    
     for i in range(num_starts):
         logger.info(f"Start of iteration {i}")
 
@@ -117,6 +121,7 @@ def start_sequence(camera, signal, start_time_sec, num_starts, photo_path, mp4_p
                 #logger.info(f"Current time: {time_now}, Seconds now: {seconds_now}, Event time: {seconds}")
                 #time.sleep(0.5) # for test
 
+                # Iterate through time intervals
                 if seconds_now == seconds:
                     logger.info(f"Waiting... Current time: {time_now}, Seconds now: {seconds_now}, Event time: {seconds}")
                     logger.info(f"Triggering event at seconds_now: {seconds_now}")
@@ -125,8 +130,7 @@ def start_sequence(camera, signal, start_time_sec, num_starts, photo_path, mp4_p
                     picture_name = f"{i + 1}:a_start_{log_message[:5]}.jpg"
                     capture_picture(camera, photo_path, picture_name)
                     logger.info(log_message)
-        else:
-            logger.info(f"End of iteration: {i}")
+        logger.info(f"End of iteration: {i}")
 
 
 def finish_recording(camera, mp4_path, video_delay, num_video, video_dur, start_time_sec):
