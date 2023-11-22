@@ -97,6 +97,7 @@ def start_sequence(camera, signal, start_time_sec, num_starts, photo_path, mp4_p
         (start_time_sec - 1, lambda: trigger_warning_signal(signal), "Start signal"),
     ]
 
+    seconds_now = 0
     for i in range(num_starts):
         logger.info(f"Start of iteration {i}")
 
