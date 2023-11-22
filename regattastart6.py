@@ -101,6 +101,10 @@ def start_sequence(camera, signal, start_time_sec, num_starts, photo_path, mp4_p
         seconds_now = 0  # Initialize with 0
         logger.info(f"Start of iteration {i}")
 
+        # Adjust the start_time_sec for the second iteration
+        if i == 1:
+            start_time_sec += 5 * 60  # Add 5 minutes for the second iteration
+
         for seconds, action, log_message in time_intervals:
             while seconds_now < seconds:
                 t = dt.datetime.now()
@@ -115,9 +119,8 @@ def start_sequence(camera, signal, start_time_sec, num_starts, photo_path, mp4_p
             picture_name = f"{i + 1}:a_start_{log_message[:5]}.jpg"
             capture_picture(camera, photo_path, picture_name)
             logger.info(log_message)
-
-            # Reset seconds_now to 0 for the next iteration
-        start_time_sec = start_time_sec + 300
+        # Reset seconds_now to 0 for the next iteration
+        seconds_now = 0
         
     logger.info(f"End of iteration {num_starts - 1}")
 
