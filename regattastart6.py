@@ -89,7 +89,7 @@ def convert_video_to_mp4(mp4_path, source_file, destination_file):
     subprocess.run(convert_video_str, shell=True)
     logger.info (" Video recording %s converted ", destination_file)
 
-def start_sequence(camera, signal, start_time_sec, num_starts, photo_path, mp4_path):
+def start_sequence(camera, signal, start_time_sec, num_starts, photo_path):
     time_intervals = [
         (start_time_sec - 5 * 60, lambda: trigger_warning_signal(signal), "5_min Lamp-1 On -- Up with Flag O"),
         (start_time_sec - 4 * 60, lambda: trigger_warning_signal(signal), "4_min Lamp-2 On  --- Up with Flag P"),
@@ -110,7 +110,7 @@ def start_sequence(camera, signal, start_time_sec, num_starts, photo_path, mp4_p
             start_time_sec += 5 * 60  # Add 5 minutes for the second iteration
             logger.info(f"Next start_time_sec: {start_time_sec}")
                 
-        while seconds_now < start_time_sec:
+        while seconds_now < start_time_sec +1:
             for seconds, action, log_message in time_intervals:
                 t = dt.datetime.now()
                 time_now = t.strftime('%H:%M:%S')
@@ -192,7 +192,7 @@ def main():
                 video_number = 0
                 # Start video recording 5 minutes before the first start
                 start_video_recording(camera, mp4_path, f"video{video_number}.h264")
-                start_sequence(camera, signal, start_time_sec, num_starts, photo_path, mp4_path)
+                start_sequence(camera, signal, start_time_sec, num_starts, photo_path)
 
                 logger.info(" Wait 2 minutes then stop video recording")
                 t0 = dt.datetime.now()
