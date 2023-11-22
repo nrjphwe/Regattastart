@@ -67,7 +67,7 @@
 <img src="/images/1:a_start_Start.jpg?<?php echo Date("Y.m.d.G.i.s")?>" alt="1st start  picture" width="720" height="480"  >
 <?php
     $path = '/images/';
-    $filename = 'images/2:a_start_5_min.jpg';
+    $filename = 'images/2:a_start_4_min.jpg';
     if (file_exists($filename)) {
        echo "<h3> Bilder tagna vid varje signal innan 2a start  </h3> ";
        echo "<br> ------------------------------------------------- <p></p> ";
