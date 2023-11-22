@@ -96,7 +96,7 @@ def start_sequence(camera, signal, start_time_sec, num_starts, photo_path, mp4_p
         (start_time_sec - 1 * 60, lambda: trigger_warning_signal(signal), "1_min  Lamp-2 Off -- Flag P down"),
         (start_time_sec - 1, lambda: trigger_warning_signal(signal), "Start signal"),
     ]
-    
+
     for i in range(num_starts):
         logger.info(f"Start of iteration {i}")
 
@@ -109,7 +109,7 @@ def start_sequence(camera, signal, start_time_sec, num_starts, photo_path, mp4_p
             time_now = t.strftime('%H:%M:%S')
             nh, nm, ns = time_now.split(':')
             seconds_now = 60 * (int(nm) + 60 * int(nh)) + int(ns)
-
+            
             logger.info(f"Current time: {time_now}, Seconds now: {seconds_now}, Event time: {seconds}")
 
             while seconds_now < seconds:
@@ -118,7 +118,7 @@ def start_sequence(camera, signal, start_time_sec, num_starts, photo_path, mp4_p
                 nh, nm, ns = time_now.split(':')
                 seconds_now = 60 * (int(nm) + 60 * int(nh)) + int(ns)
                 camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                
+
                 logger.info(f"Waiting... Current time: {time_now}, Seconds now: {seconds_now}, Event time: {seconds}")
 
             logger.info(f"Triggering event at seconds_now: {seconds_now}")
@@ -127,10 +127,11 @@ def start_sequence(camera, signal, start_time_sec, num_starts, photo_path, mp4_p
             picture_name = f"{i + 1}:a_start_{log_message[:5]}.jpg"
             capture_picture(camera, photo_path, picture_name)
             logger.info(log_message)
-    
+
         logger.info(f"End of iteration {i}")
 
     logger.info("End of all iterations")
+
 
 def finish_recording(camera, mp4_path, video_delay, num_video, video_dur, start_time_sec):
     # Wait for finish, when the next video will start (delay)
