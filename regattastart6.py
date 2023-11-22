@@ -104,31 +104,32 @@ def start_sequence(camera, signal, start_time_sec, num_starts, photo_path, mp4_p
         if i == 1:
             start_time_sec += 5 * 60  # Add 5 minutes for the second iteration
 
-        for seconds, action, log_message in time_intervals:
-            t = dt.datetime.now()
-            time_now = t.strftime('%H:%M:%S')
-            nh, nm, ns = time_now.split(':')
-            seconds_now = 60 * (int(nm) + 60 * int(nh)) + int(ns)
-            
-            logger.info(f"Current time: {time_now}, Seconds now: {seconds_now}, Event time: {seconds}")
-
-            while seconds_now < seconds:
+        while seconds_now < start_time_sec:
+            for seconds, action, log_message in time_intervals:
                 t = dt.datetime.now()
                 time_now = t.strftime('%H:%M:%S')
                 nh, nm, ns = time_now.split(':')
                 seconds_now = 60 * (int(nm) + 60 * int(nh)) + int(ns)
-                camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                
+                logger.info(f"Current time: {time_now}, Seconds now: {seconds_now}, Event time: {seconds}")
 
-                logger.info(f"Waiting... Current time: {time_now}, Seconds now: {seconds_now}, Event time: {seconds}")
+                while seconds_now < seconds:
+                    t = dt.datetime.now()
+                    time_now = t.strftime('%H:%M:%S')
+                    nh, nm, ns = time_now.split(':')
+                    seconds_now = 60 * (int(nm) + 60 * int(nh)) + int(ns)
+                    camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
-            logger.info(f"Triggering event at seconds_now: {seconds_now}")
-            if action:
-                action()
-            picture_name = f"{i + 1}:a_start_{log_message[:5]}.jpg"
-            capture_picture(camera, photo_path, picture_name)
-            logger.info(log_message)
+                    logger.info(f"Waiting... Current time: {time_now}, Seconds now: {seconds_now}, Event time: {seconds}")
 
-        logger.info(f"End of iteration {i}")
+                logger.info(f"Triggering event at seconds_now: {seconds_now}")
+                if action:
+                    action()
+                picture_name = f"{i + 1}:a_start_{log_message[:5]}.jpg"
+                capture_picture(camera, photo_path, picture_name)
+                logger.info(log_message)
+
+            logger.info(f"End of iteration {i}")
 
     logger.info("End of all iterations")
 
