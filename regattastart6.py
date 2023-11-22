@@ -126,7 +126,7 @@ def start_sequence(camera, signal, start_time_sec, num_starts, photo_path, mp4_p
 
             logger.info(f"End of iteration {i}")
 
-    logger.info("End of all iterations")
+        logger.info("End of all iterations")
 
 
 def finish_recording(camera, mp4_path, video_delay, num_video, video_dur, start_time_sec):
