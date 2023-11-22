@@ -90,18 +90,6 @@ def convert_video_to_mp4(mp4_path, source_file, destination_file):
     logger.info (" Video recording %s converted ", destination_file)
 
 def start_sequence(camera, signal, start_time_sec, num_starts, photo_path):
-    time_intervals = [
-        (start_time_sec - 5 * 60, lambda: trigger_warning_signal(signal), "5_min Lamp-1 On -- Up with Flag O"),
-        (start_time_sec - 4 * 60, lambda: trigger_warning_signal(signal), "4_min Lamp-2 On  --- Up with Flag P"),
-        (start_time_sec - 1 * 60, lambda: trigger_warning_signal(signal), "1_min  Lamp-2 Off -- Flag P down"),
-        (start_time_sec - 1, lambda: trigger_warning_signal(signal), "Start signal"),
-    ]
-
-    t = dt.datetime.now()
-    time_now = t.strftime('%H:%M:%S')
-    nh, nm, ns = time_now.split(':')
-    seconds_now = 60 * (int(nm) + 60 * int(nh)) + int(ns)
-    
     for i in range(num_starts):
         logger.info(f"Start of iteration {i}")
 
@@ -109,22 +97,38 @@ def start_sequence(camera, signal, start_time_sec, num_starts, photo_path):
         if i == 1:
             start_time_sec += 5 * 60  # Add 5 minutes for the second iteration
             logger.info(f"Next start_time_sec: {start_time_sec}")
-                
-        while seconds_now < start_time_sec +1:
+
+        t = dt.datetime.now()
+        time_now = t.strftime('%H:%M:%S')
+        nh, nm, ns = time_now.split(':')
+        seconds_now = 60 * (int(nm) + 60 * int(nh)) + int(ns)
+
+        # Define time intervals for each iteration
+        time_intervals = [
+            (start_time_sec - 5 * 60, lambda: trigger_warning_signal(signal), "5_min Lamp-1 On -- Up with Flag O"),
+            (start_time_sec - 4 * 60, lambda: trigger_warning_signal(signal), "4_min Lamp-2 On  --- Up with Flag P"),
+            (start_time_sec - 1 * 60, lambda: trigger_warning_signal(signal), "1_min  Lamp-2 Off -- Flag P down"),
+            (start_time_sec - 1, lambda: trigger_warning_signal(signal), "Start signal"),
+        ]
+
+        while seconds_now < start_time_sec + 1:
             for seconds, action, log_message in time_intervals:
                 t = dt.datetime.now()
                 time_now = t.strftime('%H:%M:%S')
                 nh, nm, ns = time_now.split(':')
                 seconds_now = 60 * (int(nm) + 60 * int(nh)) + int(ns)
                 camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                
-                #logger.info(f"Current time: {time_now}, Seconds now: {seconds_now}, Event time: {seconds}")
-                #time.sleep(0.5) # for test
+
+                logger.info(
+                    f"Current time: {time_now}, Seconds now: {seconds_now}, Event time: {seconds}")
+                # time.sleep(0.5) # for test
 
                 # Iterate through time intervals
                 if seconds_now == seconds:
-                    logger.info(f"Waiting... Current time: {time_now}, Seconds now: {seconds_now}, Event time: {seconds}")
-                    logger.info(f"Triggering event at seconds_now: {seconds_now}")
+                    logger.info(
+                        f"Waiting... Current time: {time_now}, Seconds now: {seconds_now}, Event time: {seconds}")
+                    logger.info(
+                        f"Triggering event at seconds_now: {seconds_now}")
                     if action:
                         action()
                     picture_name = f"{i + 1}:a_start_{log_message[:5]}.jpg"
