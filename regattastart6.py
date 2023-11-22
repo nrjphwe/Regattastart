@@ -169,7 +169,6 @@ def main():
         sys.exit(1)
 
     try:
-        seconds_now = 0
         form_data = json.loads(sys.argv[1])
         logger.info("form_data: %s", form_data)
         start_time = str(form_data["start_time"])
@@ -184,6 +183,7 @@ def main():
                     week_day, start_time, video_delay, num_video, video_dur, num_starts)
         start_hour, start_minute = start_time.split(':')
         start_time_sec = 60 * (int(start_minute) + 60 * int(start_hour))
+        seconds_now = start_time_sec - 5 * 60
         signal, lamp1, lamp2 = setup_gpio()
         remove_video_files(photo_path, "video")
         remove_picture_files(photo_path, ".jpg")
