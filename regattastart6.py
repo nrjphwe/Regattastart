@@ -111,24 +111,18 @@ def start_sequence(camera, signal, start_time_sec, num_starts, photo_path, mp4_p
                 time_now = t.strftime('%H:%M:%S')
                 nh, nm, ns = time_now.split(':')
                 seconds_now = 60 * (int(nm) + 60 * int(nh)) + int(ns)
+                camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                 
-                logger.info(f"Current time: {time_now}, Seconds now: {seconds_now}, Event time: {seconds}")
+                #logger.info(f"Current time: {time_now}, Seconds now: {seconds_now}, Event time: {seconds}")
 
-                while seconds_now < seconds:
-                    t = dt.datetime.now()
-                    time_now = t.strftime('%H:%M:%S')
-                    nh, nm, ns = time_now.split(':')
-                    seconds_now = 60 * (int(nm) + 60 * int(nh)) + int(ns)
-                    camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-
+                if seconds_now == seconds:
                     logger.info(f"Waiting... Current time: {time_now}, Seconds now: {seconds_now}, Event time: {seconds}")
-
-                logger.info(f"Triggering event at seconds_now: {seconds_now}")
-                if action:
-                    action()
-                picture_name = f"{i + 1}:a_start_{log_message[:5]}.jpg"
-                capture_picture(camera, photo_path, picture_name)
-                logger.info(log_message)
+                    logger.info(f"Triggering event at seconds_now: {seconds_now}")
+                    if action:
+                        action()
+                    picture_name = f"{i + 1}:a_start_{log_message[:5]}.jpg"
+                    capture_picture(camera, photo_path, picture_name)
+                    logger.info(log_message)
 
             logger.info(f"End of iteration {i}")
 
