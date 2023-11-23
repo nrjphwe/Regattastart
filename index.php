@@ -8,10 +8,25 @@
 ?>
 <!-- Your HTML to display data from the session -->
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Regattastart</title>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Regattastart</title>
+    <! JavaScript to dynamically add a placeholder text or an image to the page when >
+    <! there are no pictures available yet.>
+    <script>
+        function showPlaceholder() {
+            var imageContainer = document.getElementById('image-container');
+            var placeholderText = 'Picture pending until 5 minutes before start';
+            // Check if there are no images
+            if (imageContainer.children.length === 0) {
+                // Add a placeholder text
+                var textNode = document.createTextNode(placeholderText);
+                imageContainer.appendChild(textNode);
+            }
+        }
+    </script>
     <style>
     img {
         max-width: 100%;
@@ -25,15 +40,7 @@
     }
     </style>
     <link rel="stylesheet" href="/w3.css"
-    </head>
-<body>
-<div align="center">
-    <div class="w3-panel w3-blue">
-        <h2> Regattastart  </h2>
-    </div>
-<?php 
-    echo "     Version: " . APP_VERSION . "<br><p></p>"; 
-?>
+</head>
 <?php
     // Retrieve and display data from the session
     if (isset($_SESSION["form_data"])) {
@@ -48,7 +55,23 @@
         echo ", Number of starts: " . $num_starts;
     }
 ?>
+<header>
+<div align="center">
+    <div class="w3-panel w3-blue">
+        <h2> Regattastart  </h2>
+    </div>
 </div>
+</header>
+<body>
+<div align="center">
+<?php 
+    echo "     Version: " . APP_VERSION . "<br><p></p>"; 
+?>
+</div>
+<body onload="showPlaceholder()">
+    <div id="image-container">
+        <!-- Your image elements will be added here dynamically -->
+    </div>
 <!-- Here is our page's main content -->
 <main>
 <div align="center">
