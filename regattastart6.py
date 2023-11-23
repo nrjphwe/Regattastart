@@ -186,11 +186,11 @@ def main():
         remove_picture_files(photo_path, ".jpg")
         wd = dt.datetime.today().strftime("%A")
 
-        #t = dt.datetime.now()
+        t = dt.datetime.now()
         #time_now = t.strftime('%H:%M:%S')
         #nh, nm, ns = time_now.split(':')
         #seconds_now = 60 * (int(nm) + 60 * int(nh)) + int(ns)
-        seconds_now = dt.timedelta(seconds=time_now)
+        seconds_now = dt.timedelta(seconds=t)
 
         
         while seconds_now < start_time_sec:
