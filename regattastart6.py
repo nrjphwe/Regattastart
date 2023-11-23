@@ -117,7 +117,7 @@ def start_sequence(camera, signal, start_time_sec, num_starts, photo_path):
                 time_now = t.strftime('%H:%M:%S')
                 nh, nm, ns = time_now.split(':')
                 seconds_now = 60 * (int(nm) + 60 * int(nh)) + int(ns)
-                camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%D %H:%M:%S')
 
                 logger.info(f"Current time: {time_now}, Seconds now: {seconds_now}, Event time: {seconds}")
                 # time.sleep(0.5) # for test
@@ -144,12 +144,11 @@ def finish_recording(camera, mp4_path, video_delay, num_video, video_dur, start_
     stop = num_video + 1
     for i in range(1, stop):
         start_video_recording(camera, mp4_path, f"video{i}.h264")
-
         # Video running, duration at "video_dur"
         t2 = dt.datetime.now()
         start_time = dt.datetime.fromtimestamp(start_time_sec)
         while (dt.datetime.now() - t2).seconds < (60 * video_dur):
-            elapsed_time = (dt.datetime.now() - start_time)
+            elapsed_time = (dt.datetime.now() - start_time).seconds
             camera.annotate_text = f"{dt.datetime.now().strftime('%Y-%m-%d %(H:%M:%S')} Elapsed time: {elapsed_time}"
             camera.wait_recording(0.5)
 
