@@ -18,6 +18,8 @@ signal_dur = 0.3 # 0.3 sec
 log_path = '/usr/lib/cgi-bin/'
 mp4_path = '/var/www/html/images/'
 photo_path = '/var/www/html/images/'
+ON = GPIO.HIGH
+OFF = GPIO.LOW
 
 def setup_logging():
     global logger  # Make logger variable global
@@ -35,8 +37,6 @@ def setup_camera():
     # camera.rotation = (180) # Depends on how camera is mounted
     return camera
 
-ON = GPIO.HIGH
-OFF = GPIO.LOW
 
 def setup_gpio():
     GPIO.setmode(GPIO.BCM)
@@ -111,7 +111,7 @@ def start_sequence(camera, signal, start_time_sec, num_starts, photo_path):
             (start_time_sec - 1, lambda: trigger_warning_signal(signal), "Start signal"),
         ]
 
-        while seconds_now < start_time_sec + 1:
+        while seconds_now < start_time_sec:
             for seconds, action, log_message in time_intervals:
                 t = dt.datetime.now()
                 time_now = t.strftime('%H:%M:%S')
