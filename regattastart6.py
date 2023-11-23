@@ -118,9 +118,7 @@ def start_sequence(camera, signal, start_time_sec, num_starts, photo_path):
                 nh, nm, ns = time_now.split(':')
                 seconds_now = 60 * (int(nm) + 60 * int(nh)) + int(ns)
                 camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-
-                logger.info(f"Current time: {time_now}, Seconds now: {seconds_now}, Event time: {seconds}")
-                # time.sleep(0.5) # for test
+                # logger.info(f"Current time: {time_now}, Seconds now: {seconds_now}, Event time: {seconds}")
 
                 # Iterate through time intervals
                 if seconds_now == seconds:
@@ -148,8 +146,8 @@ def finish_recording(camera, mp4_path, video_delay, num_video, video_dur, start_
         t2 = dt.datetime.now()
         start_time = dt.datetime.fromtimestamp(start_time_sec)
         while (dt.datetime.now() - t2).seconds < (60 * video_dur):
-            elapsed_time = (dt.datetime.now() - start_time).seconds
-            camera.annotate_text = f"{dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Elapsed time: {elapsed_time}"
+            elapsed_time = (dt.datetime.now() - start_time)
+            camera.annotate_text = f"{dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Elapsed time: {elapsed_time.seconds}"
             camera.wait_recording(0.5)
 
         stop_video_recording(camera)
@@ -195,7 +193,6 @@ def main():
                 # Start video recording 5 minutes before the first start
                 start_video_recording(camera, mp4_path, f"video{video_number}.h264")
                 start_sequence(camera, signal, start_time_sec, num_starts, photo_path)
-
                 logger.info(" Wait 2 minutes then stop video recording")
                 t0 = dt.datetime.now()
                 while (dt.datetime.now() - t0).seconds < (119):
