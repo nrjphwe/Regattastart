@@ -136,7 +136,7 @@ def start_sequence(camera, signal, start_time_sec, num_starts, photo_path):
 
 def finish_recording(camera, mp4_path, video_delay, num_video, video_dur, start_time_sec):
     # Wait for finish, when the next video will start (delay)
-    time.sleep(video_delay * 60)  # Convert delay to seconds
+    time.sleep(video_delay * 60)  # Convert delay to seconds 
 
     # Result video, chopped into numeral videos with duration at "video_dur"
     stop = num_video + 1
@@ -184,9 +184,16 @@ def main():
         signal, lamp1, lamp2 = setup_gpio()
         remove_video_files(photo_path, "video")
         remove_picture_files(photo_path, ".jpg")
-        now = dt.datetime.now()
         wd = dt.datetime.today().strftime("%A")
+
+        #t = dt.datetime.now()
+        #time_now = t.strftime('%H:%M:%S')
+        #nh, nm, ns = time_now.split(':')
+        #seconds_now = 60 * (int(nm) + 60 * int(nh)) + int(ns)
+        seconds_now = dt.timedelta(seconds=time_now)
+
         
+        while seconds_now < start_time_sec:
         if wd == week_day:
             if num_starts == 1 or num_starts == 2:
                 video_number = 0
