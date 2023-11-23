@@ -194,22 +194,22 @@ def main():
 
         
         while seconds_now < start_time_sec:
-        if wd == week_day:
-            if num_starts == 1 or num_starts == 2:
-                video_number = 0
-                # Start video recording 5 minutes before the first start
-                start_video_recording(camera, mp4_path, f"video{video_number}.h264")
-                start_sequence(camera, signal, start_time_sec, num_starts, photo_path)
-                logger.info(" Wait 2 minutes then stop video recording")
-                t0 = dt.datetime.now()
-                logger.info("start_time_Sec= %s, t0= %s,start_time_sec, t0")  #test
-                while (dt.datetime.now() - t0).seconds < (119):
-                    camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + "  " + str((dt.datetime.now() - t0).seconds)
-                    camera.wait_recording(0.5)
-                stop_video_recording(camera)
-                convert_video_to_mp4(mp4_path, f"video{video_number}.h264", f"video{video_number}.mp4")
+            if wd == week_day:
+                if num_starts == 1 or num_starts == 2:
+                    video_number = 0
+                    # Start video recording 5 minutes before the first start
+                    start_video_recording(camera, mp4_path, f"video{video_number}.h264")
+                    start_sequence(camera, signal, start_time_sec, num_starts, photo_path)
+                    logger.info(" Wait 2 minutes then stop video recording")
+                    t0 = dt.datetime.now()
+                    logger.info("start_time_Sec= %s, t0= %s,start_time_sec, t0")  #test
+                    while (dt.datetime.now() - t0).seconds < (119):
+                        camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + "  " + str((dt.datetime.now() - t0).seconds)
+                        camera.wait_recording(0.5)
+                    stop_video_recording(camera)
+                    convert_video_to_mp4(mp4_path, f"video{video_number}.h264", f"video{video_number}.mp4")
 
-        finish_recording(camera, mp4_path, video_delay, num_video, video_dur,start_time_sec)
+            finish_recording(camera, mp4_path, video_delay, num_video, video_dur,start_time_sec)
      
     except json.JSONDecodeError as e:
         logger.info ("Failed to parse JSON: %", str(e))
