@@ -195,6 +195,7 @@ def main():
                 start_sequence(camera, signal, start_time_sec, num_starts, photo_path)
                 logger.info(" Wait 2 minutes then stop video recording")
                 t0 = dt.datetime.now()
+                logger.info("start_time_Sec= %s, t0= %s,start_time_sec, t0") 
                 while (dt.datetime.now() - t0).seconds < (119):
                     camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + "  " + str((dt.datetime.now() - t0).seconds)
                     camera.wait_recording(0.5)
