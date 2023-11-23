@@ -78,6 +78,7 @@ def start_video_recording(camera, mp4_path, file_name):
     if camera.recording:
         camera.stop_recording()
     camera.start_recording(os.path.join(mp4_path, file_name))
+    camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     logger.info (" Started recording of %s ", file_name)
 
 def stop_video_recording(camera):
@@ -117,8 +118,7 @@ def start_sequence(camera, signal, start_time_sec, num_starts, photo_path):
                 time_now = t.strftime('%H:%M:%S')
                 nh, nm, ns = time_now.split(':')
                 seconds_now = 60 * (int(nm) + 60 * int(nh)) + int(ns)
-                camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                camera.annotate_text = dt.datetime.now().strftime('%c') #test
+                
 
                 logger.info(f"Current time: {time_now}, Seconds now: {seconds_now}, Event time: {seconds}")
                 # time.sleep(0.5) # for test
