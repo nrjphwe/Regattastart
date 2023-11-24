@@ -161,7 +161,7 @@ def main():
     try:
         form_data = json.loads(sys.argv[1])
         logger.info("form_data: %s", form_data)
-        start_time = str(form_data["start_time"])
+        start_time = str(form_data["start_time"]) # this is the first start
         week_day = str(form_data["day"])
         video_delay = int(form_data["video_delay"])
         video_dur = int(form_data["video_dur"])
@@ -174,7 +174,7 @@ def main():
         
         start_hour, start_minute = start_time.split(':')
         start_time_sec = 60 * (int(start_minute) + 60 * int(start_hour))
-        t0_seconds_now = start_time_sec - 5 * 60 # time when the start-machine should begin to execute.
+        t_seconds_now = start_time_sec - 5 * 60 # time when the start-machine should begin to execute.
         signal, lamp1, lamp2 = setup_gpio()
         remove_video_files(photo_path, "video")  # clean up 
         remove_picture_files(photo_path, ".jpg") # clean up
@@ -183,7 +183,7 @@ def main():
         now = dt.datetime.now()
         seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
 
-        while seconds_since_midnight < start_time_sec:
+        while seconds_since_midnight < start_time_sec + 5*60:
             if wd == week_day:
                 if num_starts == 1 or num_starts == 2:
                     video_number = 0
