@@ -205,7 +205,10 @@ def main():
                         camera.wait_recording(0.5)
                     stop_video_recording(camera)
                     convert_video_to_mp4(mp4_path, "video0.h264", "video0.mp4")
-
+            else:
+                logger.info("No need to start video recording in this iteration.")
+                seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second  # Update seconds_since_midnight
+                time.sleep(5)  # Add a sleep to prevent continuous logging
         finish_recording(camera, mp4_path, video_delay, num_video, video_dur,start_time_sec)
 
     except json.JSONDecodeError as e:
