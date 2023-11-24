@@ -112,7 +112,7 @@ def start_sequence(camera, signal, start_time_sec, num_starts, photo_path):
             for seconds, action, log_message in time_intervals:
                 camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                 time_now = dt.datetime.now()
-                seconds_now = time_now.hour * 3600 + time_now.minute * 60 + time_ now.second
+                seconds_now = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
                 # Iterate through time intervals
                 if seconds_now == seconds:
                     logger.info(
