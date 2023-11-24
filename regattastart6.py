@@ -185,6 +185,7 @@ def main():
         seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
 
         if wd == week_day:
+            logger.info("seconds_since_midnight: %s", "t5_min_warning= %s", seconds_since_midnight,t5_min_warningß)
             while seconds_since_midnight > t5_min_warning - 2:         
                 if num_starts == 1 or num_starts == 2:
                     # Start video recording 5 minutes before the first start
