@@ -98,7 +98,7 @@ def start_sequence(camera, signal, start_time_sec, num_starts, photo_path):
             logger.info(f"Next start_time_sec: {start_time_sec}")
 
         time_now = dt.datetime.now()
-        seconds_since_midnight = time_now.hour * 3600 + time_now.minute * 60 + time_ now.second
+        seconds_since_midnight = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
 
         # Define time intervals for each iteration
         time_intervals = [
