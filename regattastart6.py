@@ -37,7 +37,6 @@ def setup_camera():
     # camera.rotation = (180) # Depends on how camera is mounted
     return camera
 
-
 def setup_gpio():
     GPIO.setmode(GPIO.BCM)
     GPIO.setwarnings(True)
@@ -183,12 +182,11 @@ def main():
         now = dt.datetime.now()
         seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
 
-        while seconds_since_midnight < start_time_sec + 5*60:
+        if seconds_since_midnight == start_time_sec - 5*60:
             if wd == week_day:
                 if num_starts == 1 or num_starts == 2:
-                    video_number = 0
                     # Start video recording 5 minutes before the first start
-                    start_video_recording(camera, mp4_path, f"video{video_number}.h264")
+                    start_video_recording(camera, mp4_path, "video0.h264")
                     start_sequence(camera, signal, start_time_sec, num_starts, photo_path)
                     logger.info(" Wait 2 minutes then stop video recording")
                     t0 = dt.datetime.now()
@@ -197,7 +195,7 @@ def main():
                         camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + "  " + str((dt.datetime.now() - t0).seconds)
                         camera.wait_recording(0.5)
                     stop_video_recording(camera)
-                    convert_video_to_mp4(mp4_path, f"video{video_number}.h264", f"video{video_number}.mp4")
+                    convert_video_to_mp4(mp4_path, "video0.h264", "video0.mp4")
 
             finish_recording(camera, mp4_path, video_delay, num_video, video_dur,start_time_sec)
      
