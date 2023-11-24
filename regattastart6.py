@@ -188,6 +188,7 @@ def main():
             logger.info("seconds_since_midnight: %s, t5min_warning= %s, start_time_sec: %s", seconds_since_midnight, t5min_warning, start_time_sec)
             
             while seconds_since_midnight > t5min_warning - 2:         
+                logger.info("Start of outer loop iteration. seconds_since_midnight=%s", seconds_since_midnight)
                 if num_starts == 1 or num_starts == 2:
                     # Start video recording just before 5 minutes before the first start
                     start_video_recording(camera, mp4_path, "video0.h264")
@@ -199,6 +200,7 @@ def main():
                     while (dt.datetime.now() - t0).seconds < (119):
                         now = dt.datetime.now()
                         seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
+                        logger.info("Inside inner loop. seconds_since_midnight=%s", seconds_since_midnight)
                         camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + "  " + str((dt.datetime.now() - t0).seconds)
                         camera.wait_recording(0.5)
                     stop_video_recording(camera)
