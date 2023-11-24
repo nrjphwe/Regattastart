@@ -183,6 +183,7 @@ def main():
         # Calculate the number of seconds since midnight
         now = dt.datetime.now()
         seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
+        logger.info("seconds_since_midnight: %s, start_time_sec: %s", seconds_since_midnight, start_time_sec)
 
         if wd == week_day:
             logger.info("seconds_since_midnight: %s", "t5min_warning= %s", seconds_since_midnight,t5min_warning)
@@ -190,6 +191,7 @@ def main():
                 if num_starts == 1 or num_starts == 2:
                     # Start video recording just before 5 minutes before the first start
                     start_video_recording(camera, mp4_path, "video0.h264")
+                    logger.info("Entering start sequence block.")
                     start_sequence(camera, signal, start_time_sec, num_starts, photo_path)
                     logger.info(" Wait 2 minutes then stop video recording")
                     t0 = dt.datetime.now()
@@ -214,5 +216,5 @@ def main():
         GPIO.cleanup()
         
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.WARNING)  # Set log level to WARNING
+    #logging.basicConfig(level=logging.WARNING)  # Set log level to WARNING
     main()
