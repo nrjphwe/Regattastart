@@ -188,7 +188,8 @@ def main():
             logger.info("seconds_since_midnight: %s, start_time_sec: %s", seconds_since_midnight, start_time_sec)
 
             logger.info("seconds_since_midnight: %s", "t5min_warning= %s", seconds_since_midnight,t5min_warning)
-            while seconds_since_midnight < start_time_sec t5min_warning - 2:         
+            
+            while seconds_since_midnight < start_time_sec - t5min_warning - 2:         
                 if num_starts == 1 or num_starts == 2:
                     # Start video recording just before 5 minutes before the first start
                     start_video_recording(camera, mp4_path, "video0.h264")
