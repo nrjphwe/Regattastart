@@ -168,22 +168,24 @@ def main():
         num_starts = int(form_data["num_starts"])
 
         camera = setup_camera()
+        signal, lamp1, lamp2 = setup_gpio()
+        remove_video_files(photo_path, "video")  # clean up 
+        remove_picture_files(photo_path, ".jpg") # clean up
         logger.info(" Weekday= %s, Start_time= %s, video_delay= %s, num_video= %s, video_dur= %s, num_starts=%s",
                     week_day, start_time, video_delay, num_video, video_dur, num_starts)
         
         start_hour, start_minute = start_time.split(':')
         start_time_sec = 60 * (int(start_minute) + 60 * int(start_hour))
-        t_seconds_now = start_time_sec - 5 * 60 # time when the start-machine should begin to execute.
-        signal, lamp1, lamp2 = setup_gpio()
-        remove_video_files(photo_path, "video")  # clean up 
-        remove_picture_files(photo_path, ".jpg") # clean up
+
+        t5_min_warning = start_time_sec - 5 * 60 # time when the start-machine should begin to execute.
+    
         wd = dt.datetime.today().strftime("%A")
         # Calculate the number of seconds since midnight
         now = dt.datetime.now()
         seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
 
-        while seconds_since_midnight > start_time_sec - 5*60 - 2:
-            if wd == week_day:
+        if wd == week_day:
+            while seconds_since_midnight > t5_min_warning - 2:         
                 if num_starts == 1 or num_starts == 2:
                     # Start video recording 5 minutes before the first start
                     start_video_recording(camera, mp4_path, "video0.h264")
