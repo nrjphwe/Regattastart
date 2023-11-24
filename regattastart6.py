@@ -187,7 +187,7 @@ def main():
 
         if wd == week_day:
             logger.info("seconds_since_midnight: %s", "t5min_warning= %s", seconds_since_midnight,t5min_warning)
-            while seconds_since_midnight > t5min_warning - 2:         
+            while seconds_since_midnight < start_time_sec t5min_warning - 2:         
                 if num_starts == 1 or num_starts == 2:
                     # Start video recording just before 5 minutes before the first start
                     start_video_recording(camera, mp4_path, "video0.h264")
@@ -195,7 +195,7 @@ def main():
                     start_sequence(camera, signal, start_time_sec, num_starts, photo_path)
                     logger.info(" Wait 2 minutes then stop video recording")
                     t0 = dt.datetime.now()
-                    logger.info("start_time_Sec= %s, t0= %s,start_time_sec, t0")  #test
+                    logger.info("start_time_sec= %s, t0= %s,start_time_sec, t0")  #test
                     while (dt.datetime.now() - t0).seconds < (119):
                         camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + "  " + str((dt.datetime.now() - t0).seconds)
                         camera.wait_recording(0.5)
