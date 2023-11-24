@@ -39,7 +39,7 @@
         height: auto;
     }
     </style>
-    <link rel="stylesheet" href="/w3.css"
+    <link rel="stylesheet" href="/w3.css">
 </head>
 <?php
     // Retrieve and display data from the session

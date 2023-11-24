@@ -92,16 +92,13 @@ def convert_video_to_mp4(mp4_path, source_file, destination_file):
 def start_sequence(camera, signal, start_time_sec, num_starts, photo_path):
     for i in range(num_starts):
         logger.info(f"Start of iteration {i}")
-
         # Adjust the start_time_sec for the second iteration
         if i == 1:
             start_time_sec += 5 * 60  # Add 5 minutes for the second iteration
             logger.info(f"Next start_time_sec: {start_time_sec}")
 
-        t = dt.datetime.now()
-        time_now = t.strftime('%H:%M:%S')
-        nh, nm, ns = time_now.split(':')
-        seconds_now = 60 * (int(nm) + 60 * int(nh)) + int(ns)
+        time_now = dt.datetime.now()
+        seconds_since_midnight = time_now.hour * 3600 + time_now.minute * 60 + time_ now.second
 
         # Define time intervals for each iteration
         time_intervals = [
@@ -111,15 +108,11 @@ def start_sequence(camera, signal, start_time_sec, num_starts, photo_path):
             (start_time_sec - 1, lambda: trigger_warning_signal(signal), "Start signal"),
         ]
 
-        while seconds_now < start_time_sec:
+        while seconds_since_midnight < start_time_sec:
             for seconds, action, log_message in time_intervals:
-                t = dt.datetime.now()
-                time_now = t.strftime('%H:%M:%S')
-                nh, nm, ns = time_now.split(':')
-                seconds_now = 60 * (int(nm) + 60 * int(nh)) + int(ns)
                 camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                # logger.info(f"Current time: {time_now}, Seconds now: {seconds_now}, Event time: {seconds}")
-
+                time_now = dt.datetime.now()
+                seconds_now = time_now.hour * 3600 + time_now.minute * 60 + time_ now.second
                 # Iterate through time intervals
                 if seconds_now == seconds:
                     logger.info(
@@ -178,22 +171,19 @@ def main():
         camera = setup_camera()
         logger.info(" Weekday= %s, Start_time= %s, video_delay= %s, num_video= %s, video_dur= %s, num_starts=%s",
                     week_day, start_time, video_delay, num_video, video_dur, num_starts)
+        
         start_hour, start_minute = start_time.split(':')
         start_time_sec = 60 * (int(start_minute) + 60 * int(start_hour))
-        seconds_now = start_time_sec - 5 * 60
+        t0_seconds_now = start_time_sec - 5 * 60 ! time when the start-machine should begin to execute.
         signal, lamp1, lamp2 = setup_gpio()
-        remove_video_files(photo_path, "video")
-        remove_picture_files(photo_path, ".jpg")
+        remove_video_files(photo_path, "video")  ! clean up 
+        remove_picture_files(photo_path, ".jpg") ! clean up
         wd = dt.datetime.today().strftime("%A")
+        # Calculate the number of seconds since midnight
+        now = dt.datetime.now()
+        seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
 
-        t = dt.datetime.now()
-        #time_now = t.strftime('%H:%M:%S')
-        #nh, nm, ns = time_now.split(':')
-        #seconds_now = 60 * (int(nm) + 60 * int(nh)) + int(ns)
-        seconds_now = dt.timedelta(seconds=t)
-
-        
-        while seconds_now < start_time_sec:
+        while seconds_since_midnight < start_time_sec:
             if wd == week_day:
                 if num_starts == 1 or num_starts == 2:
                     video_number = 0
