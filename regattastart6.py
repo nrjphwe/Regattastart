@@ -187,7 +187,7 @@ def main():
             seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
             logger.info("seconds_since_midnight: %s, start_time_sec: %s", seconds_since_midnight, start_time_sec)
 
-            logger.info("seconds_since_midnight: %s", "t5min_warning= %s", seconds_since_midnight,t5min_warning)
+            logger.info("seconds_since_midnight: %s, t5min_warning= %s", seconds_since_midnight, t5min_warning)
             
             while seconds_since_midnight < start_time_sec - t5min_warning - 2:         
                 if num_starts == 1 or num_starts == 2:
