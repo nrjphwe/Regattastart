@@ -177,7 +177,7 @@ def main():
         start_hour, start_minute = start_time.split(':')
         start_time_sec = 60 * (int(start_minute) + 60 * int(start_hour))
 
-        t5_min_warning = start_time_sec - 5 * 60 # time when the start-machine should begin to execute.
+        t5min_warning = start_time_sec - 5 * 60 # time when the start-machine should begin to execute.
     
         wd = dt.datetime.today().strftime("%A")
         # Calculate the number of seconds since midnight
@@ -185,10 +185,10 @@ def main():
         seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
 
         if wd == week_day:
-            logger.info("seconds_since_midnight: %s", "t5_min_warning= %s", seconds_since_midnight,t5_min_warning)
-            while seconds_since_midnight > t5_min_warning - 2:         
+            logger.info("seconds_since_midnight: %s", "t5min_warning= %s", seconds_since_midnight,t5min_warning)
+            while seconds_since_midnight > t5min_warning - 2:         
                 if num_starts == 1 or num_starts == 2:
-                    # Start video recording 5 minutes before the first start
+                    # Start video recording just before 5 minutes before the first start
                     start_video_recording(camera, mp4_path, "video0.h264")
                     start_sequence(camera, signal, start_time_sec, num_starts, photo_path)
                     logger.info(" Wait 2 minutes then stop video recording")
