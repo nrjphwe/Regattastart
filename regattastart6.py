@@ -174,10 +174,10 @@ def main():
         
         start_hour, start_minute = start_time.split(':')
         start_time_sec = 60 * (int(start_minute) + 60 * int(start_hour))
-        t0_seconds_now = start_time_sec - 5 * 60 ! time when the start-machine should begin to execute.
+        t0_seconds_now = start_time_sec - 5 * 60 # time when the start-machine should begin to execute.
         signal, lamp1, lamp2 = setup_gpio()
-        remove_video_files(photo_path, "video")  ! clean up 
-        remove_picture_files(photo_path, ".jpg") ! clean up
+        remove_video_files(photo_path, "video")  # clean up 
+        remove_picture_files(photo_path, ".jpg") # clean up
         wd = dt.datetime.today().strftime("%A")
         # Calculate the number of seconds since midnight
         now = dt.datetime.now()
