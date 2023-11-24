@@ -197,6 +197,8 @@ def main():
                     t0 = dt.datetime.now()
                     logger.info("start_time_sec= %s, t0= %s,start_time_sec, t0")  #test
                     while (dt.datetime.now() - t0).seconds < (119):
+                        now = dt.datetime.now()
+                        seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
                         camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + "  " + str((dt.datetime.now() - t0).seconds)
                         camera.wait_recording(0.5)
                     stop_video_recording(camera)
