@@ -139,7 +139,7 @@ def finish_recording(camera, mp4_path, video_delay, num_video, video_dur, start_
         start_time = dt.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) + dt.timedelta(seconds=start_time_sec)
         while (dt.datetime.now() - t2).seconds < (60 * video_dur):
             elapsed_time = (dt.datetime.now() - start_time)
-            camera.annotate_text = f"{dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Elapsed time: {elapsed_time.seconds}"
+            camera.annotate_text = f"{dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Duration since first start: {elapsed_time.seconds}"
             camera.wait_recording(0.5)
 
         stop_video_recording(camera)
@@ -182,7 +182,7 @@ def main():
         now = dt.datetime.now()
         seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
 
-        if seconds_since_midnight == start_time_sec - 5*60:
+        while seconds_since_midnight > start_time_sec - 5*60 - 2:
             if wd == week_day:
                 if num_starts == 1 or num_starts == 2:
                     # Start video recording 5 minutes before the first start
@@ -203,7 +203,7 @@ def main():
         logger.info ("Failed to parse JSON: %", str(e))
         sys.exit(1)
     finally:
-        logger.info (" This is finally section =")
+        logger.info (" This is finally section")
         if camera is not None:
             camera.close()  # Release the camera resources
         if signal is not None:
