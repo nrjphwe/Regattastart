@@ -94,7 +94,7 @@ def start_sequence(camera, signal, start_time_sec, num_starts, photo_path):
         # Adjust the start_time_sec for the second iteration
         if i == 1:
             start_time_sec += 5 * 60  # Add 5 minutes for the second iteration
-            logger.info(f"Next start_time_sec: {start_time_sec}")
+            logger.info(f"  Start_sequence, Next start_time_sec: {start_time_sec}")
 
         time_now = dt.datetime.now()
         seconds_since_midnight = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
@@ -114,16 +114,14 @@ def start_sequence(camera, signal, start_time_sec, num_starts, photo_path):
                 seconds_now = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
                 # Iterate through time intervals
                 if seconds_now == seconds:
-                    logger.info(
-                        f"Waiting... Current time: {time_now}, Seconds now: {seconds_now}, Event time: {seconds}")
-                    logger.info(
-                        f"Triggering event at seconds_now: {seconds_now}")
+                    logger.info(f"  Start_sequence, Waiting... Current time: {time_now}, Seconds now: {seconds_now}, Event time: {seconds}")
+                    logger.info(f"  Start_sequence, Triggering event at seconds_now: {seconds_now}")
                     if action:
                         action()
                     picture_name = f"{i + 1}:a_start_{log_message[:5]}.jpg"
                     capture_picture(camera, photo_path, picture_name)
-                    logger.info(log_message)
-        logger.info(f"End of iteration: {i}")
+                    logger.info("  Start_sequence, ", log_message)
+        logger.info(f"  Start_sequence, End of iteration: {i}")
 
 def finish_recording(camera, mp4_path, video_delay, num_video, video_dur, start_time_sec):
     # Wait for finish, when the next video will start (delay)
@@ -197,6 +195,7 @@ def main():
                         start_video_recording(camera, mp4_path, "video0.h264")
                         logger.info("Entering start sequence block.")
                         start_sequence(camera, signal, start_time_sec, num_starts, photo_path)
+
                         logger.info(" Wait 2 minutes then stop video recording")
                         t0 = dt.datetime.now()
                         logger.info("start_time_sec= %s, t0= %s,start_time_sec, t0")  #test
