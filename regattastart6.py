@@ -210,7 +210,6 @@ def main():
                 # Update seconds_since_midnight for the next iteration
                 now = dt.datetime.now()
                 seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
-                time.sleep(5)  # Add a sleep to prevent continuous logging
         finish_recording(camera, mp4_path, video_delay, num_video, video_dur,start_time_sec)
 
     except json.JSONDecodeError as e:
