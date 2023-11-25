@@ -120,7 +120,7 @@ def start_sequence(camera, signal, start_time_sec, num_starts, photo_path):
                         action()
                     picture_name = f"{i + 1}:a_start_{log_message[:5]}.jpg"
                     capture_picture(camera, photo_path, picture_name)
-                    logger.info("  Start_sequence, ", log_message)
+                    logger.info(f"  Start_sequence, log_message: {log_message}")
         logger.info(f"  Start_sequence, End of iteration: {i}")
 
 def finish_recording(camera, mp4_path, video_delay, num_video, video_dur, start_time_sec):
