@@ -99,9 +99,6 @@ def start_sequence(camera, signal, start_time_sec, num_starts, photo_path):
             start_time_sec += 5 * 60  # Add 5 minutes for the second iteration
             logger.info(f"  Start_sequence, Next start_time_sec: {start_time_sec}")
 
-        time_now = dt.datetime.now()
-        seconds_since_midnight = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
-
         # Define time intervals for each iteration
         time_intervals = [
             (start_time_sec - 5 * 60, lambda: trigger_warning_signal(signal), "5_min Lamp-1 On -- Up with Flag O"),
@@ -110,7 +107,13 @@ def start_sequence(camera, signal, start_time_sec, num_starts, photo_path):
             (start_time_sec - 1, lambda: trigger_warning_signal(signal), "Start signal"),
         ]
 
-        while seconds_since_midnight < start_time_sec:
+        while True:
+            time_now = dt.datetime.now()
+            seconds_since_midnight = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
+
+            if seconds_since_midnight >= start_time_sec:
+                break  # Exit the loop if the condition is met
+
             for seconds, action, log_message in time_intervals:
                 camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                 time_now = dt.datetime.now()
