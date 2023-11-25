@@ -182,35 +182,37 @@ def main():
         wd = dt.datetime.today().strftime("%A")
         
         if wd == week_day:
-            # Calculate the number of seconds since midnight
-            now = dt.datetime.now()
-            seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
-            logger.info("seconds_since_midnight: %s, t5min_warning= %s, start_time_sec: %s", seconds_since_midnight, t5min_warning, start_time_sec)
-            
-            if seconds_since_midnight > t5min_warning - 2:         
-                logger.info("Start of outer loop iteration. seconds_since_midnight=%s", seconds_since_midnight)
+            t5min_warning = start_time_sec - 5 * 60  # time when the start-machine should begin to execute.
 
-                if num_starts == 1 or num_starts == 2:
-                    # Start video recording just before 5 minutes before the first start
-                    start_video_recording(camera, mp4_path, "video0.h264")
-                    logger.info("Entering start sequence block.")
-                    start_sequence(camera, signal, start_time_sec, num_starts, photo_path)
-                    logger.info(" Wait 2 minutes then stop video recording")
-                    t0 = dt.datetime.now()
-                    logger.info("start_time_sec= %s, t0= %s,start_time_sec, t0")  #test
-                    while (dt.datetime.now() - t0).seconds < (119):
-                        now = dt.datetime.now()
-                        seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
-                        logger.info("Inside inner loop. seconds_since_midnight=%s", seconds_since_midnight)
-                        camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + "  " + str((dt.datetime.now() - t0).seconds)
-                        camera.wait_recording(0.5)
-                
-                    stop_video_recording(camera)
-                    convert_video_to_mp4(mp4_path, "video0.h264", "video0.mp4")
-
-                # Update seconds_since_midnight for the next iteration
+            while True:
                 now = dt.datetime.now()
                 seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
+    
+                if seconds_since_midnight > t5min_warning - 2:         
+                    logger.info("Start of outer loop iteration. seconds_since_midnight=%s", seconds_since_midnight)
+
+                    if num_starts == 1 or num_starts == 2:
+                        # Start video recording just before 5 minutes before the first start
+                        start_video_recording(camera, mp4_path, "video0.h264")
+                        logger.info("Entering start sequence block.")
+                        start_sequence(camera, signal, start_time_sec, num_starts, photo_path)
+                        logger.info(" Wait 2 minutes then stop video recording")
+                        t0 = dt.datetime.now()
+                        logger.info("start_time_sec= %s, t0= %s,start_time_sec, t0")  #test
+                        while (dt.datetime.now() - t0).seconds < (119):
+                            now = dt.datetime.now()
+                            seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
+                            logger.info("Inside inner loop. seconds_since_midnight=%s", seconds_since_midnight)
+                            camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + "  " + str((dt.datetime.now() - t0).seconds)
+                            camera.wait_recording(0.5)
+                    
+                        stop_video_recording(camera)
+                        convert_video_to_mp4(mp4_path, "video0.h264", "video0.mp4")
+
+                    # Exit the loop after the condition is met
+                    break
+                # Sleep briefly to avoid continuous checking
+                 time.sleep(2)
 
         finish_recording(camera, mp4_path, video_delay, num_video, video_dur,start_time_sec)
 
