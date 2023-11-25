@@ -81,7 +81,6 @@ def start_video_recording(camera, mp4_path, file_name):
 
 def stop_video_recording(camera):
     camera.stop_recording()
-    camera.close() #r elease camera resources
     logger.info (" video recording stopped")
 
 def convert_video_to_mp4(mp4_path, source_file, destination_file):
