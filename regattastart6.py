@@ -90,7 +90,7 @@ def convert_video_to_mp4(mp4_path, source_file, destination_file):
 
 def start_sequence(camera, signal, start_time_sec, num_starts, photo_path):
     for i in range(num_starts):
-        logger.info(f"Start of iteration {i}")
+        logger.info(f"   Start_sequence. Start of iteration {i}")
         # Adjust the start_time_sec for the second iteration
         if i == 1:
             start_time_sec += 5 * 60  # Add 5 minutes for the second iteration
@@ -156,7 +156,7 @@ def main():
 
     try:
         form_data = json.loads(sys.argv[1])
-        logger.info("form_data: %s", form_data)
+        #logger.info("form_data: %s", form_data)
         start_time = str(form_data["start_time"]) # this is the first start
         week_day = str(form_data["day"])
         video_delay = int(form_data["video_delay"])
@@ -168,7 +168,7 @@ def main():
         signal, lamp1, lamp2 = setup_gpio()
         remove_video_files(photo_path, "video")  # clean up 
         remove_picture_files(photo_path, ".jpg") # clean up
-        logger.info(" Weekday= %s, Start_time= %s, video_delay= %s, num_video= %s, video_dur= %s, num_starts=%s",
+        logger.info(" Weekday=%s, Start_time=%s, video_delay=%s, num_video=%s, video_dur=%s, num_starts=%s",
                     week_day, start_time, video_delay, num_video, video_dur, num_starts)
         
         start_hour, start_minute = start_time.split(':')
@@ -193,7 +193,7 @@ def main():
                     if num_starts == 1 or num_starts == 2:
                         # Start video recording just before 5 minutes before the first start
                         start_video_recording(camera, mp4_path, "video0.h264")
-                        logger.info("Entering start sequence block.")
+                        logger.info("Inner loop, entering the start sequence block.")
                         start_sequence(camera, signal, start_time_sec, num_starts, photo_path)
 
                         logger.info(" Wait 2 minutes then stop video recording")
