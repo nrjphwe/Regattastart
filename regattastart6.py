@@ -29,13 +29,16 @@ def setup_logging():
     return logger
 
 def setup_camera():
-    camera = PiCamera()
-    camera.resolution = (1296, 730)
-    camera.framerate = 5
-    camera.annotate_background = Color('black')
-    camera.annotate_foreground = Color('white')
-    # camera.rotation = (180) # Depends on how camera is mounted
-    return camera
+    try:
+        camera = PiCamera()
+        camera.resolution = (1296, 730)
+        camera.framerate = 5
+        camera.annotate_background = Color('black')
+        camera.annotate_foreground = Color('white')
+        # camera.rotation = (180) # Depends on how camera is mounted
+    except Exception as e:
+        logger.error(f"Failed to initialize camera: {e}")
+        return None
 
 def setup_gpio():
     GPIO.setmode(GPIO.BCM)
@@ -166,6 +169,9 @@ def main():
         num_starts = int(form_data["num_starts"])
 
         camera = setup_camera()
+        if camera is None:
+            logger.error("Camera initialization failed. Exiting.")
+            sys.exit(1)
         signal, lamp1, lamp2 = setup_gpio()
         remove_video_files(photo_path, "video")  # clean up 
         remove_picture_files(photo_path, ".jpg") # clean up
@@ -224,9 +230,9 @@ def main():
         logger.info ("Failed to parse JSON: %", str(e))
         sys.exit(1)
     finally:
-        logger.info (" This is finally section")
-        #if camera is not None:
-        camera.close()  # Release the camera resources
+        logger.info("This is finally section")
+        if camera is not None:
+            camera.close()  # Release the camera resources
         if signal is not None:
             GPIO.output(signal, OFF)  # Turn off the signal output
         GPIO.cleanup()
