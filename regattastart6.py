@@ -211,7 +211,7 @@ def main():
                     # Exit the loop after the condition is met
                     break
                 # Sleep briefly to avoid continuous checking
-                 time.sleep(2)
+                time.sleep(2)
 
         finish_recording(camera, mp4_path, video_delay, num_video, video_dur,start_time_sec)
 
