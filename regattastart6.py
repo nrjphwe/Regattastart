@@ -224,8 +224,8 @@ def main():
         sys.exit(1)
     finally:
         logger.info (" This is finally section")
-        if camera is not None:
-            camera.close()  # Release the camera resources
+        #if camera is not None:
+        camera.close()  # Release the camera resources
         if signal is not None:
             GPIO.output(signal, OFF)  # Turn off the signal output
         GPIO.cleanup()
