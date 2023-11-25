@@ -183,6 +183,8 @@ def main():
         if wd == week_day:
             t5min_warning = start_time_sec - 5 * 60  # time when the start-machine should begin to execute.
 
+            # A loop that waits until it's close to the 5-minute mark, a loop that continuously checks the 
+            # condition without blocking the execution completely
             while True:
                 now = dt.datetime.now()
                 seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
@@ -207,6 +209,9 @@ def main():
                     
                         stop_video_recording(camera)
                         convert_video_to_mp4(mp4_path, "video0.h264", "video0.mp4")
+
+                    # Move the finish_recording call inside the while loop
+                    finish_recording(camera, mp4_path, video_delay, num_video, video_dur, start_time_sec)
 
                     # Exit the loop after the condition is met
                     break
