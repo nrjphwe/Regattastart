@@ -189,6 +189,7 @@ def main():
             
             while seconds_since_midnight > t5min_warning - 2:         
                 logger.info("Start of outer loop iteration. seconds_since_midnight=%s", seconds_since_midnight)
+
                 if num_starts == 1 or num_starts == 2:
                     # Start video recording just before 5 minutes before the first start
                     start_video_recording(camera, mp4_path, "video0.h264")
@@ -205,9 +206,10 @@ def main():
                         camera.wait_recording(0.5)
                     stop_video_recording(camera)
                     convert_video_to_mp4(mp4_path, "video0.h264", "video0.mp4")
-            else:
-                logger.info("No need to start video recording in this iteration.")
-                seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second  # Update seconds_since_midnight
+
+                # Update seconds_since_midnight for the next iteration
+                now = dt.datetime.now()
+                seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
                 time.sleep(5)  # Add a sleep to prevent continuous logging
         finish_recording(camera, mp4_path, video_delay, num_video, video_dur,start_time_sec)
 
