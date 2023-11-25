@@ -67,11 +67,11 @@ def trigger_warning_signal(signal):
     time.sleep(signal_dur)
     GPIO.output(signal, OFF)
     time.sleep(1 - signal_dur)
-    logger.info (" For one sec, first trigger signal %s sec, then wait for 1 - %s sec", signal_dur, signal_dur)
+    logger.info ("     For one sec, first trigger signal %s sec, then wait for 1 - %s sec", signal_dur, signal_dur)
 
 def capture_picture(camera, photo_path, file_name):
     camera.capture(os.path.join(photo_path, file_name), use_video_port=True)
-    logger.info (" Capture picture = %s ", file_name)
+    logger.info ("     Capture picture = %s ", file_name)
 
 def start_video_recording(camera, mp4_path, file_name):
     if camera.recording:
@@ -90,7 +90,7 @@ def convert_video_to_mp4(mp4_path, source_file, destination_file):
 
 def start_sequence(camera, signal, start_time_sec, num_starts, photo_path):
     for i in range(num_starts):
-        logger.info(f"   Start_sequence. Start of iteration {i}")
+        logger.info(f"  Start_sequence. Start of iteration {i}")
         # Adjust the start_time_sec for the second iteration
         if i == 1:
             start_time_sec += 5 * 60  # Add 5 minutes for the second iteration
