@@ -188,7 +188,7 @@ def main():
             seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
             logger.info("seconds_since_midnight: %s, t5min_warning= %s, start_time_sec: %s", seconds_since_midnight, t5min_warning, start_time_sec)
             
-            while seconds_since_midnight > t5min_warning - 2:         
+            if seconds_since_midnight > t5min_warning - 2:         
                 logger.info("Start of outer loop iteration. seconds_since_midnight=%s", seconds_since_midnight)
 
                 if num_starts == 1 or num_starts == 2:
@@ -205,12 +205,14 @@ def main():
                         logger.info("Inside inner loop. seconds_since_midnight=%s", seconds_since_midnight)
                         camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + "  " + str((dt.datetime.now() - t0).seconds)
                         camera.wait_recording(0.5)
+                
                     stop_video_recording(camera)
                     convert_video_to_mp4(mp4_path, "video0.h264", "video0.mp4")
 
                 # Update seconds_since_midnight for the next iteration
                 now = dt.datetime.now()
                 seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
+
         finish_recording(camera, mp4_path, video_delay, num_video, video_dur,start_time_sec)
 
     except json.JSONDecodeError as e:
