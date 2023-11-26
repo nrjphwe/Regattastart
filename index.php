@@ -90,18 +90,6 @@
     </div> 
     <div align="center">
     <?php
-        $filename = '1a_start_5_min.jpg';
-        $imagePath = 'images/' . $filename; // Relative path
-        
-        echo "<h3> Image Path: $imagePath </h3>";
-        
-        if (file_exists($imagePath)) {
-            echo "<img id='$filename' src='$imagePath' alt='1a_start 5 min picture' width='720' height='480'>";
-        } else {
-            echo "<h3> Image does not exist at path: $imagePath </h3>";
-        }
-    ?>
-    <?php
         // Check and display the first image
         $filename = '1a_start_5_min.jpg';
         $imagePath = 'images/' . $filename; // Relative path
