@@ -101,7 +101,7 @@
         }
     ?>
     <?php
-        $path = '/var/www/html/images/';
+        $path = '/images/';
         // Check and display the first image
         $filename = '1a_start_5_min.jpg';
         if (file_exists($path . $filename)) {
