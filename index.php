@@ -68,9 +68,11 @@
         echo "     Version: " . APP_VERSION . "<br><p></p>"; 
     ?>
     </div>
+    <div align="center">
         <div id="image-container">
             <!-- Your image elements will be added here dynamically -->
         </div>
+    </div>
     <!-- Here is our page's main content -->
     <main>
     <div align="center">
