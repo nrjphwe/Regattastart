@@ -109,28 +109,28 @@
             echo "<h3> Bilder tagna vid varje signal innan 1a start  </h3> ";
             echo "<br> ------------------------------------------------- <p></p> ";
             echo "<h3> Bild vid varningssignal 5 minuter innan 1a start</h3>";
-            echo '<img id="'$filename' src='$imagePath' alt="1a_start 5 min picture" width="720" height="480"  >';
+            echo "<img id='$filename' src='$imagePath' alt='1a_start 5 min picture' width='720' height='480'  >";
         }
         // Check and display the second image
         $filename = '1a_start_4_min.jpg';
         $imagePath = $_SERVER['DOCUMENT_ROOT'] . '/images/' . $filename;
         if (file_exists($imagePath)) {
             echo "<h3> Signal 4 minuter innan 1a start </h3>";
-            echo '<img id='$filename' src='$imagePath' alt="1a_start 4 min picture" width="720" height="480"  >';
+            echo "<img id='$filename' src='$imagePath' alt='1a_start 4 min picture' width='720' height='480'  >";
         }
         // Check and display the third image
         $filename = '1a_start_1_min.jpg';
         $imagePath = $_SERVER['DOCUMENT_ROOT'] . '/images/' . $filename;
         if (file_exists($imagePath)) {
             echo "<h3> Signal 1 minuter innan 1a start </h3>";
-            echo '<img id='$filename' src='$imagePath' alt="1a_start 1 min picture" width="720" height="480"  >';
+            echo "<img id='$filename' src='$imagePath' alt='1a_start 1 min picture' width='720' height='480'  >";
         }
         // Check and display the start image
         $filename = '1a_start_Start.jpg';
         $imagePath = $_SERVER['DOCUMENT_ROOT'] . '/images/' . $filename;
         if (file_exists($imagePath)) {
             echo "<h3> Foto vid 1a start </h3>";
-            echo '<img id='$filename' src = '$imagePath' / alt="1a start picture" width="720" height="480"  >';
+            echo "<img id='$filename' src = '$imagePath' / alt='1a start picture' width='720' height='480'  >";
         }
     ?>
     <?php
