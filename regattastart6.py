@@ -125,7 +125,7 @@ def start_sequence(camera, signal, start_time_sec, num_starts, photo_path):
                     logger.info(f"  Start_sequence, Triggering event at seconds_now: {seconds_now}")
                     if action:
                         action()
-                    picture_name = f"{i + 1}:a_start_{log_message[:5]}.jpg"
+                    picture_name = f"{i + 1}a_start_{log_message[:5]}.jpg"
                     capture_picture(camera, photo_path, picture_name)
                     logger.info(f"  Start_sequence, log_message: {log_message}")
                     logger.info(f"  Start_sequence, seconds_since_midnight: {seconds_since_midnight}, start_time_sec: {start_time_sec}")
