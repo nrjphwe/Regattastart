@@ -116,21 +116,21 @@
         $imagePath = 'images/' . $filename; // Relative path
         if (file_exists($imagePath)) {
             echo "<h3> Signal 4 minuter innan 1a start </h3>";
-            echo "<img id='$filename' src='$imagePath' alt='1a_start 4 min picture' width='720' height='480'  >";
+            echo "<img id='$filename' src='$imagePath' alt='1a_start 4 min picture' width='720' height='480'>";
         }
         // Check and display the third image
         $filename = '1a_start_1_min.jpg';
         $imagePath = 'images/' . $filename; // Relative path
         if (file_exists($imagePath)) {
             echo "<h3> Signal 1 minuter innan 1a start </h3>";
-            echo "<img id='$filename' src='$imagePath' alt='1a_start 1 min picture' width='720' height='480'  >";
+            echo "<img id='$filename' src='$imagePath' alt='1a_start 1 min picture' width='720' height='480'>";
         }
         // Check and display the start image
         $filename = '1a_start_Start.jpg';
         $imagePath = 'images/' . $filename; // Relative path
         if (file_exists($imagePath)) {
             echo "<h3> Foto vid 1a start </h3>";
-            echo "<img id='$filename' src = '$imagePath' / alt='1a start picture' width='720' height='480'  >";
+            echo "<img id='$filename' src = '$imagePath' / alt='1a start picture' width='720' height='480'>";
         }
     ?>
     <?php
