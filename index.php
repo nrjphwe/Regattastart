@@ -104,7 +104,7 @@
                 print_r(error_get_last());
             }
         }
-        $path = '/images/';
+        $path = '/var/www/html/images/';
         // Check and display the first image
         $filename = '1a_start_5_min.jpg';
         if (file_exists($path . $filename)) {
