@@ -99,7 +99,6 @@
         } else {
             echo "<h3> Image does not exist at path: $imagePath </h3>";
         }
-
         $path = '/images/';
         // Check and display the first image
         $filename = '1:a_start_5_min.jpg';
