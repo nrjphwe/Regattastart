@@ -12,6 +12,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="refresh" content="200" >
     <title>Regattastart</title>
     <! -- JavaScript to dynamically add a placeholder text or an image to the page when -->
     <! -- there are no pictures available yet. -->
@@ -68,6 +69,8 @@
         <h2> Regattastart  </h2>
     </div>
 </div>
+<!-- Here is our main header that is used across all the pages of our website -->
+ <meta http-equiv="refresh" content="200" >
 </header>
 <body onload="showPlaceholder()">
     <div align="center">
