@@ -92,7 +92,7 @@
     <?php
         // Check and display the first image
         $path = '/images/';
-        $filename = '1:a_start_5_min.jpg';
+        $filename = '1a_start_5_min.jpg';
         $imagePath = $path . $filename;
         if (file_exists($imagePath)) {
             echo "<h3> Image Path: $imagePath </h3>";
@@ -102,7 +102,7 @@
         }
         $path = '/images/';
         // Check and display the first image
-        $filename = '1:a_start_5_min.jpg';
+        $filename = '1a_start_5_min.jpg';
         if (file_exists($path . $filename)) {
             echo "<h3> Bilder tagna vid varje signal innan 1a start  </h3> ";
             echo "<br> ------------------------------------------------- <p></p> ";
@@ -110,19 +110,19 @@
             echo '<img id="1a_start_5_min.jpg" src="' . $path . $filename . '" alt="1a_start 5 min picture" width="720" height="480"  >';
         }
         // Check and display the second image
-        $filename = '1:a_start_4_min.jpg';
+        $filename = '1a_start_4_min.jpg';
         if (file_exists($path . $filename)) {
             echo "<h3> Signal 4 minuter innan 1a start </h3>";
             echo '<img id="1a_start_4_min.jpg" src="' . $path . $filename . '" alt="1a_start 4 min picture" width="720" height="480"  >';
         }
         // Check and display the third image
-        $filename = '1:a_start_1_min.jpg';
+        $filename = '1a_start_1_min.jpg';
         if (file_exists($path . $filename)) {
             echo "<h3> Signal 1 minuter innan 1a start </h3>";
             echo '<img id="1a_start_1_min.jpg" src="' . $path . $filename . '" alt="1a_start 1 min picture" width="720" height="480"  >';
         }
         // Check and display the start image
-        $filename = '1:a_start_Start.jpg';
+        $filename = '1a_start_Start.jpg';
         if (file_exists($path . $filename)) {
             echo "<h3> Foto vid 1a start </h3>";
             echo '<img id="1a_start_Start.jpg"src = "' . $path . $filename . '" / alt="1a start picture" width="720" height="480"  >';
@@ -131,7 +131,7 @@
     <?php
         $path = '/images/';
         // Check and display the first image
-        $filename = '2:a_start_5_min.jpg';
+        $filename = '2a_start_5_min.jpg';
         if (file_exists($path . $filename)) {
             echo "<h3> Bilder tagna vid varje signal innan 2a start  </h3> ";
             echo "<br> ------------------------------------------------- <p></p> ";
@@ -139,19 +139,19 @@
             echo '<img id="2a_start_5_min.jpg" src="' . $path . $filename . '" alt="2a_start 5 min picture" width="720" height="480"  >';
         }
         // Check and display the second image
-        $filename = '2:a_start_4_min.jpg';
+        $filename = '2a_start_4_min.jpg';
         if (file_exists($path . $filename)) {
             echo "<h3> Signal 4 minuter innan 2a start </h3>";
             echo '<img id="2a_start_4_min.jpg" src="' . $path . $filename . '" alt="2a_start 4 min picture" width="720" height="480"  >';
         }
         // Check and display the third image
-        $filename = '2:a_start_1_min.jpg';
+        $filename = '2a_start_1_min.jpg';
         if (file_exists($path . $filename)) {
             echo "<h3> Signal 1 minuter innan 2a start </h3>";
             echo '<img id="2a_start_1_min.jpg" src="' . $path . $filename . '" alt="2a_start 1 min picture" width="720" height="480"  >';
         }
         // Check and display the start image
-        $filename = '2:a_start_Start.jpg';
+        $filename = '2a_start_Start.jpg';
         if (file_exists($path . $filename)) {
             echo "<h3> Foto vid 2a start </h3>";
             echo '<img id="2a_start_Start.jpg"src = "' . $path . $filename . '" / alt="2a start picture" width="720" height="480"  >';
