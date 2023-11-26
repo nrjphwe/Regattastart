@@ -94,21 +94,30 @@
     <h3> Foto vid 1a start</h3>
     <img id="1a_start_5_Start.jpg" src="/images/1:a_start_Start.jpg?<?php echo Date("Y.m.d.G.i.s")?>" alt="1st start picture at the 1st start" width="720" height="480"  >
     <?php
-    $path = '/images/';
+        $path = '/images/';
+        // Check and display the first image
         $filename = 'images/2:a_start_5_min.jpg';
         if (file_exists($filename)) {
             echo "<h3> Bilder tagna vid varje signal innan 2a start  </h3> ";
             echo "<br> ------------------------------------------------- <p></p> ";
-            $filename = '2:a_start_5_min.jpg';
             echo "<h3> Bild vid varningssignal 5 minuter innan 2a start</h3>";
-            echo '<img id="2a_start_5_min.jpg" src = "' . $path . $filename . '" / alt="2a_start 5 min picture" width="720" height="480"  >';
-            $filename = '2:a_start_4_min.jpg';
+            echo '<img id="2a_start_5_min.jpg" src="' . $path . $filename . '" alt="2a_start 5 min picture" width="720" height="480"  >';
+        }
+        // Check and display the second image
+        $filename = 'images/2:a_start_4_min.jpg';
+        if (file_exists($filename)) {
             echo "<h3> Signal 4 minuter innan 2a start </h3>";
-            echo '<img id="2a_start_4_min.jpg"src = "' . $path . $filename . '" / alt="2a_start 4 min picture" width="720" height="480"  >';
-            $filename = '2:a_start_1_min.jpg';
-            echo "<h3> Signal 1 minut innan 2a start </h3>";
-            echo '<img id="2a_start_1_min.jpg" src = "' . $path . $filename . '" / alt="2a start 1 min picture" width="720" height="480"  >';
-            $filename = '2:a_start_Start.jpg';
+            echo '<img id="2a_start_4_min.jpg" src="' . $path . $filename . '" alt="2a_start 4 min picture" width="720" height="480"  >';
+        }
+        // Check and display the third image
+        $filename = 'images/2:a_start_1_min.jpg';
+        if (file_exists($filename)) {
+            echo "<h3> Signal 1 minuter innan 2a start </h3>";
+            echo '<img id="2a_start_1_min.jpg" src="' . $path . $filename . '" alt="2a_start 1 min picture" width="720" height="480"  >';
+        }
+        // Check and display the start image
+        $filename = 'images/2:a_start_Start.jpg';
+        if (file_exists($filename)) {
             echo "<h3> Foto vid 2a start </h3>";
             echo '<img id="2a_start_Start.jpg"src = "' . $path . $filename . '" / alt="2a start picture" width="720" height="480"  >';
         }
