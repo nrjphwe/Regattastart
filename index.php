@@ -157,7 +157,7 @@
         <?php
             // Check and display the first video
             $video_name = '/images/video0.mp4';
-            $imagePath = 'images/' . $videoname; // Relative path
+            $imagePath = 'images/' . $video_name; // Relative path
             if (file_exists($imagePath)) {
                 echo "<h3> Video 5 min före start och 2 min efter, eller vid 2 starter, till 2 min efter andra start </h3>";
                 echo '<video width = "720" height="480" controls><source src= ' . $video_name . ' type="video/mp4"></video><p>';
