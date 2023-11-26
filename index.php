@@ -109,7 +109,7 @@
             echo "<h3> Bilder tagna vid varje signal innan 1a start  </h3> ";
             echo "<br> ------------------------------------------------- <p></p> ";
             echo "<h3> Bild vid varningssignal 5 minuter innan 1a start</h3>";
-            echo "<img id='$filename' src='$imagePath' alt='1a_start 5 min picture' width='720' height='480'  >";
+            echo "<img id='$filename' src='$imagePath' alt='1a_start 5 min picture' width='720' height='480'>";     
         }
         // Check and display the second image
         $filename = '1a_start_4_min.jpg';
