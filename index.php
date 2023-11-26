@@ -93,7 +93,7 @@
         // Check and display the first image
         $path = '/var/www/html/images/';
         $filename = '1a_start_5_min.jpg';
-        $imagePath = $filename;
+        $imagePath = $path . $filename;
         if (file_exists($path . $imagePath)) {
             echo "<h3> Image Path: $imagePath </h3>";
             echo "<img id='1a_start_5_min.jpg' src='$imagePath' alt='1a_start 5 min picture' width='720' height='480'>";
