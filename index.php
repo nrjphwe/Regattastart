@@ -88,6 +88,35 @@
     <div class="w3-panel w3-pale-blue">
     <h3> Bilder tagna vid varje signal innan 1a start </h3>
     </div> 
+    <?php
+        $path = '/images/';
+        // Check and display the first image
+        $filename = '1:a_start_5_min.jpg';
+        if (file_exists($path . $filename)) {
+            echo "<h3> Bilder tagna vid varje signal innan 1a start  </h3> ";
+            echo "<br> ------------------------------------------------- <p></p> ";
+            echo "<h3> Bild vid varningssignal 5 minuter innan 1a start</h3>";
+            echo '<img id="1a_start_5_min.jpg" src="' . $path . $filename . '" alt="1a_start 5 min picture" width="720" height="480"  >';
+        }
+        // Check and display the second image
+        $filename = '1:a_start_4_min.jpg';
+        if (file_exists($path . $filename)) {
+            echo "<h3> Signal 4 minuter innan 1a start </h3>";
+            echo '<img id="1a_start_4_min.jpg" src="' . $path . $filename . '" alt="1a_start 4 min picture" width="720" height="480"  >';
+        }
+        // Check and display the third image
+        $filename = '1:a_start_1_min.jpg';
+        if (file_exists($path . $filename)) {
+            echo "<h3> Signal 1 minuter innan 1a start </h3>";
+            echo '<img id="1a_start_1_min.jpg" src="' . $path . $filename . '" alt="1a_start 1 min picture" width="720" height="480"  >';
+        }
+        // Check and display the start image
+        $filename = '1:a_start_Start.jpg';
+        if (file_exists($path . $filename)) {
+            echo "<h3> Foto vid 1a start </h3>";
+            echo '<img id="1a_start_Start.jpg"src = "' . $path . $filename . '" / alt="1a start picture" width="720" height="480"  >';
+        }
+    ?>
     <h3> Bild vid varningssignal 5 minuter innan 1a start</h3>
     <img id="1a_start_5_min.jpg" src="/images/1:a_start_5_min.jpg?<?php echo Date("Y.m.d.G.i.s")?>" alt="1st 5 minutes picture before start" width="720" height="480"  >
     <h3> Bild vid signal 4 minuter innan 1a start</h3>
