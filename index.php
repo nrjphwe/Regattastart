@@ -99,6 +99,10 @@
             echo "<img id='1a_start_5_min.jpg' src='$imagePath' alt='1a_start 5 min picture' width='720' height='480'>";
         } else {
             echo "<h3> Image does not exist at path: $imagePath </h3>";
+            // Check for errors
+            if (error_get_last()) {
+                print_r(error_get_last());
+            }
         }
         $path = '/images/';
         // Check and display the first image
