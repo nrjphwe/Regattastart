@@ -25,7 +25,7 @@
                 }
             } else {
                 // Add a placeholder text
-                var placeholderText = 'Picture pending until 5 minutes before start';
+                var placeholderText = 'Pictures pending until 5 minutes before start';
                 var textNode = document.createTextNode(placeholderText);
                 imageContainer.appendChild(textNode);
             }
@@ -95,7 +95,7 @@
     <img id="1a_start_5_Start.jpg" src="/images/1:a_start_Start.jpg?<?php echo Date("Y.m.d.G.i.s")?>" alt="1st start picture at the 1st start" width="720" height="480"  >
     <?php
         $path = '/images/';
-        $filename = 'images/2:a_start_4_min.jpg';
+        $filename = 'images/2:a_start_5_min.jpg';
         if (file_exists($filename)) {
         echo "<h3> Bilder tagna vid varje signal innan 2a start  </h3> ";
         echo "<br> ------------------------------------------------- <p></p> ";
