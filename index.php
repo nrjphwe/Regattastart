@@ -96,7 +96,7 @@
     <?php
         $path = '/images/';
         // Check and display the first image
-        $filename = 'images/2:a_start_5_min.jpg';
+        $filename = '2:a_start_5_min.jpg';
         if (file_exists($filename)) {
             echo "<h3> Bilder tagna vid varje signal innan 2a start  </h3> ";
             echo "<br> ------------------------------------------------- <p></p> ";
