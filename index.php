@@ -88,6 +88,7 @@
     <div class="w3-panel w3-pale-blue">
     <h3> Bilder tagna vid varje signal innan 1a start </h3>
     </div> 
+    <div align="center">
     <?php
         $path = '/images/';
         // Check and display the first image
@@ -146,6 +147,7 @@
             echo '<img id="2a_start_Start.jpg"src = "' . $path . $filename . '" / alt="2a start picture" width="720" height="480"  >';
         }
     ?>
+    </div>
     <div class="w3-panel w3-pale-blue">
         <?php
             $video_name = '/images/video0.mp4';
