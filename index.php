@@ -99,6 +99,16 @@
         } else {
             echo "<h3> Image does not exist at path: $imagePath </h3>";
         }
+        // Check and display the first image
+        $path = '/images/';
+        $filename = '1a_start_5_min.jpg';
+        $imagePath = $path . $filename;
+        if (file_exists($_SERVER['DOCUMENT_ROOT'] . $imagePath)) {
+            echo "<h3> Image Path: $imagePath </h3>";
+            echo "<img id='$filename' src='$imagePath' alt='1a_start 5 min picture' width='720' height='480'>";
+        } else {
+            echo "<h3> Image does not exist at path: $imagePath </h3>";
+        }
     ?>
     <?php
         $path = '/images/';
