@@ -69,7 +69,7 @@
     </div>
 </div>
 </header>
-<body body onload="showPlaceholder()">
+<body onload="showPlaceholder()">
     <div align="center">
     <?php 
         echo "     Version: " . APP_VERSION . "<br><p></p>"; 
