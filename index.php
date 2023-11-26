@@ -100,11 +100,8 @@
         } else {
             echo "<h3> Image does not exist at path: $imagePath </h3>";
         }
-            // Check for errors
-            if (error_get_last()) {
-                print_r(error_get_last());
-            }
-        }
+        ?>
+    <?php    
         $path = '/var/www/html/images/';
         // Check and display the first image
         $filename = '1a_start_5_min.jpg';
