@@ -91,6 +91,7 @@
     <div align="center">
     <?php
         // Check and display the first image
+        $path = '/images/';
         $filename = '1:a_start_5_min.jpg';
         $imagePath = $path . $filename;
         if (file_exists($imagePath)) {
