@@ -228,7 +228,7 @@ def main():
                 # Sleep briefly to avoid continuous checking
                 time.sleep(2)
 
-        finish_recording(camera, mp4_path, video_delay, num_video, video_dur,start_time_sec)
+        #finish_recording(camera, mp4_path, video_delay, num_video, video_dur,start_time_sec)
 
     except json.JSONDecodeError as e:
         logger.info ("Failed to parse JSON: %", str(e))
