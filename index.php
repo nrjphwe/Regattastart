@@ -117,14 +117,6 @@
             echo '<img id="1a_start_Start.jpg"src = "' . $path . $filename . '" / alt="1a start picture" width="720" height="480"  >';
         }
     ?>
-    <h3> Bild vid varningssignal 5 minuter innan 1a start</h3>
-    <img id="1a_start_5_min.jpg" src="/images/1:a_start_5_min.jpg?<?php echo Date("Y.m.d.G.i.s")?>" alt="1st 5 minutes picture before start" width="720" height="480"  >
-    <h3> Bild vid signal 4 minuter innan 1a start</h3>
-    <img id="1a_start_4_min.jpg" src="/images/1:a_start_4_min.jpg?<?php echo Date("Y.m.d.G.i.s")?>" alt="1st 4 min picture before the 1st start" width="720" height="480"  >
-    <h3> Bild vid signal 1 minut innan 1a start</h3>
-    <img id="1a_start_1_min.jpg" src="/images/1:a_start_1_min.jpg?<?php echo Date("Y.m.d.G.i.s")?>" alt="1st 1 min picture before the 1st start" width="720" height="480"  >
-    <h3> Foto vid 1a start</h3>
-    <img id="1a_start_5_Start.jpg" src="/images/1:a_start_Start.jpg?<?php echo Date("Y.m.d.G.i.s")?>" alt="1st start picture at the 1st start" width="720" height="480"  >
     <?php
         $path = '/images/';
         // Check and display the first image
