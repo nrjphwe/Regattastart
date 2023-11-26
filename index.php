@@ -155,30 +155,24 @@
     ?>
     <div class="w3-panel w3-pale-blue">
         <?php
-            // Check and display the first video
-            $video_name = 'video0.mp4';
-            $imagePath = '/images/' . $video_name; // Relative path
-            if (file_exists($imagePath)) {
+            $video_name = '/images/video0.mp4';
+            if (file_exists($video_name)) {
                 echo "<h3> Video 5 min före start och 2 min efter, eller vid 2 starter, till 2 min efter andra start </h3>";
-                echo '<video width = "720" height="480" controls><source src= ' . $imagePath . ' type="video/mp4"></video><p>';
+                echo '<video width = "720" height="480" controls><source src= ' . $video_name . ' type="video/mp4"></video><p>';
             }
         ?>
     </div>
 
-
-
-
-
     <div class="w3-panel w3-pale-red">
         <?php
             for ($x = 1; $x <= $num_video; $x++) {
-                $video_name = 'video' . $x . '.mp4';
-                $imagePath = '/images/' . $video_name; // Relative path
-                if (file_exists($imagePath)) {
+                $video_name = '/images/video' . $x . '.mp4';
+                if (file_exists($video_name)) {
                     echo "<h2> Finish video, this is video $x for the finish</h2><br>";
-                    echo '<video width = "720" height="480" controls><source src= ' . $imagePath . ' type="video/mp4"></video><p>';
+                    echo '<video width = "720" height="480" controls><source src= ' . $video_name . ' type="video/mp4"></video><p>';
                 }
-        ?>
+            }
+        ?>  
     </div>
     <div class="w3-panel w3-grey">
         <?php
