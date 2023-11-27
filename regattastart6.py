@@ -87,20 +87,11 @@ def stop_video_recording(camera):
     camera.stop_recording()
     logger.info (" video recording stopped")
 
-def annotate_video_duration(camera, start_time_sec, num_starts):
-    if num_starts == 2:
-        # Update start_time_sec to reflect the time of the second start
-        start_time_sec += 5 * 60  # Add 5 minutes for the second start
-    elif num_starts == 3:
-        # Add conditions for the third start
-        start_time_sec += 5 * 60 * 2
-    elif num_starts == 4:
-        # Add conditions for the fourth start
-        start_time_sec += 5 * 60 * 3
+def annotate_video_duration(camera, start_time_sec):
 
     while True:
-        elapsed_time = (dt.datetime.now() - start_time).seconds
-        camera.annotate_text = f"{dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Duration since last start: {elapsed_time}"
+        elapsed_time = dt.datetime.now().second - start_time_sec
+        camera.annotate_text = f"{dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Seconds since last start: {elapsed_time}"
         camera.wait_recording(0.5)
 
 def convert_video_to_mp4(mp4_path, source_file, destination_file):
