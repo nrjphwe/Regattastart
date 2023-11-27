@@ -92,7 +92,7 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
                     echo '<option value="' . $start_time_option . '" ' . $selected . '>' . $start_time_option . '</option>';
                     $current += $steps;
                 }
-                echo " (First start in case of 2 start)"
+                echo " (First start in case of 2 start)";
                 ?>
             </select>
             <br>
