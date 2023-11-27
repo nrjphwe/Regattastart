@@ -128,8 +128,8 @@ def start_sequence(camera, signal, start_time_sec, num_starts, photo_path):
                     capture_picture(camera, photo_path, picture_name)
                     logger.info(f"  Start_sequence, log_message: {log_message}")
                     logger.info(f"  Start_sequence, seconds_since_midnight: {seconds_since_midnight}, start_time_sec: {start_time_sec}")
-        return(start_time_sec)
         logger.info(f"  Start_sequence, End of iteration: {i}")
+    return(start_time_sec)
 
 def finish_recording(camera, mp4_path, video_delay, num_video, video_dur, start_time_sec):
     # Wait for finish, when the next video will start (delay)
