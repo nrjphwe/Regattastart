@@ -220,16 +220,16 @@ def main():
                         convert_video_to_mp4(mp4_path, "video0.h264", "video0.mp4")
 
                     # Move the finish_recording call inside the while loop
-                    logger.info("Inside inner loop. start_time_sec=%s", start_time_sec)
+                    #logger.info("Inside inner loop. start_time_sec=%s", start_time_sec)
 
-                    finish_recording(camera, mp4_path, video_delay, num_video, video_dur, start_time_sec)
+                    #finish_recording(camera, mp4_path, video_delay, num_video, video_dur, start_time_sec)
 
                     # Exit the loop after the condition is met
                     break
                 # Sleep briefly to avoid continuous checking
                 time.sleep(2)
-
-        #finish_recording(camera, mp4_path, video_delay, num_video, video_dur,start_time_sec)
+        logger.info("Finsih recording outside inner loop. start_time_sec=%s", start_time_sec)
+        finish_recording(camera, mp4_path, video_delay, num_video, video_dur,start_time_sec)
 
     except json.JSONDecodeError as e:
         logger.info ("Failed to parse JSON: %", str(e))
