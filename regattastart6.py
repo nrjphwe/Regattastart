@@ -87,6 +87,22 @@ def stop_video_recording(camera):
     camera.stop_recording()
     logger.info (" video recording stopped")
 
+def annotate_video_duration(camera, start_time_sec, num_starts):
+    if num_starts == 2:
+        # Update start_time_sec to reflect the time of the second start
+        start_time_sec += 5 * 60  # Add 5 minutes for the second start
+    elif num_starts == 3:
+        # Add conditions for the third start
+        # start_time_sec += ...
+    elif num_starts == 4:
+        # Add conditions for the fourth start
+        # start_time_sec += ...
+
+    while True:
+        elapsed_time = (dt.datetime.now() - start_time).seconds
+        camera.annotate_text = f"{dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Duration since last start: {elapsed_time}"
+        camera.wait_recording(0.5)
+
 def convert_video_to_mp4(mp4_path, source_file, destination_file):
     convert_video_str = "MP4Box -add {} -new {}".format(os.path.join(mp4_path,source_file), os.path.join(mp4_path,destination_file))
     subprocess.run(convert_video_str, shell=True)
@@ -141,10 +157,20 @@ def finish_recording(camera, mp4_path, video_delay, num_video, video_dur, start_
         # Video running, duration at "video_dur"
         t2 = dt.datetime.now()
         start_time = dt.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) + dt.timedelta(seconds=start_time_sec)
+
+        #while (dt.datetime.now() - t2).seconds < (60 * video_dur):
+        #    elapsed_time = (dt.datetime.now() - start_time)
+        #    camera.annotate_text = f"{dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Seconds since first start: {elapsed_time.seconds}"
+        #    camera.wait_recording(0.5)
+
+        # Annotate the video duration
+        annotate_video_duration(camera, start_time_sec, num_starts)
+
         while (dt.datetime.now() - t2).seconds < (60 * video_dur):
             elapsed_time = (dt.datetime.now() - start_time)
-            camera.annotate_text = f"{dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Duration since first start: {elapsed_time.seconds}"
+            camera.annotate_text = f"{dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Seconds since first start: {elapsed_time.seconds}"
             camera.wait_recording(0.5)
+
 
         stop_video_recording(camera)
         convert_video_to_mp4(mp4_path, f"video{i}.h264", f"video{i}.mp4")
