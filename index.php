@@ -12,7 +12,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta http-equiv="refresh" content="200" >
+    <! -- meta http-equiv="refresh" content="200" -->
     <title>Regattastart</title>
     <! -- JavaScript to dynamically add a placeholder text or an image to the page when -->
     <! -- there are no pictures available yet. -->
