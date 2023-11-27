@@ -93,10 +93,10 @@ def annotate_video_duration(camera, start_time_sec, num_starts):
         start_time_sec += 5 * 60  # Add 5 minutes for the second start
     elif num_starts == 3:
         # Add conditions for the third start
-        # start_time_sec += ...
+        start_time_sec += 5 * 60 * 2
     elif num_starts == 4:
         # Add conditions for the fourth start
-        # start_time_sec += ...
+        start_time_sec += 5 * 60 * 3
 
     while True:
         elapsed_time = (dt.datetime.now() - start_time).seconds
