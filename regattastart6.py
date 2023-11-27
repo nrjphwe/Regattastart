@@ -121,7 +121,6 @@ def start_sequence(camera, signal, start_time_sec, num_starts, photo_path):
                 seconds_now = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
                 # Iterate through time intervals
                 if seconds_now == seconds:
-                    logger.info(f"  Start_sequence, Waiting... Current time: {time_now}, Seconds now: {seconds_now}, Event time: {seconds}")
                     logger.info(f"  Start_sequence, Triggering event at seconds_now: {seconds_now}")
                     if action:
                         action()
@@ -129,6 +128,7 @@ def start_sequence(camera, signal, start_time_sec, num_starts, photo_path):
                     capture_picture(camera, photo_path, picture_name)
                     logger.info(f"  Start_sequence, log_message: {log_message}")
                     logger.info(f"  Start_sequence, seconds_since_midnight: {seconds_since_midnight}, start_time_sec: {start_time_sec}")
+        return(start_time_sec)
         logger.info(f"  Start_sequence, End of iteration: {i}")
 
 def finish_recording(camera, mp4_path, video_delay, num_video, video_dur, start_time_sec):
@@ -186,13 +186,12 @@ def main():
         start_time_sec = 60 * (int(start_minute) + 60 * int(start_hour))
 
         t5min_warning = start_time_sec - 5 * 60 # time when the start-machine should begin to execute.
-    
         wd = dt.datetime.today().strftime("%A")
         
         if wd == week_day:
-            t5min_warning = start_time_sec - 5 * 60  # time when the start-machine should begin to execute.
+            #t5min_warning = start_time_sec - 5 * 60  # time when the start-machine should begin to execute.
 
-            # A loop that waits until it's close to the 5-minute mark, a loop that continuously checks the 
+            # A loop that waits until close to the 5-minute mark, a loop that continuously checks the 
             # condition without blocking the execution completely
             while True:
                 now = dt.datetime.now()
@@ -214,13 +213,15 @@ def main():
                             now = dt.datetime.now()
                             seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
                             logger.info("Inside inner loop. seconds_since_midnight=%s", seconds_since_midnight)
-                            camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + "  " + str((dt.datetime.now() - t0).seconds)
+                            camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + "  Seconds since last start: " + str((dt.datetime.now() - t0).seconds)
                             camera.wait_recording(0.5)
                     
                         stop_video_recording(camera)
                         convert_video_to_mp4(mp4_path, "video0.h264", "video0.mp4")
 
                     # Move the finish_recording call inside the while loop
+                    logger.info("Inside inner loop. start_time_sec=%s", start_time_sec)
+
                     finish_recording(camera, mp4_path, video_delay, num_video, video_dur, start_time_sec)
 
                     # Exit the loop after the condition is met
