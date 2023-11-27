@@ -129,7 +129,6 @@ def start_sequence(camera, signal, start_time_sec, num_starts, photo_path):
                     logger.info(f"  Start_sequence, log_message: {log_message}")
                     logger.info(f"  Start_sequence, seconds_since_midnight: {seconds_since_midnight}, start_time_sec: {start_time_sec}")
         logger.info(f"  Start_sequence, End of iteration: {i}")
-    return(start_time_sec)
 
 def finish_recording(camera, mp4_path, video_delay, num_video, video_dur, start_time_sec):
     # Wait for finish, when the next video will start (delay)
@@ -228,7 +227,7 @@ def main():
                     break
                 # Sleep briefly to avoid continuous checking
                 time.sleep(2)
-        logger.info("Finsih recording outside inner loop. start_time_sec=%s", start_time_sec)
+        logger.info("Finish recording outside inner loop. start_time_sec=%s", start_time_sec)
         finish_recording(camera, mp4_path, video_delay, num_video, video_dur,start_time_sec)
 
     except json.JSONDecodeError as e:
