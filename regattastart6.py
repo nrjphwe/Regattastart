@@ -155,7 +155,7 @@ def finish_recording(camera, mp4_path, video_delay, num_video, video_dur, start_
         #    camera.wait_recording(0.5)
 
         # Annotate the video duration
-        annotate_video_duration(camera, start_time_sec, num_starts)
+        annotate_video_duration(camera, start_time_sec)
 
         while (dt.datetime.now() - t2).seconds < (60 * video_dur):
             elapsed_time = (dt.datetime.now() - start_time)
