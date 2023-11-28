@@ -151,7 +151,7 @@ def finish_recording(camera, mp4_path, video_delay, num_video, video_dur, start_
         while (dt.datetime.now() - t2).seconds < (60 * video_dur):
             annotate_video_duration(camera, start_time_sec)
             #camera.annotate_text = f"{dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Seconds since first start: {elapsed_time.seconds}"
-            camera.wait_recording(0.5)
+            camera.wait_recording(0) # was 0.5
 
         stop_video_recording(camera)
         convert_video_to_mp4(mp4_path, f"video{i}.h264", f"video{i}.mp4")
