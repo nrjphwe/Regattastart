@@ -95,6 +95,7 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
                 ?>
             </select>
             <br>
+            <p style="font-size:11px">
             (First start in case of 2 starts)
             <br>
         </fieldset>
