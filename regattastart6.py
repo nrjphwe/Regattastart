@@ -90,11 +90,8 @@ def stop_video_recording(camera):
 def annotate_video_duration(camera, start_time_sec):
     time_now = dt.datetime.now()
     seconds_since_midnight = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
-    gap = seconds_since_midnight - start_time_sec
-    logger.info(f"gap %s",gap)
-    elapsed_time = gap
+    elapsed_time = seconds_since_midnight - start_time_sec #elapsed since last star until now)
     camera.annotate_text = f"{dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Seconds since last start: {elapsed_time}"
-    #camera.wait_recording(0.5)
 
 def convert_video_to_mp4(mp4_path, source_file, destination_file):
     convert_video_str = "MP4Box -add {} -new {}".format(os.path.join(mp4_path,source_file), os.path.join(mp4_path,destination_file))
