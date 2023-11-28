@@ -219,6 +219,7 @@ def main():
                             now = dt.datetime.now()
                             seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
                             logger.info("Inside inner loop. seconds_since_midnight=%s", seconds_since_midnight)
+                            annotate_video_duration(camera, start_time_sec)
                             #camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + "  Seconds since last start: " + str((dt.datetime.now() - t0).seconds)
                             camera.wait_recording(0.5)
                     
