@@ -88,6 +88,7 @@ def stop_video_recording(camera):
     logger.info (" video recording stopped")
 
 def annotate_video_duration(camera, start_time_sec):
+    logger.info(f"dt.datetime.now().second=%s,start_time_sec=%s",dt.datetime.now().second, start_time_sec)
     elapsed_time = dt.datetime.now().second - start_time_sec
     camera.annotate_text = f"{dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Seconds since last start: {elapsed_time}"
     #camera.wait_recording(0.5)
