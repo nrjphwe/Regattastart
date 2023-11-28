@@ -71,7 +71,7 @@ def trigger_warning_signal(signal):
     time.sleep(signal_dur)
     GPIO.output(signal, OFF)
     time.sleep(1 - signal_dur)
-    logger.info ("     For one sec, first trigger signal %s sec, then wait for 1 - %s sec", signal_dur, signal_dur)
+    logger.info ("     Trigger signal %s sec, then wait for 1 - %s sec", signal_dur, signal_dur)
 
 def capture_picture(camera, photo_path, file_name):
     camera.capture(os.path.join(photo_path, file_name), use_video_port=True)
@@ -225,15 +225,9 @@ def main():
                         stop_video_recording(camera)
                         convert_video_to_mp4(mp4_path, "video0.h264", "video0.mp4")
 
-                    # Move the finish_recording call inside the while loop
-                    #logger.info("Inside inner loop. start_time_sec=%s", start_time_sec)
-
-                    #finish_recording(camera, mp4_path, video_delay, num_video, video_dur, start_time_sec)
-
                     # Exit the loop after the condition is met
                     break
-                # Sleep briefly to avoid continuous checking
-                #time.sleep(2)
+
         logger.info("Finish recording outside inner loop. start_time_sec=%s", start_time_sec)
         finish_recording(camera, mp4_path, video_delay, num_video, video_dur,start_time_sec)
 
