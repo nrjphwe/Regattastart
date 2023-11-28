@@ -196,8 +196,6 @@ def main():
         wd = dt.datetime.today().strftime("%A")
         
         if wd == week_day:
-            #t5min_warning = start_time_sec - 5 * 60  # time when the start-machine should begin to execute.
-
             # A loop that waits until close to the 5-minute mark, a loop that continuously checks the 
             # condition without blocking the execution completely
             while True:
@@ -212,7 +210,8 @@ def main():
                         start_video_recording(camera, mp4_path, "video0.h264")
                         logger.info("Inner loop, entering the start sequence block.")
                         start_sequence(camera, signal, start_time_sec, num_starts, photo_path)
-
+                        if num_starts == 2:
+                            start_time_sec = start_time_sec + 5* 60
                         logger.info(" Wait 2 minutes then stop video recording")
                         t0 = dt.datetime.now()
                         logger.info("start_time_sec= %s, t0= %s",start_time_sec, t0)  #test
