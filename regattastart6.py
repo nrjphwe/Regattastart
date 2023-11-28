@@ -90,7 +90,7 @@ def stop_video_recording(camera):
 def annotate_video_duration(camera, start_time_sec):
     time_now = dt.datetime.now()
     seconds_since_midnight = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
-    gap = start_time_sec - seconds_since_midnight
+    gap = seconds_since_midnight - start_time_sec
     logger.info(f"gap %s",gap)
     elapsed_time = gap
     camera.annotate_text = f"{dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Seconds since last start: {elapsed_time}"
