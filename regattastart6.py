@@ -149,19 +149,10 @@ def finish_recording(camera, mp4_path, video_delay, num_video, video_dur, start_
         t2 = dt.datetime.now()
         start_time = dt.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) + dt.timedelta(seconds=start_time_sec)
 
-        #while (dt.datetime.now() - t2).seconds < (60 * video_dur):
-        #    elapsed_time = (dt.datetime.now() - start_time)
-        #    camera.annotate_text = f"{dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Seconds since first start: {elapsed_time.seconds}"
-        #    camera.wait_recording(0.5)
-
-        # Annotate the video duration
-        annotate_video_duration(camera, start_time_sec)
-
         while (dt.datetime.now() - t2).seconds < (60 * video_dur):
-            elapsed_time = (dt.datetime.now() - start_time)
-            camera.annotate_text = f"{dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Seconds since first start: {elapsed_time.seconds}"
+            annotate_video_duration(camera, start_time_sec)
+            #camera.annotate_text = f"{dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Seconds since first start: {elapsed_time.seconds}"
             camera.wait_recording(0.5)
-
 
         stop_video_recording(camera)
         convert_video_to_mp4(mp4_path, f"video{i}.h264", f"video{i}.mp4")
@@ -229,7 +220,7 @@ def main():
                             now = dt.datetime.now()
                             seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
                             logger.info("Inside inner loop. seconds_since_midnight=%s", seconds_since_midnight)
-                            camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + "  Seconds since last start: " + str((dt.datetime.now() - t0).seconds)
+                            #camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + "  Seconds since last start: " + str((dt.datetime.now() - t0).seconds)
                             camera.wait_recording(0.5)
                     
                         stop_video_recording(camera)
