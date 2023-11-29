@@ -15,17 +15,29 @@
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Process and store the form data
     $_SESSION["form_data"] = $_POST;
+
     // Execute the Python script
     $command = 'python3 /usr/lib/cgi-bin/regattastart6.py ' . escapeshellarg(json_encode($_POST)) . ' > /var/www/html/output.txt 2>&1 &';
     shell_exec($command);
+    
     echo date('h:i:s') . "<br>";
     echo "execution started";
     sleep(3);
+    
     //exec('python3 /usr/lib/cgi-bin/regattastart6.py ' . escapeshellarg(json_encode($_POST)));
     // Redirect to index.php
     header("Location: index.php");
     exit;
 }
+
+$day = date("l");
+$start_time = "18:25"; // You need to initialize $start_time
+$video_delay = isset($_SESSION["form_data"]["video_delay"]) ? $_SESSION["form_data"]["video_delay"] : "";
+$video_dur = isset($_SESSION["form_data"]["video_dur"]) ? $_SESSION["form_data"]["video_dur"] : "";
+$num_video = isset($_SESSION["form_data"]["num_video"]) ? $_SESSION["form_data"]["num_video"] : "";
+$num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data"]["num_starts"] : "";
+
+
 ?>
 <!DOCTYPE html>
 <html>
@@ -66,24 +78,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </select>
             <p></p>
             <div data-tap-disabled="true">
-            Start Time: <select name = "start_time" id = "start_time">
+            <?php
+                $start_time = isset($_SESSION["form_data"]["start_time"]) ? $_SESSION["form_data"]["start_time"] : "";
+                $steps = 5; // Set to 10, for test set to 5, You can adjust the value of $steps according to your needs
+                $loops = 24 * (60 / $steps); // Define $loops here or wherever it makes sense in your code
+                $current = 0; // Initialize $current
+            ?>
+            Start Time: <select name="start_time" id="start_time">
                 <?php
-                    $hour = date('H');
-                    $steps   = 10; // only edit the minutes value
-                    $current = 0;
-                    $loops   = 24*(60/$steps);
-                    //$loops   = (24-$hour)*(60/$steps);
-                    //for ($i = $hour*(60/$steps); $i < $loops; $i++) {
-                    for ($i = 0; $i < $loops; $i++) {
-                    //    $time = sprintf('%02d:%02d', $i/(60/$steps), $current%60);
-                    $start_time = sprintf('%02d:%02d', $i/(60/$steps), $current%60);
-                    //echo '<option>' . $start_time . '</option>';
-                    echo '<option value="' . $start_time . '">' . $start_time . '</option>';
+                for ($i = 0; $i < $loops; $i++) {
+                    $start_time_option = sprintf('%02d:%02d', $i / (60 / $steps), $current % 60);
+                    $selected = ($start_time == $start_time_option) ? "selected" : ""; // Check if this option should be selected
+                    echo '<option value="' . $start_time_option . '" ' . $selected . '>' . $start_time_option . '</option>';
                     $current += $steps;
-                    }
+                }
                 ?>
             </select>
             <br>
+            <p style="font-size:11px">
+            (First start in case of 2 starts)
             <br>
         </fieldset>
     </div>
@@ -91,28 +104,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <fieldset>
             <legend>Video Setup: </legend>
             <p></p>
-            Duration between start and estimated finish: <select name = "video_delay" id = "video_delay">
-                <option <?php if(isset($video_delay) && $video_delay == "20"){echo "selected=\"selected\"";} ?> value="20">20</option>
-                <option <?php if(isset($video_delay) && $video_delay == "30"){echo "selected=\"selected\"";} ?> value="30">30</option>
-                <option <?php if(isset($video_delay) && $video_delay == "40"){echo "selected=\"selected\"";} ?> value="40">40</option>
-                <option <?php if(isset($video_delay) && $video_delay == "50"){echo "selected=\"selected\"";} ?> value="50">50</option>
-                <option <?php if(isset($video_delay) && $video_delay == "60"){echo "selected=\"selected\"";} ?> value="60">60</option>
-                <option <?php if(isset($video_delay) && $video_delay == "70"){echo "selected=\"selected\"";} ?> value="70">70</option>
-                <option <?php if(isset($video_delay) && $video_delay == "80"){echo "selected=\"selected\"";} ?> value="80">80</option>
-                <option <?php if(isset($video_delay) && $video_delay == "3"){echo "selected=\"selected\"";} ?> value="5">5</option>
+            Duration between start and estimated finish: 
+            <select name = "video_delay" id = "video_delay">
+                <option value="5" <?php if(isset($video_delay) && $video_delay == "5"){echo "selected=\"selected\"";}  ?>>5</option>
+                <option value="20" <?php if(isset($video_delay) && $video_delay == "20"){echo "selected=\"selected\"";} ?>>20</option>
+                <option value="30" <?php if(isset($video_delay) && $video_delay == "30"){echo "selected=\"selected\"";} ?>>30</option>
+                <option value="40" <?php if(isset($video_delay) && $video_delay == "40"){echo "selected=\"selected\"";} ?>>40</option>
+                <option value="50" <?php if(isset($video_delay) && $video_delay == "50"){echo "selected=\"selected\"";} ?>>50</option>
+                <option value="60" <?php if(isset($video_delay) && $video_delay == "60"){echo "selected=\"selected\"";} ?>>60</option>
+                <option value="70" <?php if(isset($video_delay) && $video_delay == "70"){echo "selected=\"selected\"";} ?>>70</option>
+                <option value="80" <?php if(isset($video_delay) && $video_delay == "80"){echo "selected=\"selected\"";} ?>>80</option>
             </select>
             <p></p>
-            Duration for each video: <select name = "video_dur" id = "video_dur">
-                <option <?php if(isset($video_dur) && $video_dur == "10"){echo "selected=\"selected\"";} ?> value="10">10</option>
-                <option <?php if(isset($video_dur) && $video_dur == "15"){echo "selected=\"selected\"";} ?> value="15">15</option>
-                <option <?php if(isset($video_dur) && $video_dur == "20"){echo "selected=\"selected\"";} ?> value="20">20</option>
-                <option <?php if(isset($video_dur) && $video_dur == "30"){echo "selected=\"selected\"";} ?> value="30">30</option>
-                <option <?php if(isset($video_dur) && $video_dur == "50"){echo "selected=\"selected\"";} ?> value="50">50</option>
-                <option <?php if(isset($video_dur) && $video_dur == "60"){echo "selected=\"selected\"";} ?> value="60">60</option>
-                <option <?php if(isset($video_dur) && $video_dur == "2"){echo "selected=\"selected\"";} ?> value="2">2</option>
+            Duration for each video: 
+            <select name = "video_dur" id = "video_dur">
+                <option value="2"  <?php if(isset($video_dur) && $video_dur == "2"){echo "selected=\"selected\"";} ?> value="2">2</option> 
+                <option value="10" <?php if(isset($video_dur) && $video_dur == "10"){echo "selected=\"selected\"";} ?> value="10">10</option>
+                <option value="15" <?php if(isset($video_dur) && $video_dur == "15"){echo "selected=\"selected\"";}?> value="15">15</option>
+                <option value="20" <?php if(isset($video_dur) && $video_dur == "20"){echo "selected=\"selected\"";} ?> value="20">20</option>
+                <option value="30" <?php if(isset($video_dur) && $video_dur == "30"){echo "selected=\"selected\"";} ?> value="30">30</option>
+                <option value="50" <?php if(isset($video_dur) && $video_dur == "50"){echo "selected=\"selected\"";} ?> value="50">50</option>
+                <option value="60" <?php if(isset($video_dur) && $video_dur == "60"){echo "selected=\"selected\"";} ?> value="60">60</option> 
             </select>
             <p></p>
-            Number of video's: <select name = "num_video" id = "num_video">
+            Number of video's: 
+            <select name = "num_video" id = "num_video">
                 <option <?php if(isset($num_video) && $num_video == "9"){echo "selected=\"selected\"";} ?> value="9">9</option>
                 <option <?php if(isset($num_video) && $num_video == "8"){echo "selected=\"selected\"";} ?> value="8">8</option>
                 <option <?php if(isset($num_video) && $num_video == "7"){echo "selected=\"selected\"";} ?> value="7">7</option>
@@ -133,8 +149,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <legend> Setup of 1 or 2 starts </legend>
                 <p></p>
                 Number of starts: <select name="num_starts" id="num_starts">
-                    <option value="1">1</option>
-                    <option value="2">2</option>
+                    <option <?php if(isset($num_starts) && $num_starts == "1"){echo "selected=\"selected\"";} ?> value="1">1</option>
+                    <option <?php if(isset($num_starts) && $num_starts == "2"){echo "selected=\"selected\"";} ?> value="2">2</option>
                 </select>
             </fieldset>
             <p></p>
