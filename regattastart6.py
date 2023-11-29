@@ -210,7 +210,7 @@ def main():
                         logger.info("Inner loop, entering the start sequence block.")
                         start_sequence(camera, signal, start_time_sec, num_starts, photo_path)
                         if num_starts == 2:
-                            start_time_sec = start_time_sec + 5* 60
+                            start_time_sec = start_time_sec + (5 * 60)
                         logger.info(" Wait 2 minutes then stop video recording")
                         t0 = dt.datetime.now()
                         logger.info("start_time_sec= %s, t0= %s",start_time_sec, t0)  #test
@@ -220,7 +220,7 @@ def main():
                             logger.info("Inside inner loop. seconds_since_midnight=%s", seconds_since_midnight)
                             annotate_video_duration(camera, start_time_sec)
                             #camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + "  Seconds since last start: " + str((dt.datetime.now() - t0).seconds)
-                            camera.wait_recording(0.5)
+                            camera.wait_recording(0)
                     
                         stop_video_recording(camera)
                         convert_video_to_mp4(mp4_path, "video0.h264", "video0.mp4")
