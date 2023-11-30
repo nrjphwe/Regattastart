@@ -97,6 +97,7 @@
         $filename = '1a_start_5_min.jpg';
         $imagePath = 'images/' . $filename; // Relative path
         if (file_exists($imagePath)) {
+            $imagePath .= '?' . filemtime($imagePath);
             echo "<br> ------------------------------------------------- <p></p> ";
             echo "<h3> Bild vid varningssignal 5 minuter innan 1a start</h3>";
             echo "<img id='$filename' src='$imagePath' alt='1a_start 5 min picture' width='720' height='480'>";     
@@ -105,6 +106,7 @@
         $filename = '1a_start_4_min.jpg';
         $imagePath = 'images/' . $filename; // Relative path
         if (file_exists($imagePath)) {
+            $imagePath .= '?' . filemtime($imagePath);
             echo "<h3> Signal 4 minuter innan 1a start </h3>";
             echo "<img id='$filename' src='$imagePath' alt='1a_start 4 min picture' width='720' height='480'>";
         }
@@ -112,6 +114,7 @@
         $filename = '1a_start_1_min.jpg';
         $imagePath = 'images/' . $filename; // Relative path
         if (file_exists($imagePath)) {
+            $imagePath .= '?' . filemtime($imagePath);
             echo "<h3> Signal 1 minuter innan 1a start </h3>";
             echo "<img id='$filename' src='$imagePath' alt='1a_start 1 min picture' width='720' height='480'>";
         }
@@ -119,6 +122,7 @@
         $filename = '1a_start_Start.jpg';
         $imagePath = 'images/' . $filename; // Relative path
         if (file_exists($imagePath)) {
+            $imagePath .= '?' . filemtime($imagePath);
             echo "<h3> Foto vid 1a start </h3>";
             echo "<img id='$filename' src='$imagePath' alt='1a start picture' width='720' height='480'>";
         }
@@ -128,6 +132,7 @@
         $filename = '2a_start_5_min.jpg';
         $imagePath = 'images/' . $filename; // Relative path
         if (file_exists($imagePath)) {
+            $imagePath .= '?' . filemtime($imagePath);
             echo "<h3> Bilder tagna vid varje signal innan 2a start  </h3> ";
             echo "<br> ------------------------------------------------- <p></p> ";
             echo "<h3> Bild vid varningssignal 5 minuter innan 2a start</h3>";
@@ -137,6 +142,7 @@
         $filename = '2a_start_4_min.jpg';
         $imagePath = 'images/' . $filename; // Relative path
         if (file_exists($imagePath)) {
+            $imagePath .= '?' . filemtime($imagePath);
             echo "<h3> Signal 4 minuter innan 2a start </h3>";
             echo "<img id='$filename' src='$imagePath' alt='2a_start 4 min picture' width='720' height='480'>";
         }
@@ -144,6 +150,7 @@
         $filename = '2a_start_1_min.jpg';
         $imagePath = 'images/' . $filename; // Relative path
         if (file_exists($imagePath)) {
+            $imagePath .= '?' . filemtime($imagePath);
             echo "<h3> Signal 1 minuter innan 2a start </h3>";
             echo "<img id='$filename' src='$imagePath' alt='2a_start 1 min picture' width='720' height='480'>";
         }
@@ -151,6 +158,7 @@
         $filename = '2a_start_Start.jpg';
         $imagePath = 'images/' . $filename; // Relative path
         if (file_exists($imagePath)) {
+            $imagePath .= '?' . filemtime($imagePath);
             echo "<h3> Foto vid 2a start </h3>";
             echo "<img id='$filename' src='$imagePath' alt='2a start picture' width='720' height='480'>";
         }
