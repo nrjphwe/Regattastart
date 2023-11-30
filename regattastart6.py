@@ -138,7 +138,7 @@ def start_sequence(camera, signal, start_time_sec, num_starts, photo_path):
 
 def finish_recording(camera, mp4_path, video_delay, num_video, video_dur, start_time_sec):
     # Wait for finish, when the next video will start (delay)
-    time.sleep((video_delay - 2) * 60)  # Convert delay (minus 2 minutes after start) to seconds 
+    time.sleep(video_delay -2 * 60)  # Convert delay (minus 2 minutes after start) to seconds 
 
     # Result video, chopped into numeral videos with duration at "video_dur"
     stop = num_video + 1
