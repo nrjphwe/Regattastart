@@ -1,6 +1,7 @@
 #!/usr/bin/python3 -u
 import os
 import sys
+print(sys.path)
 import cgitb
 import time
 from datetime import datetime
@@ -139,6 +140,7 @@ def start_sequence(camera, signal, start_time_sec, num_starts, photo_path):
                     logger.info(f"  Start_sequence, seconds_since_midnight: {seconds_since_midnight}, start_time_sec: {start_time_sec}")
         logger.info(f"  Start_sequence, End of iteration: {i}")
 
+# image recognition
 def is_sailboat_visible(frame):
     # Implement your sailboat detection logic here
     # This could involve using a pre-trained model or custom logic
@@ -153,7 +155,7 @@ def finish_recording(camera, mp4_path, video_delay, num_video, video_dur, start_
     t2 = dt.datetime.now()  
     start_time = dt.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) + dt.timedelta(seconds=start_time_sec)
     while (dt.datetime.now() - t2).seconds < (60 * video_dur):
-        
+
         start_video_recording(camera, mp4_path, f"video{i}.h264")
         while True:
             # Capture a frame
