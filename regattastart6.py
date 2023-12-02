@@ -1,7 +1,6 @@
 #!/usr/bin/python3 -u
 import os
 import sys
-print(sys.path)
 import cgitb
 import time
 from datetime import datetime
@@ -12,6 +11,7 @@ import json
 
 # image recognition
 import cv2
+print(cv2.__file__)
 
 import subprocess
 import RPi.GPIO as GPIO
