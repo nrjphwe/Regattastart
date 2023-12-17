@@ -1,4 +1,4 @@
-#!/usr/bin/python3 
+#!/usr/bin/python3
 import cv2
 
 # Load the pre-trained object detection model
