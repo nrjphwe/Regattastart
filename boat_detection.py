@@ -1,5 +1,9 @@
 #!/usr/bin/python3
+import sys
+sys.path.append('/home/pi/opencv/build/lib/python3')
 import cv2
+print(sys.path)
+print(sys.executable)
 import numpy as np
 
 # Load the pre-trained object detection model
