@@ -5,6 +5,7 @@ import cv2
 print(sys.path)
 print(sys.executable)
 import numpy as np
+# nonsense
 
 # Load the pre-trained object detection model
 # YOLO (You Only Look Once) 
@@ -18,7 +19,7 @@ with open('../darknet/data/coco.names', 'r') as f:
 layer_names = net.getUnconnectedOutLayersNames()
 
 # Initialize the camera
-cap = cv2.VideoCapture(0)  # 0 for default camera
+cap = cv2.VideoCapture('video0.mp4')  # 0 for default camera
 
 while True:
     ret, frame = cap.read()
