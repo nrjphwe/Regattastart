@@ -148,7 +148,7 @@ def is_sailboat_visible(frame):
     return True
 
 
-def finish_recording(camera, mp4_path, video_delay, num_video, video_dur, start_time_sec):
+def finish_recording(camera, mp4_path, video_delay, video_dur, start_time_sec):
     # Wait for finish, when the next video will start (delay)
     time.sleep((video_delay - 2) * 60)  # Convert delay (minus 2 minutes after start) to seconds 
     
@@ -156,7 +156,7 @@ def finish_recording(camera, mp4_path, video_delay, num_video, video_dur, start_
     start_time = dt.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) + dt.timedelta(seconds=start_time_sec)
     while (dt.datetime.now() - t2).seconds < (60 * video_dur):
 
-        start_video_recording(camera, mp4_path, f"video{i}.h264")
+        start_video_recording(camera, mp4_path, f"video1.h264")
         while True:
             # Capture a frame
             frame = camera.capture()
@@ -171,7 +171,7 @@ def finish_recording(camera, mp4_path, video_delay, num_video, video_dur, start_
                 stop_video_recording(camera)
                 break  # Exit the inner loop
 
-            convert_video_to_mp4(mp4_path, f"video{i}.h264", f"video{i}.mp4")
+            convert_video_to_mp4(mp4_path, f"video1.h264", f"video1.mp4")
         logger.info("This was the last video =====")
 
 def main():
