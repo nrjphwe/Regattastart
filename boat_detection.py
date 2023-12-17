@@ -1,9 +1,10 @@
 #!/usr/bin/python3
 import cv2
+import numpy as np
 
 # Load the pre-trained object detection model
 # YOLO (You Only Look Once) 
-net = cv2.dnn.readNet('yolov3.weights', 'yolov3.cfg')
+net = cv2.dnn.readNet('yolov3.weights', '/home/pi/opencv/build/yolov3.cfg')
 
 # Load COCO names (class labels)
 with open('coco.names', 'r') as f:
