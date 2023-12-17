@@ -7,7 +7,7 @@ import numpy as np
 net = cv2.dnn.readNet('../darknet/yolov3.weights', '../darknet/cfg/yolov3.cfg')
 
 # Load COCO names (class labels)
-with open('coco.names', 'r') as f:
+with open('../darknet/data/coco.names', 'r') as f:
     classes = f.read().strip().split('\n')
 
 # Load the configuration and weights for YOLO
