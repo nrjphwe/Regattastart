@@ -42,6 +42,7 @@ while True:
     cv2.imshow('Boat Detection', frame)
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
+#  Pressing 'q' will exit the script.
 # After loop, the script release camera and closes the OpenCV windows
 cap.release()
 cv2.destroyAllWindows()
