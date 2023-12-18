@@ -5,7 +5,10 @@ import cv2
 print(sys.path)
 print(sys.executable)
 import numpy as np
-# nonsense
+
+def on_key(event):
+    if event == ord('q'):
+        cv2.destroyAllWindows()
 
 # Load the pre-trained object detection model
 # YOLO (You Only Look Once) 
@@ -43,10 +46,15 @@ while True:
             if confidence > 0.5 and classes[class_id] == 'boat':
                 # Implement your logic to start/stop recording here
                 print("Boat detected!")
+
     # Display the frame with the detection results.
     cv2.imshow('Boat Detection', frame)
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
+
+    # Wait for a key event (100 ms delay)
+    key = cv2.waitKey(100)
+    if key != -1:
+        on_key(key)
+    
 #  Pressing 'q' will exit the script.
 # After loop, the script release camera and closes the OpenCV windows
 cap.release()
