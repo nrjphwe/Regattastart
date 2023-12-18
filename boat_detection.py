@@ -49,7 +49,7 @@ while True:
             confidence = scores[class_id]
             
             #if confidence > 0.5 and classes[class_id] == 'boat':
-            if confidence > 0.3:
+            if confidence > 0.1:
                 print(f"Class: {classes[class_id]}, Confidence: {confidence}")
                 # Implement your logic to start/stop recording here
                 print("Boat detected!")
