@@ -26,6 +26,7 @@ cap = cv2.VideoCapture('video0.mp4')  # 0 for default camera
 
 while True:
     ret, frame = cap.read()
+    frame = cv2.resize(frame, (640, 480))
     if not ret or frame is None:
         break
 
