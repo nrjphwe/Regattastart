@@ -49,7 +49,7 @@ while True:
             confidence = scores[class_id]
 
             # Visualize the detected bounding box
-            if confidence > 0.4 and classes[class_id] == 'boat':
+            if confidence > 0.5 and classes[class_id] == 'boat':
                 print(f"Class: {classes[class_id]}, Confidence: {confidence}")
                 h, w, _ = frame.shape
                 x, y, w, h = map(int, detection[0:4] * [w, h, w, h])
