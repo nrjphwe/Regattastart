@@ -12,7 +12,7 @@ def on_key(event):
 
 # Load the pre-trained object detection model
 # YOLO (You Only Look Once) 
-net = cv2.dnn.readNet('../darknet/yolov3.weights', '../darknet/cfg/yolov3-tiny.cfg')
+net = cv2.dnn.readNet('../darknet/yolov3-tiny.weights', '../darknet/cfg/yolov3-tiny.cfg')
 
 # Load COCO names (class labels)
 with open('../darknet/data/coco.names', 'r') as f:
@@ -35,7 +35,9 @@ while True:
     # Perform object detection, preprocess the frame for object 
     # detection using YOLO. The frame is converted into a blob, and
     # the YOLO model is fed with this blob to obtain the detection results.
-    blob = cv2.dnn.blobFromImage(frame, 0.00392, (416, 416), (0, 0, 0), True, crop=False)
+    #blob = cv2.dnn.blobFromImage(frame, 0.00392, (416, 416), (0, 0, 0), True, crop=False)
+    blob = cv2.dnn.blobFromImage(frame, scalefactor=0.00392, size=(416, 416), swapRB=True, crop=False)
+
     net.setInput(blob)
     outs = net.forward(layer_names)
 
@@ -46,7 +48,9 @@ while True:
             class_id = np.argmax(scores)
             confidence = scores[class_id]
             
-            if confidence > 0.5 and classes[class_id] == 'boat':
+            #if confidence > 0.5 and classes[class_id] == 'boat':
+            if confidence > 0.3:
+                print(f"Class: {classes[class_id]}, Confidence: {confidence}")
                 # Implement your logic to start/stop recording here
                 print("Boat detected!")
 
