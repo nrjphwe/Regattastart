@@ -26,6 +26,9 @@ cap = cv2.VideoCapture('video0.mp4')  # 0 for default camera
 
 while True:
     ret, frame = cap.read()
+    if not ret or frame is None:
+        break
+
     # ret is a boolean indicating whether the frame was successfully 
     # captured and frame is the captured frame
 
