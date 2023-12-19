@@ -22,7 +22,8 @@ with open('../darknet/data/coco.names', 'r') as f:
 layer_names = net.getUnconnectedOutLayersNames()
 
 # Initialize the camera
-cap = cv2.VideoCapture('video0.mp4')  # 0 for default camera
+#cap = cv2.VideoCapture('video0.mp4')  # 0 for default camera
+cap = cv2.VideoCapture(0)  # 0 for default camera
 
 while True:
     ret, frame = cap.read()
