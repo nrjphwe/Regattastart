@@ -5,10 +5,11 @@ import cv2
 print(sys.path)
 print(sys.executable)
 import numpy as np
+import keyboard  # Import the keyboard module
 
-def on_key(event):
-    if key == 113: # 113 is the key code for 'q'
-        cv2.destroyAllWindows()
+
+def on_key():
+    cv2.destroyAllWindows()
 
 # Load the pre-trained object detection model
 # YOLO (You Only Look Once) 
@@ -71,10 +72,13 @@ while True:
         # Display the frame with the detection results.
         cv2.imshow('Boat Detection', frame)
 
-    # Wait for a key event (100 ms delay)
-    key = cv2.waitKeyEx(100)
+    # Use keyboard.is_pressed() to check if the 'q' key is pressed
+    if keyboard.is_pressed('q'):
+        on_key()
+
+    key = cv2.waitKey(1)
     if key != -1:
-        on_key(key)
+        on_key()
     
 #  Pressing 'q' will exit the script.
 # After loop, the script release camera and closes the OpenCV windows
