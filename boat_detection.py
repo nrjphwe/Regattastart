@@ -87,6 +87,7 @@ while True:
 
         if recording and not boat_detected:
             # Pause video recording
+            time.sleep(3)
             recording = False
             if video_writer is not None:
                 video_writer.release()
