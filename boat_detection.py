@@ -25,7 +25,7 @@ frame_counter = 0
 # Flag to indicate if recording is in progress
 recording = False
 video_writer = None
-
+fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # H.264 codec with MP4 container
 
 while True:
     # ret is a boolean indicating whether the frame was successfully 
@@ -73,7 +73,8 @@ while True:
                     # Trigger video recording
                     if not recording:
                         recording = True
-                        video_writer = cv2.VideoWriter('output.avi', cv2.VideoWriter_fourcc(*'XVID'), 20, (640, 480))
+                        #video_writer = cv2.VideoWriter('output.avi', cv2.VideoWriter_fourcc(*'XVID'), 20, (640, 480))
+                        video_writer = cv2.VideoWriter('output.mp4', fourcc, 20.0, (640, 480))
                         boat_detected = True
 
         if recording and not boat_detected:
@@ -86,7 +87,8 @@ while True:
         elif not recording and boat_detected:
             # Resume video recording
             recording = True
-            video_writer = cv2.VideoWriter('output.avi', cv2.VideoWriter_fourcc(*'XVID'), 20, (640, 480))
+            #video_writer = cv2.VideoWriter('output.avi', cv2.VideoWriter_fourcc(*'XVID'), 20, (640, 480))
+            video_writer = cv2.VideoWriter('output.mp4', fourcc, 20.0, (640, 480))
 
         if recording:
             video_writer.write(frame)
