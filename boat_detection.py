@@ -21,18 +21,21 @@ layer_names = net.getUnconnectedOutLayersNames()
 # Initialize the camera
 #cap = cv2.VideoCapture('video0.mp4')  # 0 for default camera
 cap = cv2.VideoCapture(0)  # 0 for default camera
-#cap = cv2.VideoCapture('video0.mp4')  # 0 for default camera
 
 # Set the frame skipping factor
 frame_skip_factor = 1
 frame_counter = 0
+
+# Flag to indicate if recording is in progress
+recording = False
+video_writer = None
+
 
 while True:
     # ret is a boolean indicating whether the frame was successfully 
     ret, frame = cap.read()
     # captured and frame is the captured frame
     frame = cv2.resize(frame, (640, 480))
-    #frame = cv2.resize(frame, (1280, 720))
     if not ret or frame is None:
         break
 
@@ -59,13 +62,35 @@ while True:
                 class_id = np.argmax(scores)
                 confidence = scores[class_id]
 
-                # Visualize the detected bounding box
+               
                 if confidence > 0.2 and classes[class_id] == 'boat':
                     print(f"Class: {classes[class_id]}, Confidence: {confidence}")
+                    # Visualize the detected bounding box
                     h, w, _ = frame.shape
                     x, y, w, h = map(int, detection[0:4] * [w, h, w, h])
                     #cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
                     cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
+
+                    # Trigger video recording
+                    if not recording:
+                        recording = True
+                        video_writer = cv2.VideoWriter('output.avi', cv2.VideoWriter_fourcc(*'XVID'), 20, (640, 480))
+                        boat_detected = True
+
+        if recording and not boat_detected:
+            # Pause video recording
+            recording = False
+            if video_writer is not None:
+                video_writer.release()
+                video_writer = None
+
+        elif not recording and boat_detected:
+            # Resume video recording
+            recording = True
+            video_writer = cv2.VideoWriter('output.avi', cv2.VideoWriter_fourcc(*'XVID'), 20, (640, 480))
+
+        if recording:
+            video_writer.write(frame)
 
         # Display the frame with the detection results.
         cv2.imshow('Boat Detection', frame)
@@ -76,4 +101,8 @@ while True:
 #  Pressing 'q' will exit the script.
 # After loop, the script release camera and closes the OpenCV windows
 cap.release()
+
+if video_writer is not None:
+    video_writer.release()
+
 cv2.destroyAllWindows()
