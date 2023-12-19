@@ -7,7 +7,7 @@ print(sys.executable)
 import numpy as np
 
 def on_key(event):
-    if event == ord('q'):
+    if key == 113: # 113 is the key code for 'q'
         cv2.destroyAllWindows()
 
 # Load the pre-trained object detection model
@@ -61,7 +61,7 @@ while True:
                 confidence = scores[class_id]
 
                 # Visualize the detected bounding box
-                if confidence > 0.5 and classes[class_id] == 'boat':
+                if confidence > 0.4 and classes[class_id] == 'boat':
                     print(f"Class: {classes[class_id]}, Confidence: {confidence}")
                     h, w, _ = frame.shape
                     x, y, w, h = map(int, detection[0:4] * [w, h, w, h])
@@ -72,7 +72,7 @@ while True:
         cv2.imshow('Boat Detection', frame)
 
     # Wait for a key event (100 ms delay)
-    key = cv2.waitKey(100)
+    key = cv2.waitKeyEx(100)
     if key != -1:
         on_key(key)
     
