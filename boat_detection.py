@@ -68,8 +68,8 @@ while True:
                     #cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
                     cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
 
-    # Display the frame with the detection results.
-    cv2.imshow('Boat Detection', frame)
+        # Display the frame with the detection results.
+        cv2.imshow('Boat Detection', frame)
 
     # Wait for a key event (100 ms delay)
     key = cv2.waitKey(100)
