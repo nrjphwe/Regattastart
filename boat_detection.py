@@ -8,8 +8,8 @@ import numpy as np
 
 # Load the pre-trained object detection model
 # YOLO (You Only Look Once) 
-#net = cv2.dnn.readNet('../darknet/yolov3-tiny.weights', '../darknet/cfg/yolov3-tiny.cfg')
-net = cv2.dnn.readNet('../darknet/yolov3.weights', '../darknet/cfg/yolov3.cfg')
+net = cv2.dnn.readNet('../darknet/yolov3-tiny.weights', '../darknet/cfg/yolov3-tiny.cfg')
+#net = cv2.dnn.readNet('../darknet/yolov3.weights', '../darknet/cfg/yolov3.cfg')
 
 # Load COCO names (class labels)
 with open('../darknet/data/coco.names', 'r') as f:
