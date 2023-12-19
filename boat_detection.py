@@ -25,38 +25,48 @@ layer_names = net.getUnconnectedOutLayersNames()
 #cap = cv2.VideoCapture('video0.mp4')  # 0 for default camera
 cap = cv2.VideoCapture(0)  # 0 for default camera
 
+# Set the frame skipping factor, (to reduce latency)
+frame_skip_factor = 5
+frame_counter = 0
+
 while True:
+    # ret is a boolean indicating whether the frame was successfully 
     ret, frame = cap.read()
+    # captured and frame is the captured frame
     frame = cv2.resize(frame, (640, 480))
     if not ret or frame is None:
         break
 
-    # ret is a boolean indicating whether the frame was successfully 
-    # captured and frame is the captured frame
+    # Increment the frame counter
+    frame_counter += 1
 
-    # Perform object detection, preprocess the frame for object 
-    # detection using YOLO. The frame is converted into a blob, and
-    # the YOLO model is fed with this blob to obtain the detection results.
-    #blob = cv2.dnn.blobFromImage(frame, 0.00392, (416, 416), (0, 0, 0), True, crop=False)
-    blob = cv2.dnn.blobFromImage(frame, scalefactor=0.00392, size=(416, 416), swapRB=True, crop=False)
+    # Only process frames that meet the skipping criteria
+    if frame_counter % frame_skip_factor == 0:
+        # Reset the frame counter
+        frame_counter = 0
 
-    net.setInput(blob)
-    outs = net.forward(layer_names)
+        # Perform object detection, preprocess the frame for object 
+        # detection using YOLO. The frame is converted into a blob, and
+        # the YOLO model is fed with this blob to obtain the detection results.
+        #blob = cv2.dnn.blobFromImage(frame, 0.00392, (416, 416), (0, 0, 0), True, crop=False)
+        blob = cv2.dnn.blobFromImage(frame, scalefactor=0.00392, size=(416, 416), swapRB=True, crop=False)
+        net.setInput(blob)
+        outs = net.forward(layer_names)
 
-    # Process the detection results
-    for out in outs:
-        for detection in out:
-            scores = detection[5:]
-            class_id = np.argmax(scores)
-            confidence = scores[class_id]
+        # Process the detection results
+        for out in outs:
+            for detection in out:
+                scores = detection[5:]
+                class_id = np.argmax(scores)
+                confidence = scores[class_id]
 
-            # Visualize the detected bounding box
-            if confidence > 0.5 and classes[class_id] == 'boat':
-                print(f"Class: {classes[class_id]}, Confidence: {confidence}")
-                h, w, _ = frame.shape
-                x, y, w, h = map(int, detection[0:4] * [w, h, w, h])
-                #cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
-                cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
+                # Visualize the detected bounding box
+                if confidence > 0.5 and classes[class_id] == 'boat':
+                    print(f"Class: {classes[class_id]}, Confidence: {confidence}")
+                    h, w, _ = frame.shape
+                    x, y, w, h = map(int, detection[0:4] * [w, h, w, h])
+                    #cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+                    cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
 
     # Display the frame with the detection results.
     cv2.imshow('Boat Detection', frame)
