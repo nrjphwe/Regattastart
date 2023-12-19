@@ -5,7 +5,6 @@ import cv2
 print(sys.path)
 print(sys.executable)
 import numpy as np
-import keyboard  # Import the keyboard module
 
 # Load the pre-trained object detection model
 # YOLO (You Only Look Once) 
@@ -23,7 +22,7 @@ layer_names = net.getUnconnectedOutLayersNames()
 cap = cv2.VideoCapture(0)  # 0 for default camera
 
 # Set the frame skipping factor, frame_skip_factor = how many frames are skipped before processing the next frame
-frame_skip_factor = 1
+frame_skip_factor = 0
 frame_counter = 0
 
 while True:
