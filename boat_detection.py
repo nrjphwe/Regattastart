@@ -55,7 +55,8 @@ while True:
                 print(f"Class: {classes[class_id]}, Confidence: {confidence}")
                 h, w, _ = frame.shape
                 x, y, w, h = map(int, detection[0:4] * [w, h, w, h])
-                cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+                #cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+                cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
 
     # Display the frame with the detection results.
     cv2.imshow('Boat Detection', frame)
