@@ -32,10 +32,10 @@ video_writer = None
 today = time.strftime("%Y%m%d-%H%M%S")
 fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # H.264 codec with MP4 container
 fps_out = 20.0
-out = cv2.VideoWriter('output.mp4', fourcc, fps_out, (640, 480))  # Adjust parameters as needed
+#out = cv2.VideoWriter('output.mp4', fourcc, fps_out, (640, 480))  # Adjust parameters as needed
 
 # Use context managers to automatically release resources
-with cv2.VideoWriter('output.mp4', fourcc, 20.0, (640, 480)) as video_writer:
+with cv2.VideoWriter('output.mp4', fourcc, fps_out, (640, 480)) as video_writer:
 
     while True:
         # ret is a boolean indicating whether the frame was successfully 
