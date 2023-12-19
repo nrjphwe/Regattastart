@@ -21,8 +21,8 @@ layer_names = net.getUnconnectedOutLayersNames()
 #cap = cv2.VideoCapture('video0.mp4')  # 0 for default camera
 cap = cv2.VideoCapture(0)  # 0 for default camera
 
-# Set the frame skipping factor, frame_skip_factor = how many frames are skipped before processing the next frame
-frame_skip_factor = 0
+# Set the frame skipping factor
+frame_skip_factor = 2
 frame_counter = 0
 
 while True:
