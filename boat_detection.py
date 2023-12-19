@@ -2,14 +2,10 @@
 import sys
 sys.path.append('/home/pi/opencv/build/lib/python3')
 import cv2
-print(sys.path)
-print(sys.executable)
 import numpy as np
 
-# Load the pre-trained object detection model
-# YOLO (You Only Look Once) 
+# Load the pre-trained object detection model -- YOLO (You Only Look Once) 
 net = cv2.dnn.readNet('../darknet/yolov3-tiny.weights', '../darknet/cfg/yolov3-tiny.cfg')
-#net = cv2.dnn.readNet('../darknet/yolov3.weights', '../darknet/cfg/yolov3.cfg')
 
 # Load COCO names (class labels)
 with open('../darknet/data/coco.names', 'r') as f:
@@ -54,6 +50,9 @@ while True:
         blob = cv2.dnn.blobFromImage(frame, scalefactor=0.00392, size=(416, 416), swapRB=True, crop=False)
         net.setInput(blob)
         outs = net.forward(layer_names)
+
+        # Variable to check if any boat is detected in the current frame
+        boat_detected = False
 
         # Process the detection results
         for out in outs:
