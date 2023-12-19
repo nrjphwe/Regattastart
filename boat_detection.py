@@ -32,7 +32,6 @@ video_writer = None
 today = time.strftime("%Y%m%d-%H%M%S")
 fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # H.264 codec with MP4 container
 fps_out = 20.0
-#out = cv2.VideoWriter('output.mp4', fourcc, fps_out, (640, 480))  # Adjust parameters as needed
 
 # Initialize video writer outside the loop
 video_writer = cv2.VideoWriter('output.mp4', fourcc, fps_out, (640, 480))
@@ -40,7 +39,7 @@ video_writer = cv2.VideoWriter('output.mp4', fourcc, fps_out, (640, 480))
 while True:
     # ret is a boolean indicating whether the frame was successfully 
     ret, frame = cap.read()
-    # captured and frame is the captured frame
+    # frame is the captured frame
     frame = cv2.resize(frame, (640, 480))
     if not ret or frame is None:
         break
@@ -98,11 +97,11 @@ while True:
             recording = True
             video_writer = cv2.VideoWriter('output.mp4', fourcc, fps_out, (640, 480))
 
-        if recording:
-            video_writer.write(frame)
+    if recording:
+        video_writer.write(frame)
 
-        # Display the frame with the detection results.
-        cv2.imshow('Boat Detection', frame)
+    # Display the frame with the detection results.
+    cv2.imshow('Boat Detection', frame)
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
