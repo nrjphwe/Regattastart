@@ -123,13 +123,15 @@ with picamera.PiCamera() as camera:
             elif not recording and boat_detected:
                 # Resume video recording
                 recording = True
+                print(time.time(), "Before video_writer")
                 video_writer = cv2.VideoWriter('output.mp4', fourcc, fps_out, frame_size)
                 camera.wait_recording(5)
+                print(time.time(),"After wait 5 sec")
             
-            print("Before video writing")
+            print(time.time(),"Before video writing")
             if recording:
                 video_writer.write(frame)
-            print("After video writing")
+            print(time.time(),"After video writing")
 
             # Display the frame with the detection results.
             cv2.imshow('Boat Detection', frame)
