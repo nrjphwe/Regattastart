@@ -55,9 +55,9 @@ with picamera.PiCamera() as camera:
     while True:
         # Open the PiCamera as a stream and convert it to a numpy array
         stream = picamera.array.PiRGBArray(camera, size=frame_size )
-        print("Before frame capture")
+        print(today, "Before frame capture")
         camera.capture(stream, format='bgr')
-        print("After frame capture")
+        print(today, "After frame capture")
 
         frame = np.copy(stream.array)
         #frame = stream.array
@@ -73,11 +73,11 @@ with picamera.PiCamera() as camera:
             # detection using YOLO. The frame is converted into a blob, and
             # the YOLO model is fed with this blob to obtain the detection results.
             #blob = cv2.dnn.blobFromImage(frame, 0.00392, (416, 416), (0, 0, 0), True, crop=False)
-            print("Before object detection")
+            print(today, "Before object detection")
             blob = cv2.dnn.blobFromImage(frame, scalefactor=0.00392, size=(416, 416), swapRB=True, crop=False)
             net.setInput(blob)
             outs = net.forward(layer_names)
-            print("After object detection")
+            print(today, "After object detection")
 
             # Variable to check if any boat is detected in the current frame
             boat_detected = False
@@ -93,7 +93,7 @@ with picamera.PiCamera() as camera:
                         # Update the time when the last boat was detected
                         last_detection_time = time.time()
 
-                        print(f"Class: {classes[class_id]}, Confidence: {confidence}")
+                        print(today, f"Class: {classes[class_id]}, Confidence: {confidence}")
                         # Visualize the detected bounding box
                         h, w, _ = frame.shape
                         x, y, w, h = map(int, detection[0:4] * [w, h, w, h])
@@ -102,8 +102,10 @@ with picamera.PiCamera() as camera:
                         cv2.rectangle(frame, (int(x), int(y)), (int(x + w), int(y + h)), (0, 255, 0), 2, cv2.LINE_AA)
 
                         # Trigger video recording
+                        print(today,"Before video writer, line 105")
                         if video_writer is None:
                             video_writer = cv2.VideoWriter('output.mp4', fourcc, fps_out, (640, 480))
+                            print(today,"After video writer, line 108")
 
                         # Trigger video recording
                         if not recording:
@@ -123,15 +125,15 @@ with picamera.PiCamera() as camera:
             elif not recording and boat_detected:
                 # Resume video recording
                 recording = True
-                print(time.time(), "Before video_writer")
+                print(today, "Before video_writer, line 127")
                 video_writer = cv2.VideoWriter('output.mp4', fourcc, fps_out, frame_size)
                 camera.wait_recording(5)
-                print(time.time(),"After wait 5 sec")
+                print(today,"After wait 5 sec")
             
-            print(time.time(),"Before video writing")
+            print(today,"Before video writing")
             if recording:
                 video_writer.write(frame)
-            print(time.time(),"After video writing")
+            print(today,"After video writing")
 
             # Display the frame with the detection results.
             cv2.imshow('Boat Detection', frame)
