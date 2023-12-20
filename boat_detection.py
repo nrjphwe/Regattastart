@@ -41,8 +41,9 @@ with picamera.PiCamera() as camera:
 
     while True:
         # Open the PiCamera as a stream and convert it to a numpy array
-        with picamera.array.PiRGBArray(camera) as stream:
-            camera.capture(stream, format='bgr')
+        stream = picamera.array.PiRGBArray(camera)
+        camera.capture(stream, format='bgr')
+        frame = stream.array
 
         # Increment the frame counter
         frame_counter += 1
