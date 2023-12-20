@@ -74,9 +74,11 @@ with picamera.PiCamera() as camera:
             # detection using YOLO. The frame is converted into a blob, and
             # the YOLO model is fed with this blob to obtain the detection results.
             #blob = cv2.dnn.blobFromImage(frame, 0.00392, (416, 416), (0, 0, 0), True, crop=False)
+            print("Before object detection")
             blob = cv2.dnn.blobFromImage(frame, scalefactor=0.00392, size=(416, 416), swapRB=True, crop=False)
             net.setInput(blob)
             outs = net.forward(layer_names)
+            print("After object detection")
 
             # Variable to check if any boat is detected in the current frame
             boat_detected = False
@@ -120,10 +122,12 @@ with picamera.PiCamera() as camera:
                 # Resume video recording
                 recording = True
                 video_writer = cv2.VideoWriter('output.mp4', fourcc, fps_out, frame_size )
-
+            
+            print("Before video writing")
             if recording:
                 video_writer.write(frame)
-
+            print("After video writing")
+            
             # Display the frame with the detection results.
             cv2.imshow('Boat Detection', frame)
 
