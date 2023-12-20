@@ -52,7 +52,8 @@ with picamera.PiCamera() as camera:
         # Open the PiCamera as a stream and convert it to a numpy array
         stream = picamera.array.PiRGBArray(camera)
         camera.capture(stream, format='bgr')
-        frame = stream.array
+        frame = np.copy(stream.array)
+        #frame = stream.array
 
         # Increment the frame counter
         frame_counter += 1
@@ -90,10 +91,10 @@ with picamera.PiCamera() as camera:
                         x, y, w, h = map(int, detection[0:4] * [w, h, w, h])
 
                         # Modify the original frame
-                        cv2.rectangle(frame, (int(x), int(y)), (int(x + w), int(y + h)), (0, 0, 255), 2, cv2.LINE_AA)
+                        cv2.rectangle(frame, (int(x), int(y)), (int(x + w), int(y + h)), (0, 255, 0), 2, cv2.LINE_AA)
 
                         #cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
-                        #cv2.rectangle(frame, (int(x), int(y)), (int(x + w), int(y + h)), (0, 0, 255), 2, cv2.LINE_AA)
+
 
                         # Trigger video recording
                         if not recording:
