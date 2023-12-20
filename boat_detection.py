@@ -42,15 +42,14 @@ fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # H.264 codec with MP4 container
 fps_out = 25.0
 frame_size = (640, 480)
 
-# Initialize PiCamera outside the loop
+# Initialize video writer outside the loop
+#video_writer = None
+video_writer = cv2.VideoWriter('output.mp4', fourcc, fps_out, frame_size)
 
+# Initialize PiCamera outside the loop
 with picamera.PiCamera() as camera:
     camera.resolution = (640, 480)
-    time.sleep(1)  # Allow the camera to warm up
-
-    # Initialize video writer outside the loop
-    video_writer = None
-    #video_writer = cv2.VideoWriter('output.mp4', fourcc, fps_out, frame_size)
+    time.sleep(2)  # Allow the camera to warm up
     
     while True:
         # Open the PiCamera as a stream and convert it to a numpy array
@@ -58,6 +57,7 @@ with picamera.PiCamera() as camera:
         print("Before frame capture")
         camera.capture(stream, format='bgr')
         print("After frame capture")
+
         frame = np.copy(stream.array)
         #frame = stream.array
 
@@ -108,7 +108,7 @@ with picamera.PiCamera() as camera:
                         if not recording:
                             recording = True
                             # Create a deep copy of the frame for video recording
-                            video_frame = np.copy(frame)
+                            #video_frame = np.copy(frame)
                             boat_detected = True
 
             # Check for inactivity timeout
@@ -122,6 +122,7 @@ with picamera.PiCamera() as camera:
             elif not recording and boat_detected:
                 # Resume video recording
                 recording = True
+                video_writer = cv2.VideoWriter('output.mp4', fourcc, fps_out, frame_size)
             
             print("Before video writing")
             if recording:
