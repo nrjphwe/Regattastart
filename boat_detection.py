@@ -51,7 +51,7 @@ with picamera.PiCamera() as camera:
 
     while True:
         # Open the PiCamera as a stream and convert it to a numpy array
-        stream = picamera.array.PiRGBArray(camera)
+        stream = picamera.array.PiRGBArray(camera, size=frame_size )
         camera.capture(stream, format='bgr')
         frame = np.copy(stream.array)
         #frame = stream.array
