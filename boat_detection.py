@@ -42,6 +42,7 @@ last_detection_time = time.time()
 today = time.strftime("%Y%m%d-%H%M%S")
 fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # H.264 codec with MP4 container
 fps_out = 25.0
+frame_size = (640, 480)
 
 # Initialize PiCamera outside the loop
 with picamera.PiCamera() as camera:
@@ -101,7 +102,7 @@ with picamera.PiCamera() as camera:
                             recording = True
                             # Create a deep copy of the frame for video recording
                             video_frame = np.copy(frame)
-                            video_writer = cv2.VideoWriter('output.mp4', fourcc, fps_out, (640, 480))
+                            video_writer = cv2.VideoWriter('output.mp4', fourcc, fps_out, frame_size )
                             boat_detected = True
 
             # Check for inactivity timeout
@@ -115,7 +116,7 @@ with picamera.PiCamera() as camera:
             elif not recording and boat_detected:
                 # Resume video recording
                 recording = True
-                video_writer = cv2.VideoWriter('output.mp4', fourcc, fps_out, (640, 480))
+                video_writer = cv2.VideoWriter('output.mp4', fourcc, fps_out, frame_size )
 
             if recording:
                 video_writer.write(frame)
