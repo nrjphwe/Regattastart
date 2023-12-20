@@ -8,6 +8,8 @@ import picamera.array
 import cv2
 import numpy as np
 
+
+
 # Load the pre-trained object detection model -- YOLO (You Only Look Once) 
 net = cv2.dnn.readNet('../darknet/yolov3-tiny.weights', '../darknet/cfg/yolov3-tiny.cfg')
 
@@ -29,6 +31,12 @@ frame_counter = 0
 # Flag to indicate if recording is in progress
 recording = False
 video_writer = None
+
+# Set the timeout duration in seconds
+timeout_duration = 10  # Adjust as needed
+
+# Variable to store the time when the last boat was detected
+last_detection_time = time.time()
 
 #Define the codec
 today = time.strftime("%Y%m%d-%H%M%S")
@@ -73,6 +81,9 @@ with picamera.PiCamera() as camera:
 
                 
                     if confidence > 0.2 and classes[class_id] == 'boat':
+                        # Update the time when the last boat was detected
+                        last_detection_time = time.time()
+
                         print(f"Class: {classes[class_id]}, Confidence: {confidence}")
                         # Visualize the detected bounding box
                         h, w, _ = frame.shape
@@ -92,13 +103,13 @@ with picamera.PiCamera() as camera:
                             video_writer = cv2.VideoWriter('output.mp4', fourcc, fps_out, (640, 480))
                             boat_detected = True
 
-            if recording and not boat_detected:
+            # Check for inactivity timeout
+            if recording and time.time() - last_detection_time > timeout_duration:
                 # Pause video recording
-                time.sleep(3)
                 recording = False
                 if video_writer is not None:
                     video_writer.release()
-                    video_writer = None
+                    video_writer = None 
 
             elif not recording and boat_detected:
                 # Resume video recording
