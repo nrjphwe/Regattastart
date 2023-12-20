@@ -33,7 +33,7 @@ recording = False
 video_writer = None
 
 # Set the timeout duration in seconds
-timeout_duration = 10  # Adjust as needed
+timeout_duration = 5  # Adjust as needed
 
 # Variable to store the time when the last boat was detected
 last_detection_time = time.time()
@@ -41,7 +41,7 @@ last_detection_time = time.time()
 #Define the codec
 today = time.strftime("%Y%m%d-%H%M%S")
 fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # H.264 codec with MP4 container
-fps_out = 20.0
+fps_out = 25.0
 
 # Initialize PiCamera outside the loop
 with picamera.PiCamera() as camera:
