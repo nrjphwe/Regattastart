@@ -18,10 +18,6 @@ with open('../darknet/data/coco.names', 'r') as f:
 # Load the configuration and weights for YOLO
 layer_names = net.getUnconnectedOutLayersNames()
 
-# Initialize the camera
-#cap = cv2.VideoCapture('video0.mp4')  # 0 for default camera
-cap = cv2.VideoCapture(0)  # 0 for default camera
-
 # Set the frame skipping factor
 frame_skip_factor = 2
 frame_counter = 0
@@ -146,7 +142,6 @@ with picamera.PiCamera() as camera:
         
     #  Pressing 'q' will exit the script.
     # After loop, the script release camera and closes the OpenCV windows
-    cap.release()
     if video_writer is not None:
         video_writer.release()
     cv2.destroyAllWindows()
