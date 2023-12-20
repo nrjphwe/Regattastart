@@ -45,9 +45,13 @@ fps_out = 25.0
 frame_size = (640, 480)
 
 # Initialize PiCamera outside the loop
+
 with picamera.PiCamera() as camera:
     camera.resolution = (640, 480)
     time.sleep(2)  # Allow the camera to warm up
+
+    # Initialize video writer outside the loop
+    video_writer = cv2.VideoWriter('output.mp4', fourcc, fps_out, frame_size)
 
     while True:
         # Open the PiCamera as a stream and convert it to a numpy array
@@ -80,7 +84,6 @@ with picamera.PiCamera() as camera:
                     scores = detection[5:]
                     class_id = np.argmax(scores)
                     confidence = scores[class_id]
-
                 
                     if confidence > 0.2 and classes[class_id] == 'boat':
                         # Update the time when the last boat was detected
@@ -93,9 +96,6 @@ with picamera.PiCamera() as camera:
 
                         # Modify the original frame
                         cv2.rectangle(frame, (int(x), int(y)), (int(x + w), int(y + h)), (0, 255, 0), 2, cv2.LINE_AA)
-
-                        #cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
-
 
                         # Trigger video recording
                         if not recording:
@@ -130,8 +130,6 @@ with picamera.PiCamera() as camera:
     #  Pressing 'q' will exit the script.
     # After loop, the script release camera and closes the OpenCV windows
     cap.release()
-
     if video_writer is not None:
         video_writer.release()
-
     cv2.destroyAllWindows()
