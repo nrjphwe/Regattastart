@@ -34,73 +34,75 @@ today = time.strftime("%Y%m%d-%H%M%S")
 fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # H.264 codec with MP4 container
 fps_out = 20.0
 
+# Initialize PiCamera outside the loop
 with picamera.PiCamera() as camera:
     camera.resolution = (640, 480)
     time.sleep(2)  # Allow the camera to warm up
 
 
-while True:
-    frame = np.empty((480, 640, 3), dtype=np.uint8)
-    camera.capture(frame, 'bgr')
+    while True:
+        # Open the PiCamera as a stream and convert it to a numpy array
+        with picamera.array.PiRGBArray(camera) as stream:
+            camera.capture(stream, format='bgr')
 
-    # Increment the frame counter
-    frame_counter += 1
+        # Increment the frame counter
+        frame_counter += 1
 
-    # Only process frames that meet the skipping criteria
-    if frame_counter % frame_skip_factor == 0:
-        frame_counter = 0
+        # Only process frames that meet the skipping criteria
+        if frame_counter % frame_skip_factor == 0:
+            frame_counter = 0
 
-        # Perform object detection, preprocess the frame for object 
-        # detection using YOLO. The frame is converted into a blob, and
-        # the YOLO model is fed with this blob to obtain the detection results.
-        #blob = cv2.dnn.blobFromImage(frame, 0.00392, (416, 416), (0, 0, 0), True, crop=False)
-        blob = cv2.dnn.blobFromImage(frame, scalefactor=0.00392, size=(416, 416), swapRB=True, crop=False)
-        net.setInput(blob)
-        outs = net.forward(layer_names)
+            # Perform object detection, preprocess the frame for object 
+            # detection using YOLO. The frame is converted into a blob, and
+            # the YOLO model is fed with this blob to obtain the detection results.
+            #blob = cv2.dnn.blobFromImage(frame, 0.00392, (416, 416), (0, 0, 0), True, crop=False)
+            blob = cv2.dnn.blobFromImage(frame, scalefactor=0.00392, size=(416, 416), swapRB=True, crop=False)
+            net.setInput(blob)
+            outs = net.forward(layer_names)
 
-        # Variable to check if any boat is detected in the current frame
-        boat_detected = False
+            # Variable to check if any boat is detected in the current frame
+            boat_detected = False
 
-        # Process the detection results
-        for out in outs:
-            for detection in out:
-                scores = detection[5:]
-                class_id = np.argmax(scores)
-                confidence = scores[class_id]
+            # Process the detection results
+            for out in outs:
+                for detection in out:
+                    scores = detection[5:]
+                    class_id = np.argmax(scores)
+                    confidence = scores[class_id]
 
-            
-                if confidence > 0.2 and classes[class_id] == 'boat':
-                    print(f"Class: {classes[class_id]}, Confidence: {confidence}")
-                    # Visualize the detected bounding box
-                    h, w, _ = frame.shape
-                    x, y, w, h = map(int, detection[0:4] * [w, h, w, h])
-                    #cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
-                    cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
+                
+                    if confidence > 0.2 and classes[class_id] == 'boat':
+                        print(f"Class: {classes[class_id]}, Confidence: {confidence}")
+                        # Visualize the detected bounding box
+                        h, w, _ = frame.shape
+                        x, y, w, h = map(int, detection[0:4] * [w, h, w, h])
+                        #cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+                        cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
 
-                    # Trigger video recording
-                    if not recording:
-                        recording = True
-                        video_writer = cv2.VideoWriter('output.mp4', fourcc, fps_out, (640, 480))
-                        boat_detected = True
+                        # Trigger video recording
+                        if not recording:
+                            recording = True
+                            video_writer = cv2.VideoWriter('output.mp4', fourcc, fps_out, (640, 480))
+                            boat_detected = True
 
-        if recording and not boat_detected:
-            # Pause video recording
-            time.sleep(3)
-            recording = False
-            if video_writer is not None:
-                video_writer.release()
-                video_writer = None
+            if recording and not boat_detected:
+                # Pause video recording
+                time.sleep(3)
+                recording = False
+                if video_writer is not None:
+                    video_writer.release()
+                    video_writer = None
 
-        elif not recording and boat_detected:
-            # Resume video recording
-            recording = True
-            video_writer = cv2.VideoWriter('output.mp4', fourcc, fps_out, (640, 480))
+            elif not recording and boat_detected:
+                # Resume video recording
+                recording = True
+                video_writer = cv2.VideoWriter('output.mp4', fourcc, fps_out, (640, 480))
 
-        if recording:
-            video_writer.write(frame)
+            if recording:
+                video_writer.write(frame)
 
-        # Display the frame with the detection results.
-        cv2.imshow('Boat Detection', frame)
+            # Display the frame with the detection results.
+            cv2.imshow('Boat Detection', frame)
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
