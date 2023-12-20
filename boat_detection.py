@@ -78,15 +78,17 @@ with picamera.PiCamera() as camera:
                         h, w, _ = frame.shape
                         x, y, w, h = map(int, detection[0:4] * [w, h, w, h])
 
-                        # Create a deep copy of the frame to avoid modifying the original
-                        frame_copy = np.copy(frame)
+                        # Modify the original frame
+                        cv2.rectangle(frame, (int(x), int(y)), (int(x + w), int(y + h)), (0, 0, 255), 2, cv2.LINE_AA)
 
                         #cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
-                        cv2.rectangle(frame, (int(x), int(y)), (int(x + w), int(y + h)), (0, 0, 255), 2, cv2.LINE_AA)
+                        #cv2.rectangle(frame, (int(x), int(y)), (int(x + w), int(y + h)), (0, 0, 255), 2, cv2.LINE_AA)
 
                         # Trigger video recording
                         if not recording:
                             recording = True
+                            # Create a deep copy of the frame for video recording
+                            video_frame = np.copy(frame)
                             video_writer = cv2.VideoWriter('output.mp4', fourcc, fps_out, (640, 480))
                             boat_detected = True
 
