@@ -44,8 +44,8 @@ fps_out = 25.0
 frame_size = (640, 480)
 
 # Initialize video writer outside the loop
-#video_writer = None
-video_writer = cv2.VideoWriter('output'+ today + '.mp4', fourcc, fps_out, frame_size)
+video_writer = None
+#video_writer = cv2.VideoWriter('output'+ today + '.mp4', fourcc, fps_out, frame_size)
 
 # Initialize PiCamera outside the loop
 with picamera.PiCamera() as camera:
