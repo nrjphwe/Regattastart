@@ -56,7 +56,10 @@ with picamera.PiCamera() as camera:
     while True:
         # Open the PiCamera as a stream and convert it to a numpy array
         stream = picamera.array.PiRGBArray(camera, size=frame_size )
+        print("Before frame capture")
         camera.capture(stream, format='bgr')
+        print("After frame capture")
+
         frame = np.copy(stream.array)
         #frame = stream.array
 
@@ -122,7 +125,7 @@ with picamera.PiCamera() as camera:
                 video_writer.write(frame)
 
             # Display the frame with the detection results.
-            #cv2.imshow('Boat Detection', frame)
+            cv2.imshow('Boat Detection', frame)
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
