@@ -45,7 +45,7 @@ frame_size = (640, 480)
 
 # Initialize video writer outside the loop
 #video_writer = None
-video_writer = cv2.VideoWriter('output.mp4', fourcc, fps_out, frame_size)
+video_writer = cv2.VideoWriter('output'+ today + '.mp4', fourcc, fps_out, frame_size)
 
 # Initialize PiCamera outside the loop
 with picamera.PiCamera() as camera:
@@ -104,7 +104,7 @@ with picamera.PiCamera() as camera:
                         # Trigger video recording
                         print(today,"Before video writer, line 105")
                         if video_writer is None:
-                            video_writer = cv2.VideoWriter('output.mp4', fourcc, fps_out, (640, 480))
+                            video_writer = cv2.VideoWriter('output'+today + '.mp4', fourcc, fps_out, (640, 480))
                             print(today,"After video writer, line 108")
 
                         # Trigger video recording
