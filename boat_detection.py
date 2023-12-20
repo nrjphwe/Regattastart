@@ -104,15 +104,15 @@ with picamera.PiCamera() as camera:
                         cv2.rectangle(frame, (int(x), int(y)), (int(x + w), int(y + h)), (0, 255, 0), 2, cv2.LINE_AA)
 
                         # Trigger video recording
-                        print(today,"Before video writer, line 105")
+                        print(today,"Before video writer, line 107")
                         if video_writer is None:
                             video_writer = cv2.VideoWriter('output'+today + '.mp4', fourcc, fps_out, (640, 480))
-                            print(today,"After video writer, line 108")
+                            print(today,"After video writer, line 110")
 
                         # Trigger video recording
                         if not recording:
                             recording = True
-                            print(today, "not recording boat detected, line 114")
+                            print(today, "not recording boat detected, line 115")
                             # Create a deep copy of the frame for video recording
                             #video_frame = np.copy(frame)
                             boat_detected = True
@@ -122,15 +122,15 @@ with picamera.PiCamera() as camera:
                 # Pause video recording
                 recording = False
                 if video_writer is not None:
-                    print(today, "video_writer is not None, line 123")
+                    print(today, "video_writer is not None, line 125")
                     video_writer.release()
                     video_writer = None 
 
             elif not recording and boat_detected:
                 # Resume video recording
                 recording = True
-                print(today, "Before video_writer, line 127")
-                video_writer = cv2.VideoWriter('output.mp4', fourcc, fps_out, frame_size)
+                print(today, "Resume recording, line 132")
+                video_writer = cv2.VideoWriter('output' + 'today' + '.mp4', fourcc, fps_out, frame_size)
                 camera.wait_recording(5)
                 print(today,"After wait 5 sec")
             
