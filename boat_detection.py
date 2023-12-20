@@ -124,7 +124,7 @@ with picamera.PiCamera() as camera:
                 # Resume video recording
                 recording = True
                 video_writer = cv2.VideoWriter('output.mp4', fourcc, fps_out, frame_size)
-                camera.wait_recording(0.5)
+                camera.wait_recording(5)
             
             print("Before video writing")
             if recording:
