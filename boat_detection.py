@@ -142,7 +142,8 @@ with picamera.PiCamera() as camera:
             # Display the frame with the detection results.
             cv2.imshow('Boat Detection', frame)
 
-        if cv2.waitKey(1) & 0xFF == ord('q'):
+        #if cv2.waitKey(1) & 0xFF == ord('q'):
+        if cv2.waitKey(10) & 0xFF == ord('q'):
             break
         
     #  Pressing 'q' will exit the script.
