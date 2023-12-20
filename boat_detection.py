@@ -74,6 +74,7 @@ with picamera.PiCamera() as camera:
             # detection using YOLO. The frame is converted into a blob, and
             # the YOLO model is fed with this blob to obtain the detection results.
             #blob = cv2.dnn.blobFromImage(frame, 0.00392, (416, 416), (0, 0, 0), True, crop=False)
+            today = time.strftime("%Y%m%d-%H%M%S")
             print(today, "Before object detection")
             blob = cv2.dnn.blobFromImage(frame, scalefactor=0.00392, size=(416, 416), swapRB=True, crop=False)
             net.setInput(blob)
@@ -93,7 +94,7 @@ with picamera.PiCamera() as camera:
                     if confidence > 0.2 and classes[class_id] == 'boat':
                         # Update the time when the last boat was detected
                         last_detection_time = time.time()
-
+                        today = time.strftime("%Y%m%d-%H%M%S")
                         print(today, f"Class: {classes[class_id]}, Confidence: {confidence}")
                         # Visualize the detected bounding box
                         h, w, _ = frame.shape
