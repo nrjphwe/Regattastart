@@ -78,8 +78,7 @@ with picamera.PiCamera() as camera:
                         h, w, _ = frame.shape
                         x, y, w, h = map(int, detection[0:4] * [w, h, w, h])
                         #cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
-                        cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2, cv2.LINE_AA)
-
+                        cv2.rectangle(frame, (int(x), int(y)), (int(x + w), int(y + h)), (0, 0, 255), 2, cv2.LINE_AA)
 
                         # Trigger video recording
                         if not recording:
