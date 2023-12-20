@@ -36,7 +36,7 @@ fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # H.264 codec with MP4 container
 fps_out = 20.0
 
 # Initialize PiCamera outside the loop
-with picamera.array.PiCamera() as camera:
+with picamera.PiCamera() as camera:
     camera.resolution = (640, 480)
     time.sleep(2)  # Allow the camera to warm up
 
