@@ -100,15 +100,15 @@ with picamera.PiCamera() as camera:
                         cv2.rectangle(frame, (int(x), int(y)), (int(x + w), int(y + h)), (0, 255, 0), 2, cv2.LINE_AA)
 
                         # Trigger video recording
-                        print(today,"Before video writer, line 107")
+                        print(today,"Before video writer, line 103")
                         if video_writer is None:
                             video_writer = cv2.VideoWriter('output'+today + '.mp4', fourcc, fps_out, (640, 480))
-                            print(today,"After video writer, line 110")
+                            print(today,"After video writer, line 106")
 
                         # Trigger video recording
                         if not recording:
                             recording = True
-                            print(today, "not recording boat detected, line 115")
+                            print(today, "not recording boat detected, line 111")
                             # Create a deep copy of the frame for video recording
                             #video_frame = np.copy(frame)
                             boat_detected = True
@@ -118,20 +118,20 @@ with picamera.PiCamera() as camera:
                 # Pause video recording
                 recording = False
                 if video_writer is not None:
-                    print(today, "video_writer is not None, line 125")
+                    print(today, "video_writer is not None, line 121")
                     video_writer.release()
                     video_writer = None 
 
             elif not recording and boat_detected:
                 # Resume video recording
                 recording = True
-                print(today, "Resume recording, line 132")
+                print(today, "Resume recording, line 128")
                 video_writer = cv2.VideoWriter('output' + 'today' + '.mp4', fourcc, fps_out, frame_size)
             
-            print(today,"Before video writing, line 135")
+            print(today,"Before video writing, line 131")
             if recording:
                 video_writer.write(frame)
-            print(today,"After video writing, lin 138")
+            print(today,"After video writing, lin 134")
 
             # Display the frame with the detection results.
             cv2.imshow('Boat Detection', frame)
