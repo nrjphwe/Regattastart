@@ -111,6 +111,7 @@ with picamera.PiCamera() as camera:
                         # Trigger video recording
                         if not recording:
                             recording = True
+                            print(today, "not recording boat detected, line 114")
                             # Create a deep copy of the frame for video recording
                             #video_frame = np.copy(frame)
                             boat_detected = True
@@ -120,6 +121,7 @@ with picamera.PiCamera() as camera:
                 # Pause video recording
                 recording = False
                 if video_writer is not None:
+                    print(today, "video_writer is not None, line 123")
                     video_writer.release()
                     video_writer = None 
 
