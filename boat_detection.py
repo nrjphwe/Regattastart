@@ -53,6 +53,7 @@ with picamera.PiCamera() as camera:
     time.sleep(2)  # Allow the camera to warm up
     
     while True:
+        today = time.strftime("%Y%m%d-%H%M%S")
         # Open the PiCamera as a stream and convert it to a numpy array
         stream = picamera.array.PiRGBArray(camera, size=frame_size )
         print(today, "Before frame capture")
