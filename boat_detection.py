@@ -39,7 +39,6 @@ with picamera.PiCamera() as camera:
     camera.resolution = (640, 480)
     time.sleep(2)  # Allow the camera to warm up
 
-
     while True:
         # Open the PiCamera as a stream and convert it to a numpy array
         with picamera.array.PiRGBArray(camera) as stream:
@@ -104,14 +103,14 @@ with picamera.PiCamera() as camera:
             # Display the frame with the detection results.
             cv2.imshow('Boat Detection', frame)
 
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
-    
-#  Pressing 'q' will exit the script.
-# After loop, the script release camera and closes the OpenCV windows
-cap.release()
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+        
+    #  Pressing 'q' will exit the script.
+    # After loop, the script release camera and closes the OpenCV windows
+    cap.release()
 
-if video_writer is not None:
-    video_writer.release()
+    if video_writer is not None:
+        video_writer.release()
 
-cv2.destroyAllWindows()
+    cv2.destroyAllWindows()
