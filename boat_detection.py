@@ -56,8 +56,7 @@ with picamera.PiCamera() as camera:
         camera.capture(stream, format='bgr')
         print(today, "After frame capture, line 57")
 
-        #frame = np.copy(stream.array)
-        frame = stream.array
+        frame = np.copy(stream.array)
 
         # Increment the frame counter
         frame_counter += 1
