@@ -122,7 +122,7 @@ with picamera.PiCamera() as camera:
                 video_writer.write(frame)
 
             # Display the frame with the detection results.
-            cv2.imshow('Boat Detection', frame)
+            #cv2.imshow('Boat Detection', frame)
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
