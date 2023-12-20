@@ -52,12 +52,12 @@ with picamera.PiCamera() as camera:
         today = time.strftime("%Y%m%d-%H%M%S")
         # Open the PiCamera as a stream and convert it to a numpy array
         stream = picamera.array.PiRGBArray(camera, size=frame_size )
-        print(today, "Before frame capture")
+        print(today, "Before frame capture,line 55")
         camera.capture(stream, format='bgr')
-        print(today, "After frame capture")
+        print(today, "After frame capture, line 57")
 
-        frame = np.copy(stream.array)
-        #frame = stream.array
+        #frame = np.copy(stream.array)
+        frame = stream.array
 
         # Increment the frame counter
         frame_counter += 1
@@ -71,7 +71,7 @@ with picamera.PiCamera() as camera:
             # the YOLO model is fed with this blob to obtain the detection results.
             #blob = cv2.dnn.blobFromImage(frame, 0.00392, (416, 416), (0, 0, 0), True, crop=False)
             today = time.strftime("%Y%m%d-%H%M%S")
-            print(today, "Before object detection")
+            print(today, "Before object detection, line 70")
             blob = cv2.dnn.blobFromImage(frame, scalefactor=0.00392, size=(416, 416), swapRB=True, crop=False)
             net.setInput(blob)
             outs = net.forward(layer_names)
