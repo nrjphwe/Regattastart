@@ -38,7 +38,8 @@ last_detection_time = time.time()
 
 #Define the codec
 today = time.strftime("%Y%m%d-%H%M%S")
-fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # H.264 codec with MP4 container
+fourcc = cv2.VideoWriter_fourcc(*'xvid')  # XVID
+#fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # H.264 codec with MP4 container
 fps_out = 25.0
 frame_size = (640, 480)
 
