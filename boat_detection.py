@@ -74,6 +74,7 @@ with picamera.PiCamera() as camera:
             blob = cv2.dnn.blobFromImage(frame, scalefactor=0.00392, size=(416, 416), swapRB=True, crop=False)
             net.setInput(blob)
             outs = net.forward(layer_names)
+
             print(today, "After object detection")
 
             # Variable to check if any boat is detected in the current frame
@@ -102,14 +103,12 @@ with picamera.PiCamera() as camera:
                         print(today,"Before video writer, line 103")
                         if video_writer is None:
                             video_writer = cv2.VideoWriter('output'+today + '.mp4', fourcc, fps_out, (640, 480))
-                            print(today,"After video writer, line 106")
+                            print(today,"Video writer created, line 106")
 
                         # Trigger video recording
                         if not recording:
                             recording = True
-                            print(today, "not recording boat detected, line 111")
-                            # Create a deep copy of the frame for video recording
-                            #video_frame = np.copy(frame)
+                            print(today, "Recording started, line 111")
                             boat_detected = True
 
             # Check for inactivity timeout
@@ -117,20 +116,20 @@ with picamera.PiCamera() as camera:
                 # Pause video recording
                 recording = False
                 if video_writer is not None:
-                    print(today, "video_writer is not None, line 121")
+                    print(today, "recording paused, line 119")
                     video_writer.release()
                     video_writer = None 
 
             elif not recording and boat_detected:
                 # Resume video recording
                 recording = True
-                print(today, "Resume recording, line 128")
+                print(today, "recording resumed, line 126")
                 video_writer = cv2.VideoWriter('output' + 'today' + '.mp4', fourcc, fps_out, frame_size)
             
             print(today,"Before video writing, line 131")
             if recording:
                 video_writer.write(frame)
-            print(today,"After video writing, lin 134")
+            print(today,"After video writing, line 132")
 
             # Display the frame with the detection results.
             cv2.imshow('Boat Detection', frame)
