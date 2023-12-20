@@ -78,8 +78,8 @@ with picamera.PiCamera() as camera:
                         h, w, _ = frame.shape
                         x, y, w, h = map(int, detection[0:4] * [w, h, w, h])
 
-                        # Create a copy of the frame to avoid modifying the original
-                        frame_copy = frame.copy()
+                        # Create a deep copy of the frame to avoid modifying the original
+                        frame_copy = np.copy(frame)
 
                         #cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
                         cv2.rectangle(frame, (int(x), int(y)), (int(x + w), int(y + h)), (0, 0, 255), 2, cv2.LINE_AA)
