@@ -63,10 +63,7 @@ while True:
                  boat_detected = False
 
             if boat_detected == True:
-                i = 1
-                while i < 5: 
-                    cv2.waitKey(0)
-                    i += 1
+                time.sleep(1)
     
     # Display the frame in the 'Video' window
     cv2.imshow("Video", frame)
