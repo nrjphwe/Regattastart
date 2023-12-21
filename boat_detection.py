@@ -19,7 +19,7 @@ with open('../darknet/data/coco.names', 'r') as f:
 layer_names = net.getUnconnectedOutLayersNames()
 
 # Set the frame skipping factor
-frame_skip_factor = 2
+frame_skip_factor = 1
 frame_counter = 0
 
 # Flag to indicate if recording is in progress
@@ -27,21 +27,22 @@ recording = False
 video_writer = None
 
 # Set the timeout duration in seconds
-timeout_duration = 5  # Adjust as needed
+timeout_duration = 0.1  # Adjust as needed
 
 # Variable to store the time when the last boat was detected
 last_detection_time = time.time()
 
 #Define the codec
-today = time.strftime("%Y%m%d-%H%M%S")
-fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-#fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # H.264 codec with MP4 container
+today = time.strftime("%Y%m%d")
+fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # H.264 codec with MP4 container
 fps_out = 25.0
 frame_size = (640, 480)
 
 # Initialize video writer outside the loop
-video_writer = None
-#video_writer = cv2.VideoWriter('output'+ today + '.mp4', fourcc, fps_out, frame_size)
+#video_writer = None
+# Open a video capture object 0 for webcam)
+cap = cv2.VideoCapture(0)
+out = video_writer = cv2.VideoWriter('output'+ today + '.mp4', fourcc, fps_out, frame_size)
 
 # Initialize PiCamera outside the loop
 with picamera.PiCamera() as camera:
@@ -49,7 +50,11 @@ with picamera.PiCamera() as camera:
     time.sleep(2)  # Allow the camera to warm up
     
     while True:
-        today = time.strftime("%Y%m%d-%H%M%S")
+
+        ret, frame = cap.read()
+        if not ret:
+            break
+
         # Open the PiCamera as a stream and convert it to a numpy array
         stream = picamera.array.PiRGBArray(camera, size=frame_size )
         print(today, "Before frame capture,line 55")
@@ -100,36 +105,13 @@ with picamera.PiCamera() as camera:
                         cv2.rectangle(frame, (int(x), int(y)), (int(x + w), int(y + h)), (0, 255, 0), 2, cv2.LINE_AA)
 
                         # Trigger video recording
-                        print(today,"Before video writer, line 103")
-                        if video_writer is None:
-                            video_writer = cv2.VideoWriter('output'+today + '.mp4', fourcc, fps_out, (640, 480))
-                            print(today,"Video writer created, line 106")
-
-                        # Trigger video recording
                         if not recording:
                             recording = True
-                            print(today, "Recording started, line 111")
+                            out.write(frame)
+                            print(today, "Recording started, line 110")
                             boat_detected = True
-
-            # Check for inactivity timeout
-            if recording and time.time() - last_detection_time > timeout_duration:
-                # Pause video recording
-                recording = False
-                if video_writer is not None:
-                    print(today, "recording paused, line 119")
-                    video_writer.release()
-                    video_writer = None 
-
-            elif not recording and boat_detected:
-                # Resume video recording
-                recording = True
-                print(today, "recording resumed, line 126")
-                video_writer = cv2.VideoWriter('output' + 'today' + '.mp4', fourcc, fps_out, frame_size)
-            
-            print(today,"Before video writing, line 131")
-            if recording:
-                video_writer.write(frame)
-            print(today,"After video writing, line 132")
+                    else:
+                        boat_detected = False
 
             # Display the frame with the detection results.
             cv2.imshow('Boat Detection', frame)
