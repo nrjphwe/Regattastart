@@ -51,21 +51,17 @@ while True:
         
             if confidence > 0.2 and classes[class_id] == 'boat':
                 boat_detected = True
-                print("boat_detected = True")
-                today = time.strftime("%Y%m%d")
-                print(today, f"Class: {classes[class_id]}, Confidence: {confidence}")
+                print(time.strftime("%Y-%m-%d-%H:%M:%S"), f"Class: {classes[class_id]}, Confidence: {confidence}")
                 # Visualize the detected bounding box
                 h, w, _ = frame.shape
                 x, y, w, h = map(int, detection[0:4] * [w, h, w, h])
 
                 # Modify the original frame
                 cv2.rectangle(frame, (int(x), int(y)), (int(x + w), int(y + h)), (0, 255, 0), 2, cv2.LINE_AA)
+                output.write(frame)
 
-
-        if boat_detected == True:
-            # write frame
-            print("write frame")
-            output.write(frame)
+            else:
+                boat_detected = False
 
     # Display the frame in the 'Video' window
     cv2.imshow("Video", frame)
