@@ -21,7 +21,7 @@ today = time.strftime("%Y%m%d")
 
 # Open a video capture object (replace 'your_video_file.mp4' with the actual video file or use 0 for webcam)
 cap = cv2.VideoCapture(0)
-output = cv2.VideoWriter('output'+ today + '.mp4', fourcc, 10, (640, 480))
+out = cv2.VideoWriter('output'+ today + '.mp4', fourcc, 10, (640, 480))
 
 # Set the frame skipping factor
 #frame_skip_factor = 2
@@ -58,7 +58,7 @@ while True:
 
                 # Modify the original frame
                 cv2.rectangle(frame, (int(x), int(y)), (int(x + w), int(y + h)), (0, 255, 0), 2, cv2.LINE_AA)
-                output.write(frame)
+                out.write(frame)
 
             else:
                 boat_detected = False
