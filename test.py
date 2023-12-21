@@ -16,10 +16,6 @@ with open('../darknet/data/coco.names', 'r') as f:
 # Load the configuration and weights for YOLO
 layer_names = net.getUnconnectedOutLayersNames()
 
-def on_key(event):
-    if event == ord('q'):
-        cv2.destroyAllWindows()
-
 fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # H.264 codec with MP4 container
 today = time.strftime("%Y%m%d")
 
@@ -49,7 +45,7 @@ while True:
         
             if confidence > 0.2 and classes[class_id] == 'boat':
                 boat_detected = True
-                today = time.strftime("%Y%m%d-%H%M%S")
+                today = time.strftime("%Y%m%d")
                 print(today, f"Class: {classes[class_id]}, Confidence: {confidence}")
                 # Visualize the detected bounding box
                 h, w, _ = frame.shape
@@ -62,14 +58,11 @@ while True:
         
             pause_video = cv2.VideoWriter('output'+ today + '.mp4', fourcc, 0, (640, 480))
 
-
     # Display the frame in the 'Video' window
     cv2.imshow("Video", frame)
 
-    # Wait for a key event (100 ms delay)
-    key = cv2.waitKey(100)
-    if key != -1:
-        on_key(key)
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
 
 # Release the video capture object and close all windows
 cap.release()
