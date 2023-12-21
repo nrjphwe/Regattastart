@@ -61,11 +61,11 @@ while True:
             else:
                  boat_detected = False
 
-        if boat_detected == True:
-            i = 1
-            while i < 25: 
-                output.write(frame)
-                i += 1
+            if boat_detected == True:
+                i = 1
+                while i < 25: 
+                    output.write(frame)
+                    i += 1
     
     # Display the frame in the 'Video' window
     cv2.imshow("Video", frame)
