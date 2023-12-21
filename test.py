@@ -21,7 +21,10 @@ today = time.strftime("%Y%m%d")
 
 # Open a video capture object (replace 'your_video_file.mp4' with the actual video file or use 0 for webcam)
 cap = cv2.VideoCapture(0)
-video_writer = None
+output = cv2.VideoWriter('output'+ today + '.mp4', fourcc, 10, (640, 480))
+
+
+#video_writer = cv2.VideoWriter.write(image)
 
 while True:
     ret, frame = cap.read()
@@ -45,6 +48,7 @@ while True:
         
             if confidence > 0.2 and classes[class_id] == 'boat':
                 boat_detected = True
+                print("boat_detected = True")
                 today = time.strftime("%Y%m%d")
                 print(today, f"Class: {classes[class_id]}, Confidence: {confidence}")
                 # Visualize the detected bounding box
@@ -54,10 +58,12 @@ while True:
                 # Modify the original frame
                 cv2.rectangle(frame, (int(x), int(y)), (int(x + w), int(y + h)), (0, 255, 0), 2, cv2.LINE_AA)
 
-                resume_video = cv2.VideoWriter('output'+ today + '.mp4', fourcc, 10, (640, 480))
-        
-            pause_video = cv2.VideoWriter('output'+ today + '.mp4', fourcc, 0, (640, 480))
+                output.write(frame)
 
+            else:
+                 boat_detected = False
+                 print("boat_detected =False")
+    
     # Display the frame in the 'Video' window
     cv2.imshow("Video", frame)
 
