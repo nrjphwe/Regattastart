@@ -33,13 +33,13 @@ timeout_duration = 0.1  # Adjust as needed
 last_detection_time = time.time()
 
 #Define the codec
-today = time.strftime("%Y%m%d")
+today = time.strftime("%Y-%m-%d")
 fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # H.264 codec with MP4 container
 fps_out = 25.0
 frame_size = (640, 480)
 
 # Initialize video writer outside the loop
-#video_writer = None
+# video_writer = None
 # Open a video capture object 0 for webcam)
 cap = cv2.VideoCapture(0)
 out = video_writer = cv2.VideoWriter('output'+ today + '.mp4', fourcc, fps_out, frame_size)
