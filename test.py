@@ -61,9 +61,6 @@ while True:
                 # Modify the original frame
                 cv2.rectangle(frame, (int(x), int(y)), (int(x + w), int(y + h)), (0, 255, 0), 2, cv2.LINE_AA)
 
-            else:
-                boat_detected = False
-                print("boat not detected")
 
         if boat_detected == True:
             # write frame
