@@ -58,11 +58,12 @@ while True:
                 # Modify the original frame
                 cv2.rectangle(frame, (int(x), int(y)), (int(x + w), int(y + h)), (0, 255, 0), 2, cv2.LINE_AA)
 
-                output.write(frame)
-
+                i = 1
+                while i < 25: 
+                    output.write(frame)
+                    i += 1
             else:
                  boat_detected = False
-                 print("boat_detected =False")
     
     # Display the frame in the 'Video' window
     cv2.imshow("Video", frame)
