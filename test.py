@@ -23,6 +23,9 @@ today = time.strftime("%Y%m%d")
 cap = cv2.VideoCapture(0)
 output = cv2.VideoWriter('output'+ today + '.mp4', fourcc, 10, (640, 480))
 
+# Set the frame skipping factor
+#frame_skip_factor = 2
+frame_counter = 0
 
 #video_writer = cv2.VideoWriter.write(image)
 
@@ -57,14 +60,15 @@ while True:
 
                 # Modify the original frame
                 cv2.rectangle(frame, (int(x), int(y)), (int(x + w), int(y + h)), (0, 255, 0), 2, cv2.LINE_AA)
-                output.write(frame)
 
             else:
-                 boat_detected = False
+                boat_detected = False
+                time.sleep(0.1)
 
-            if boat_detected == True:
-                time.sleep(1)
-    
+    if boat_detected == True:
+        # write frame
+        output.write(frame)
+
     # Display the frame in the 'Video' window
     cv2.imshow("Video", frame)
 
