@@ -63,10 +63,11 @@ while True:
 
             else:
                 boat_detected = False
-                time.sleep(0.1)
+                print("boat not detected")
 
         if boat_detected == True:
             # write frame
+            print("write frame")
             output.write(frame)
 
     # Display the frame in the 'Video' window
