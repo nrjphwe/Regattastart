@@ -76,13 +76,10 @@ while True:
                         start_time = time.time()
                                         
                     elapsed_time = time.time() - start_time
-                    if elapsed_time < 1:
+                    if elapsed_time < 2:
                         # Write the frame to the video file during the capture duration
                         print(time.strftime("%Y-%m-%d-%H:%M:%S"),"write frame < 0.3")
                         video_writer.write(frame)
-                else:
-                    # Reset the timer and stop capturing frames
-                    start_time = 0
                     boat_detected = False
 
     # Display the frame in the 'Video' window
