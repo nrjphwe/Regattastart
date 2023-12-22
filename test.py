@@ -19,7 +19,7 @@ fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # H.264 codec with MP4 container
 today = time.strftime("%Y%m%d")
 
 # Open a video capture object (replace 'your_video_file.mp4' with the actual video file or use 0 for webcam)
-cap = cv2.VideoCapture(/home/pi/Regattastart/video0.mp4)
+cap = cv2.VideoCapture("video0.mp4")
 video_writer = cv2.VideoWriter('output'+ today + '.mp4', fourcc, 10, (640, 480))
 
 # Timer variables
