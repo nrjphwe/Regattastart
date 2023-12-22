@@ -29,7 +29,7 @@ video_writer = cv2.VideoWriter('output'+ today + '.mp4', fourcc, 10, size)
 # Timer variables
 start_time = 0
 capture_duration = 2  # in seconds
-number_of_frames = 5
+number_of_frames = 50
  
 while True:
     ret, frame = cap.read()
@@ -63,6 +63,13 @@ while True:
                 print(time.strftime("%Y-%m-%d-%H:%M:%S"),"write frame > 0.3")
                 # Write frames to the video file
                 video_writer.write(frame)
+            else:
+                # Confidence < 0.3
+                if boat_detected == True:
+                    i = 1
+                    while i < number_of_frames:
+                        # Write frames to the video file
+                        video_writer.write(frame)
 
     # Display the frame in the 'Video' window
     cv2.imshow("Video", frame)
