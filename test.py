@@ -62,9 +62,6 @@ while True:
                 while i < number_of_frames:
                     # Write frames to the video file
                     video_writer.write(frame)
-                    # Display the frame in the 'Video' window
-                    cv2.imshow("Video", frame)
-                # reset
                 
             else:
                 if boat_detected == True:
@@ -74,14 +71,11 @@ while True:
                     while i < number_of_frames:
                         # Write frames to the video file
                         video_writer.write(frame)
-                        # Display the frame in the 'Video' window
-                        cv2.imshow("Video", frame)
                 boat_detected = False
 
-
+    # Display the frame in the 'Video' window
+    cv2.imshow("Video", frame)
     
-
-
     if cv2.waitKey(25) & 0xFF == ord('q'):
         break
 
