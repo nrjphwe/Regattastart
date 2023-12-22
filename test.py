@@ -70,6 +70,7 @@ while True:
                     while i < number_of_frames:
                         # Write frames to the video file
                         video_writer.write(frame)
+                    boat_detected = False    
 
     # Display the frame in the 'Video' window
     cv2.imshow("Video", frame)
