@@ -25,7 +25,8 @@ video_writer = cv2.VideoWriter('output'+ today + '.mp4', fourcc, 10, (640, 480))
 # Timer variables
 start_time = 0
 capture_duration = 2  # in seconds
-capturing_frames = False
+number_of_frames = 200
+ 
 
 while True:
     ret, frame = cap.read()
@@ -55,29 +56,19 @@ while True:
                 # Modify the original frame
                 cv2.rectangle(frame, (int(x), int(y)), (int(x + w), int(y + h)), (0, 255, 0), 2, cv2.LINE_AA)
                 
-                # Set the timer when the first boat is detected
-                if start_time == 0:
-                    start_time = time.time()
-
-                # Check if the capture duration has passed
-                elapsed_time = time.time() - start_time
-                if elapsed_time < capture_duration:
-                    # Write the frame to the video file during the capture duration
-                    print(time.strftime("%Y-%m-%d-%H:%M:%S"),"write frame")
+                # confidence > 0.3 
+                i = 1
+                while i < number_of_frames:
+                    # Write frames to the video file
+                    print(time.strftime("%Y-%m-%d-%H:%M:%S"),"write frame > 0.3")
                     video_writer.write(frame)
-                else:
-                    # Reset the timer and stop capturing frames
-                    start_time = 0
             
             else:
                 # confidence < 0.3 
                 if boat_detected == True:
-                    if start_time == 0:
-                        start_time = time.time()
-                                        
-                    elapsed_time = time.time() - start_time
-                    if elapsed_time < 2:
-                        # Write the frame to the video file during the capture duration
+                    i = 1
+                    while i < number_of_frames:
+                        #Write the frame to the video file
                         print(time.strftime("%Y-%m-%d-%H:%M:%S"),"write frame < 0.3")
                         video_writer.write(frame)
                     boat_detected = False
