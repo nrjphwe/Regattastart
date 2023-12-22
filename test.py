@@ -75,7 +75,7 @@ while True:
             #    elapsed_time = time.time() - start_time
             #    if elapsed_time < 1:
             #        # Write the frame to the video file during the capture duration
-            3        video_writer.write(frame)
+            #        video_writer.write(frame)
             #    else:
             #        # Reset the timer and stop capturing frames
             #        start_time = 0
