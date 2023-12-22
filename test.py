@@ -2,7 +2,6 @@
 import sys
 sys.path.append('/home/pi/opencv/build/lib/python3')
 import time
-sys.path.append('/home/pi/opencv/build/lib/python3')
 import cv2
 import numpy as np
 
