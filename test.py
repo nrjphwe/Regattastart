@@ -70,6 +70,9 @@ while True:
                     boat_detected = False
             
             else:
+                # Set the timer when no boat is detected
+                if start_time == 0:
+                    start_time = time.time()
                 # confidence < 0.2 
                 elapsed_time = time.time() - start_time
                 if elapsed_time < capture_duration:
