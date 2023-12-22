@@ -24,7 +24,7 @@ video_writer = cv2.VideoWriter('output'+ today + '.mp4', fourcc, 10, (640, 480))
 
 # Timer variables
 start_time = 0
-capture_duration = 1  # in seconds
+capture_duration = 2  # in seconds
 
 
 while True:
@@ -73,9 +73,10 @@ while True:
                 # Set the timer when no boat is detected
                 if start_time == 0:
                     start_time = time.time()
+
                 # confidence < 0.2 
                 elapsed_time = time.time() - start_time
-                if elapsed_time < capture_duration:
+                if elapsed_time < 1:
                     # Write the frame to the video file during the capture duration
                     video_writer.write(frame)
                 else:
