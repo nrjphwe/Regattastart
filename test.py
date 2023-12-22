@@ -20,20 +20,18 @@ today = time.strftime("%Y%m%d")
 
 # Open a video capture object (replace 'your_video_file.mp4' with the actual video file or use 0 for webcam)
 cap = cv2.VideoCapture(0)
-out = cv2.VideoWriter('output'+ today + '.mp4', fourcc, 10, (640, 480))
+video_writer = cv2.VideoWriter('output'+ today + '.mp4', fourcc, 10, (640, 480))
 
 # Set the frame skipping factor
 #frame_skip_factor = 2
 frame_counter = 0
-
-#video_writer = cv2.VideoWriter.write(image)
 
 while True:
     ret, frame = cap.read()
     if not ret:
         break
 
-    video_writer = cv2.VideoWriter('output'+ today + '.mp4', fourcc, 10, (640, 480))
+    
    
     # Variable to check if any boat is detected in the current frame
     boat_detected = False
@@ -57,11 +55,8 @@ while True:
 
                 # Modify the original frame
                 cv2.rectangle(frame, (int(x), int(y)), (int(x + w), int(y + h)), (0, 255, 0), 2, cv2.LINE_AA)
-                cv2.VideoWriter.write(frame)
-
-            else:
-                boat_detected = False
-                #time.sleep(0.1)
+                
+    video_writer.write(frame)
 
     # Display the frame in the 'Video' window
     cv2.imshow("Video", frame)
@@ -71,6 +66,5 @@ while True:
 
 # Release the video capture object and close all windows
 cap.release()
-if video_writer is not None:
-    video_writer.release()
+video_writer.release()
 cv2.destroyAllWindows()
