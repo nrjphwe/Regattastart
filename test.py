@@ -25,14 +25,13 @@ video_writer = cv2.VideoWriter('output'+ today + '.mp4', fourcc, 10, (640, 480))
 # Timer variables
 start_time = 0
 capture_duration = 2  # in seconds
-number_of_frames = 20
+number_of_frames = 5
  
-
 while True:
     ret, frame = cap.read()
     if not ret:
         break
-   
+
     # Variable to check if any boat is detected in the current frame
     boat_detected = False
 
@@ -57,21 +56,9 @@ while True:
                 cv2.rectangle(frame, (int(x), int(y)), (int(x + w), int(y + h)), (0, 255, 0), 2, cv2.LINE_AA)
                 
                 # confidence > 0.3 
-                i = 1
                 print(time.strftime("%Y-%m-%d-%H:%M:%S"),"write frame > 0.3")
-                while i < number_of_frames:
-                    # Write frames to the video file
-                    video_writer.write(frame)
-                
-            else:
-                if boat_detected == True:
-                    # confidence < 0.3 
-                    i = 1
-                    print(time.strftime("%Y-%m-%d-%H:%M:%S"),"write frame < 0.3")
-                    while i < number_of_frames:
-                        # Write frames to the video file
-                        video_writer.write(frame)
-                boat_detected = False
+                # Write frames to the video file
+                video_writer.write(frame)
 
     # Display the frame in the 'Video' window
     cv2.imshow("Video", frame)
