@@ -15,12 +15,16 @@ with open('../darknet/data/coco.names', 'r') as f:
 # Load the configuration and weights for YOLO
 layer_names = net.getUnconnectedOutLayersNames()
 
-fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # H.264 codec with MP4 container
 today = time.strftime("%Y%m%d")
 
 # Open a video capture object (replace 'your_video_file.mp4' with the actual video file or use 0 for webcam)
 cap = cv2.VideoCapture("video0.mp4")
-video_writer = cv2.VideoWriter('output'+ today + '.mp4', fourcc, 10, (640, 480))
+width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH) + 0.5)
+height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT) + 0.5)
+size = (width, height)
+
+fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # H.264 codec with MP4 container
+video_writer = cv2.VideoWriter('output'+ today + '.mp4', fourcc, 10, size)
 
 # Timer variables
 start_time = 0
