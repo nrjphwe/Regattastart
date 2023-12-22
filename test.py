@@ -22,16 +22,15 @@ today = time.strftime("%Y%m%d")
 cap = cv2.VideoCapture(0)
 video_writer = cv2.VideoWriter('output'+ today + '.mp4', fourcc, 10, (640, 480))
 
-# Set the frame skipping factor
-#frame_skip_factor = 2
-frame_counter = 0
+# Timer variables
+start_time = 0
+capture_duration = 5  # in seconds
+
 
 while True:
     ret, frame = cap.read()
     if not ret:
         break
-
-    
    
     # Variable to check if any boat is detected in the current frame
     boat_detected = False
@@ -56,7 +55,19 @@ while True:
                 # Modify the original frame
                 cv2.rectangle(frame, (int(x), int(y)), (int(x + w), int(y + h)), (0, 255, 0), 2, cv2.LINE_AA)
                 
-    video_writer.write(frame)
+                # Set the timer when the first boat is detected
+                if start_time == 0:
+                    start_time = time.time()
+
+                # Check if the capture duration has passed
+                elapsed_time = time.time() - start_time
+                if elapsed_time < capture_duration:
+                    # Write the frame to the video file during the capture duration
+                    video_writer.write(frame)
+                else:
+                    # Reset the timer and stop capturing frames
+                    start_time = 0
+                    boat_detected = False
 
     # Display the frame in the 'Video' window
     cv2.imshow("Video", frame)
