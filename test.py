@@ -85,8 +85,8 @@ while True:
     # Display the frame in the 'Video' window
     cv2.imshow("Video", frame)
 
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
+    if cv2.waitKey(25) & 0xFF == ord('q'):
+        break
 
 # Release the video capture object and close all windows
 cap.release()
