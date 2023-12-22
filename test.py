@@ -65,10 +65,10 @@ while True:
                 if elapsed_time < capture_duration and capturing_frames:
                     # Write the frame to the video file during the capture duration
                     video_writer.write(frame)
-                else:
-                    # Reset the timer and stop capturing frames
-                    start_time = 0
-                    capturing_frames = False
+                #else:
+                #    # Reset the timer and stop capturing frames
+                #    start_time = 0
+                #    capturing_frames = False
             
             else:
                 # confidence < 0.2 
