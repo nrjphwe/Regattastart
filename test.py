@@ -57,7 +57,7 @@ while True:
 
                 # Modify the original frame
                 cv2.rectangle(frame, (int(x), int(y)), (int(x + w), int(y + h)), (0, 255, 0), 2, cv2.LINE_AA)
-                out.write()
+                cv2.VideoWriter.write(frame)
 
             else:
                 boat_detected = False
