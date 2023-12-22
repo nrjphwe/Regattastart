@@ -58,18 +58,16 @@ while True:
                 # Set the timer when the first boat is detected
                 if start_time == 0:
                     start_time = time.time()
-                    capturing_frames = True
 
                 # Check if the capture duration has passed
                 elapsed_time = time.time() - start_time
-                if elapsed_time < capture_duration and capturing_frames:
+                if elapsed_time < capture_duration:
                     # Write the frame to the video file during the capture duration
                     print(time.strftime("%Y-%m-%d-%H:%M:%S"),"write frame")
                     video_writer.write(frame)
                 else:
                     # Reset the timer and stop capturing frames
                     start_time = 0
-                    capturing_frames = False
             
             else:
                 # confidence < 0.3 
