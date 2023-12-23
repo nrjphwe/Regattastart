@@ -18,7 +18,7 @@ layer_names = net.getUnconnectedOutLayersNames()
 today = time.strftime("%Y%m%d")
 
 # Open a video capture object (replace 'your_video_file.mp4' with the actual video file or use 0 for webcam)
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture("2023-06-07_Onsdagssegling.mp4")
 width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH) + 0.5)
 height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT) + 0.5)
 size = (width, height)
