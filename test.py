@@ -30,7 +30,7 @@ video_writer = cv2.VideoWriter('output'+ today + '.mp4', fourcc, 25, size)
 start_time = 0
 capture_duration = 2  # in seconds
 number_of_detected_frames = 1
-number_of_non_detected_frames = 25
+number_of_non_detected_frames = 2
 
 while True:
     ret, frame = cap.read()
