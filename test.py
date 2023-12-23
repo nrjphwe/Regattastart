@@ -52,7 +52,7 @@ while True:
         
             if confidence > 0.3 and classes[class_id] == 'boat':
                 boat_detected = True
-                print(time.strftime("%Y-%m-%d-%H:%M:%S"), f"Class: {classes[class_id]}, Confidence: {confidence}")
+                #print(time.strftime("%Y-%m-%d-%H:%M:%S"), f"Class: {classes[class_id]}, Confidence: {confidence}")
                 # Visualize the detected bounding box
                 h, w, _ = frame.shape
                 x, y, w, h = map(int, detection[0:4] * [w, h, w, h])
@@ -74,7 +74,8 @@ while True:
                         # Write frames to the video file
                         video_writer.write(frame)
                         i += 1
-                boat_detected = False    
+                boat_detected = False
+                print(time.strftime("%Y-%m-%d-%H:%M:%S"),"78") 
 
     # Display the frame in the 'Video' window
     #cv2.imshow("Video", frame)
