@@ -63,10 +63,10 @@ while True:
                 print(time.strftime("%Y-%m-%d-%H:%M:%S"),"write frame > 0.3")
                 # Write frames to the video file
                 i = 1
-                    while i < number_of_frames:
-                        # Write frames to the video file
-                        video_writer.write(frame)
-                        i += 1
+                while i < number_of_frames:
+                    # Write frames to the video file
+                    video_writer.write(frame)
+                    i += 1
             else:
                 # Confidence < 0.2
                 if boat_detected == True:
