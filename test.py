@@ -60,9 +60,7 @@ while True:
                 # Modify the original frame
                 cv2.rectangle(frame, (int(x), int(y)), (int(x + w), int(y + h)), (0, 255, 0), 2, cv2.LINE_AA)
                 
-                # confidence > 0.2 
-                print(time.strftime("%Y-%m-%d-%H:%M:%S"),"write frame > 0.3")
-                # Write frames to the video file
+                # Write detected frames to the video file
                 i = 1
                 while i < number_of_detected_frames:
                     # Write frames to the video file
