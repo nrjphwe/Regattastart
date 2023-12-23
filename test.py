@@ -49,7 +49,7 @@ while True:
             class_id = np.argmax(scores)
             confidence = scores[class_id]
         
-            if confidence > 0.3 and classes[class_id] == 'boat':
+            if confidence > 0.2 and classes[class_id] == 'boat':
                 boat_detected = True
                 print(time.strftime("%Y-%m-%d-%H:%M:%S"), f"Class: {classes[class_id]}, Confidence: {confidence}")
                 # Visualize the detected bounding box
@@ -76,7 +76,7 @@ while True:
     # Display the frame in the 'Video' window
     cv2.imshow("Video", frame)
     
-    if cv2.waitKey(25) & 0xFF == ord('q'):
+    if cv2.waitKey(5) & 0xFF == ord('q'):
         break
 
 # Release the video capture object and close all windows
