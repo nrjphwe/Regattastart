@@ -210,7 +210,7 @@ def finish_recording(mp4_path, video_dur, start_time_sec):
 
                     # Modify the original frame
                     cv2.rectangle(frame, (int(x), int(y)), (int(x + w), int(y + h)), (0, 255, 0), 2, cv2.LINE_AA)
-                    
+
                     # Write detected frames to the video file
                     i = 1
                     while i < number_of_detected_frames:
@@ -229,10 +229,10 @@ def finish_recording(mp4_path, video_dur, start_time_sec):
                             video_writer.write(frame)
                             i += 1
                     boat_detected = False
-                    
+
         # Display the frame in the 'Video' window
         #cv2.imshow("Video", frame)
-        
+
         #if cv2.waitKey(1) & 0xFF == ord('q'):
         #    break
 
@@ -284,7 +284,7 @@ def main():
             while True:
                 now = dt.datetime.now()
                 seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
-    
+
                 if seconds_since_midnight > t5min_warning - 2:         
                     logger.info("Start of outer loop iteration. seconds_since_midnight=%s", seconds_since_midnight)
 
