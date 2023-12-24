@@ -24,12 +24,12 @@ height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT) + 0.5)
 size = (width, height)
 
 fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # H.264 codec with MP4 container
-video_writer = cv2.VideoWriter('output'+ today + '.mp4', fourcc, 5, size)
+video_writer = cv2.VideoWriter('output'+ today + '.mp4', fourcc, 50, size)
 
 # Timer variables
 start_time = 0
 capture_duration = 2  # in seconds
-number_of_detected_frames = 1
+number_of_detected_frames = 2
 number_of_non_detected_frames = 2
 
 while True:
@@ -66,16 +66,16 @@ while True:
                     # Write frames to the video file
                     video_writer.write(frame)
                     i += 1
-            else:
+            #else:
                 # Confidence < 0.3
-                if boat_detected == True:
+            #    if boat_detected == True:
                     #print(time.strftime("%Y-%m-%d-%H:%M:%S"),"78") 
-                    i = 1
-                    while i < number_of_non_detected_frames:
-                        # Write frames to the video file
-                        video_writer.write(frame)
-                        i += 1
-                boat_detected = False
+            #        i = 1
+            #        while i < number_of_non_detected_frames:
+            #            # Write frames to the video file
+            #            video_writer.write(frame)
+            #            i += 1
+            #    boat_detected = False
                 
     # Display the frame in the 'Video' window
     #cv2.imshow("Video", frame)
