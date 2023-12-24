@@ -19,11 +19,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Execute the Python script
     $command = 'python3 /usr/lib/cgi-bin/regattastart9.py ' . escapeshellarg(json_encode($_POST)) . ' > /var/www/html/output.txt 2>&1 &';
     shell_exec($command);
-    
+
     echo date('h:i:s') . "<br>";
     echo "execution started";
     sleep(3);
-    
+
     //exec('python3 /usr/lib/cgi-bin/regattastart9.py ' . escapeshellarg(json_encode($_POST)));
     // Redirect to index.php
     header("Location: index.php");
@@ -37,12 +37,11 @@ $video_dur = isset($_SESSION["form_data"]["video_dur"]) ? $_SESSION["form_data"]
 $num_video = isset($_SESSION["form_data"]["num_video"]) ? $_SESSION["form_data"]["num_video"] : "";
 $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data"]["num_starts"] : "";
 
-
 ?>
 <!DOCTYPE html>
 <html>
 <div align="center">
-<head><title> Regattastart 2024 för setup av en eller 2 starter </title>   
+<head><title> Regattastart 2024 image detection </title>   
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="/w3.css"
 <style>
@@ -50,7 +49,7 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
 </style>
 </head>
 <div class="w3-container w3-blue">
-    <h2>Regattastart for 1 or 2 starts </h2>
+    <h2>Regattastart image detetion </h2>
 </div>
 <p></p>
 <header>
@@ -60,7 +59,7 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
 <!-- HTML form -->
 <body>
 <div align="center">
-<form action="index6.php" method="POST">
+<form action="index9.php" method="POST">
     <!-- Your form fields -->
     <div class="w3-container w3-pale-yellow w3-cell">
         <fieldset>
