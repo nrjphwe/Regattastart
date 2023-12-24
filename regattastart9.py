@@ -156,91 +156,93 @@ def cv_annotate_video(frame, start_time_sec):
     cv2.putText(frame,label,(105,105),cv2.FONT_HERSHEY_COMPLEX_SMALL,1,(0,0,255))
 
 def finish_recording(mp4_path, video_dur, start_time_sec):
-    # Load the pre-trained object detection model -- YOLO (You Only Look Once) 
-    net = cv2.dnn.readNet('/home/pi/darknet/yolov3-tiny.weights', '/home/pi/darknet/cfg/yolov3-tiny.cfg')
+    t_end = time.time() + 60 * video_dur
+    while time.time() < t_end:
+        # Load the pre-trained object detection model -- YOLO (You Only Look Once) 
+        net = cv2.dnn.readNet('/home/pi/darknet/yolov3-tiny.weights', '/home/pi/darknet/cfg/yolov3-tiny.cfg')
 
-    # Load COCO names (class labels)
-    with open('/home/pi/darknet/data/coco.names', 'r') as f:
-        classes = f.read().strip().split('\n')
+        # Load COCO names (class labels)
+        with open('/home/pi/darknet/data/coco.names', 'r') as f:
+            classes = f.read().strip().split('\n')
 
-    # Load the configuration and weights for YOLO
-    layer_names = net.getUnconnectedOutLayersNames()
+        # Load the configuration and weights for YOLO
+        layer_names = net.getUnconnectedOutLayersNames()
 
-    today = time.strftime("%Y%m%d")
+        today = time.strftime("%Y%m%d")
 
-    # Open a video capture object (replace 'your_video_file.mp4' with the actual video file or use 0 for webcam)
-    cap = cv2.VideoCapture(os.path.join(mp4_path, "finish21-6.mp4"))
-    width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH) + 0.5)
-    height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT) + 0.5)
-    size = (width, height)
+        # Open a video capture object (replace 'your_video_file.mp4' with the actual video file or use 0 for webcam)
+        cap = cv2.VideoCapture(os.path.join(mp4_path, "finish21-6.mp4"))
+        width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH) + 0.5)
+        height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT) + 0.5)
+        size = (width, height)
 
-    fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # H.264 codec with MP4 container
-    video_writer = cv2.VideoWriter(mp4_path + 'output' + today + '.mp4', fourcc, 50, size)
+        fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # H.264 codec with MP4 container
+        video_writer = cv2.VideoWriter(mp4_path + 'output' + today + '.mp4', fourcc, 50, size)
 
-    # Timer variables
-    start_time = 0
-    capture_duration = 2  # in seconds
-    number_of_detected_frames = 2
-    number_of_non_detected_frames = 2
-    #start_time_sec = 66000
+        # Timer variables
+        start_time = 0
+        capture_duration = 2  # in seconds
+        number_of_detected_frames = 2
+        number_of_non_detected_frames = 2
+        #start_time_sec = 66000
 
-    while True:
-        ret, frame = cap.read()
-        if not ret:
-            break
+        while True:
+            ret, frame = cap.read()
+            if not ret:
+                break
 
-        # Variable to check if any boat is detected in the current frame
-        boat_detected = False
+            # Variable to check if any boat is detected in the current frame
+            boat_detected = False
 
-        blob = cv2.dnn.blobFromImage(frame, scalefactor=0.00392, size=(416, 416), swapRB=True, crop=False)
-        net.setInput(blob)
-        outs = net.forward(layer_names)
+            blob = cv2.dnn.blobFromImage(frame, scalefactor=0.00392, size=(416, 416), swapRB=True, crop=False)
+            net.setInput(blob)
+            outs = net.forward(layer_names)
 
-        for out in outs:
-            for detection in out:
-                scores = detection[5:]
-                class_id = np.argmax(scores)
-                confidence = scores[class_id]
-            
-                if confidence > 0.3 and classes[class_id] == 'boat':
-                    boat_detected = True
-                    #print(time.strftime("%Y-%m-%d-%H:%M:%S"), f"Class: {classes[class_id]}, Confidence: {confidence}")
-                    # Visualize the detected bounding box
-                    h, w, _ = frame.shape
-                    x, y, w, h = map(int, detection[0:4] * [w, h, w, h])
+            for out in outs:
+                for detection in out:
+                    scores = detection[5:]
+                    class_id = np.argmax(scores)
+                    confidence = scores[class_id]
+                
+                    if confidence > 0.3 and classes[class_id] == 'boat':
+                        boat_detected = True
+                        #print(time.strftime("%Y-%m-%d-%H:%M:%S"), f"Class: {classes[class_id]}, Confidence: {confidence}")
+                        # Visualize the detected bounding box
+                        h, w, _ = frame.shape
+                        x, y, w, h = map(int, detection[0:4] * [w, h, w, h])
 
-                    # Modify the original frame
-                    cv2.rectangle(frame, (int(x), int(y)), (int(x + w), int(y + h)), (0, 255, 0), 2, cv2.LINE_AA)
+                        # Modify the original frame
+                        cv2.rectangle(frame, (int(x), int(y)), (int(x + w), int(y + h)), (0, 255, 0), 2, cv2.LINE_AA)
 
-                    # Write detected frames to the video file
-                    i = 1
-                    while i < number_of_detected_frames:
-                        # Write frames to the video file
-                        cv_annotate_video(frame, start_time_sec)
-                        video_writer.write(frame)
-                        i += 1
-                else:
-                    # Confidence < 0.3
-                    if boat_detected == True:
-                        #print(time.strftime("%Y-%m-%d-%H:%M:%S"),"78") 
+                        # Write detected frames to the video file
                         i = 1
-                        while i < number_of_non_detected_frames:
-                            cv_annotate_video(frame, start_time_sec)
+                        while i < number_of_detected_frames:
                             # Write frames to the video file
+                            cv_annotate_video(frame, start_time_sec)
                             video_writer.write(frame)
                             i += 1
-                    boat_detected = False
+                    else:
+                        # Confidence < 0.3
+                        if boat_detected == True:
+                            #print(time.strftime("%Y-%m-%d-%H:%M:%S"),"78") 
+                            i = 1
+                            while i < number_of_non_detected_frames:
+                                cv_annotate_video(frame, start_time_sec)
+                                # Write frames to the video file
+                                video_writer.write(frame)
+                                i += 1
+                        boat_detected = False
 
-        # Display the frame in the 'Video' window
-        #cv2.imshow("Video", frame)
+            # Display the frame in the 'Video' window
+            #cv2.imshow("Video", frame)
 
-        #if cv2.waitKey(1) & 0xFF == ord('q'):
-        #    break
+            #if cv2.waitKey(1) & 0xFF == ord('q'):
+            #    break
 
-    # Release the video capture object and close all windows
-    cap.release()
-    video_writer.release()
-    #cv2.destroyAllWindows()
+        # Release the video capture object and close all windows
+        cap.release()
+        video_writer.release()
+        #cv2.destroyAllWindows()
 
 def main():
     logger = setup_logging()  # Initialize the logger
