@@ -12,7 +12,7 @@ def annotate_video_duration(frame, start_time_sec):
     seconds_since_midnight = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
     elapsed_time = seconds_since_midnight - start_time_sec #elapsed since last star until now)
     label = str(dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) +  "Seconds since last start: " +  str(elapsed_time)
-    cv2.putText(frame,label,(105,105),cv2.FONT_HERSHEY_COMPLEX_SMALL,2,(0,0,255))
+    cv2.putText(frame,label,(105,105),cv2.FONT_HERSHEY_COMPLEX_SMALL,1,(0,0,255))
 
 # Load the pre-trained object detection model -- YOLO (You Only Look Once) 
 net = cv2.dnn.readNet('../darknet/yolov3-tiny.weights', '../darknet/cfg/yolov3-tiny.cfg')
