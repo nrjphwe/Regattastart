@@ -5,6 +5,14 @@ import time
 import cv2
 import numpy as np
 
+
+def annotate_video_duration(frame, start_time_sec):
+    time_now = dt.datetime.now()
+    seconds_since_midnight = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
+    elapsed_time = seconds_since_midnight - start_time_sec #elapsed since last star until now)
+    label = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S') +  "Seconds since last start: " +  elapsed_time
+    cv2.putText(frame,label,(105,105),cv2.FONT_HERSHEY_COMPLEX_SMALL,2,(0,0,255))
+
 # Load the pre-trained object detection model -- YOLO (You Only Look Once) 
 net = cv2.dnn.readNet('../darknet/yolov3-tiny.weights', '../darknet/cfg/yolov3-tiny.cfg')
 
@@ -31,6 +39,7 @@ start_time = 0
 capture_duration = 2  # in seconds
 number_of_detected_frames = 2
 number_of_non_detected_frames = 2
+start_time_sec = 66000
 
 while True:
     ret, frame = cap.read()
@@ -64,6 +73,7 @@ while True:
                 i = 1
                 while i < number_of_detected_frames:
                     # Write frames to the video file
+                    annotate_video_duration(frame, start_time_sec)
                     video_writer.write(frame)
                     i += 1
             else:
