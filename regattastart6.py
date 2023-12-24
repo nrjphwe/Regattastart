@@ -9,10 +9,6 @@ import logging
 import logging.config
 import json
 
-# image recognition
-import cv2
-print(cv2.__file__)
-
 import subprocess
 import RPi.GPIO as GPIO
 from picamera import PiCamera, Color
