@@ -175,8 +175,7 @@ def finish_recording(mp4_path, video_dur, start_time_sec):
     size = (width, height)
 
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # H.264 codec with MP4 container
-    file_path = mp4_path + "output" + today + ".mp4"
-    video_writer = cv2.VideoWriter(file_path), fourcc, 50, size)
+    video_writer = cv2.VideoWriter(mp4_path + 'output' + today + '.mp4', fourcc, 50, size)
 
     # Timer variables
     start_time = 0
