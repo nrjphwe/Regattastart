@@ -1,6 +1,7 @@
 #!/usr/bin/python3 -u
 import os
 import sys
+sys.path.append('/home/pi/opencv/build/lib/python3')
 import cgitb
 import time
 from datetime import datetime
@@ -8,10 +9,9 @@ import datetime as dt
 import logging
 import logging.config
 import json
-
 # image recognition
 import cv2
-print(cv2.__file__)
+import numpy as np
 
 import subprocess
 import RPi.GPIO as GPIO
@@ -141,38 +141,105 @@ def start_sequence(camera, signal, start_time_sec, num_starts, photo_path):
         logger.info(f"  Start_sequence, End of iteration: {i}")
 
 # image recognition
-def is_sailboat_visible(frame):
+#def is_sailboat_visible(frame,video_delay):
     # Implement your sailboat detection logic here
     # This could involve using a pre-trained model or custom logic
     # For simplicity, let's assume sailboat detection is always True
-    return True
+    #return True
 
+def cv_annotate_video(frame, start_time_sec):
+    time_now = dt.datetime.now()
+    seconds_since_midnight = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
+    elapsed_time = seconds_since_midnight - start_time_sec #elapsed since last start until now)
+    label = str(dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) +  " Seconds since last start: " +  str(elapsed_time)
+    cv2.putText(frame,label,(105,105),cv2.FONT_HERSHEY_COMPLEX_SMALL,1,(0,0,255))
 
-def finish_recording(camera, mp4_path, video_delay, video_dur, start_time_sec):
-    # Wait for finish, when the next video will start (delay)
-    time.sleep((video_delay - 2) * 60)  # Convert delay (minus 2 minutes after start) to seconds 
-    
-    t2 = dt.datetime.now()  
-    start_time = dt.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) + dt.timedelta(seconds=start_time_sec)
-    while (dt.datetime.now() - t2).seconds < (60 * video_dur):
+def finish_recording(mp4_path, video_dur, start_time_sec):
+    # Load the pre-trained object detection model -- YOLO (You Only Look Once) 
+    net = cv2.dnn.readNet('../darknet/yolov3-tiny.weights', '../darknet/cfg/yolov3-tiny.cfg')
 
-        start_video_recording(camera, mp4_path, f"video1.h264")
-        while True:
-            # Capture a frame
-            frame = camera.capture()
+    # Load COCO names (class labels)
+    with open('../darknet/data/coco.names', 'r') as f:
+        classes = f.read().strip().split('\n')
 
-            # Check if sailboat is visible
-            if is_sailboat_visible(frame):
-                # Sailboat is visible, continue recording
-                camera.wait_recording(0.5)
-                annotate_video_duration(camera, start_time_sec)
-            else:
-                # Sailboat is not visible, pause recording
-                stop_video_recording(camera)
-                break  # Exit the inner loop
+    # Load the configuration and weights for YOLO
+    layer_names = net.getUnconnectedOutLayersNames()
 
-            convert_video_to_mp4(mp4_path, f"video1.h264", f"video1.mp4")
-        logger.info("This was the last video =====")
+    today = time.strftime("%Y%m%d")
+
+    # Open a video capture object (replace 'your_video_file.mp4' with the actual video file or use 0 for webcam)
+    cap = cv2.VideoCapture(os.path.join(mp4_path, "video1.mp4")
+    width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH) + 0.5)
+    height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT) + 0.5)
+    size = (width, height)
+
+    fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # H.264 codec with MP4 container
+    video_writer = cv2.VideoWriter('output'+ today + '.mp4', fourcc, 50, size)
+
+    # Timer variables
+    start_time = 0
+    capture_duration = 2  # in seconds
+    number_of_detected_frames = 2
+    number_of_non_detected_frames = 2
+    #start_time_sec = 66000
+
+    while True:
+        ret, frame = cap.read()
+        if not ret:
+            break
+
+        # Variable to check if any boat is detected in the current frame
+        boat_detected = False
+
+        blob = cv2.dnn.blobFromImage(frame, scalefactor=0.00392, size=(416, 416), swapRB=True, crop=False)
+        net.setInput(blob)
+        outs = net.forward(layer_names)
+
+        for out in outs:
+            for detection in out:
+                scores = detection[5:]
+                class_id = np.argmax(scores)
+                confidence = scores[class_id]
+            
+                if confidence > 0.3 and classes[class_id] == 'boat':
+                    boat_detected = True
+                    #print(time.strftime("%Y-%m-%d-%H:%M:%S"), f"Class: {classes[class_id]}, Confidence: {confidence}")
+                    # Visualize the detected bounding box
+                    h, w, _ = frame.shape
+                    x, y, w, h = map(int, detection[0:4] * [w, h, w, h])
+
+                    # Modify the original frame
+                    cv2.rectangle(frame, (int(x), int(y)), (int(x + w), int(y + h)), (0, 255, 0), 2, cv2.LINE_AA)
+                    
+                    # Write detected frames to the video file
+                    i = 1
+                    while i < number_of_detected_frames:
+                        # Write frames to the video file
+                        cv_annotate_video(frame, start_time_sec)
+                        video_writer.write(frame)
+                        i += 1
+                else:
+                    # Confidence < 0.3
+                    if boat_detected == True:
+                        #print(time.strftime("%Y-%m-%d-%H:%M:%S"),"78") 
+                        i = 1
+                        while i < number_of_non_detected_frames:
+                            cv_annotate_video(frame, start_time_sec)
+                            # Write frames to the video file
+                            video_writer.write(frame)
+                            i += 1
+                    boat_detected = False
+                    
+        # Display the frame in the 'Video' window
+        #cv2.imshow("Video", frame)
+        
+        #if cv2.waitKey(1) & 0xFF == ord('q'):
+        #    break
+
+    # Release the video capture object and close all windows
+    cap.release()
+    video_writer.release()
+    #cv2.destroyAllWindows()
 
 def main():
     logger = setup_logging()  # Initialize the logger
@@ -244,7 +311,7 @@ def main():
                     break
 
         logger.info("Finish recording outside inner loop. start_time_sec=%s", start_time_sec)
-        finish_recording(camera, mp4_path, video_delay, num_video, video_dur,start_time_sec)
+        finish_recording( mp4_path, video_dur, start_time_sec)
 
     except json.JSONDecodeError as e:
         logger.info ("Failed to parse JSON: %", str(e))
