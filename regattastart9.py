@@ -9,6 +9,7 @@ import datetime as dt
 import logging
 import logging.config
 import json
+
 # image recognition
 import cv2
 import numpy as np
@@ -168,13 +169,14 @@ def finish_recording(mp4_path, video_dur, start_time_sec):
     today = time.strftime("%Y%m%d")
 
     # Open a video capture object (replace 'your_video_file.mp4' with the actual video file or use 0 for webcam)
-    cap = cv2.VideoCapture(os.path.join(mp4_path, "video1.mp4"))
+    cap = cv2.VideoCapture(os.path.join(mp4_path, "finish21-6.mp4"))
     width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH) + 0.5)
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT) + 0.5)
     size = (width, height)
 
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # H.264 codec with MP4 container
-    video_writer = cv2.VideoWriter('output'+ today + '.mp4', fourcc, 50, size)
+    file_path = mp4_path + "output" + today + ".mp4"
+    video_writer = cv2.VideoWriter(file_path), fourcc, 50, size)
 
     # Timer variables
     start_time = 0
