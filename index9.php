@@ -1,5 +1,5 @@
 <?php
-    define('APP_VERSION', '23.11.29'); // You can replace '1.0.0' with your desired version number
+    define('APP_VERSION', '23.12.24'); // You can replace '1.0.0' with your desired version number
     session_id("regattastart");
     session_start();
     //echo "Session id = " . Session_id() . " ";
@@ -189,8 +189,8 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
 </body>
 </html>
 <?php
-    // output when index6.php was last modified.
-    $filename = 'index6.php';
+    // output when index9.php was last modified.
+    $filename = 'index9.php';
     if (file_exists($filename)) {
         echo "        This web-page: $filename was last modified: " . date ("Y-m-d H:i:s.", filemtime($filename));
     }
