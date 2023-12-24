@@ -66,16 +66,16 @@ while True:
                     # Write frames to the video file
                     video_writer.write(frame)
                     i += 1
-            #else:
+            else:
                 # Confidence < 0.3
-            #    if boat_detected == True:
+                if boat_detected == True:
                     #print(time.strftime("%Y-%m-%d-%H:%M:%S"),"78") 
-            #        i = 1
-            #        while i < number_of_non_detected_frames:
-            #            # Write frames to the video file
-            #            video_writer.write(frame)
-            #            i += 1
-            #    boat_detected = False
+                    i = 1
+                    while i < number_of_non_detected_frames:
+                        # Write frames to the video file
+                        video_writer.write(frame)
+                        i += 1
+                boat_detected = False
                 
     # Display the frame in the 'Video' window
     #cv2.imshow("Video", frame)
