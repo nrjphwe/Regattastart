@@ -159,7 +159,7 @@ def finish_recording(mp4_path, video_dur, start_time_sec):
     net = cv2.dnn.readNet('/home/pi/darknet/yolov3-tiny.weights', '/home/pi/darknet/cfg/yolov3-tiny.cfg')
 
     # Load COCO names (class labels)
-    with open('../darknet/data/coco.names', 'r') as f:
+    with open('/home/pi/darknet/data/coco.names', 'r') as f:
         classes = f.read().strip().split('\n')
 
     # Load the configuration and weights for YOLO
