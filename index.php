@@ -76,6 +76,8 @@
         if (array_key_exists('num_video', $_SESSION['form_data'])) {
             $num_video = $_SESSION['form_data']['num_video'];
             echo " Number of videos durinhg finish: " . $num_video;
+        } else {
+            $num_video = 1;
         }
     }
     else {
