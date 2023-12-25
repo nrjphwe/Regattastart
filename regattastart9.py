@@ -141,13 +141,6 @@ def start_sequence(camera, signal, start_time_sec, num_starts, photo_path):
                     logger.info(f"  Start_sequence, seconds_since_midnight: {seconds_since_midnight}, start_time_sec: {start_time_sec}")
         logger.info(f"  Start_sequence, End of iteration: {i}")
 
-# image recognition
-#def is_sailboat_visible(frame,video_delay):
-    # Implement your sailboat detection logic here
-    # This could involve using a pre-trained model or custom logic
-    # For simplicity, let's assume sailboat detection is always True
-    #return True
-
 def cv_annotate_video(frame, start_time_sec):
     time_now = dt.datetime.now()
     seconds_since_midnight = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
@@ -155,8 +148,8 @@ def cv_annotate_video(frame, start_time_sec):
     label = str(dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) +  " Seconds since last start: " +  str(elapsed_time)
     cv2.putText(frame,label,(105,105),cv2.FONT_HERSHEY_COMPLEX_SMALL,1,(0,0,255))
 
-def finish_recording(mp4_path, video_dur, start_time_sec):
-    t_end = time.time() + 60 * video_dur
+def finish_recording(mp4_path, video_end, start_time_sec):
+    t_end = time.time() + 60 * video_end
     while time.time() < t_end:
         # Load the pre-trained object detection model -- YOLO (You Only Look Once) 
         net = cv2.dnn.readNet('/home/pi/darknet/yolov3-tiny.weights', '/home/pi/darknet/cfg/yolov3-tiny.cfg')
@@ -206,14 +199,11 @@ def finish_recording(mp4_path, video_dur, start_time_sec):
                 
                     if confidence > 0.3 and classes[class_id] == 'boat':
                         boat_detected = True
-                        #print(time.strftime("%Y-%m-%d-%H:%M:%S"), f"Class: {classes[class_id]}, Confidence: {confidence}")
                         # Visualize the detected bounding box
                         h, w, _ = frame.shape
                         x, y, w, h = map(int, detection[0:4] * [w, h, w, h])
-
                         # Modify the original frame
                         cv2.rectangle(frame, (int(x), int(y)), (int(x + w), int(y + h)), (0, 255, 0), 2, cv2.LINE_AA)
-
                         # Write detected frames to the video file
                         i = 1
                         while i < number_of_detected_frames:
@@ -260,9 +250,7 @@ def main():
         #logger.info("form_data: %s", form_data)
         start_time = str(form_data["start_time"]) # this is the first start
         week_day = str(form_data["day"])
-        video_delay = int(form_data["video_delay"])
-        video_dur = int(form_data["video_dur"])
-        num_video = int(form_data["num_video"])
+        video_end = int(form_data["video_end"])
         num_starts = int(form_data["num_starts"])
 
         camera = setup_camera()
@@ -272,8 +260,8 @@ def main():
         signal, lamp1, lamp2 = setup_gpio()
         remove_video_files(photo_path, "video")  # clean up 
         remove_picture_files(photo_path, ".jpg") # clean up
-        logger.info(" Weekday=%s, Start_time=%s, video_delay=%s, num_video=%s, video_dur=%s, num_starts=%s",
-                    week_day, start_time, video_delay, num_video, video_dur, num_starts)
+        logger.info(" Weekday=%s, Start_time=%s, video_end=%s, num_starts=%s",
+                    week_day, start_time, video_end, num_starts)
         
         start_hour, start_minute = start_time.split(':')
         start_time_sec = 60 * (int(start_minute) + 60 * int(start_hour))
@@ -314,7 +302,7 @@ def main():
                     break
 
         logger.info("Finish recording outside inner loop. start_time_sec=%s", start_time_sec)
-        finish_recording( mp4_path, video_dur, start_time_sec)
+        finish_recording( mp4_path, video_end, start_time_sec)
 
     except json.JSONDecodeError as e:
         logger.info ("Failed to parse JSON: %", str(e))
