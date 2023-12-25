@@ -55,6 +55,7 @@
         $form_data = $_SESSION["form_data"];
         // Display the data or do whatever you need
         echo "     Start time: " . $form_data['start_time'];
+        echo ", Video End: " . $form_data['video_end'];
         echo ", Video Delay: " . $form_data['video_delay'];
         echo ", Video Duration: " . $form_data['video_dur']; 
         $num_video = $form_data['num_video'];
@@ -86,10 +87,10 @@
     <!-- Here is our page's main content -->
     <main>
     <div align="center">
-    <h4><a href="/index6.php" title="Merged 1 and 2 start versions together"> Setup Page </a></h4>
+    <h4><a href="/index6.php" title="Merged 1 and 2 start versions together"> Setup Page Regattastart6 </a></h4>
     <div align="center">
     <div align="center">
-    <h4><a href="/index9.php" title="New with image detection"> Setup Page </a></h4>
+    <h4><a href="/index9.php" title="New with image detection"> Setup page Regattastart8 </a></h4>
     <div align="center">    
     <div class="w3-panel w3-pale-blue">
     <h3> Bilder tagna vid varje signal innan 1a start </h3>
