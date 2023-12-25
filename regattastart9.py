@@ -149,7 +149,7 @@ def cv_annotate_video(frame, start_time_sec):
     cv2.putText(frame,label,(105,105),cv2.FONT_HERSHEY_COMPLEX_SMALL,1,(0,0,255))
 
 def finish_recording(mp4_path, video_end, start_time_sec):
-    t_end = time.time() + 60 * video_end
+    t_end = time.time() + 60 * video_end - 120
     while time.time() < t_end:
         # Load the pre-trained object detection model -- YOLO (You Only Look Once) 
         net = cv2.dnn.readNet('/home/pi/darknet/yolov3-tiny.weights', '/home/pi/darknet/cfg/yolov3-tiny.cfg')
