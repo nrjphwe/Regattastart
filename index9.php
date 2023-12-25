@@ -4,10 +4,10 @@
     session_start();
     //echo "Session id = " . Session_id() . " ";
     // ini_set('session.gc_maxlifetime', 86400); is set in /etc/php/7.3/apache2/php.ini
-    //print_r($_SESSION);
-    //echo "<br/>";
-    //print_r($_POST);
-    //echo "<br/>";
+    print_r($_SESSION);
+    echo "<br/>";
+    print_r($_POST);
+    echo "<br/>";
     ini_set('display_errors', 1);
     error_reporting(E_ALL);
 ?>
@@ -32,8 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 $day = date("l");
 $start_time = "18:25"; // You need to initialize $start_time
-$video_delay = isset($_SESSION["form_data"]["video_delay"]) ? $_SESSION["form_data"]["video_delay"] : "";
-$video_dur = isset($_SESSION["form_data"]["video_dur"]) ? $_SESSION["form_data"]["video_dur"] : "";
+$video_end = isset($_SESSION["form_data"]["video_end"]) ? $_SESSION["form_data"]["video_end"] : "";
 $num_video = isset($_SESSION["form_data"]["num_video"]) ? $_SESSION["form_data"]["num_video"] : "";
 $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data"]["num_starts"] : "";
 
@@ -103,12 +102,12 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
         <fieldset>
             <legend>Video Setup: </legend>
             <p></p>
-            Duration for video1: 
-            <select name = "video_dur" id = "video_dur">
-                <option value="2"  <?php if(isset($video_dur) && $video_dur == "20"){echo "selected=\"selected\"";} ?> value="20">20</option> 
-                <option value="10" <?php if(isset($video_dur) && $video_dur == "60"){echo "selected=\"selected\"";} ?> value="60">60</option>
-                <option value="15" <?php if(isset($video_dur) && $video_dur == "90"){echo "selected=\"selected\"";}?> value="90">90</option>
-                <option value="20" <?php if(isset($video_dur) && $video_dur == "120"){echo "selected=\"selected\"";} ?> value="120">120</option>
+            End for finish video, duration from start: 
+            <select name = "video_end" id = "video_end">
+                <option value="2"  <?php if(isset($video_end) && $video_end == "20"){echo "selected=\"selected\"";} ?> value="20">20</option> 
+                <option value="10" <?php if(isset($video_end) && $video_end == "60"){echo "selected=\"selected\"";} ?> value="60">60</option>
+                <option value="15" <?php if(isset($video_end) && $video_end == "90"){echo "selected=\"selected\"";}?> value="90">90</option>
+                <option value="20" <?php if(isset($video_end) && $video_end == "120"){echo "selected=\"selected\"";} ?> value="120">120</option>
             </select>
             <p></p>
         </fieldset>
