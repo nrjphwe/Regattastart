@@ -55,12 +55,19 @@
         $form_data = $_SESSION["form_data"];
         // Display the data or do whatever you need
         echo "     Start time: " . $form_data['start_time'];
-        echo ", Video End: " . $form_data['video_end'];
-        echo ", Video Delay: " . $form_data['video_delay'];
+        
+        $video_end = $form_data['video_end'];
+        echo ", Video End: " . $video_end;
+
+        $video_delay = $form_data['video_delay'];
+        echo ", Video Delay: " . $video_delay;
+
         $video_dur = $form_data['video_dur'];
-        echo ", Video Duration: " . $video_dur']; 
+        echo ", Video Duration: " . $video_dur; 
+
         $num_video = $form_data['num_video'];
         echo ", Number of Videos: " . $num_video;
+
         $num_starts = $form_data['num_starts'];
         echo ", Number of starts: " . $num_starts;
     }
