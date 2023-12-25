@@ -50,56 +50,33 @@
     <link rel="stylesheet" href="/w3.css">
 </head>
 <?php
-    // Retrieve and display data from the session
-    if (isset($_SESSION["form_data"])) {
-        $form_data = $_SESSION["form_data"];
-        // Display the data or do whatever you need
-        echo " Start time: " . $form_data['start_time'];
-
-        echo ", Video Delay: " . $form_data['video_delay'];
-        echo ", Video Duration: " . $form_data['video_dur']; 
-        
-        $num_video = $form_data['num_video'];
-        echo ", Number of Videos: " . $num_video;
-
-        $num_starts = $form_data['num_starts'];
-        echo ", Number of starts: " . $num_starts;
-    }
-?>  
-
-<?php
-    // Check if a specific session variable exists
-    if (isset($_SESSION['video_end'])) {
-        // Read the value of the 'video_end duration' session variable
-        $video_end = $_SESSION['video_end'];
-
-        // Do something with the username
-        echo "Video end duration: $video_end";
-    }
+    if (isset($_SESSION['form_data']) && is_array($_SESSION['form_data'])) {
     
-    if (isset($_SESSION["form_data"])){
-        $form_data = $_SESSION['form_data'];
-        $num_starts= $form_data['num_starts'];
-        echo ", Number of starts: " . $num_starts; 
+        if (array_key_exists('start_time', $_SESSION['form_data'])) {
+            // Retrieve the value of the 'start_time' key
+            $start_time = $_SESSION['form_data']['start_time'];
+            echo "First Start time: $start_time";
+        }
+        if (array_key_exists('video_end', $_SESSION['form_data'])) {
+            $video_end = $_SESSION['form_data']['video_end'];
+            echo "Video end duration: $video_end";
+        }
+        if (array_key_exists('num_starts', $_SESSION['form_data'])) {
+            $num_starts = $_SESSION['form_data']['num_starts'];
+            echo "Number of starts: $num_starts";
+        }
+        if (array_key_exists('video_dur', $_SESSION['form_data'])) {
+            $video_dur = $_SESSION['form_data']['video_dur'];
+            echo "Video duration: $video_dur";
+        }
+        if (array_key_exists('video_delay', $_SESSION['form_data'])) {
+            $video_delay = $_SESSION['form_data']['video_delay'];
+            echo "Video delay after start: $video_delay";
+        }
     }
-    
-    if (isset($_SESSION["start_time"])){
-        $start_time= $_SESSION['start_time'];
-        echo ", First start time: " . $start_time; 
-    }
-
-    if (isset($_SESSION['video_dur'])){
-        $video_dur = $_SESSION['video_dur'];
-        $video_dur = $_form_data['video_dur'];
-        echo ", Video Duration: " . $video_dur; 
-    
-        $video_delay = $SESSION['video_delay'];
-        $video_delay = $form_data['video_delay'];
-        echo ", Video Delay: " . $video_delay;
-
-        $num_video = $SESSION['num_video'];
-        $num_video = $form_data['num_video'];
-        echo ", Number of Videos: " . $num_video;
+    else {
+        // 'form_data' array not set or not an array
+        echo "No form data found in the session.";
     }
 ?>
 <header>
