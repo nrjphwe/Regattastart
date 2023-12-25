@@ -68,23 +68,15 @@
 ?>  
 
 <?php
-// Check if a specific session variable exists
-if (isset($_SESSION['video_end'])) {
-    // Read the value of the 'video_end duration' session variable
-    $video_end = $_SESSION['video_end'];
+    // Check if a specific session variable exists
+    if (isset($_SESSION['video_end'])) {
+        // Read the value of the 'video_end duration' session variable
+        $video_end = $_SESSION['video_end'];
 
-    // Do something with the username
-    echo "Video end duration: $video_end";
-
-
-    // Retrieve and display data from the session
-
-    echo "video_end: ".$_SESSION['video_end'];
-
-    if (isset($_form_data['video_end'])){
-        echo ", Max duration from start: " . $video_end; 
+        // Do something with the username
+        echo "Video end duration: $video_end";
     }
-
+    
     if (isset($_SESSION["form_data"])){
         $form_data = $_SESSION['form_data'];
         $num_starts= $form_data['num_starts'];
