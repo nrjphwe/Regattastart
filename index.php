@@ -68,6 +68,15 @@
 ?>  
 
 <?php
+// Check if a specific session variable exists
+if (isset($_SESSION['video_end'])) {
+    // Read the value of the 'video_end duration' session variable
+    $video_end = $_SESSION['video_end'];
+
+    // Do something with the username
+    echo "Video end duration: $video_end";
+
+
     // Retrieve and display data from the session
 
     echo "video_end: ".$_SESSION['video_end'];
@@ -81,7 +90,6 @@
         $num_starts= $form_data['num_starts'];
         echo ", Number of starts: " . $num_starts; 
     }
-
     
     if (isset($_SESSION["start_time"])){
         $start_time= $_SESSION['start_time'];
