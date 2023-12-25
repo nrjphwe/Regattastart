@@ -73,6 +73,10 @@
             $video_delay = $_SESSION['form_data']['video_delay'];
             echo " Video delay after start: " . $video_delay;
         }
+        if (array_key_exists('num_video', $_SESSION['form_data'])) {
+            $num_video = $_SESSION['form_data']['num_video'];
+            echo " Number of videos durinhg finish: " . $num_video;
+        }
     }
     else {
         // 'form_data' array not set or not an array
