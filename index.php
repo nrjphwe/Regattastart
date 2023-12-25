@@ -67,16 +67,20 @@
 
     if (isset($_SESSION["start_time"]))
         $start_time= $_SESSION['start_time'];
+        $start_time= $_form_data['start_time'];
         echo ", First start time: " . $start_time; 
 
     
     if (isset($_SESSION["video_dur"]))
         $video_dur = $_SESSION['video_dur'];
+        $video_dur = $_form_data['video_dur'];
         echo ", Video Duration: " . $video_dur; 
 
+        $video_delay = $SESSION['video_delay'];
         $video_delay = $form_data['video_delay'];
         echo ", Video Delay: " . $video_delay;
 
+        $num_video = $SESSION['num_video'];
         $num_video = $form_data['num_video'];
         echo ", Number of Videos: " . $num_video;
        
