@@ -53,7 +53,7 @@
     // Retrieve and display data from the session
     if (isset($_SESSION["form_data"])) {
         $form_data = $_SESSION["form_data"];
-        // Display the data or do whatever you need
+        echo ", Form data " . $form_data; 
 
     if (isset($_SESSION["num_starts"]))
         $num_starts= $_SESSION['num_starts'];
