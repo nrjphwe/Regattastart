@@ -71,7 +71,7 @@
         }
         if (array_key_exists('video_delay', $_SESSION['form_data'])) {
             $video_delay = $_SESSION['form_data']['video_delay'];
-            echo "Video delay after start: $video_delay";
+            echo "Video delay after start: " . $video_delay;
         }
     }
     else {
