@@ -56,11 +56,11 @@
         echo ", Form data " . $form_data; 
 
     if (isset($_SESSION["num_starts"]))
-        $num_starts= $_SESSION['num_starts'];
+        $num_starts= $form_data['num_starts'];
         echo ", Number of starts: " . $num_starts; 
 
     if (isset($_SESSION["video_end"]))
-        $video_end = $_SESSION['form_data'];
+        //$video_end = $_SESSION['form_data'];
         $video_end = $form_data['video_end'];
         echo ", Max duration from start: " . $video_end; 
 
