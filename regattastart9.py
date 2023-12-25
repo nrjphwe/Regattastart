@@ -164,7 +164,8 @@ def finish_recording(mp4_path, video_end, start_time_sec):
         today = time.strftime("%Y%m%d")
 
         # Open a video capture object (replace 'your_video_file.mp4' with the actual video file or use 0 for webcam)
-        cap = cv2.VideoCapture(os.path.join(mp4_path, "finish21-6.mp4"))
+        #cap = cv2.VideoCapture(os.path.join(mp4_path, "finish21-6.mp4"))
+        cap = cv2.VideoCapture(0)
         width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH) + 0.5)
         height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT) + 0.5)
         size = (width, height)
