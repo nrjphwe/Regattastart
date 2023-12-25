@@ -59,15 +59,16 @@
         $video_end = $form_data['video_end'];
         echo ", Video End: " . $video_end;
 
-        $video_delay = $form_data['video_delay'];
-        echo ", Video Delay: " . $video_delay;
-
         $num_starts = $form_data['num_starts'];
         echo ", Number of starts: " . $num_starts;
     }
     if (isset($_SESSION["video_dur"])) {
+
         $video_dur = $_SESSION['video_dur'];
         echo ", Video Duration: " . $video_dur; 
+
+        $video_delay = $form_data['video_delay'];
+        echo ", Video Delay: " . $video_delay;
 
         $num_video = $form_data['num_video'];
         echo ", Number of Videos: " . $num_video;
