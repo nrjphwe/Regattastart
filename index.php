@@ -55,23 +55,23 @@
         if (array_key_exists('start_time', $_SESSION['form_data'])) {
             // Retrieve the value of the 'start_time' key
             $start_time = $_SESSION['form_data']['start_time'];
-            echo "First Start time: $start_time";
+            echo "First Start time: " . $start_time;
         }
         if (array_key_exists('video_end', $_SESSION['form_data'])) {
             $video_end = $_SESSION['form_data']['video_end'];
-            echo "Video end duration: $video_end";
+            echo " Video end duration: " . $video_end;
         }
         if (array_key_exists('num_starts', $_SESSION['form_data'])) {
             $num_starts = $_SESSION['form_data']['num_starts'];
-            echo "Number of starts: $num_starts";
+            echo " Number of starts: $num_starts";
         }
         if (array_key_exists('video_dur', $_SESSION['form_data'])) {
             $video_dur = $_SESSION['form_data']['video_dur'];
-            echo "Video duration: $video_dur";
+            echo " Video duration: $video_dur";
         }
         if (array_key_exists('video_delay', $_SESSION['form_data'])) {
             $video_delay = $_SESSION['form_data']['video_delay'];
-            echo "Video delay after start: " . $video_delay;
+            echo " Video delay after start: " . $video_delay;
         }
     }
     else {
