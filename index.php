@@ -70,7 +70,7 @@
 <?php
     // Retrieve and display data from the session
 
-    echo "video_end: ".$_SESSION[video_end];
+    echo "video_end: ".$_SESSION['video_end'];
 
     if (isset($_form_data['video_end'])){
         echo ", Max duration from start: " . $video_end; 
@@ -85,7 +85,6 @@
     
     if (isset($_SESSION["start_time"])){
         $start_time= $_SESSION['start_time'];
-        $start_time= $_form_data['start_time'];
         echo ", First start time: " . $start_time; 
     }
 
