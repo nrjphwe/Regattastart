@@ -106,10 +106,10 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
             <p></p>
             End for finish video, duration from start: 
             <select name = "video_end" id = "video_end">
-                <option value="2"  <?php if(isset($video_end) && $video_end == "20"){echo "selected=\"selected\"";} ?> value="20">20</option> 
-                <option value="10" <?php if(isset($video_end) && $video_end == "60"){echo "selected=\"selected\"";} ?> value="60">60</option>
-                <option value="15" <?php if(isset($video_end) && $video_end == "90"){echo "selected=\"selected\"";}?> value="90">90</option>
-                <option value="20" <?php if(isset($video_end) && $video_end == "120"){echo "selected=\"selected\"";} ?> value="120">120</option>
+                <option value="20"  <?php if(isset($video_end) && $video_end == "20"){echo "selected=\"selected\"";} ?> value="20">20</option> 
+                <option value="60" <?php if(isset($video_end) && $video_end == "60"){echo "selected=\"selected\"";} ?> value="60">60</option>
+                <option value="90" <?php if(isset($video_end) && $video_end == "90"){echo "selected=\"selected\"";}?> value="90">90</option>
+                <option value="120" <?php if(isset($video_end) && $video_end == "120"){echo "selected=\"selected\"";} ?> value="120">120</option>
             </select>
             <p></p>
         </fieldset>
