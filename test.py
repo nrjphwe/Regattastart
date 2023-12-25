@@ -27,7 +27,7 @@ layer_names = net.getUnconnectedOutLayersNames()
 today = time.strftime("%Y%m%d")
 
 # Open a video capture object (replace 'your_video_file.mp4' with the actual video file or use 0 for webcam)
-cap = cv2.VideoCapture("finish21-6.mp4")
+cap = cv2.VideoCapture(0)
 width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH) + 0.5)
 height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT) + 0.5)
 size = (width, height)
@@ -90,7 +90,7 @@ while True:
                 boat_detected = False
                 
     # Display the frame in the 'Video' window
-    #cv2.imshow("Video", frame)
+    cv2.imshow("Video", frame)
     
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
