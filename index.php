@@ -53,8 +53,6 @@
     // Retrieve and display data from the session
     if (isset($_SESSION["form_data"])) {
         $form_data = $_SESSION["form_data"];
-        echo "Form data" . $form_data;
-        
         // Display the data or do whatever you need
         echo "     Start time: " . $form_data['start_time'];
         echo ", Video Delay: " . $form_data['video_delay'];
@@ -77,9 +75,8 @@
         echo ", Number of starts: " . $num_starts; 
     }
 
-    if (isset($_SESSION["video_end"])){
-        $video_end = $_SESSION['form_data'];
-        $video_end = $form_data['video_end'];
+    if (isset($_SESSION['video_end'])){
+        $video_end = $_SESSION['video_end'];
         echo ", Max duration from start: " . $video_end; 
     }
     if (isset($_SESSION["start_time"])){
@@ -88,7 +85,7 @@
         echo ", First start time: " . $start_time; 
     }
 
-    if (isset($_SESSION["video_dur"])){
+    if (isset($_SESSION['video_dur'])){
         $video_dur = $_SESSION['video_dur'];
         $video_dur = $_form_data['video_dur'];
         echo ", Video Duration: " . $video_dur; 
