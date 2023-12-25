@@ -5,9 +5,9 @@
     //echo "Session id = " . Session_id() . " ";
     // ini_set('session.gc_maxlifetime', 86400); is set in /etc/php/7.3/apache2/php.ini
     print_r($_SESSION);
-    echo "<br/>";
+    echo "Session <br/>";
     print_r($_POST);
-    echo "<br/>";
+    echo "<post br/>";
     ini_set('display_errors', 1);
     error_reporting(E_ALL);
 ?>
