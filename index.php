@@ -70,6 +70,8 @@
 <?php
     // Retrieve and display data from the session
 
+    echo "video_end: ".$_SESSION["video_name"];
+
     if (isset($_form_data['video_end'])){
         echo ", Max duration from start: " . $video_end; 
     }
