@@ -94,11 +94,11 @@ while True:
                             i += 1
                     boat_detected = False
                     
-        # Display the frame in the 'Video' window
-        cv2.imshow("Video", frame)
-        
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
+    # Display the frame in the 'Video' window
+    cv2.imshow("Video", frame)
+    
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
 
 # Release the video capture object and close all windows
 cap.release()
