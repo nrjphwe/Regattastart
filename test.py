@@ -18,7 +18,7 @@ def annotate_video(frame, start_time_sec):
 # Load the pre-trained object detection model -- YOLO (You Only Look Once) 
 net = cv2.dnn.readNet('../darknet/yolov3-tiny.weights', '../darknet/cfg/yolov3-tiny.cfg')
 
-# Load COCO names (class labels)
+# Load COCO names (class labels) 
 with open('../darknet/data/coco.names', 'r') as f:
     classes = f.read().strip().split('\n')
 
