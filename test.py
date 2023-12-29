@@ -37,6 +37,7 @@ fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # H.264 codec with MP4 container
 video_writer = cv2.VideoWriter('output'+ today + '.mp4', fourcc, 50, size)
 
 # Timer variables
+start_time_sec = 0
 number_of_detected_frames = 2
 number_of_non_detected_frames = 1
 
