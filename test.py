@@ -43,20 +43,20 @@ number_of_detected_frames = 2
 number_of_non_detected_frames = 1
 start_time_sec = 66000
 
-while True:
-    ret, frame = cap.read()
-    if not ret:
-        break
+t_end = time.time() + 60 * video_end
+while time.time() < t_end:
 
-    # Variable to check if any boat is detected in the current frame
-    boat_detected = False
+    while True:
+        ret, frame = cap.read()
+        if not ret:
+            break
 
-    blob = cv2.dnn.blobFromImage(frame, scalefactor=0.00392, size=(416, 416), swapRB=True, crop=False)
-    net.setInput(blob)
-    outs = net.forward(layer_names)
+        # Variable to check if any boat is detected in the current frame
+        boat_detected = False
 
-    t_end = time.time() + 60 * video_end
-    while time.time() < t_end:
+        blob = cv2.dnn.blobFromImage(frame, scalefactor=0.00392, size=(416, 416), swapRB=True, crop=False)
+        net.setInput(blob)
+        outs = net.forward(layer_names)
 
         for out in outs:
             for detection in out:
