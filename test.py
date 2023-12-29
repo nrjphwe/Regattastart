@@ -55,9 +55,8 @@ while True:
     net.setInput(blob)
     outs = net.forward(layer_names)
 
-    t_end = time.time() + 60 * video_end - 120
+    t_end = time.time() + 60 * video_end
     while time.time() < t_end:
-
 
         for out in outs:
             for detection in out:
