@@ -6,8 +6,6 @@ import datetime as dt
 import cv2
 import numpy as np
 
-video_end = 1
-
 def annotate_video(frame, start_time_sec):
     time_now = dt.datetime.now()
     seconds_since_midnight = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
@@ -37,9 +35,13 @@ fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # H.264 codec with MP4 container
 video_writer = cv2.VideoWriter('output'+ today + '.mp4', fourcc, 50, size)
 
 # Timer variables
+video_end = 1
+start_time_= 0
 start_time_sec = 0
 number_of_detected_frames = 2
 number_of_non_detected_frames = 1
+
+start_time = time.time()
 
 while True:
     ret, frame = cap.read()
@@ -84,9 +86,8 @@ while True:
             break
 
         # Check if the maximum duration has been reached
-
-        t_end = time.time() + 60 * video_end
-        if time.time() < t_end:
+        elapsed_time = time.time() - start_time
+        if elapsed_time >= 60 * video_end:
             break
 
 # Release the video capture object and close all windows
