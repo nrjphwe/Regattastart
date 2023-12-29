@@ -6,6 +6,7 @@ import datetime as dt
 import cv2
 import numpy as np
 
+video_end = 5
 
 def annotate_video(frame, start_time_sec):
     time_now = dt.datetime.now()
@@ -54,46 +55,50 @@ while True:
     net.setInput(blob)
     outs = net.forward(layer_names)
 
-    for out in outs:
-        for detection in out:
-            scores = detection[5:]
-            class_id = np.argmax(scores)
-            confidence = scores[class_id]
-        
-            if confidence > 0.3 and classes[class_id] == 'boat':
-                boat_detected = True
-                #print(time.strftime("%Y-%m-%d-%H:%M:%S"), f"Class: {classes[class_id]}, Confidence: {confidence}")
-                # Visualize the detected bounding box
-                h, w, _ = frame.shape
-                x, y, w, h = map(int, detection[0:4] * [w, h, w, h])
+    t_end = time.time() + 60 * video_end - 120
+    while time.time() < t_end:
 
-                # Modify the original frame
-                cv2.rectangle(frame, (int(x), int(y)), (int(x + w), int(y + h)), (0, 255, 0), 2, cv2.LINE_AA)
-                
-                # Write detected frames to the video file
-                i = 1
-                while i < number_of_detected_frames:
-                    # Write frames to the video file
-                    annotate_video(frame, start_time_sec)
-                    video_writer.write(frame)
-                    i += 1
-            else:
-                # Confidence < 0.3
-                if boat_detected == True:
-                    #print(time.strftime("%Y-%m-%d-%H:%M:%S"),"78") 
+
+        for out in outs:
+            for detection in out:
+                scores = detection[5:]
+                class_id = np.argmax(scores)
+                confidence = scores[class_id]
+            
+                if confidence > 0.3 and classes[class_id] == 'boat':
+                    boat_detected = True
+                    #print(time.strftime("%Y-%m-%d-%H:%M:%S"), f"Class: {classes[class_id]}, Confidence: {confidence}")
+                    # Visualize the detected bounding box
+                    h, w, _ = frame.shape
+                    x, y, w, h = map(int, detection[0:4] * [w, h, w, h])
+
+                    # Modify the original frame
+                    cv2.rectangle(frame, (int(x), int(y)), (int(x + w), int(y + h)), (0, 255, 0), 2, cv2.LINE_AA)
+                    
+                    # Write detected frames to the video file
                     i = 1
-                    while i < number_of_non_detected_frames:
-                        annotate_video(frame, start_time_sec)
+                    while i < number_of_detected_frames:
                         # Write frames to the video file
+                        annotate_video(frame, start_time_sec)
                         video_writer.write(frame)
                         i += 1
-                boat_detected = False
-                
-    # Display the frame in the 'Video' window
-    cv2.imshow("Video", frame)
-    
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
+                else:
+                    # Confidence < 0.3
+                    if boat_detected == True:
+                        #print(time.strftime("%Y-%m-%d-%H:%M:%S"),"78") 
+                        i = 1
+                        while i < number_of_non_detected_frames:
+                            annotate_video(frame, start_time_sec)
+                            # Write frames to the video file
+                            video_writer.write(frame)
+                            i += 1
+                    boat_detected = False
+                    
+        # Display the frame in the 'Video' window
+        cv2.imshow("Video", frame)
+        
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
 
 # Release the video capture object and close all windows
 cap.release()
