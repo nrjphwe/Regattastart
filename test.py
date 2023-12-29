@@ -43,13 +43,13 @@ number_of_detected_frames = 2
 number_of_non_detected_frames = 1
 start_time_sec = 66000
 
-t_end = time.time() + 60 * video_end
-while time.time() < t_end:
+while True:
+    ret, frame = cap.read()
+    if not ret:
+        break
 
-    while True:
-        ret, frame = cap.read()
-        if not ret:
-            break
+    t_end = time.time() + 60 * video_end
+    while time.time() < t_end:
 
         # Variable to check if any boat is detected in the current frame
         boat_detected = False
