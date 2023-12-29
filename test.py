@@ -79,6 +79,17 @@ while True:
                     video_writer.write(frame)
                     i += 1
                 
+            else:
+                # Confidence < 0.2
+                if boat_detected == True:
+                    i = 1
+                    while i < number_of_non_detected_frames:
+                        annotate_video(frame, start_time_sec)
+                        video_writer.write(frame)
+                        i += 1
+                    boat_detected = False
+
+
                 # Display the frame in the 'Video' window
                 cv2.imshow("Video", frame)
     
