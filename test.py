@@ -79,12 +79,13 @@ while True:
                     while i < number_of_detected_frames:
                         # Write frames to the video file
                         annotate_video(frame, start_time_sec)
+                        print(time.strftime("%Y-%m-%d-%H:%M:%S"),"82") 
                         video_writer.write(frame)
                         i += 1
                 else:
                     # Confidence < 0.3
                     if boat_detected == True:
-                        #print(time.strftime("%Y-%m-%d-%H:%M:%S"),"78") 
+                        print(time.strftime("%Y-%m-%d-%H:%M:%S"),"88") 
                         i = 1
                         while i < number_of_non_detected_frames:
                             annotate_video(frame, start_time_sec)
