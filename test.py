@@ -82,13 +82,13 @@ while True:
                 # Display the frame in the 'Video' window
                 cv2.imshow("Video", frame)
     
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
 
-        # Check if the maximum duration has been reached
-        elapsed_time = time.time() - start_time
-        if elapsed_time >= 60 * video_end:
-            break
+    # Check if the maximum duration has been reached
+    elapsed_time = time.time() - start_time
+    if elapsed_time >= 60 * video_end:
+        break
 
 # Release the video capture object and close all windows
 cap.release()
