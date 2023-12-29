@@ -39,8 +39,8 @@ video_writer = cv2.VideoWriter('output'+ today + '.mp4', fourcc, 50, size)
 # Timer variables
 start_time = 0
 capture_duration = 2  # in seconds
-number_of_detected_frames = 3
-number_of_non_detected_frames = 2
+number_of_detected_frames = 5
+number_of_non_detected_frames = 1
 start_time_sec = 66000
 
 while True:
@@ -55,7 +55,7 @@ while True:
     net.setInput(blob)
     outs = net.forward(layer_names)
 
-    t_end = time.time() + 10 * video_end
+    t_end = time.time() + 60 * video_end
     while time.time() < t_end:
 
         for out in outs:
