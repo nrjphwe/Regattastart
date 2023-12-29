@@ -39,7 +39,7 @@ video_writer = cv2.VideoWriter('output'+ today + '.mp4', fourcc, 50, size)
 # Timer variables
 start_time = 0
 capture_duration = 2  # in seconds
-number_of_detected_frames = 5
+number_of_detected_frames = 3
 number_of_non_detected_frames = 2
 start_time_sec = 66000
 
@@ -79,7 +79,6 @@ while True:
                     while i < number_of_detected_frames:
                         # Write frames to the video file
                         annotate_video(frame, start_time_sec)
-                        print(time.strftime("%Y-%m-%d-%H:%M:%S"),"82") 
                         video_writer.write(frame)
                         i += 1
                 else:
