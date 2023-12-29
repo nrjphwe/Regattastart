@@ -49,7 +49,9 @@ while True:
         break
 
     t_end = time.time() + 60 * video_end
-    while time.time() < t_end:
+    while True:
+        if time.time() > t_end:
+            break
 
         # Variable to check if any boat is detected in the current frame
         boat_detected = False
@@ -81,17 +83,17 @@ while True:
                         annotate_video(frame, start_time_sec)
                         video_writer.write(frame)
                         i += 1
-                else:
-                    # Confidence < 0.2
-                    if boat_detected == True:
-                        i = 1
-                        while i < number_of_non_detected_frames:
-                            print(time.strftime("%Y-%m-%d-%H:%M:%S"),"89") 
-                            annotate_video(frame, start_time_sec)
-                            # Write frames to the video file
-                            video_writer.write(frame)
-                            i += 1
-                    boat_detected = False
+                #else:
+                #    # Confidence < 0.2
+                #    if boat_detected == True:
+                #        i = 1
+                #        while i < number_of_non_detected_frames:
+                #            print(time.strftime("%Y-%m-%d-%H:%M:%S"),"89") 
+                #            annotate_video(frame, start_time_sec)
+                #            # Write frames to the video file
+                #            video_writer.write(frame)
+                #            i += 1
+                #    boat_detected = False
                     
                 # Display the frame in the 'Video' window
                 cv2.imshow("Video", frame)
