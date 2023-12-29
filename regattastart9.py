@@ -34,7 +34,7 @@ def setup_logging():
     return logger
 
 def setup_camera():
-    try:§
+    try:
         camera = PiCamera()
         camera.resolution = (1296, 730)
         camera.framerate = 5
