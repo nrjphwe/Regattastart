@@ -6,7 +6,7 @@ import datetime as dt
 import cv2
 import numpy as np
 
-video_end = 5
+video_end = 1
 
 def annotate_video(frame, start_time_sec):
     time_now = dt.datetime.now()
@@ -55,7 +55,7 @@ while True:
     net.setInput(blob)
     outs = net.forward(layer_names)
 
-    t_end = time.time() + 60 * video_end
+    t_end = time.time() + 10 * video_end
     while time.time() < t_end:
 
         for out in outs:
