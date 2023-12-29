@@ -37,69 +37,56 @@ fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # H.264 codec with MP4 container
 video_writer = cv2.VideoWriter('output'+ today + '.mp4', fourcc, 50, size)
 
 # Timer variables
-start_time = 0
-capture_duration = 2  # in seconds
 number_of_detected_frames = 2
 number_of_non_detected_frames = 1
-start_time_sec = 66000
 
 while True:
     ret, frame = cap.read()
     if not ret:
         break
 
-    t_end = time.time() + 60 * video_end
-    while True:
-        if time.time() > t_end:
-            break
+    # Variable to check if any boat is detected in the current frame
+    boat_detected = False
 
-        # Variable to check if any boat is detected in the current frame
-        boat_detected = False
+    blob = cv2.dnn.blobFromImage(frame, scalefactor=0.00392, size=(416, 416), swapRB=True, crop=False)
+    net.setInput(blob)
+    outs = net.forward(layer_names)
 
-        blob = cv2.dnn.blobFromImage(frame, scalefactor=0.00392, size=(416, 416), swapRB=True, crop=False)
-        net.setInput(blob)
-        outs = net.forward(layer_names)
+    for out in outs:
+        for detection in out:
+            scores = detection[5:]
+            class_id = np.argmax(scores)
+            confidence = scores[class_id]
+        
+            if confidence > 0.2 and classes[class_id] == 'boat':
+                boat_detected = True
+                #print(time.strftime("%Y-%m-%d-%H:%M:%S"), f"Class: {classes[class_id]}, Confidence: {confidence}")
+                # Visualize the detected bounding box
+                h, w, _ = frame.shape
+                x, y, w, h = map(int, detection[0:4] * [w, h, w, h])
 
-        for out in outs:
-            for detection in out:
-                scores = detection[5:]
-                class_id = np.argmax(scores)
-                confidence = scores[class_id]
-            
-                if confidence > 0.2 and classes[class_id] == 'boat':
-                    boat_detected = True
-                    #print(time.strftime("%Y-%m-%d-%H:%M:%S"), f"Class: {classes[class_id]}, Confidence: {confidence}")
-                    # Visualize the detected bounding box
-                    h, w, _ = frame.shape
-                    x, y, w, h = map(int, detection[0:4] * [w, h, w, h])
-
-                    # Modify the original frame
-                    cv2.rectangle(frame, (int(x), int(y)), (int(x + w), int(y + h)), (0, 255, 0), 2, cv2.LINE_AA)
-                    
-                    # Write detected frames to the video file
-                    i = 1
-                    while i < number_of_detected_frames:
-                        # Write frames to the video file
-                        annotate_video(frame, start_time_sec)
-                        video_writer.write(frame)
-                        i += 1
-                #else:
-                #    # Confidence < 0.2
-                #    if boat_detected == True:
-                #        i = 1
-                #        while i < number_of_non_detected_frames:
-                #            print(time.strftime("%Y-%m-%d-%H:%M:%S"),"89") 
-                #            annotate_video(frame, start_time_sec)
-                #            # Write frames to the video file
-                #            video_writer.write(frame)
-                #            i += 1
-                #    boat_detected = False
-                    
+                # Modify the original frame
+                cv2.rectangle(frame, (int(x), int(y)), (int(x + w), int(y + h)), (0, 255, 0), 2, cv2.LINE_AA)
+                
+                # Write detected frames to the video file
+                i = 1
+                while i < number_of_detected_frames:
+                    # Write frames to the video file
+                    annotate_video(frame, start_time_sec)
+                    video_writer.write(frame)
+                    i += 1
+                
                 # Display the frame in the 'Video' window
                 cv2.imshow("Video", frame)
     
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+
+        # Check if the maximum duration has been reached
+
+        t_end = time.time() + 60 * video_end
+        if time.time() < t_end:
+            break
 
 # Release the video capture object and close all windows
 cap.release()
