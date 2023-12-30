@@ -223,7 +223,7 @@ def finish_recording(mp4_path, video_end, start_time_sec):
                         boat_detected = False
 
         # Check if the maximum duration has been reached
-        elapsed_time = time.time() - start_time_sec
+        elapsed_time = time.time() - start_time
         if elapsed_time >= 60 * video_end:
             break
 
@@ -293,7 +293,6 @@ def main():
                             #logger.info("Inside inner loop. seconds_since_midnight=%s", seconds_since_midnight)
                             annotate_video_duration(camera, start_time_sec)
                             camera.wait_recording(0)
-                    
                         stop_video_recording(camera)
                         convert_video_to_mp4(mp4_path, "video0.h264", "video0.mp4")
                     # Exit the loop after the condition is met
