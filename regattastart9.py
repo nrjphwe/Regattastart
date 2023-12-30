@@ -225,7 +225,7 @@ def finish_recording(mp4_path, video_end, start_time, start_time_sec):
                         boat_detected = False
 
         # Check if the maximum duration has been reached
-        elapsed_time = time.time() - start_time
+        elapsed_time = (datetime.now() - start_time).total_seconds()
         if elapsed_time >= 60 * video_end:
             break
 
@@ -248,7 +248,8 @@ def main():
     try:
         form_data = json.loads(sys.argv[1])
         #logger.info("form_data: %s", form_data)
-        start_time = str(form_data["start_time"]) # this is the first start
+        start_time_str = str(form_data["start_time"]) # this is the first start
+        start_time = datetime.strptime(start_time_str, "%H:%M")  # Convert to datetime object
         week_day = str(form_data["day"])
         video_end = int(form_data["video_end"])
         num_starts = int(form_data["num_starts"])
@@ -303,8 +304,6 @@ def main():
         # After finishing the initial recording with PiCamera
         camera.close()
         time.sleep(2)  # Introduce a delay of 2 seconds
-
-
 
     except json.JSONDecodeError as e:
         logger.info ("Failed to parse JSON: %", str(e))
