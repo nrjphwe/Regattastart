@@ -151,15 +151,11 @@ def cv_annotate_video(frame, start_time_sec):
 def finish_recording(mp4_path, video_end, start_time, start_time_sec):
     # Load the pre-trained object detection model -- YOLO (You Only Look Once) 
     net = cv2.dnn.readNet('/home/pi/darknet/yolov3-tiny.weights', '/home/pi/darknet/cfg/yolov3-tiny.cfg')
-
     # Load COCO names (class labels)
     with open('/home/pi/darknet/data/coco.names', 'r') as f:
         classes = f.read().strip().split('\n')
-
     # Load the configuration and weights for YOLO
     layer_names = net.getUnconnectedOutLayersNames()
-
-    today = time.strftime("%Y%m%d")
 
     # Open a video capture object (replace 'your_video_file.mp4' with the actual video file or use 0 for webcam)
     #cap = cv2.VideoCapture(os.path.join(mp4_path, "finish21-6.mp4"))
@@ -172,8 +168,6 @@ def finish_recording(mp4_path, video_end, start_time, start_time_sec):
     video_writer = cv2.VideoWriter(mp4_path + 'video1' + '.mp4', fourcc, 50, size)
 
     # Timer variables
-    #start_time = 0
-    capture_duration = 2  # in seconds
     number_of_detected_frames = 5
     number_of_non_detected_frames = 1
 
@@ -197,6 +191,7 @@ def finish_recording(mp4_path, video_end, start_time, start_time_sec):
             
                 if confidence > 0.3 and classes[class_id] == 'boat':
                     boat_detected = True
+                    print("Boatdetected = ", boat_detected)
                     # Visualize the detected bounding box
                     h, w, _ = frame.shape
                     x, y, w, h = map(int, detection[0:4] * [w, h, w, h])
