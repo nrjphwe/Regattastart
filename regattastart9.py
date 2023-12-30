@@ -226,6 +226,7 @@ def finish_recording(mp4_path, video_end, start_time, start_time_sec):
 
         # Check if the maximum duration has been reached
         elapsed_time = (datetime.now() - start_time).total_seconds()
+        print("Elapsed time ", elapsed_time)
         if elapsed_time >= 60 * video_end:
             break
 
@@ -265,8 +266,8 @@ def main():
                     week_day, start_time, video_end, num_starts)
         
         #start_hour, start_minute = start_time.split(':')
-        start_hour, start_minute = start_time.hour, start_time.minute  # Extract hour and minute
-        start_time_sec = 60 * (int(start_minute) + 60 * int(start_hour))
+        start_hour, start_minute = start_time.hour, start_time.minute
+        start_time_sec = 60 * (int(start_minute) + 60 * int(start_hour)) # Extract hour and minute
 
         t5min_warning = start_time_sec - 5 * 60 # time when the start-machine should begin to execute.
         wd = dt.datetime.today().strftime("%A")
