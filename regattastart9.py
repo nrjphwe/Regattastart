@@ -301,6 +301,10 @@ def main():
                     # Exit the loop after the condition is met
                     break
 
+        # After finishing the initial recording with PiCamera
+        camera.close()
+        time.sleep(2)  # Introduce a delay of 2 seconds
+        
         logger.info("Finish recording outside inner loop. start_time_sec=%s", start_time_sec)
         finish_recording( mp4_path, video_end, start_time, start_time_sec)
 
