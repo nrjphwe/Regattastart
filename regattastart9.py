@@ -261,7 +261,7 @@ def main():
         signal, lamp1, lamp2 = setup_gpio()
         remove_video_files(photo_path, "video")  # clean up 
         remove_picture_files(photo_path, ".jpg") # clean up
-        logger.info(" Weekday=%s, Start_time=%s, video_end=%s, num_starts=%s",
+        logger.info(" Weekday=%s, Start_time_str=%s, video_end=%s, num_starts=%s",
                     week_day, start_time, video_end, num_starts)
         
         #start_hour, start_minute = start_time.split(':')
@@ -277,7 +277,6 @@ def main():
             while True:
                 now = dt.datetime.now()
                 seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
-
                 if seconds_since_midnight > t5min_warning - 2:         
                     logger.info("Start of outer loop iteration. seconds_since_midnight=%s", seconds_since_midnight)
 
@@ -294,7 +293,6 @@ def main():
                         while (dt.datetime.now() - t0).seconds < (119):
                             now = dt.datetime.now()
                             seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
-                            #logger.info("Inside inner loop. seconds_since_midnight=%s", seconds_since_midnight)
                             annotate_video_duration(camera, start_time_sec)
                             camera.wait_recording(0)
                         stop_video_recording(camera)
