@@ -150,7 +150,6 @@ def cv_annotate_video(frame, start_time_sec):
     cv2.putText(frame,label,(105,105),cv2.FONT_HERSHEY_COMPLEX_SMALL,1,(0,0,255))
 
 def finish_recording(mp4_path, video_end, start_time, start_time_sec):
-    time.sleep(1)
     # Load the pre-trained object detection model -- YOLO (You Only Look Once) 
     net = cv2.dnn.readNet('/home/pi/darknet/yolov3-tiny.weights', '/home/pi/darknet/cfg/yolov3-tiny.cfg')
     # Load COCO names (class labels)
@@ -304,7 +303,7 @@ def main():
         # After finishing the initial recording with PiCamera
         camera.close()
         time.sleep(2)  # Introduce a delay of 2 seconds
-        
+
         logger.info("Finish recording outside inner loop. start_time_sec=%s", start_time_sec)
         finish_recording( mp4_path, video_end, start_time, start_time_sec)
 
