@@ -36,7 +36,8 @@ def setup_logging():
 def setup_camera():
     try:
         camera = PiCamera()
-        camera.resolution = (1296, 730)
+        #camera.resolution = (1296, 730)
+        camera.resolution = (720, 480)
         camera.framerate = 5
         camera.annotate_background = Color('black')
         camera.annotate_foreground = Color('white')
