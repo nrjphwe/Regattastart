@@ -159,8 +159,8 @@ def finish_recording(mp4_path, video_end, start_time, start_time_sec):
     layer_names = net.getUnconnectedOutLayersNames()
 
     # Open a video capture object (replace 'your_video_file.mp4' with the actual video file or use 0 for webcam)
-    cap = cv2.VideoCapture(os.path.join(mp4_path, "finish21-6.mp4"))
-    #cap = cv2.VideoCapture(0)
+    #cap = cv2.VideoCapture(os.path.join(mp4_path, "finish21-6.mp4"))
+    cap = cv2.VideoCapture(0)
     if not cap.isOpened():
         print("Cannot open camera")
         exit()
