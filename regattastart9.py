@@ -161,6 +161,9 @@ def finish_recording(mp4_path, video_end, start_time, start_time_sec):
     # Open a video capture object (replace 'your_video_file.mp4' with the actual video file or use 0 for webcam)
     #cap = cv2.VideoCapture(os.path.join(mp4_path, "finish21-6.mp4"))
     cap = cv2.VideoCapture(0)
+    if not cap.isOpened():
+        print("Cannot open camera")
+        exit()
     width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH) + 0.5)
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT) + 0.5)
     size = (width, height)
@@ -173,8 +176,11 @@ def finish_recording(mp4_path, video_end, start_time, start_time_sec):
     number_of_non_detected_frames = 1
 
     while True:
+        # Capture frame-by-frame
         ret, frame = cap.read()
+        # if frame is read correctly ret is True
         if not ret:
+            print("Can't receive frame (stream end?). Exiting ...")
             break
 
         # Variable to check if any boat is detected in the current frame
