@@ -229,10 +229,10 @@ def finish_recording(mp4_path, video_end, start_time, start_time_sec):
         if elapsed_time >= 60 * video_end:
             break
 
-        # Release the video capture object and close all windows
-        cap.release()
-        video_writer.release()
-        #cv2.destroyAllWindows()
+    # Release the video capture object and close all windows
+    cap.release()
+    video_writer.release()
+    #cv2.destroyAllWindows()
 
 def main():
     logger = setup_logging()  # Initialize the logger
@@ -304,14 +304,15 @@ def main():
         camera.close()
         time.sleep(2)  # Introduce a delay of 2 seconds
 
-        logger.info("Finish recording outside inner loop. start_time_sec=%s", start_time_sec)
-        finish_recording( mp4_path, video_end, start_time, start_time_sec)
+
 
     except json.JSONDecodeError as e:
         logger.info ("Failed to parse JSON: %", str(e))
         sys.exit(1)
     finally:
         logger.info("This is finally section")
+        logger.info("Finish recording outside inner loop. start_time_sec=%s", start_time_sec)
+        finish_recording( mp4_path, video_end, start_time, start_time_sec)
         if camera is not None:
             camera.close()  # Release the camera resources
         if signal is not None:
