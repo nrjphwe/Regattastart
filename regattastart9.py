@@ -264,7 +264,8 @@ def main():
         logger.info(" Weekday=%s, Start_time=%s, video_end=%s, num_starts=%s",
                     week_day, start_time, video_end, num_starts)
         
-        start_hour, start_minute = start_time.split(':')
+        #start_hour, start_minute = start_time.split(':')
+        start_hour, start_minute = start_time.hour, start_time.minute  # Extract hour and minute
         start_time_sec = 60 * (int(start_minute) + 60 * int(start_hour))
 
         t5min_warning = start_time_sec - 5 * 60 # time when the start-machine should begin to execute.
