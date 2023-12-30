@@ -150,6 +150,7 @@ def cv_annotate_video(frame, start_time_sec):
     cv2.putText(frame,label,(105,105),cv2.FONT_HERSHEY_COMPLEX_SMALL,1,(0,0,255))
 
 def finish_recording(mp4_path, video_end, start_time, start_time_sec):
+    time.sleep(1)
     # Load the pre-trained object detection model -- YOLO (You Only Look Once) 
     net = cv2.dnn.readNet('/home/pi/darknet/yolov3-tiny.weights', '/home/pi/darknet/cfg/yolov3-tiny.cfg')
     # Load COCO names (class labels)
@@ -159,8 +160,8 @@ def finish_recording(mp4_path, video_end, start_time, start_time_sec):
     layer_names = net.getUnconnectedOutLayersNames()
 
     # Open a video capture object (replace 'your_video_file.mp4' with the actual video file or use 0 for webcam)
-    #cap = cv2.VideoCapture(os.path.join(mp4_path, "finish21-6.mp4"))
-    cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture(os.path.join(mp4_path, "finish21-6.mp4"))
+    #cap = cv2.VideoCapture(0)
     if not cap.isOpened():
         print("Cannot open camera")
         exit()
