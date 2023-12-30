@@ -148,7 +148,7 @@ def cv_annotate_video(frame, start_time_sec):
     label = str(dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) +  " Seconds since last start: " +  str(elapsed_time)
     cv2.putText(frame,label,(105,105),cv2.FONT_HERSHEY_COMPLEX_SMALL,1,(0,0,255))
 
-def finish_recording(mp4_path, video_end, start_time_sec):
+def finish_recording(mp4_path, video_end, start_time, start_time_sec):
     # Load the pre-trained object detection model -- YOLO (You Only Look Once) 
     net = cv2.dnn.readNet('/home/pi/darknet/yolov3-tiny.weights', '/home/pi/darknet/cfg/yolov3-tiny.cfg')
 
@@ -172,11 +172,10 @@ def finish_recording(mp4_path, video_end, start_time_sec):
     video_writer = cv2.VideoWriter(mp4_path + 'video1' + '.mp4', fourcc, 50, size)
 
     # Timer variables
-    start_time = 0
+    #start_time = 0
     capture_duration = 2  # in seconds
-    number_of_detected_frames = 2
-    number_of_non_detected_frames = 2
-    #start_time_sec = 66000
+    number_of_detected_frames = 5
+    number_of_non_detected_frames = 1
 
     while True:
         ret, frame = cap.read()
@@ -203,6 +202,7 @@ def finish_recording(mp4_path, video_end, start_time_sec):
                     x, y, w, h = map(int, detection[0:4] * [w, h, w, h])
                     # Modify the original frame
                     cv2.rectangle(frame, (int(x), int(y)), (int(x + w), int(y + h)), (0, 255, 0), 2, cv2.LINE_AA)
+                    
                     # Write detected frames to the video file
                     i = 1
                     while i < number_of_detected_frames:
@@ -215,7 +215,7 @@ def finish_recording(mp4_path, video_end, start_time_sec):
                     if boat_detected == True:
                         #print(time.strftime("%Y-%m-%d-%H:%M:%S"),"78") 
                         i = 1
-                        while i < number_of_non_detected_frames:
+                        while i <= number_of_non_detected_frames:
                             cv_annotate_video(frame, start_time_sec)
                             # Write frames to the video file
                             video_writer.write(frame)
@@ -299,7 +299,7 @@ def main():
                     break
 
         logger.info("Finish recording outside inner loop. start_time_sec=%s", start_time_sec)
-        finish_recording( mp4_path, video_end, start_time_sec)
+        finish_recording( mp4_path, video_end, start_time, start_time_sec)
 
     except json.JSONDecodeError as e:
         logger.info ("Failed to parse JSON: %", str(e))
