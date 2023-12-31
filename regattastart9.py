@@ -196,7 +196,7 @@ def finish_recording(mp4_path, video_end, start_time, start_time_sec):
                 class_id = np.argmax(scores)
                 confidence = scores[class_id]
             
-                if confidence > 0.3 and classes[class_id] == 'boat':
+                if confidence > 0.2 and classes[class_id] == 'boat':
                     boat_detected = True
                     print("Boatdetected = ", boat_detected)
                     # Visualize the detected bounding box
@@ -213,7 +213,7 @@ def finish_recording(mp4_path, video_end, start_time, start_time_sec):
                         video_writer.write(frame)
                         i += 1
                 else:
-                    # Confidence < 0.3
+                    # Confidence < 0.2
                     if boat_detected == True:
                         #print(time.strftime("%Y-%m-%d-%H:%M:%S"),"78") 
                         i = 1
