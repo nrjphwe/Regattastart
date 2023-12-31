@@ -247,13 +247,25 @@ def main():
         sys.exit(1)
 
     try:
+         #logger.info("form_data: %s", form_data)
         form_data = json.loads(sys.argv[1])
-        #logger.info("form_data: %s", form_data)
-        start_time_str = str(form_data["start_time"]) # this is the first start
-        start_time = datetime.strptime(start_time_str, "%H:%M")  # Convert to datetime object
         week_day = str(form_data["day"])
         video_end = int(form_data["video_end"])
         num_starts = int(form_data["num_starts"])
+        start_time_str = str(form_data["start_time"]) # this is the first start
+        
+        # Convert to datetime object
+        start_time = datetime.strptime(start_time_str, "%H:%M").time()
+
+         #start_hour, start_minute = start_time.split(':')
+        # Extract hour and minute
+        start_hour = start_time.hour
+        start_minute = start_time.minute
+        # Calculate start_time_sec
+        start_time_sec = 60 * start_minute + 3600 * start_hour
+
+        t5min_warning = start_time_sec - 5 * 60 # time when the start-machine should begin to execute.
+        wd = dt.datetime.today().strftime("%A")
 
         camera = setup_camera()
         if camera is None:
@@ -262,15 +274,8 @@ def main():
         signal, lamp1, lamp2 = setup_gpio()
         remove_video_files(photo_path, "video")  # clean up 
         remove_picture_files(photo_path, ".jpg") # clean up
-        logger.info(" Weekday=%s, Start_time_str=%s, video_end=%s, num_starts=%s",
-                    week_day, start_time, video_end, num_starts)
-        
-        #start_hour, start_minute = start_time.split(':')
-        start_hour, start_minute = start_time.hour, start_time.minute
-        start_time_sec = 60 * (int(start_minute) + 60 * int(start_hour)) # Extract hour and minute
-
-        t5min_warning = start_time_sec - 5 * 60 # time when the start-machine should begin to execute.
-        wd = dt.datetime.today().strftime("%A")
+        logger.info(" Weekday=%s, Start_time=%s, video_end=%s, num_starts=%s",
+                    week_day, start_time.strftime("%H:%M"), video_end, num_starts)
         
         if wd == week_day:
             # A loop that waits until close to the 5-minute mark, a loop that continuously checks the 
