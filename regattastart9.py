@@ -215,7 +215,7 @@ def finish_recording(mp4_path, video_end, start_time, start_time_sec):
                 else:
                     # Confidence < 0.2
                     if boat_detected == True:
-                        #print(time.strftime("%Y-%m-%d-%H:%M:%S"),"78") 
+                        #print(time.strftime("%Y-%m-%d-%H:%M:%S"),"218") 
                         i = 1
                         while i <= number_of_non_detected_frames:
                             cv_annotate_video(frame, start_time_sec)
@@ -225,7 +225,8 @@ def finish_recording(mp4_path, video_end, start_time, start_time_sec):
                         boat_detected = False
 
         # Check if the maximum duration has been reached
-        elapsed_time = (datetime.now() - start_time).total_seconds()
+        elapsed_time = (datetime.combine(datetime.today(), datetime.now().time()) - datetime.combine(datetime.today(), start_time)).total_seconds()
+        #elapsed_time = (datetime.now() - start_time).total_seconds()
         print("Elapsed time ", elapsed_time)
         if elapsed_time >= 60 * video_end:
             break
@@ -314,7 +315,7 @@ def main():
         logger.info ("Failed to parse JSON: %", str(e))
         sys.exit(1)
     finally:
-        logger.info("Finish recording outside inner loop. start_time_sec=%s", start_time_sec)
+        logger.info("Finish recording outside inner loop. start_time=%s start_time_sec=%s", start_time,start_time_sec)
         finish_recording( mp4_path, video_end, start_time, start_time_sec)
         logger.info("Finished with finish_recording")
         if camera is not None:
