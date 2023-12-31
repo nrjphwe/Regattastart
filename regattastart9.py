@@ -172,8 +172,8 @@ def finish_recording(mp4_path, video_end, start_time, start_time_sec):
     video_writer = cv2.VideoWriter(mp4_path + 'video1' + '.mp4', fourcc, 50, size)
 
     # Timer variables
-    number_of_detected_frames = 5
-    number_of_non_detected_frames = 1
+    number_of_detected_frames = 10
+    number_of_non_detected_frames = 4
 
     while True:
         # Capture frame-by-frame
@@ -198,7 +198,7 @@ def finish_recording(mp4_path, video_end, start_time, start_time_sec):
             
                 if confidence > 0.2 and classes[class_id] == 'boat':
                     boat_detected = True
-                    print("Boatdetected = ", boat_detected)
+                    #print("Boatdetected = ", boat_detected)
                     # Visualize the detected bounding box
                     h, w, _ = frame.shape
                     x, y, w, h = map(int, detection[0:4] * [w, h, w, h])
@@ -226,8 +226,7 @@ def finish_recording(mp4_path, video_end, start_time, start_time_sec):
 
         # Check if the maximum duration has been reached
         elapsed_time = (datetime.combine(datetime.today(), datetime.now().time()) - datetime.combine(datetime.today(), start_time)).total_seconds()
-        #elapsed_time = (datetime.now() - start_time).total_seconds()
-        print("Elapsed time ", elapsed_time)
+        #print("Elapsed time ", elapsed_time)
         if elapsed_time >= 60 * video_end:
             break
 
