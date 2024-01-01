@@ -180,7 +180,7 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
     video_writer = cv2.VideoWriter(mp4_path + 'video1' + '.mp4', fourcc, 50, size)
 
     # Timer variables
-    number_of_detected_frames = 5
+    number_of_detected_frames = 10
 
     while True:
         # Capture frame-by-frame
@@ -191,7 +191,7 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
             break
 
         # Set the number of additional seconds to record after detecting a boat
-        additional_seconds = 3  # Adjust the value as needed
+        additional_seconds = 4  # Adjust the value as needed
 
         # Initialize variables
         boat_detected = False
