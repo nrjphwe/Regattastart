@@ -180,7 +180,7 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
     video_writer = cv2.VideoWriter(mp4_path + 'video1' + '.mp4', fourcc, 50, size)
 
     # Timer variables
-    number_of_detected_frames = 10
+    number_of_detected_frames = 5
 
     while True:
         # Capture frame-by-frame
@@ -234,7 +234,7 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
                     i = 1
                     while i < number_of_detected_frames:
                         # Write frames to the video file
-                        ret, frame = cap.read()  # Read new frames
+                        #ret, frame = cap.read()  # Read new frames
                         cv_annotate_video(frame, start_time_sec)
                         video_writer.write(frame)
                         i += 1
