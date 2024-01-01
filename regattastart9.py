@@ -181,7 +181,7 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
 
     # Timer variables
     number_of_detected_frames = 10
-    number_of_non_detected_frames = 10
+    number_of_non_detected_frames = 50
 
     while True:
         # Capture frame-by-frame
