@@ -205,7 +205,7 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
         swapRB = True # This swaps the Red and Blue channels, as OpenCV loads images in BGR format by default, but many pre-trained models expect RGB.
         crop = False # The image is not cropped.
 
-        blob = cv2.dnn.blobFromImage(frame, scalefactor, swapRB, crop)
+        blob = cv2.dnn.blobFromImage(frame, scalefactor, size, swapRB, crop)
         net.setInput(blob) # Sets the input blob as the input to the neural network
         # Performs a forward pass through the neural network. The layer_names represent the names of the output layers of the network.
         outs = net.forward(layer_names)
