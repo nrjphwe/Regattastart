@@ -147,7 +147,8 @@ def cv_annotate_video(frame, start_time_sec):
     seconds_since_midnight = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
     elapsed_time = seconds_since_midnight - start_time_sec #elapsed since last start until now)
     label = str(dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) +  " Seconds since last start: " +  str(elapsed_time)
-    cv2.putText(frame,label,(105,105),cv2.FONT_HERSHEY_COMPLEX_SMALL,1,(0,0,255))
+    #cv2.putText(frame,label,(105,105),fontFace=cv2.FONT_HERSHEY_COMPLEX_SMALL,fontScale=1,color=(0,0,255))
+    cv2.putText(frame,label,(105,105),fontFace=cv2.FONT_HERSHEY_DUPLEX,fontScale=1,color=(0,0,255))
 
 def finish_recording(mp4_path, video_end, start_time, start_time_sec):
     # Load the pre-trained object detection model -- YOLO (You Only Look Once) 
