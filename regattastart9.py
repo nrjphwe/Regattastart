@@ -191,18 +191,30 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
             print("Can't receive frame (stream end?). Exiting ...")
             break
 
-        # Variable to check if any boat is detected in the current frame
-        boat_detected = False
+        # Set the number of additional seconds to record after detecting a boat
+        additional_seconds = 5  # Adjust the value as needed
 
-        blob = cv2.dnn.blobFromImage(frame, scalefactor=0.00392, size=(416, 416), swapRB=True, crop=False)
-        net.setInput(blob)
+        # Initialize variables
+        boat_detected = False
+        start_time_detection = 0
+
+        # Function to prepares the input image (frame) for the neural network. 
+        # The parameters are: frame: The input image/frame.
+        scalefactor = 0.00392 # A scale factor to normalize the pixel values. This is often set to 1/255.0.
+        size = (416, 416) # The size to which the input image is resized. YOLO models are often trained on 416x416 images.
+        swapRB = True # This swaps the Red and Blue channels, as OpenCV loads images in BGR format by default, but many pre-trained models expect RGB.
+        crop = False # The image is not cropped.
+
+        blob = cv2.dnn.blobFromImage(frame, scalefactor, swapRB, crop)
+        net.setInput(blob) # Sets the input blob as the input to the neural network
+        # Performs a forward pass through the neural network. The layer_names represent the names of the output layers of the network.
         outs = net.forward(layer_names)
 
-        for out in outs:
-            for detection in out:
-                scores = detection[5:]
-                class_id = np.argmax(scores)
-                confidence = scores[class_id]
+        for out in outs: #  Iterates over the outputs of the network (there might be multiple output layers).
+            for detection in out: # Iterates over the detections in a particular output
+                scores = detection[5:] # Extracts the confidence scores for each class.
+                class_id = np.argmax(scores) # Determines the class (object) with the highest confidence.
+                confidence = scores[class_id] # Retrieves the confidence score for the detected class.
             
                 if confidence > 0.2 and classes[class_id] == 'boat':
                     boat_detected = True
@@ -226,17 +238,32 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
                         cv_annotate_video(frame, start_time_sec)
                         video_writer.write(frame)
                         i += 1
+
                 else:
-                    # Confidence < 0.2
-                    if boat_detected == True:
-                        #print(time.strftime("%Y-%m-%d-%H:%M:%S"),"218") 
+                    # Check if additional_seconds have passed since the last boat detection
+                    elapsed_time_since_detection = time.time() - start_time_detection
+                    if boat_detected and elapsed_time_since_detection < additional_seconds:
                         i = 1
                         while i <= number_of_non_detected_frames:
+                            ret, frame = cap.read()  # Read new frames
                             cv_annotate_video(frame, start_time_sec)
-                            # Write frames to the video file
                             video_writer.write(frame)
                             i += 1
+                    else:
                         boat_detected = False
+
+
+                #else:
+                #    # Confidence < 0.2
+                #    if boat_detected == True:
+                #        #print(time.strftime("%Y-%m-%d-%H:%M:%S"),"232") 
+                #        i = 1
+                #        while i <= number_of_non_detected_frames:
+                #            cv_annotate_video(frame, start_time_sec)
+                #            # Write frames to the video file
+                #            video_writer.write(frame)
+                #            i += 1
+                #        boat_detected = False
 
         # Check if the maximum duration has been reached
         elapsed_time = (datetime.combine(datetime.today(), datetime.now().time()) - datetime.combine(datetime.today(), start_time)).total_seconds()
