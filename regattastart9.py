@@ -205,7 +205,7 @@ def finish_recording(mp4_path, video_end, start_time, start_time_sec):
             
                 if confidence > 0.2 and classes[class_id] == 'boat':
                     boat_detected = True
-                    print("boat_detected = True")
+                    print("boat_detected ", time.strftime("%Y-%m-%d-%H:%M:%S"))
                     # Visualize the detected bounding box
                     h, w, _ = frame.shape
                     x, y, w, h = map(int, detection[0:4] * [w, h, w, h])
