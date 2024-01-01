@@ -104,9 +104,9 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
         <fieldset>
             <legend>Video Setup: </legend>
             <p></p>
-            End for finish video, duration from start: 
+            End for finish video, duration from last start: 
             <select name = "video_end" id = "video_end">
-                <option value="5"  <?php if(isset($video_end) && $video_end == "5"){echo "selected=\"selected\"";} ?> value="5">5</option> 
+                <option value="10"  <?php if(isset($video_end) && $video_end == "5"){echo "selected=\"selected\"";} ?> value="10">10</option> 
                 <option value="20"  <?php if(isset($video_end) && $video_end == "20"){echo "selected=\"selected\"";} ?> value="20">20</option> 
                 <option value="60" <?php if(isset($video_end) && $video_end == "60"){echo "selected=\"selected\"";} ?> value="60">60</option>
                 <option value="90" <?php if(isset($video_end) && $video_end == "90"){echo "selected=\"selected\"";}?> value="90">90</option>
