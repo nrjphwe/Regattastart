@@ -156,7 +156,8 @@ def cv_annotate_video(frame, start_time_sec):
     #cv2.putText(frame,label,(105,105),fontFace=cv2.FONT_HERSHEY_COMPLEX_SMALL,fontScale=1,color=(0,0,255))
     cv2.putText(frame,label,org,fontFace,fontScale,color,thickness,lineType)
 
-def finish_recording(mp4_path, video_end, start_time, start_time_sec):
+def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec):
+    
     # Load the pre-trained object detection model -- YOLO (You Only Look Once) 
     net = cv2.dnn.readNet('/home/pi/darknet/yolov3-tiny.weights', '/home/pi/darknet/cfg/yolov3-tiny.cfg')
     # Load COCO names (class labels)
@@ -240,7 +241,7 @@ def finish_recording(mp4_path, video_end, start_time, start_time_sec):
         # Check if the maximum duration has been reached
         elapsed_time = (datetime.combine(datetime.today(), datetime.now().time()) - datetime.combine(datetime.today(), start_time)).total_seconds()
         #print("Elapsed time ", elapsed_time)
-        if elapsed_time >= 60 * video_end:
+        if elapsed_time >= 60 * (video_end + 5 * (num_starts -1)):
             break
 
     # Release the video capture object and close all windows
@@ -307,7 +308,7 @@ def main():
                             start_time_sec = start_time_sec + (5 * 60)
                         logger.info(" Wait 2 minutes then stop video recording")
                         t0 = dt.datetime.now()
-                        logger.info("start_time_sec= %s, t0= %s",start_time_sec, t0)  #test
+                        logger.info(" start_time_sec= %s, t0= %s",start_time_sec, t0)  #test
                         while (dt.datetime.now() - t0).seconds < (119):
                             now = dt.datetime.now()
                             seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
@@ -327,7 +328,7 @@ def main():
         sys.exit(1)
     finally:
         logger.info("Finish recording outside inner loop. start_time=%s start_time_sec=%s", start_time,start_time_sec)
-        finish_recording( mp4_path, video_end, start_time, start_time_sec)
+        finish_recording( mp4_path, num_starts, video_end, start_time, start_time_sec)
         logger.info("Finished with finish_recording")
         if camera is not None:
             camera.close()  # Release the camera resources
