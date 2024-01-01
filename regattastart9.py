@@ -208,10 +208,15 @@ def finish_recording(mp4_path, video_end, start_time, start_time_sec):
                     print("boat_detected ", time.strftime("%Y-%m-%d-%H:%M:%S"))
                     # Visualize the detected bounding box
                     h, w, _ = frame.shape
+                    # Map the scaled values to integers because pixel coordinates must be whole numbers.
+                    # The resulting integers represent the coordinates and dimensions of the bounding box.
                     x, y, w, h = map(int, detection[0:4] * [w, h, w, h])
+                    
                     # Modify the original frame
+                    pt1 = (int(x), int(y)) # The starting point of the rectangle (top-left corner)
+                    pt2 = (int(x + w), int(y + h)) # The ending point of the rectangle (bottom-right corner)
                     # cv2.rectangle(image, pt1, pt2, color, thickness, lineType)
-                    cv2.rectangle(frame, (int(x), int(y)), (int(x + w), int(y + h)), (0, 255, 0), 2, cv2.LINE_AA)
+                    cv2.rectangle(frame, pt1, pt2, (0, 255, 0), 2, cv2.LINE_AA)
                     
                     # Write detected frames to the video file
                     i = 1
