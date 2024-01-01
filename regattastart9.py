@@ -180,7 +180,7 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
     video_writer = cv2.VideoWriter(mp4_path + 'video1' + '.mp4', fourcc, 50, size)
 
     # Timer variables
-    number_of_detected_frames = 10
+    number_of_detected_frames = 25
 
     while True:
         # Capture frame-by-frame
@@ -218,6 +218,7 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
                 if confidence > 0.2 and classes[class_id] == 'boat':
                     boat_detected = True
                     print("boat_detected ", time.strftime("%Y-%m-%d-%H:%M:%S"))
+                    
                     # Visualize the detected bounding box
                     h, w, _ = frame.shape
                     # Map the scaled values to integers because pixel coordinates must be whole numbers.
