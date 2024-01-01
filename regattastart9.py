@@ -138,8 +138,8 @@ def start_sequence(camera, signal, start_time_sec, num_starts, photo_path):
                         action()
                     picture_name = f"{i + 1}a_start_{log_message[:5]}.jpg"
                     capture_picture(camera, photo_path, picture_name)
-                    logger.info(f"  Start_sequence, log_message: {log_message}")
-                    logger.info(f"  Start_sequence, seconds_since_midnight: {seconds_since_midnight}, start_time_sec: {start_time_sec}")
+                    logger.info(f"     Start_sequence, log_message: {log_message}")
+                    logger.info(f"     Start_sequence, seconds_since_midnight: {seconds_since_midnight}, start_time_sec: {start_time_sec}")
         logger.info(f"  Start_sequence, End of iteration: {i}")
 
 def cv_annotate_video(frame, start_time_sec):
@@ -173,7 +173,7 @@ def finish_recording(mp4_path, video_end, start_time, start_time_sec):
 
     # Timer variables
     number_of_detected_frames = 10
-    number_of_non_detected_frames = 4
+    number_of_non_detected_frames = 10
 
     while True:
         # Capture frame-by-frame
@@ -198,7 +198,6 @@ def finish_recording(mp4_path, video_end, start_time, start_time_sec):
             
                 if confidence > 0.2 and classes[class_id] == 'boat':
                     boat_detected = True
-                    #print("Boatdetected = ", boat_detected)
                     # Visualize the detected bounding box
                     h, w, _ = frame.shape
                     x, y, w, h = map(int, detection[0:4] * [w, h, w, h])
@@ -233,7 +232,6 @@ def finish_recording(mp4_path, video_end, start_time, start_time_sec):
     # Release the video capture object and close all windows
     cap.release()
     video_writer.release()
-    #cv2.destroyAllWindows()
 
 def main():
     logger = setup_logging()  # Initialize the logger
@@ -303,7 +301,7 @@ def main():
                             camera.wait_recording(0)
                         stop_video_recording(camera)
                         convert_video_to_mp4(mp4_path, "video0.h264", "video0.mp4")
-                    # Exit the loop after the condition is met
+                    # Exit the loop after the if condition is met
                     break
 
         # After finishing the initial recording with PiCamera
