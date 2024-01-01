@@ -235,6 +235,7 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
                     i = 1
                     while i < number_of_detected_frames:
                         # Write frames to the video file
+                        ret, frame = cap.read()  # Read new frames
                         cv_annotate_video(frame, start_time_sec)
                         video_writer.write(frame)
                         i += 1
@@ -251,19 +252,6 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
                             i += 1
                     else:
                         boat_detected = False
-
-
-                #else:
-                #    # Confidence < 0.2
-                #    if boat_detected == True:
-                #        #print(time.strftime("%Y-%m-%d-%H:%M:%S"),"232") 
-                #        i = 1
-                #        while i <= number_of_non_detected_frames:
-                #            cv_annotate_video(frame, start_time_sec)
-                #            # Write frames to the video file
-                #            video_writer.write(frame)
-                #            i += 1
-                #        boat_detected = False
 
         # Check if the maximum duration has been reached
         elapsed_time = (datetime.combine(datetime.today(), datetime.now().time()) - datetime.combine(datetime.today(), start_time)).total_seconds()
