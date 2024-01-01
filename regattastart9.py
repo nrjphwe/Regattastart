@@ -209,6 +209,7 @@ def finish_recording(mp4_path, video_end, start_time, start_time_sec):
                     h, w, _ = frame.shape
                     x, y, w, h = map(int, detection[0:4] * [w, h, w, h])
                     # Modify the original frame
+                    # cv2.rectangle(image, pt1, pt2, color, thickness, lineType)
                     cv2.rectangle(frame, (int(x), int(y)), (int(x + w), int(y + h)), (0, 255, 0), 2, cv2.LINE_AA)
                     
                     # Write detected frames to the video file
