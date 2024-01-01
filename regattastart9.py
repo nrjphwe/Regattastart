@@ -181,7 +181,6 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
 
     # Timer variables
     number_of_detected_frames = 10
-    number_of_non_detected_frames = 50
 
     while True:
         # Capture frame-by-frame
@@ -192,7 +191,7 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
             break
 
         # Set the number of additional seconds to record after detecting a boat
-        additional_seconds = 5  # Adjust the value as needed
+        additional_seconds = 3  # Adjust the value as needed
 
         # Initialize variables
         boat_detected = False
@@ -240,18 +239,11 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
                         video_writer.write(frame)
                         i += 1
 
-                else:
-                    # Check if additional_seconds have passed since the last boat detection
-                    elapsed_time_since_detection = time.time() - start_time_detection
-                    if boat_detected and elapsed_time_since_detection < additional_seconds:
-                        i = 1
-                        while i <= number_of_non_detected_frames:
-                            ret, frame = cap.read()  # Read new frames
-                            cv_annotate_video(frame, start_time_sec)
-                            video_writer.write(frame)
-                            i += 1
-                    else:
-                        boat_detected = False
+                elif boat_detected and time.time() - start_time_detection < additional_seconds:
+                    # Record new frames for additional_seconds after the last boat detection
+                    ret, frame = cap.read()  # Read new frames
+                    cv_annotate_video(frame, start_time_sec)
+                    video_writer.write(frame)
 
         # Check if the maximum duration has been reached
         elapsed_time = (datetime.combine(datetime.today(), datetime.now().time()) - datetime.combine(datetime.today(), start_time)).total_seconds()
