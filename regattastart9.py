@@ -163,7 +163,7 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
     # Set the number of additional seconds to record after detecting a boat
     additional_seconds = 4  # Adjust the value as needed
 
-    # Load the pre-trained object detection model -- YOLO (You Only Look Once) 
+    # Load the pre-trained object detection model -- YOLO (You Only Look Once)
     net = cv2.dnn.readNet('/home/pi/darknet/yolov3-tiny.weights', '/home/pi/darknet/cfg/yolov3-tiny.cfg')
     # Load COCO names (class labels)
     with open('/home/pi/darknet/data/coco.names', 'r') as f:
