@@ -339,7 +339,7 @@ def main():
         logger.info ("Failed to parse JSON: %", str(e))
         sys.exit(1)
     finally:
-        logger.info("Finish recording outside inner loop. start_time=%s start_time_sec=%s", start_time,start_time_sec)
+        logger.info("Finally section, before 'Finish recording'. start_time=%s start_time_sec=%s", start_time,start_time_sec)
         finish_recording( mp4_path, num_starts, video_end, start_time, start_time_sec)
         logger.info("Finished with finish_recording")
         if camera is not None:
