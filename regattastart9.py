@@ -195,7 +195,7 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
         ret, frame = cap.read()
         # if frame is read correctly ret is True
         if not ret:
-            print("Can't receive frame (stream end?). Exiting ...")
+            print("End of video stream. Or can't receive frame (stream end?). Exiting ...")
             break
 
         # Function to prepare the input image (frame) for the neural network.
@@ -250,6 +250,7 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
                         cv_annotate_video(frame, start_time_sec)
                         video_writer.write(frame)
                         i += 1
+                    boat_detected = False
 
         # Check if the maximum duration has been reached
         elapsed_time = (datetime.combine(datetime.today(), datetime.now().time()) - datetime.combine(datetime.today(), start_time)).total_seconds()
