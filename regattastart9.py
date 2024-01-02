@@ -147,7 +147,7 @@ def cv_annotate_video(frame, start_time_sec):
     seconds_since_midnight = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
     elapsed_time = seconds_since_midnight - start_time_sec #elapsed since last start until now)
     label = str(dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) +  " Seconds since last start: " +  str(elapsed_time)
-    org = (40,40)
+    org = (30,40)
     fontFace=cv2.FONT_HERSHEY_DUPLEX
     fontScale = 0.6
     color=(0,0,255) #(B, G, R)
@@ -203,8 +203,8 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
         size = (416, 416) # The size to which the input image is resized. YOLO models are often trained on 416x416 images.
         swapRB = True # This swaps the Red and Blue channels, as OpenCV loads images in BGR format by default, but many pre-trained models expect RGB.
         crop = False # The image is not cropped.
-
         blob = cv2.dnn.blobFromImage(frame, scalefactor, size, swapRB, crop)
+        
         net.setInput(blob) # Sets the input blob as the input to the neural network
         # Performs a forward pass through the neural network. The layer_names represent the names of the output layers of the network.
         outs = net.forward(layer_names)
@@ -241,7 +241,6 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
                         i += 1
 
                 #elif boat_detected and time.time() - start_time_detection < additional_seconds:
-              
                 elif boat_detected: 
                     i = 1
                     while i < number_of_non_detected_frames:
@@ -253,7 +252,6 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
 
         # Check if the maximum duration has been reached
         elapsed_time = (datetime.combine(datetime.today(), datetime.now().time()) - datetime.combine(datetime.today(), start_time)).total_seconds()
-        #print("Elapsed time ", elapsed_time)
         if elapsed_time >= 60 * (video_end + 5 * (num_starts -1)):
             break
 
