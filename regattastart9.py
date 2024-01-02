@@ -157,7 +157,12 @@ def cv_annotate_video(frame, start_time_sec):
     cv2.putText(frame,label,org,fontFace,fontScale,color,thickness,lineType)
 
 def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec):
-    
+    # Timer variables
+    number_of_detected_frames = 25
+    number_of_non_detected_frames = 100
+    # Set the number of additional seconds to record after detecting a boat
+    additional_seconds = 4  # Adjust the value as needed
+
     # Load the pre-trained object detection model -- YOLO (You Only Look Once) 
     net = cv2.dnn.readNet('/home/pi/darknet/yolov3-tiny.weights', '/home/pi/darknet/cfg/yolov3-tiny.cfg')
     # Load COCO names (class labels)
@@ -172,17 +177,19 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
     if not cap.isOpened():
         print("Cannot open camera")
         exit()
+
+    # adjust the output recording resoution to camera setting.
     width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH) + 0.5)
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT) + 0.5)
     size = (width, height)
-
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # H.264 codec with MP4 container
-    video_writer = cv2.VideoWriter(mp4_path + 'video1' + '.mp4', fourcc, 50, size)
-
-    # Timer variables
-    number_of_detected_frames = 25
+    video_writer = cv2.VideoWriter(mp4_path + 'video1' + '.mp4', fourcc, 25, size)
 
     while True:
+        # Initialize variables
+        boat_detected = False
+        start_time_detection = 0
+        
         # Capture frame-by-frame
         ret, frame = cap.read()
         # if frame is read correctly ret is True
@@ -190,15 +197,8 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
             print("Can't receive frame (stream end?). Exiting ...")
             break
 
-        # Set the number of additional seconds to record after detecting a boat
-        additional_seconds = 4  # Adjust the value as needed
-
-        # Initialize variables
-        boat_detected = False
-        start_time_detection = 0
-
-        # Function to prepares the input image (frame) for the neural network. 
-        # The parameters are: frame: The input image/frame.
+        # Function to prepare the input image (frame) for the neural network. 
+        # Frame = The input image/frame.
         scalefactor = 0.00392 # A scale factor to normalize the pixel values. This is often set to 1/255.0.
         size = (416, 416) # The size to which the input image is resized. YOLO models are often trained on 416x416 images.
         swapRB = True # This swaps the Red and Blue channels, as OpenCV loads images in BGR format by default, but many pre-trained models expect RGB.
@@ -218,7 +218,7 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
                 if confidence > 0.2 and classes[class_id] == 'boat':
                     boat_detected = True
                     print("boat_detected ", time.strftime("%Y-%m-%d-%H:%M:%S"))
-                    
+
                     # Visualize the detected bounding box
                     h, w, _ = frame.shape
                     # Map the scaled values to integers because pixel coordinates must be whole numbers.
@@ -240,11 +240,16 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
                         video_writer.write(frame)
                         i += 1
 
-                elif boat_detected and time.time() - start_time_detection < additional_seconds:
-                    # Record new frames for additional_seconds after the last boat detection
-                    ret, frame = cap.read()  # Read new frames
-                    cv_annotate_video(frame, start_time_sec)
-                    video_writer.write(frame)
+                #elif boat_detected and time.time() - start_time_detection < additional_seconds:
+              
+                elif boat_detected: 
+                    i = 1
+                    while i < number_of_non_detected_frames:
+                        # Record new frames for additional_seconds after the last boat detection
+                        ret, frame = cap.read()  # Read new frames
+                        cv_annotate_video(frame, start_time_sec)
+                        video_writer.write(frame)
+                        i += 1
 
         # Check if the maximum duration has been reached
         elapsed_time = (datetime.combine(datetime.today(), datetime.now().time()) - datetime.combine(datetime.today(), start_time)).total_seconds()
