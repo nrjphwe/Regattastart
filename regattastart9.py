@@ -161,7 +161,7 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
     number_of_detected_frames = 25
     number_of_non_detected_frames = 100
     # Set the number of additional seconds to record after detecting a boat
-    additional_seconds = 4  # Adjust the value as needed
+    #additional_seconds = 4  # Adjust the value as needed
 
     # Load the pre-trained object detection model -- YOLO (You Only Look Once)
     net = cv2.dnn.readNet('/home/pi/darknet/yolov3-tiny.weights', '/home/pi/darknet/cfg/yolov3-tiny.cfg')
@@ -172,8 +172,8 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
     layer_names = net.getUnconnectedOutLayersNames()
 
     # Open a video capture object (replace 'your_video_file.mp4' with the actual video file or use 0 for webcam)
-    #cap = cv2.VideoCapture(os.path.join(mp4_path, "finish21-6.mp4"))
-    cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture(os.path.join(mp4_path, "finish21-6.mp4"))
+    #cap = cv2.VideoCapture(0)
     if not cap.isOpened():
         print("Cannot open camera")
         exit()
