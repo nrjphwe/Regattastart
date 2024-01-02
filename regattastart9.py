@@ -198,7 +198,7 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
             print("Can't receive frame (stream end?). Exiting ...")
             break
 
-        # Function to prepare the input image (frame) for the neural network. 
+        # Function to prepare the input image (frame) for the neural network.
         # Frame = The input image/frame.
         scalefactor = 0.00392 # A scale factor to normalize the pixel values. This is often set to 1/255.0.
         size = (416, 416) # The size to which the input image is resized. YOLO models are often trained on 416x416 images.
@@ -298,13 +298,13 @@ def main():
             logger.error("Camera initialization failed. Exiting.")
             sys.exit(1)
         signal, lamp1, lamp2 = setup_gpio()
-        remove_video_files(photo_path, "video")  # clean up 
+        remove_video_files(photo_path, "video")  # clean up
         remove_picture_files(photo_path, ".jpg") # clean up
         logger.info(" Weekday=%s, Start_time=%s, video_end=%s, num_starts=%s",
                     week_day, start_time.strftime("%H:%M"), video_end, num_starts)
 
         if wd == week_day:
-            # A loop that waits until close to the 5-minute mark, a loop that continuously checks the 
+            # A loop that waits until close to the 5-minute mark, a loop that continuously checks the
             # condition without blocking the execution completely
             while True:
                 now = dt.datetime.now()
