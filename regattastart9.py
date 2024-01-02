@@ -193,6 +193,10 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
 
         # Capture frame-by-frame
         ret, frame = cap.read()
+        if frame is None:
+            print("Frame is None. Ending loop.")
+            break
+
         # if frame is read correctly ret is True
         if not ret:
             print("End of video stream. Or can't receive frame (stream end?). Exiting ...")
