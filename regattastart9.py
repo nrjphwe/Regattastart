@@ -182,6 +182,7 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
     width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH) + 0.5)
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT) + 0.5)
     size = (width, height)
+    print("size= ", size)
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # H.264 codec with MP4 container
     video_writer = cv2.VideoWriter(mp4_path + 'video1' + '.mp4', fourcc, 25, size)
 
@@ -189,7 +190,7 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
         # Initialize variables
         boat_detected = False
         start_time_detection = 0
-        
+
         # Capture frame-by-frame
         ret, frame = cap.read()
         # if frame is read correctly ret is True
@@ -204,7 +205,7 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
         swapRB = True # This swaps the Red and Blue channels, as OpenCV loads images in BGR format by default, but many pre-trained models expect RGB.
         crop = False # The image is not cropped.
         blob = cv2.dnn.blobFromImage(frame, scalefactor, size, swapRB, crop)
-        
+
         net.setInput(blob) # Sets the input blob as the input to the neural network
         # Performs a forward pass through the neural network. The layer_names represent the names of the output layers of the network.
         outs = net.forward(layer_names)
@@ -214,7 +215,7 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
                 scores = detection[5:] # Extracts the confidence scores for each class.
                 class_id = np.argmax(scores) # Determines the class (object) with the highest confidence.
                 confidence = scores[class_id] # Retrieves the confidence score for the detected class.
-            
+
                 if confidence > 0.2 and classes[class_id] == 'boat':
                     boat_detected = True
                     print("boat_detected ", time.strftime("%Y-%m-%d-%H:%M:%S"))
@@ -224,13 +225,13 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
                     # Map the scaled values to integers because pixel coordinates must be whole numbers.
                     # The resulting integers represent the coordinates and dimensions of the bounding box.
                     x, y, w, h = map(int, detection[0:4] * [w, h, w, h])
-                    
+
                     # Modify the original frame
                     pt1 = (int(x), int(y)) # The starting point of the rectangle (top-left corner)
                     pt2 = (int(x + w), int(y + h)) # The ending point of the rectangle (bottom-right corner)
                     # cv2.rectangle(image, pt1, pt2, color, thickness, lineType)
                     cv2.rectangle(frame, pt1, pt2, (0, 255, 0), 2, cv2.LINE_AA)
-                    
+
                     # Write detected frames to the video file
                     i = 1
                     while i < number_of_detected_frames:
@@ -241,7 +242,7 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
                         i += 1
 
                 #elif boat_detected and time.time() - start_time_detection < additional_seconds:
-                elif boat_detected: 
+                elif boat_detected:
                     i = 1
                     while i < number_of_non_detected_frames:
                         # Record new frames for additional_seconds after the last boat detection
@@ -278,7 +279,7 @@ def main():
         video_end = int(form_data["video_end"])
         num_starts = int(form_data["num_starts"])
         start_time_str = str(form_data["start_time"]) # this is the first start
-        
+
         # Convert to datetime object
         start_time = datetime.strptime(start_time_str, "%H:%M").time()
 
@@ -301,14 +302,14 @@ def main():
         remove_picture_files(photo_path, ".jpg") # clean up
         logger.info(" Weekday=%s, Start_time=%s, video_end=%s, num_starts=%s",
                     week_day, start_time.strftime("%H:%M"), video_end, num_starts)
-        
+
         if wd == week_day:
             # A loop that waits until close to the 5-minute mark, a loop that continuously checks the 
             # condition without blocking the execution completely
             while True:
                 now = dt.datetime.now()
                 seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
-                if seconds_since_midnight > t5min_warning - 2:         
+                if seconds_since_midnight > t5min_warning - 2:
                     logger.info("Start of outer loop iteration. seconds_since_midnight=%s", seconds_since_midnight)
 
                     if num_starts == 1 or num_starts == 2:
@@ -347,7 +348,7 @@ def main():
         if signal is not None:
             GPIO.output(signal, OFF)  # Turn off the signal output
         GPIO.cleanup()
-        
+
 if __name__ == "__main__":
     #logging.basicConfig(level=logging.WARNING)  # Set log level to WARNING
     main()
