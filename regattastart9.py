@@ -252,7 +252,8 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
 
         # Check if the maximum duration has been reached
         elapsed_time = (datetime.combine(datetime.today(), datetime.now().time()) - datetime.combine(datetime.today(), start_time)).total_seconds()
-        if elapsed_time >= 60 * (video_end + 5 * (num_starts -1)):
+        print("elapsed time", elapsed_time)
+        if elapsed_time >= 60 * (video_end + 5 * (num_starts - 1)):
             break
 
     # Release the video capture object and close all windows
