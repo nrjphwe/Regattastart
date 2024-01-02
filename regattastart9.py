@@ -253,16 +253,16 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
                         ret, frame = cap.read()  # Read new frames
 
                         if frame is None:
-                            print("Frame is None. Ending loop.")
+                            print("Frame is None. Ending loop 256.")
+                            break
+                        
+                        if not ret:
+                            print("End of video stream.260")
                             break
 
                         cv_annotate_video(frame, start_time_sec)
                         video_writer.write(frame)
                         i += 1
-
-                        if not ret:
-                            print("End of video stream.")
-                            break
 
                     boat_detected = False
 
