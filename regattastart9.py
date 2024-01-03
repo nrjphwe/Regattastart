@@ -157,8 +157,6 @@ def cv_annotate_video(frame, start_time_sec):
     cv2.putText(frame,label,org,fontFace,fontScale,color,thickness,lineType)
 
 def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec):
-  
-
 
     # Load the pre-trained object detection model -- YOLO (You Only Look Once)
     net = cv2.dnn.readNet('/home/pi/darknet/yolov3-tiny.weights', '/home/pi/darknet/cfg/yolov3-tiny.cfg')
@@ -180,6 +178,7 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT) + 0.5)
     frame_size = (width, height)
     logger.info(f"frame size= {frame_size}")
+    
     fps = 25 # frames per second
     # Timer variables
     number_of_detected_frames = 25
@@ -255,13 +254,12 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
                         ret, frame = cap.read()  # Read new frames
 
                         if frame is None or not ret:
-                            print("End of video stream. Ending loop 255.")
+                            print("End of video stream. Ending loop elif boat detected.")
                             break
 
                         cv_annotate_video(frame, start_time_sec)
                         video_writer.write(frame)
                         i += 1
-
                     boat_detected = False
 
         # Check if the maximum duration has been reached
