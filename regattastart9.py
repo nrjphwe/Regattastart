@@ -106,7 +106,7 @@ def convert_video_to_mp4(mp4_path, source_file, destination_file):
 
 def start_sequence(camera, signal, start_time_sec, num_starts, photo_path):
     for i in range(num_starts):
-        logger.info(f"  Start_sequence. Start of iteration {i}")
+        logger.info(f" Start_sequence. Start of iteration {i}")
         # Adjust the start_time_sec for the second iteration
         if i == 1:
             start_time_sec += 5 * 60  # Add 5 minutes for the second iteration
@@ -140,7 +140,7 @@ def start_sequence(camera, signal, start_time_sec, num_starts, photo_path):
                     capture_picture(camera, photo_path, picture_name)
                     logger.info(f"     Start_sequence, log_message: {log_message}")
                     logger.info(f"     Start_sequence, seconds_since_midnight: {seconds_since_midnight}, start_time_sec: {start_time_sec}")
-        logger.info(f"  Start_sequence, End of iteration: {i}")
+        logger.info(f" Start_sequence, End of iteration: {i}")
 
 def cv_annotate_video(frame, start_time_sec):
     time_now = dt.datetime.now()
@@ -157,11 +157,8 @@ def cv_annotate_video(frame, start_time_sec):
     cv2.putText(frame,label,org,fontFace,fontScale,color,thickness,lineType)
 
 def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec):
-    # Timer variables
-    number_of_detected_frames = 25
-    number_of_non_detected_frames = 100
-    # Set the number of additional seconds to record after detecting a boat
-    #additional_seconds = 4  # Adjust the value as needed
+  
+
 
     # Load the pre-trained object detection model -- YOLO (You Only Look Once)
     net = cv2.dnn.readNet('/home/pi/darknet/yolov3-tiny.weights', '/home/pi/darknet/cfg/yolov3-tiny.cfg')
@@ -182,14 +179,20 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
     width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH) + 0.5)
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT) + 0.5)
     size = (width, height)
-    print("size= ", size)
+    logger.info("frame size= {size}")
+    fps = 25 # frames per second
+    # Timer variables
+    number_of_detected_frames = 25
+     # Set the number of additional frames or seconds to record after detecting a boat
+    additional_seconds = 10  # Adjust the value as needed
+    number_of_non_detected_frames = fps * additional_seconds
+   
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # H.264 codec with MP4 container
-    video_writer = cv2.VideoWriter(mp4_path + 'video1' + '.mp4', fourcc, 25, size)
+    video_writer = cv2.VideoWriter(mp4_path + 'video1' + '.mp4', fourcc, fps, size)
 
     while True:
         # Initialize variables
         boat_detected = False
-        start_time_detection = 0
 
         # Capture frame-by-frame
         ret, frame = cap.read()
@@ -222,7 +225,7 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
 
                 if confidence > 0.2 and classes[class_id] == 'boat':
                     boat_detected = True
-                    print("boat_detected ", time.strftime("%Y-%m-%d-%H:%M:%S"))
+                    logger.info(f"boat_detected {time.strftime('%Y-%m-%d-%H:%M:%S')} Confidence = {confidence}")
 
                     # Visualize the detected bounding box
                     h, w, _ = frame.shape
@@ -263,7 +266,7 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
 
         # Check if the maximum duration has been reached
         elapsed_time = (datetime.combine(datetime.today(), datetime.now().time()) - datetime.combine(datetime.today(), start_time)).total_seconds()
-        print("elapsed time", elapsed_time)
+        #print("elapsed time", elapsed_time)
         if elapsed_time >= 60 * (video_end + 5 * (num_starts - 1)):
             break
 
