@@ -183,6 +183,7 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
     # Timer variables
     number_of_detected_frames = 24
      # Set the number of additional frames or seconds to record after detecting a boat
+    extra_seconds = 2
     additional_seconds = 5  # Adjust the value as needed
     number_of_non_detected_frames = fps * additional_seconds
    
@@ -226,6 +227,7 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
                 if confidence > 0.2 and classes[class_id] == 'boat':
                     boat_detected = True
                     logger.info(f"boat_detected {time.strftime('%Y-%m-%d-%H:%M:%S')} Confidence = {confidence}")
+                    start_time_detection = time.time()
 
                     # Visualize the detected bounding box
                     h, w, _ = frame.shape
@@ -239,14 +241,19 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
                     # cv2.rectangle(image, pt1, pt2, color, thickness, lineType)
                     cv2.rectangle(frame, pt1, pt2, (0, 255, 0), 2, cv2.LINE_AA)
 
-                    # Write detected frames to the video file
-                    i = 1
-                    while i < number_of_detected_frames:
-                        # Write frames to the video file
+                    if (time.time() - start_time_detection) < extra_seconds:
                         #ret, frame = cap.read()  # Read new frames
                         cv_annotate_video(frame, start_time_sec)
                         video_writer.write(frame)
-                        i += 1
+
+                    # Write detected frames to the video file
+                    #i = 1
+                    #while i < number_of_detected_frames:
+                    #    # Write frames to the video file
+                    #    #ret, frame = cap.read()  # Read new frames
+                    #    cv_annotate_video(frame, start_time_sec)
+                    #    video_writer.write(frame)
+                    #    i += 1
 
                 elif boat_detected:
                     # Check if additional_seconds have passed since the last boat detection
