@@ -184,7 +184,7 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
     number_of_detected_frames = 24
      # Set the number of additional frames or seconds to record after detecting a boat
     extra_seconds = 2
-    additional_seconds = 5  # Adjust the value as needed
+    additional_seconds = 8  # Adjust the value as needed
     number_of_non_detected_frames = fps * additional_seconds
    
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # H.264 codec with MP4 container
