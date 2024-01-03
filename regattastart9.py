@@ -183,8 +183,8 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
     # Timer variables
     number_of_detected_frames = 24
      # Set the number of additional frames or seconds to record after detecting a boat
-    extra_seconds = 2
-    additional_seconds = 4  # Adjust the value as needed
+    extra_seconds = 1
+    additional_seconds = 6  # Adjust the value as needed
     number_of_non_detected_frames = fps * additional_seconds
    
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # H.264 codec with MP4 container
@@ -224,7 +224,7 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
                 class_id = np.argmax(scores) # Determines the class (object) with the highest confidence.
                 confidence = scores[class_id] # Retrieves the confidence score for the detected class.
 
-                if confidence > 0.2 and classes[class_id] == 'boat':
+                if confidence > 0.4 and classes[class_id] == 'boat':
                     boat_detected = True
                     logger.info(f"boat_detected {time.strftime('%Y-%m-%d-%H:%M:%S')} Confidence = {confidence}")
                     start_time_detection = time.time()
