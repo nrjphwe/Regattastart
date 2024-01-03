@@ -181,7 +181,7 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
     
     fps = 25 # frames per second
     # Timer variables
-    number_of_detected_frames = 25
+    number_of_detected_frames = 24
      # Set the number of additional frames or seconds to record after detecting a boat
     additional_seconds = 10  # Adjust the value as needed
     number_of_non_detected_frames = fps * additional_seconds
@@ -252,7 +252,6 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
                     while i < number_of_non_detected_frames:
                         # Record new frames for additional_seconds after the last boat detection
                         ret, frame = cap.read()  # Read new frames
-
                         if frame is None or not ret:
                             print("End of video stream. Ending loop elif boat detected.")
                             break
