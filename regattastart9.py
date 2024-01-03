@@ -175,11 +175,11 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
         print("Cannot open camera")
         exit()
 
-    # adjust the output recording resoution to camera setting.
+    # adjust the output recording resolution to camera setting.
     width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH) + 0.5)
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT) + 0.5)
-    size = (width, height)
-    logger.info("frame size= {size}")
+    frame_size = (width, height)
+    logger.info(f"frame size= {frame_size}")
     fps = 25 # frames per second
     # Timer variables
     number_of_detected_frames = 25
@@ -188,7 +188,7 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
     number_of_non_detected_frames = fps * additional_seconds
    
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # H.264 codec with MP4 container
-    video_writer = cv2.VideoWriter(mp4_path + 'video1' + '.mp4', fourcc, fps, size)
+    video_writer = cv2.VideoWriter(mp4_path + 'video1' + '.mp4', fourcc, fps, frame_size)
 
     while True:
         # Initialize variables
