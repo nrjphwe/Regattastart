@@ -189,11 +189,11 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
    
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # H.264 codec with MP4 container
     video_writer = cv2.VideoWriter(mp4_path + 'video1' + '.mp4', fourcc, fps, frame_size)
-
+    start_time_detection = time.time()
+    
     while True:
         # Initialize variables
         boat_detected = False
-        start_time_detection = time.time()
 
         while (time.time() - start_time_detection) < additional_seconds:
 
@@ -248,40 +248,9 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
                         cv_annotate_video(frame, start_time_sec)
                         video_writer.write(frame)
 
-                        # Write detected frames to the video file
-                        #i = 1
-                        #while i < number_of_detected_frames:
-                        #    # Write frames to the video file
-                        #    #ret, frame = cap.read()  # Read new frames
-                        #    cv_annotate_video(frame, start_time_sec)
-                        #    video_writer.write(frame)
-                        #    i += 1
-
                     elif boat_detected:
-                        # Check if additional_seconds have passed since the last boat detection
-                        #start_time_detection = time.time()
-                        #if boat_detected:
-                        #    while (time.time() - start_time_detection) < additional_seconds:
-                        #        # Record new frames for additional_seconds after the last boat detection
-                        #        ret, frame = cap.read()  # Read new frames
-                        #        if frame is None or not ret:
-                        #            print("End of video stream. Ending loop elif boat detected.")
-                        #            break
-
                         cv_annotate_video(frame, start_time_sec)
                         video_writer.write(frame)
-
-                        #i = 1
-                        #while i < number_of_non_detected_frames:
-                        #    # Record new frames for additional_seconds after the last boat detection
-                        #    ret, frame = cap.read()  # Read new frames
-                        #    if frame is None or not ret:
-                        #        print("End of video stream. Ending loop elif boat detected.")
-                        #        break
-                        #
-                        #    cv_annotate_video(frame, start_time_sec)
-                        #    video_writer.write(frame)
-                        #    i += 1
                         boat_detected = False
 
         # Check if the maximum duration has been reached
