@@ -181,7 +181,8 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
     
     fps = 24 # frames per second
     # Timer variables
-    number_of_detected_frames = 24
+    additional_frames_threshold = 50
+    #number_of_detected_frames = 24
      # Set the number of additional frames or seconds to record after detecting a boat
     extra_seconds = 1
     additional_seconds = 6  # Adjust the value as needed
@@ -190,6 +191,8 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # H.264 codec with MP4 container
     video_writer = cv2.VideoWriter(mp4_path + 'video1' + '.mp4', fourcc, fps, frame_size)
     boat_detected = False
+    detection_counter = 0  # Counter to keep track of frames after a boat detection
+
 
     while True:
         # Initialize variables
@@ -229,7 +232,7 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
                     class_id = np.argmax(scores) # Determines the class (object) with the highest confidence.
                     confidence = scores[class_id] # Retrieves the confidence score for the detected class.
                    
-                    if confidence > 0.4 and classes[class_id] == 'boat':
+                    if confidence > 0.2 and classes[class_id] == 'boat':
                         logger.info(f"boat_detected {time.strftime('%Y-%m-%d-%H:%M:%S')} Confidence = {confidence}")
                         start_time_detection = time.time()
 
@@ -252,6 +255,8 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
                         print("Time to write frame:", write_end_time - write_start_time, "seconds")
     
                         boat_detected = True
+                        detection_counter = 0  # Reset the counter
+
 
         elif boat_detected:
             while (time.time() - start_time_detection) < additional_seconds:
@@ -267,8 +272,12 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
 
                 cv_annotate_video(frame, start_time_sec)
                 video_writer.write(frame)
-            boat_detected = False
-  
+                detection_counter += 1  # Increment the counter
+
+                if detection_counter >= additional_frames_threshold:
+                    boat_detected = False  # Reset the flag to stop capturing more frames
+                    break
+
 
         # Check if the maximum duration has been reached
         elapsed_time = (datetime.combine(datetime.today(), datetime.now().time()) - datetime.combine(datetime.today(), start_time)).total_seconds()
