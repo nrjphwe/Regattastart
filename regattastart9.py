@@ -179,9 +179,9 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
     frame_size = (width, height)
     logger.info(f"frame size= {frame_size}")
     
-    fps = 24 # frames per second
+    fps = 10 # frames per second
     # Timer variables
-    additional_frames_threshold = 50
+    additional_frames_threshold = 100
     #number_of_detected_frames = 24
      # Set the number of additional frames or seconds to record after detecting a boat
     extra_seconds = 1
@@ -192,7 +192,6 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
     video_writer = cv2.VideoWriter(mp4_path + 'video1' + '.mp4', fourcc, fps, frame_size)
     boat_detected = False
     detection_counter = 0  # Counter to keep track of frames after a boat detection
-
 
     while True:
         # Initialize variables
@@ -257,7 +256,6 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
                         boat_detected = True
                         detection_counter = 0  # Reset the counter
 
-
                     elif boat_detected:
                         #while (time.time() - start_time_detection) < additional_seconds:
                         ret, frame = cap.read()
@@ -280,7 +278,6 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
                         if detection_counter >= additional_frames_threshold:
                             boat_detected = False  # Reset the flag to stop capturing more frames
                             break
-
 
         # Check if the maximum duration has been reached
         elapsed_time = (datetime.combine(datetime.today(), datetime.now().time()) - datetime.combine(datetime.today(), start_time)).total_seconds()
