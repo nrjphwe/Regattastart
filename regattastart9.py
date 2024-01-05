@@ -179,7 +179,7 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
     frame_size = (width, height)
     logger.info(f"frame size= {frame_size}")
     
-    fps = 25 # frames per second
+    fps = 24 # frames per second
     # Timer variables
     number_of_detected_frames = 24
      # Set the number of additional frames or seconds to record after detecting a boat
@@ -197,7 +197,11 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
         
         if boat_detected == False:
             # Capture frame-by-frame
+            read_start_time = time.time()
             ret, frame = cap.read()
+            read_end_time = time.time()
+            print("Time to read frame:", read_end_time - read_start_time, "seconds")
+            
             if frame is None:
                 print("Frame is None. Ending loop.")
                 break
@@ -241,7 +245,12 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
                         # cv2.rectangle(image, pt1, pt2, color, thickness, lineType)
                         cv2.rectangle(frame, pt1, pt2, (0, 255, 0), 2, cv2.LINE_AA)
                         cv_annotate_video(frame, start_time_sec)
+
+                        write_start_time = time.time()
                         video_writer.write(frame)
+                        write_end_time = time.time()
+                        print("Time to write frame:", write_end_time - write_start_time, "seconds")
+    
                         boat_detected = True
 
         elif boat_detected:
