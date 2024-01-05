@@ -258,28 +258,28 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
                         detection_counter = 0  # Reset the counter
 
 
-        elif boat_detected:
-            #while (time.time() - start_time_detection) < additional_seconds:
-            ret, frame = cap.read()
-            if frame is None:
-                print("Frame is None. Ending loop.")
-                break
+                    elif boat_detected:
+                        #while (time.time() - start_time_detection) < additional_seconds:
+                        ret, frame = cap.read()
+                        if frame is None:
+                            print("Frame is None. Ending loop.")
+                            break
 
-            # if frame is read correctly ret is True
-            if not ret:
-                print("End of video stream. Or can't receive frame (stream end?). Exiting ...")
-                break
+                        # if frame is read correctly ret is True
+                        if not ret:
+                            print("End of video stream. Or can't receive frame (stream end?). Exiting ...")
+                            break
 
-            cv_annotate_video(frame, start_time_sec)
-            write_start_time_elif = time.time()
-            video_writer.write(frame)
-            write_end_time_elif = time.time()
-            print("Time to write frame elif:", write_end_time_elif - write_start_time_elif, "seconds")
-            detection_counter += 1  # Increment the counter
+                        cv_annotate_video(frame, start_time_sec)
+                        write_start_time_elif = time.time()
+                        video_writer.write(frame)
+                        write_end_time_elif = time.time()
+                        print("Time to write frame elif:", write_end_time_elif - write_start_time_elif, "seconds")
+                        detection_counter += 1  # Increment the counter
 
-            if detection_counter >= additional_frames_threshold:
-                boat_detected = False  # Reset the flag to stop capturing more frames
-                break
+                        if detection_counter >= additional_frames_threshold:
+                            boat_detected = False  # Reset the flag to stop capturing more frames
+                            break
 
 
         # Check if the maximum duration has been reached
