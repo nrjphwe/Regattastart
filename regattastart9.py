@@ -156,7 +156,7 @@ def cv_annotate_video(frame, start_time_sec):
     #cv2.putText(frame,label,(105,105),fontFace=cv2.FONT_HERSHEY_COMPLEX_SMALL,fontScale=1,color=(0,0,255))
     cv2.putText(frame,label,org,fontFace,fontScale,color,thickness,lineType)
 
-def detect_and_write_boats(frame, video_writer, start_time_sec):
+def detect_and_write_boats(frame, start_time_sec):
     # Load the pre-trained object detection model -- YOLO (You Only Look Once)
     net = cv2.dnn.readNet('/home/pi/darknet/yolov3-tiny.weights', '/home/pi/darknet/cfg/yolov3-tiny.cfg')
     # Load COCO names (class labels)
@@ -182,7 +182,7 @@ def detect_and_write_boats(frame, video_writer, start_time_sec):
             class_id = np.argmax(scores)
             confidence = scores[class_id]
 
-            if confidence > 0.4 and classes[class_id] == 'boat':
+            if confidence > 0.3 and classes[class_id] == 'boat':
                 print(f"Boat detected! Confidence = {confidence}")
                 # Visualize the detected bounding box
                 h, w, _ = frame.shape
@@ -195,10 +195,10 @@ def detect_and_write_boats(frame, video_writer, start_time_sec):
     return boat_detected
 
 def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec):
-
     # Open a video capture object (replace 'your_video_file.mp4' with the actual video file or use 0 for webcam)
     #cap = cv2.VideoCapture(os.path.join(mp4_path, "finish21-6.mp4"))
     cap = cv2.VideoCapture(0)
+
     if not cap.isOpened():
         print("Cannot open camera")
         exit()
@@ -209,14 +209,15 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
     frame_size = (width, height)
     logger.info(f"frame size= {frame_size}")
     fps = 10 # frames per second
-    # Timer variables
+
      # Set the number seconds to record after detecting a boat
     additional_seconds = 8  # Adjust the value as needed
-   
+    # setup cv2 writer 
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # H.264 codec with MP4 container
     video_writer = cv2.VideoWriter(mp4_path + 'video1' + '.mp4', fourcc, fps, frame_size)
-    boat_detected = False
+
     # Initialize variables
+    boat_detected = False
     start_time_detection = time.time()
 
     while (time.time() - start_time_detection) < additional_seconds:
@@ -230,15 +231,15 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
             print("End of video stream. Or can't receive frame (stream end?). Exiting ...")
             break
 
-        if not boat_detected:
-            boat_detected = detect_and_write_boats(frame, video_writer, start_time_sec)
-        else:
+        # Detect and write boats
+        boat_detected = detect_and_write_boats(frame, start_time_sec)
+
+        if boat_detected:
             cv_annotate_video(frame, start_time_sec)
             video_writer.write(frame)
 
         # Check if the maximum duration has been reached
         elapsed_time = (datetime.combine(datetime.today(), datetime.now().time()) - datetime.combine(datetime.today(), start_time)).total_seconds()
-        #print("elapsed time", elapsed_time)
         if elapsed_time >= 60 * (video_end + 5 * (num_starts - 1)):
             break
 
