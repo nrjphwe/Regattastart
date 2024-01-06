@@ -256,51 +256,51 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
                         boat_detected = True
                         detection_counter = 0  # Reset the counter
 
-                    elif boat_detected:
-                        while (time.time() - start_time_detection) < additional_seconds:
-                            ret, frame = cap.read()
-                            if frame is None:
-                                print("Frame is None. Ending loop.")
-                                break
+        elif boat_detected:
+            while (time.time() - start_time_detection) < additional_seconds:
+                ret, frame = cap.read()
+                if frame is None:
+                    print("Frame is None. Ending loop.")
+                    break
 
-                            # if frame is read correctly ret is True
-                            if not ret:
-                                print("End of video stream. Or can't receive frame (stream end?). Exiting ...")
-                                break
+                # if frame is read correctly ret is True
+                if not ret:
+                    print("End of video stream. Or can't receive frame (stream end?). Exiting ...")
+                    break
 
-                            # Function to prepare the input image (frame) for the neural network.
-                            scalefactor = 0.00392
-                            size = (416, 416)
-                            swapRB = True
-                            crop = False
-                            blob = cv2.dnn.blobFromImage(frame, scalefactor, size, swapRB, crop)
+                # Function to prepare the input image (frame) for the neural network.
+                scalefactor = 0.00392
+                size = (416, 416)
+                swapRB = True
+                crop = False
+                blob = cv2.dnn.blobFromImage(frame, scalefactor, size, swapRB, crop)
 
-                            net.setInput(blob)
-                            outs = net.forward(layer_names)
-                            boat_detected = False  # Reset detection flag for each frame
+                net.setInput(blob)
+                outs = net.forward(layer_names)
+                boat_detected = False  # Reset detection flag for each frame
 
-                            for out in outs:
-                                for detection in out:
-                                    scores = detection[5:]
-                                    class_id = np.argmax(scores)
-                                    confidence = scores[class_id]
+                for out in outs:
+                    for detection in out:
+                        scores = detection[5:]
+                        class_id = np.argmax(scores)
+                        confidence = scores[class_id]
 
-                                    if confidence > 0.4 and classes[class_id] == 'boat':
-                                        print(f"Boat detected! Confidence = {confidence}")
+                        if confidence > 0.4 and classes[class_id] == 'boat':
+                            print(f"Boat detected! Confidence = {confidence}")
 
-                                        # Visualize the detected bounding box
-                                        h, w, _ = frame.shape
-                                        x, y, w, h = map(int, detection[0:4] * [w, h, w, h])
-                                        pt1 = (int(x), int(y))
-                                        pt2 = (int(x + w), int(y + h))
-                                        cv2.rectangle(frame, pt1, pt2, (0, 255, 0), 2, cv2.LINE_AA)
-                                        cv_annotate_video(frame, start_time_sec)
+                            # Visualize the detected bounding box
+                            h, w, _ = frame.shape
+                            x, y, w, h = map(int, detection[0:4] * [w, h, w, h])
+                            pt1 = (int(x), int(y))
+                            pt2 = (int(x + w), int(y + h))
+                            cv2.rectangle(frame, pt1, pt2, (0, 255, 0), 2, cv2.LINE_AA)
+                            cv_annotate_video(frame, start_time_sec)
 
-                                        video_writer.write(frame)
-                                        boat_detected = True  # Set detection flag to True
+                            video_writer.write(frame)
+                            boat_detected = True  # Set detection flag to True
 
-                            if boat_detected:
-                                break  # Exit the loop if a boat is detected
+                if boat_detected:
+                    break  # Exit the loop if a boat is detected
 
 
         # Check if the maximum duration has been reached
