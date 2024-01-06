@@ -185,7 +185,7 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
     #number_of_detected_frames = 24
      # Set the number of additional frames or seconds to record after detecting a boat
     extra_seconds = 1
-    additional_seconds = 6  # Adjust the value as needed
+    additional_seconds = 8  # Adjust the value as needed
     number_of_non_detected_frames = fps * additional_seconds
    
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # H.264 codec with MP4 container
@@ -231,8 +231,8 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
                     class_id = np.argmax(scores) # Determines the class (object) with the highest confidence.
                     confidence = scores[class_id] # Retrieves the confidence score for the detected class.
                    
-                    if confidence > 0.2 and classes[class_id] == 'boat':
-                        logger.info(f"boat_detected {time.strftime('%Y-%m-%d-%H:%M:%S')} Confidence = {confidence}")
+                    if confidence > 0.3 and classes[class_id] == 'boat':
+                        print(f"if loop Boat detected! {time.time()} Confidence = {confidence}")
                         start_time_detection = time.time()
 
                         # Visualize the detected bounding box
@@ -257,6 +257,7 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
                         detection_counter = 0  # Reset the counter
 
         elif boat_detected:
+            start_time_detection = time.time()
             while (time.time() - start_time_detection) < additional_seconds:
                 ret, frame = cap.read()
                 if frame is None:
@@ -285,9 +286,8 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
                         class_id = np.argmax(scores)
                         confidence = scores[class_id]
 
-                        if confidence > 0.4 and classes[class_id] == 'boat':
-                            print(f"Boat detected! Confidence = {confidence}")
-
+                        if confidence > 0.3 and classes[class_id] == 'boat':
+                            print(f"elsif loop Boat detected! {time.time()} Confidence = {confidence}")
                             # Visualize the detected bounding box
                             h, w, _ = frame.shape
                             x, y, w, h = map(int, detection[0:4] * [w, h, w, h])
@@ -295,13 +295,11 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
                             pt2 = (int(x + w), int(y + h))
                             cv2.rectangle(frame, pt1, pt2, (0, 255, 0), 2, cv2.LINE_AA)
                             cv_annotate_video(frame, start_time_sec)
-
                             video_writer.write(frame)
                             boat_detected = True  # Set detection flag to True
 
                 if boat_detected:
                     break  # Exit the loop if a boat is detected
-
 
         # Check if the maximum duration has been reached
         elapsed_time = (datetime.combine(datetime.today(), datetime.now().time()) - datetime.combine(datetime.today(), start_time)).total_seconds()
