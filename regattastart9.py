@@ -195,48 +195,49 @@ def detect_and_write_boats(frame, start_time_sec):
     return boat_detected
 
 def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec):
-    # Open a video capture object (replace 'your_video_file.mp4' with the actual video file or use 0 for webcam)
-    #cap = cv2.VideoCapture(os.path.join(mp4_path, "finish21-6.mp4"))
-    cap = cv2.VideoCapture(0)
+    while True:
+        # Open a video capture object (replace 'your_video_file.mp4' with the actual video file or use 0 for webcam)
+        #cap = cv2.VideoCapture(os.path.join(mp4_path, "finish21-6.mp4"))
+        cap = cv2.VideoCapture(0)
 
-    if not cap.isOpened():
-        print("Cannot open camera")
-        exit()
+        if not cap.isOpened():
+            print("Cannot open camera")
+            exit()
 
-    # adjust the output recording resolution to camera setting.
-    width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH) + 0.5)
-    height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT) + 0.5)
-    frame_size = (width, height)
-    logger.info(f"frame size= {frame_size}")
-    fps = 10 # frames per second
+        # adjust the output recording resolution to camera setting.
+        width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH) + 0.5)
+        height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT) + 0.5)
+        frame_size = (width, height)
+        logger.info(f"frame size= {frame_size}")
+        fps = 10 # frames per second
 
-     # Set the number seconds to record after detecting a boat
-    additional_seconds = 8  # Adjust the value as needed
-    # setup cv2 writer 
-    fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # H.264 codec with MP4 container
-    video_writer = cv2.VideoWriter(mp4_path + 'video1' + '.mp4', fourcc, fps, frame_size)
+        # Set the number seconds to record after detecting a boat
+        additional_seconds = 8  # Adjust the value as needed
+        # setup cv2 writer 
+        fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # H.264 codec with MP4 container
+        video_writer = cv2.VideoWriter(mp4_path + 'video1' + '.mp4', fourcc, fps, frame_size)
 
-    # Initialize variables
-    boat_detected = False
-    start_time_detection = time.time()
+        # Initialize variables
+        boat_detected = False
+        start_time_detection = time.time()
 
-    while (time.time() - start_time_detection) < additional_seconds:
-        ret, frame = cap.read()
-        if frame is None:
-            print("Frame is None. Ending loop.")
-            break
+        while (time.time() - start_time_detection) < additional_seconds:
+            ret, frame = cap.read()
+            if frame is None:
+                print("Frame is None. Ending loop.")
+                break
 
-        # if frame is read correctly ret is True
-        if not ret:
-            print("End of video stream. Or can't receive frame (stream end?). Exiting ...")
-            break
+            # if frame is read correctly ret is True
+            if not ret:
+                print("End of video stream. Or can't receive frame (stream end?). Exiting ...")
+                break
 
-        # Detect and write boats
-        boat_detected = detect_and_write_boats(frame, start_time_sec)
+            # Detect and write boats
+            boat_detected = detect_and_write_boats(frame, start_time_sec)
 
-        if boat_detected:
-            cv_annotate_video(frame, start_time_sec)
-            video_writer.write(frame)
+            if boat_detected:
+                cv_annotate_video(frame, start_time_sec)
+                video_writer.write(frame)
 
         # Check if the maximum duration has been reached
         elapsed_time = (datetime.combine(datetime.today(), datetime.now().time()) - datetime.combine(datetime.today(), start_time)).total_seconds()
