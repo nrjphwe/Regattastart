@@ -215,7 +215,7 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
     video_writer = cv2.VideoWriter(mp4_path + 'video1' + '.mp4', fourcc, fps, frame_size)
 
     # Initialize variables
-    boat_detected = False
+    boat_detected_flag = False
     additional_seconds = 8  # Set the number seconds to record after detecting a boat
     start_time_recording = time.time()  # Record the start time of the recording
 
@@ -234,7 +234,7 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
 
         boat_detected = detect_and_write_boats(frame, start_time_sec)
         if boat_detected:
-            boat_detected = True
+            boat_detected_flag = True
             # Reset the timer if a boat is detected
             start_time_detection = time.time()
 
@@ -249,12 +249,12 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
                     # Reset the timer if another boat is detected during additional_seconds
                     start_time_detection = time.time()
 
-        elif boat_detected:
+        elif boat_detected_flag:
             elapsed_detection_time = time.time() - start_time_detection
             cv_annotate_video(frame, start_time_sec)
             video_writer.write(frame)
             if elapsed_detection_time >= additional_seconds:
-                    boat_detected = False
+                    boat_detected_flag = False
                     break
 
         # Check if the maximum recording duration has been reached
