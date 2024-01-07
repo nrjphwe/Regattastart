@@ -215,6 +215,7 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
     video_writer = cv2.VideoWriter(mp4_path + 'video1' + '.mp4', fourcc, fps, frame_size)
 
     # Initialize variables
+    boat_detected = False
     additional_seconds = 8  # Set the number seconds to record after detecting a boat
     start_time_recording = time.time()  # Record the start time of the recording
 
@@ -248,24 +249,19 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
 
                 cv_annotate_video(frame, start_time_sec)
                 video_writer.write(frame)
+                print(f"frame written at time= {start_time_detection}")
 
                 # Check if additional_seconds have passed or if another boat is detected
                 elapsed_detection_time = time.time() - start_time_detection
                 print(f"elapsed detection time= {elapsed_detection_time}")
                 if elapsed_detection_time >= additional_seconds:
-                    start_time_detection = time.time()
                     break
 
                 if detect_and_write_boats(frame, start_time_sec):
-                    cv_annotate_video(frame, start_time_sec)
-                    video_writer.write(frame)
                     # Reset the timer if another boat is detected during additional_seconds
                     start_time_detection = time.time()
 
         # Check if the maximum recording duration has been reached
-        #elapsed_time = (datetime.combine(datetime.today(), datetime.now().time()) - datetime.combine(datetime.today(), start_time)).total_seconds()
-        #if elapsed_time >= 60 * (video_end + 5 * (num_starts - 1)):
-        #    break
         elapsed_recording_time = time.time() - start_time_recording
         print(f"elapsed recording time= {elapsed_recording_time}")
         if elapsed_recording_time >= 60 * (video_end + 5 * (num_starts - 1)):
@@ -273,6 +269,7 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
             cap.release()
             video_writer.release()
             break
+
     print("Exited finish_recording loop.")
 
 def main():
