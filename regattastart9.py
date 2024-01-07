@@ -257,6 +257,8 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
                     break
 
                 if detect_and_write_boats(frame, start_time_sec):
+                    cv_annotate_video(frame, start_time_sec)
+                    video_writer.write(frame)
                     # Reset the timer if another boat is detected during additional_seconds
                     start_time_detection = time.time()
 
