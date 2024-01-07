@@ -236,7 +236,7 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
             # Reset the timer if a boat is detected
             start_time_detection = time.time()
 
-            while (time.time() - start_time_detection) < additional_seconds:
+            while True:
                 ret, frame = cap.read()
 
                 if frame is None:
@@ -250,7 +250,7 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
                 cv_annotate_video(frame, start_time_sec)
                 video_writer.write(frame)
 
-                    # Check if additional_seconds have passed or if another boat is detected
+                # Check if additional_seconds have passed or if another boat is detected
                 elapsed_detection_time = time.time() - start_time_detection
                 #print(f"elapsed detection time= {elapsed_detection_time}")
                 if elapsed_detection_time >= additional_seconds:
@@ -271,7 +271,7 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
             cap.release()
             video_writer.release()
             break
-
+    print("Exited finish_recording loop.")
 
 def main():
     logger = setup_logging()  # Initialize the logger
