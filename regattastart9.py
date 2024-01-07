@@ -231,38 +231,31 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
             break
 
         # Detect and write boats
+
         boat_detected = detect_and_write_boats(frame, start_time_sec)
         if boat_detected:
+            boat_detected = True
             # Reset the timer if a boat is detected
             start_time_detection = time.time()
 
             while True:
-                ret, frame = cap.read()
-
-                if frame is None:
-                    print("Frame is None. Ending loop.")
-                    break
-
-                if not ret:
-                    print("End of video stream. Or can't receive frame (stream end?). Exiting ...")
-                    break
-
+                elapsed_detection_time = time.time() - start_time_detection
                 cv_annotate_video(frame, start_time_sec)
                 video_writer.write(frame)
-                print(f"frame written at time= {start_time_detection}")
-
-                # Check if additional_seconds have passed or if another boat is detected
-                while True:
-
-                    elapsed_detection_time = time.time() - start_time_detection
-                    cv_annotate_video(frame, start_time_sec)
-                    video_writer.write(frame)
-                    if elapsed_detection_time >= additional_seconds:
-                        break
-
+                if elapsed_detection_time >= additional_seconds:
+                    break
+                
                 if detect_and_write_boats(frame, start_time_sec):
                     # Reset the timer if another boat is detected during additional_seconds
                     start_time_detection = time.time()
+
+        elif boat_detected:
+            elapsed_detection_time = time.time() - start_time_detection
+            cv_annotate_video(frame, start_time_sec)
+            video_writer.write(frame)
+            if elapsed_detection_time >= additional_seconds:
+                    boat_detected = False
+                    break
 
         # Check if the maximum recording duration has been reached
         elapsed_recording_time = time.time() - start_time_recording
