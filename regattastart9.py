@@ -257,7 +257,7 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
                     if elapsed_detection_time >= additional_seconds:
                         break
 
-                    if detect_and_write_boats(frame, video_writer, start_time_sec):
+                    if detect_and_write_boats(frame, start_time_sec):
                         # Reset the timer if another boat is detected during additional_seconds
                         start_time_detection = time.time()
 
