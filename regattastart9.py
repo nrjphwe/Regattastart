@@ -220,11 +220,12 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
         # Initialize variables
         boat_detected = False
         # Timer variables
+        start_time_recording = time.time()  # Record the start time of the recording
         elapsed_time = 0
         additional_seconds = 8  # Adjust the value as needed
 
         #while (time.time() - start_time_detection) < additional_seconds:
-        while elapsed_time < 60 * (video_end + 5 * (num_starts - 1)):
+        while True:
             ret, frame = cap.read()
             if frame is None:
                 print("Frame is None. Ending loop.")
@@ -239,7 +240,6 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
             boat_detected = detect_and_write_boats(frame, start_time_sec)
             if boat_detected:
                 # Reset the timer if a boat is detected
-                elapsed_time = 0
                 start_time_detection = time.time()
 
                 while (time.time() - start_time_detection) < additional_seconds:
@@ -255,19 +255,21 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
 
                     cv_annotate_video(frame, start_time_sec)
                     video_writer.write(frame)
-                    elapsed_time += 1  # Increment the elapsed time during additional_seconds
 
             cv_annotate_video(frame, start_time_sec)
             video_writer.write(frame)
 
-            # Increment the elapsed time
-            elapsed_time += 1
             print(f"elapsed time= {elapsed_time}")
         
+            # Check if the maximum recording duration has been reached
+            elapsed_recording_time = time.time() - start_time_recording
+            if elapsed_recording_time >= 60 * video_end:
+                break
+
             # Check if the maximum duration has been reached
             #elapsed_time = (datetime.combine(datetime.today(), datetime.now().time()) - datetime.combine(datetime.today(), start_time)).total_seconds()
-            if elapsed_time >= 60 * (video_end + 5 * (num_starts - 1)):
-                break
+            #if elapsed_time >= 60 * (video_end + 5 * (num_starts - 1)):
+            #    break
 
         # Release the video capture object and close all windows
         cap.release()
