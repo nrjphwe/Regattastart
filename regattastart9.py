@@ -253,7 +253,7 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
 
                      # Check if additional_seconds have passed or if another boat is detected
                     elapsed_detection_time = time.time() - start_time_detection
-                    print(f"elapsed detection time= {elapsed_detection_time}")
+                    #print(f"elapsed detection time= {elapsed_detection_time}")
                     if elapsed_detection_time >= additional_seconds:
                         break
 
@@ -266,6 +266,7 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
             #if elapsed_time >= 60 * (video_end + 5 * (num_starts - 1)):
             #    break
             elapsed_recording_time = time.time() - start_time_recording
+            print(f"elapsed recording time= {elapsed_recording_time}")
             if elapsed_recording_time >= 60 * video_end:
                 break
 
