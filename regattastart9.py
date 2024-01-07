@@ -195,84 +195,83 @@ def detect_and_write_boats(frame, start_time_sec):
     return boat_detected
 
 def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec):
+    # Open a video capture object (replace 'your_video_file.mp4' with the actual video file or use 0 for webcam)
+    #cap = cv2.VideoCapture(os.path.join(mp4_path, "finish21-6.mp4"))
+    cap = cv2.VideoCapture(0)
+
+    if not cap.isOpened():
+        print("Cannot open camera")
+        exit()
+
+    # adjust the output recording resolution to camera setting.
+    width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH) + 0.5)
+    height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT) + 0.5)
+    frame_size = (width, height)
+    logger.info(f"frame size= {frame_size}")
+    fps = 10 # frames per second
+
+    # setup cv2 writer 
+    fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # H.264 codec with MP4 container
+    video_writer = cv2.VideoWriter(mp4_path + 'video1' + '.mp4', fourcc, fps, frame_size)
+
+    # Initialize variables
+    boat_detected = False
+    additional_seconds = 8  # Set the number seconds to record after detecting a boat
+    start_time_recording = time.time()  # Record the start time of the recording
+
     while True:
-        # Open a video capture object (replace 'your_video_file.mp4' with the actual video file or use 0 for webcam)
-        #cap = cv2.VideoCapture(os.path.join(mp4_path, "finish21-6.mp4"))
-        cap = cv2.VideoCapture(0)
+        ret, frame = cap.read()
+        if frame is None:
+            print("Frame is None. Ending loop.")
+            break
 
-        if not cap.isOpened():
-            print("Cannot open camera")
-            exit()
+        # if frame is read correctly ret is True
+        if not ret:
+            print("End of video stream. Or can't receive frame (stream end?). Exiting ...")
+            break
 
-        # adjust the output recording resolution to camera setting.
-        width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH) + 0.5)
-        height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT) + 0.5)
-        frame_size = (width, height)
-        logger.info(f"frame size= {frame_size}")
-        fps = 10 # frames per second
+        # Detect and write boats
+        boat_detected = detect_and_write_boats(frame, start_time_sec)
+        if boat_detected:
+            # Reset the timer if a boat is detected
+            start_time_detection = time.time()
 
-        # setup cv2 writer 
-        fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # H.264 codec with MP4 container
-        video_writer = cv2.VideoWriter(mp4_path + 'video1' + '.mp4', fourcc, fps, frame_size)
+            while (time.time() - start_time_detection) < additional_seconds:
+                ret, frame = cap.read()
 
-        # Initialize variables
-        boat_detected = False
-        additional_seconds = 8  # Set the number seconds to record after detecting a boat
-        start_time_recording = time.time()  # Record the start time of the recording
+                if frame is None:
+                    print("Frame is None. Ending loop.")
+                    break
 
-        while True:
-            ret, frame = cap.read()
-            if frame is None:
-                print("Frame is None. Ending loop.")
-                break
+                if not ret:
+                    print("End of video stream. Or can't receive frame (stream end?). Exiting ...")
+                    break
 
-            # if frame is read correctly ret is True
-            if not ret:
-                print("End of video stream. Or can't receive frame (stream end?). Exiting ...")
-                break
+                cv_annotate_video(frame, start_time_sec)
+                video_writer.write(frame)
 
-            # Detect and write boats
-            boat_detected = detect_and_write_boats(frame, start_time_sec)
-            if boat_detected:
-                # Reset the timer if a boat is detected
-                start_time_detection = time.time()
+                    # Check if additional_seconds have passed or if another boat is detected
+                elapsed_detection_time = time.time() - start_time_detection
+                #print(f"elapsed detection time= {elapsed_detection_time}")
+                if elapsed_detection_time >= additional_seconds:
+                    break
 
-                while (time.time() - start_time_detection) < additional_seconds:
-                    ret, frame = cap.read()
+                if detect_and_write_boats(frame, start_time_sec):
+                    # Reset the timer if another boat is detected during additional_seconds
+                    start_time_detection = time.time()
 
-                    if frame is None:
-                        print("Frame is None. Ending loop.")
-                        break
+        # Check if the maximum recording duration has been reached
+        #elapsed_time = (datetime.combine(datetime.today(), datetime.now().time()) - datetime.combine(datetime.today(), start_time)).total_seconds()
+        #if elapsed_time >= 60 * (video_end + 5 * (num_starts - 1)):
+        #    break
+        elapsed_recording_time = time.time() - start_time_recording
+        print(f"elapsed recording time= {elapsed_recording_time}")
+        if elapsed_recording_time >= 60 * video_end:
+            # Release the video capture object and close all windows
+            cap.release()
+            video_writer.release()
+            break
 
-                    if not ret:
-                        print("End of video stream. Or can't receive frame (stream end?). Exiting ...")
-                        break
-
-                    cv_annotate_video(frame, start_time_sec)
-                    video_writer.write(frame)
-
-                     # Check if additional_seconds have passed or if another boat is detected
-                    elapsed_detection_time = time.time() - start_time_detection
-                    #print(f"elapsed detection time= {elapsed_detection_time}")
-                    if elapsed_detection_time >= additional_seconds:
-                        break
-
-                    if detect_and_write_boats(frame, start_time_sec):
-                        # Reset the timer if another boat is detected during additional_seconds
-                        start_time_detection = time.time()
-
-            # Check if the maximum recording duration has been reached
-            #elapsed_time = (datetime.combine(datetime.today(), datetime.now().time()) - datetime.combine(datetime.today(), start_time)).total_seconds()
-            #if elapsed_time >= 60 * (video_end + 5 * (num_starts - 1)):
-            #    break
-            elapsed_recording_time = time.time() - start_time_recording
-            print(f"elapsed recording time= {elapsed_recording_time}")
-            if elapsed_recording_time >= 60 * video_end:
-                break
-
-        # Release the video capture object and close all windows
-        cap.release()
-        video_writer.release()
 
 def main():
     logger = setup_logging()  # Initialize the logger
