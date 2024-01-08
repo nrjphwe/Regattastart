@@ -211,7 +211,7 @@ def write_frame_to_video(frame,cap):
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # H.264 codec with MP4 container
     video_writer = cv2.VideoWriter(mp4_path + 'video1' + '.mp4', fourcc, fps, frame_size)
     video_writer.write(frame)
-    logger.info("write frame 218")
+    #logger.info("write frame 214")
 
 def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec):
     # Open a video capture object (replace 'your_video_file.mp4' with the actual video file or use 0 for webcam)
@@ -219,7 +219,7 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
     cap = open_camera()
 
     # Initialize variables
-    additional_seconds = 1  # Set the number seconds to record after detecting a boat
+    additional_seconds = 5  # Set the number seconds to record after detecting a boat
     start_time_recording = time.time()  # Record the start time of the recording
 
     while True:
