@@ -239,13 +239,13 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
 
         # Detect and write boats
 
-        boat_detected = detect_boat(frame,cap)
+        boat_detected = detect_boat(frame)
         if boat_detected:
             start_time_detection = time.time()
             while True:
                 elapsed_writing_duration = time.time() - start_time_detection
                 cv_annotate_video(frame, start_time_sec)
-                write_frame_to_video(frame)
+                write_frame_to_video(frame, cap)
                 if elapsed_writing_duration >= additional_seconds:
                     start_time_detection = time.time()
                     break
