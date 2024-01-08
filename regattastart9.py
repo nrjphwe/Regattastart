@@ -201,9 +201,9 @@ def detect_boat(frame):
                 cv2.rectangle(frame, pt1, pt2, (0, 255, 0), 2, cv2.LINE_AA)
     return boat_detected
 
-def write_frame_to_video(frame):
+def write_frame_to_video(frame,cap):
 
-    cap = open_camera()
+    #cap = open_camera()
     # adjust the output recording resolution to camera setting.
     width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH) + 0.5)
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT) + 0.5)
@@ -239,7 +239,7 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
 
         # Detect and write boats
 
-        boat_detected = detect_boat(frame)
+        boat_detected = detect_boat(frame,cap)
         if boat_detected:
             start_time_detection = time.time()
             while True:
