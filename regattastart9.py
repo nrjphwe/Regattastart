@@ -221,7 +221,7 @@ def write_frame_to_video(frame):
 def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec):
     # Open a video capture object (replace 'your_video_file.mp4' with the actual video file or use 0 for webcam)
     #cap = cv2.VideoCapture(os.path.join(mp4_path, "finish21-6.mp4"))
-    cap = open_camera
+    cap = open_camera()
 
     # Initialize variables
     start_time_detection = time.time()
