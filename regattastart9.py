@@ -202,20 +202,17 @@ def detect_boat(frame):
     return boat_detected
 
 def write_frame_to_video(frame,cap):
-
-    #cap = open_camera()
     # adjust the output recording resolution to camera setting.
     width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH) + 0.5)
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT) + 0.5)
     frame_size = (width, height)
-    logger.info(f"frame size= {frame_size}")
-    fps = 10 # frames per second
+    fps = 24 # frames per second
 
     # setup cv2 writer 
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # H.264 codec with MP4 container
     video_writer = cv2.VideoWriter(mp4_path + 'video1' + '.mp4', fourcc, fps, frame_size)
     video_writer.write(frame)
-    logger.info("write frame")
+    logger.info("write frame 218")
 
 def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec):
     # Open a video capture object (replace 'your_video_file.mp4' with the actual video file or use 0 for webcam)
@@ -223,7 +220,7 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
     cap = open_camera()
 
     # Initialize variables
-    additional_seconds = 4  # Set the number seconds to record after detecting a boat
+    additional_seconds = 6  # Set the number seconds to record after detecting a boat
     start_time_recording = time.time()  # Record the start time of the recording
 
     while True:
@@ -238,7 +235,6 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
             break
 
         # Detect and write boats
-
         boat_detected = detect_boat(frame)
         if boat_detected:
             start_time_detection = time.time()
