@@ -190,8 +190,8 @@ def detect_boat(frame):
             scores = detection[5:]
             class_id = np.argmax(scores)
             confidence = scores[class_id]
-
             if confidence > 0.3 and classes[class_id] == 'boat':
+                boat_detected = True  # Set detection flag to True
                 logger.info(f"Boat detected! Confidence = {confidence}")
                 # Visualize the detected bounding box
                 h, w, _ = frame.shape
@@ -199,7 +199,6 @@ def detect_boat(frame):
                 pt1 = (int(x), int(y))
                 pt2 = (int(x + w), int(y + h))
                 cv2.rectangle(frame, pt1, pt2, (0, 255, 0), 2, cv2.LINE_AA)
-                boat_detected = True  # Set detection flag to True
     return boat_detected
 
 def write_frame_to_video(frame):
@@ -224,8 +223,6 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
     cap = open_camera()
 
     # Initialize variables
-    start_time_detection = time.time()
-    boat_detected_flag = False
     additional_seconds = 4  # Set the number seconds to record after detecting a boat
     start_time_recording = time.time()  # Record the start time of the recording
 
@@ -244,6 +241,7 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
 
         boat_detected = detect_boat(frame)
         if boat_detected:
+            start_time_detection = time.time()
             while True:
                 elapsed_writing_duration = time.time() - start_time_detection
                 cv_annotate_video(frame, start_time_sec)
