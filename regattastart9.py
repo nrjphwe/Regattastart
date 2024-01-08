@@ -260,7 +260,7 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
             #cap.release()
             #video_writer.release()
             break
-
+    cap.release()  # Don't forget to release the camera resources when done
     logger.info("Exited finish_recording loop.")
 
 def main():
