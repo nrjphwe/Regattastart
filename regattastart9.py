@@ -142,12 +142,22 @@ def start_sequence(camera, signal, start_time_sec, num_starts, photo_path):
                     logger.info(f"     Start_sequence, seconds_since_midnight: {seconds_since_midnight}, start_time_sec: {start_time_sec}")
         logger.info(f" Start_sequence, End of iteration: {i}")
 
+def open_camera():
+    """
+    Opens the camera and returns the VideoCapture object.
+    """
+    cap = cv2.VideoCapture(0)
+    if not cap.isOpened():
+        print("Cannot open camera")
+        exit()
+    return cap
+
 def cv_annotate_video(frame, start_time_sec):
     time_now = dt.datetime.now()
     seconds_since_midnight = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
     elapsed_time = seconds_since_midnight - start_time_sec #elapsed since last start until now)
     label = str(dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) +  " Seconds since last start: " +  str(elapsed_time)
-    org = (30,40)
+    org = (30,60)
     fontFace=cv2.FONT_HERSHEY_DUPLEX
     fontScale = 0.6
     color=(0,0,255) #(B, G, R)
@@ -157,6 +167,7 @@ def cv_annotate_video(frame, start_time_sec):
     cv2.putText(frame,label,org,fontFace,fontScale,color,thickness,lineType)
 
 def detect_boat(frame):
+    boat_detected = False  # Reset detection flag for each frame
     # Load the pre-trained object detection model -- YOLO (You Only Look Once)
     net = cv2.dnn.readNet('/home/pi/darknet/yolov3-tiny.weights', '/home/pi/darknet/cfg/yolov3-tiny.cfg')
     # Load COCO names (class labels)
@@ -173,9 +184,7 @@ def detect_boat(frame):
     blob = cv2.dnn.blobFromImage(frame, scalefactor, size, swapRB, crop)
     net.setInput(blob) # Sets the input blob as the input to the neural network
     outs = net.forward(layer_names)
-
-    boat_detected = False  # Reset detection flag for each frame
-
+   
     for out in outs:
         for detection in out:
             scores = detection[5:]
@@ -183,7 +192,7 @@ def detect_boat(frame):
             confidence = scores[class_id]
 
             if confidence > 0.3 and classes[class_id] == 'boat':
-                print(f"Boat detected! Confidence = {confidence}")
+                logger.info(f"Boat detected! Confidence = {confidence}")
                 # Visualize the detected bounding box
                 h, w, _ = frame.shape
                 x, y, w, h = map(int, detection[0:4] * [w, h, w, h])
@@ -194,6 +203,8 @@ def detect_boat(frame):
     return boat_detected
 
 def write_frame_to_video(frame):
+
+    cap = open_camera()
     # adjust the output recording resolution to camera setting.
     width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH) + 0.5)
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT) + 0.5)
@@ -210,11 +221,7 @@ def write_frame_to_video(frame):
 def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec):
     # Open a video capture object (replace 'your_video_file.mp4' with the actual video file or use 0 for webcam)
     #cap = cv2.VideoCapture(os.path.join(mp4_path, "finish21-6.mp4"))
-    cap = cv2.VideoCapture(0)
-
-    if not cap.isOpened():
-        print("Cannot open camera")
-        exit()
+    cap = open_camera
 
     # Initialize variables
     start_time_detection = time.time()
@@ -225,12 +232,12 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
     while True:
         ret, frame = cap.read()
         if frame is None:
-            print("Frame is None. Ending loop.")
+            logger.info("Frame is None. Ending loop.")
             break
 
         # if frame is read correctly ret is True
         if not ret:
-            print("End of video stream. Or can't receive frame (stream end?). Exiting ...")
+            logger.info("End of video stream. Or can't receive frame (stream end?). Exiting ...")
             break
 
         # Detect and write boats
@@ -254,7 +261,7 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
             #video_writer.release()
             break
 
-    print("Exited finish_recording loop.")
+    logger.info("Exited finish_recording loop.")
 
 def main():
     logger = setup_logging()  # Initialize the logger
