@@ -207,7 +207,6 @@ def write_frame_to_video(frame,cap):
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT) + 0.5)
     frame_size = (width, height)
     fps = 24 # frames per second
-
     # setup cv2 writer 
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # H.264 codec with MP4 container
     video_writer = cv2.VideoWriter(mp4_path + 'video1' + '.mp4', fourcc, fps, frame_size)
@@ -220,7 +219,7 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
     cap = open_camera()
 
     # Initialize variables
-    additional_seconds = 6  # Set the number seconds to record after detecting a boat
+    additional_seconds = 1  # Set the number seconds to record after detecting a boat
     start_time_recording = time.time()  # Record the start time of the recording
 
     while True:
@@ -250,9 +249,6 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
         elapsed_recording_time = time.time() - start_time_recording
         print(f"elapsed recording time= {elapsed_recording_time}")
         if elapsed_recording_time >= 60 * (video_end + 5 * (num_starts - 1)):
-            # Release the video capture object and close all windows
-            #cap.release()
-            #video_writer.release()
             break
     cap.release()  # Don't forget to release the camera resources when done
     logger.info("Exited finish_recording loop.")
@@ -269,7 +265,7 @@ def main():
         sys.exit(1)
 
     try:
-         #logger.info("form_data: %s", form_data)
+        #logger.info("form_data: %s", form_data)
         form_data = json.loads(sys.argv[1])
         week_day = str(form_data["day"])
         video_end = int(form_data["video_end"])
@@ -278,14 +274,11 @@ def main():
 
         # Convert to datetime object
         start_time = datetime.strptime(start_time_str, "%H:%M").time()
-
-         #start_hour, start_minute = start_time.split(':')
         # Extract hour and minute
         start_hour = start_time.hour
         start_minute = start_time.minute
         # Calculate start_time_sec
         start_time_sec = 60 * start_minute + 3600 * start_hour
-
         t5min_warning = start_time_sec - 5 * 60 # time when the start-machine should begin to execute.
         wd = dt.datetime.today().strftime("%A")
 
