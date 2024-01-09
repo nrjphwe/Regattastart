@@ -10,9 +10,15 @@ def annotate_video(frame, start_time_sec):
     time_now = dt.datetime.now()
     seconds_since_midnight = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
     elapsed_time = seconds_since_midnight - start_time_sec #elapsed since last start until now)
+    org = (30,60)
+    fontFace=cv2.FONT_HERSHEY_DUPLEX
+    fontScale = 0.6
+    color=(0,0,255) #(B, G, R)
+    thickness = 1
+    lineType = cv2.LINE_AA
     label = str(dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) +  " Seconds since last start: " +  str(elapsed_time)
-    cv2.putText(frame,label,(105,105),cv2.FONT_HERSHEY_COMPLEX_SMALL,1,(0,0,255))
-
+    cv2.putText(frame,label,org,fontFace,fontScale,color,thickness,lineType)
+   
 # Load the pre-trained object detection model -- YOLO (You Only Look Once) 
 net = cv2.dnn.readNet('../darknet/yolov3-tiny.weights', '../darknet/cfg/yolov3-tiny.cfg')
 
@@ -39,7 +45,7 @@ video_end = 10
 start_time_= 0
 start_time_sec = 0
 number_of_detected_frames = 5
-number_of_non_detected_frames = 1
+number_of_non_detected_frames = 5
 
 start_time = time.time()
 
@@ -90,8 +96,8 @@ while True:
                     boat_detected = False
 
 
-                # Display the frame in the 'Video' window
-                cv2.imshow("Video", frame)
+        # Display the frame in the 'Video' window
+        cv2.imshow("Video", frame)
     
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
