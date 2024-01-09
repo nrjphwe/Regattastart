@@ -2,7 +2,6 @@
 import os
 import sys
 sys.path.append('/home/pi/opencv/build/lib/python3')
-import cgitb
 import time
 from datetime import datetime
 import datetime as dt
@@ -201,18 +200,6 @@ def detect_boat(frame):
                 cv2.rectangle(frame, pt1, pt2, (0, 255, 0), 2, cv2.LINE_AA)
     return boat_detected
 
-def write_frame_to_video(frame,cap):
-    # adjust the output recording resolution to camera setting.
-    width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH) + 0.5)
-    height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT) + 0.5)
-    frame_size = (width, height)
-    fps = 24 # frames per second
-    # setup cv2 writer 
-    fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # H.264 codec with MP4 container
-    video_writer = cv2.VideoWriter(mp4_path + 'video1' + '.mp4', fourcc, fps, frame_size)
-    video_writer.write(frame)
-    #logger.info("write frame 214")
-
 def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec):
     # Open a video capture object (replace 'your_video_file.mp4' with the actual video file or use 0 for webcam)
     #cap = cv2.VideoCapture(os.path.join(mp4_path, "finish21-6.mp4"))
@@ -221,6 +208,14 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
     # Initialize variables
     additional_seconds = 5  # Set the number seconds to record after detecting a boat
     start_time_recording = time.time()  # Record the start time of the recording
+    fps = 24  # frames per second
+    width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH) + 0.5)
+    height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT) + 0.5)
+    frame_size = (width, height)
+
+    # setup cv2 writer 
+    fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # H.264 codec with MP4 container
+    video_writer = cv2.VideoWriter(mp4_path + 'video1' + '.mp4', fourcc, fps, frame_size)
 
     while True:
         ret, frame = cap.read()
@@ -240,7 +235,7 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
             while True:
                 elapsed_writing_duration = time.time() - start_time_detection
                 cv_annotate_video(frame, start_time_sec)
-                write_frame_to_video(frame, cap)
+                video_writer.write(frame)  # Write frame to video file
                 if elapsed_writing_duration >= additional_seconds:
                     start_time_detection = time.time()
                     break
@@ -250,7 +245,9 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
         print(f"elapsed recording time= {elapsed_recording_time}")
         if elapsed_recording_time >= 60 * (video_end + 5 * (num_starts - 1)):
             break
+        
     cap.release()  # Don't forget to release the camera resources when done
+    video_writer.release()  # Release the video writer
     logger.info("Exited finish_recording loop.")
 
 def main():
