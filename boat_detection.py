@@ -43,6 +43,10 @@ frame_size = (640, 480)
 # Open a video capture object 0 for webcam)
 cap = cv2.VideoCapture(0)
 out = video_writer = cv2.VideoWriter('output'+ today + '.mp4', fourcc, fps_out, frame_size)
+fps = 24  # frames per second
+width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH) + 0.5)
+height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT) + 0.5)
+frame_size = (width, height)
 
 # Initialize PiCamera outside the loop
 with picamera.PiCamera() as camera:
@@ -98,11 +102,13 @@ with picamera.PiCamera() as camera:
                         today = time.strftime("%Y%m%d-%H%M%S")
                         print(today, f"Class: {classes[class_id]}, Confidence: {confidence}")
                         # Visualize the detected bounding box
+                        # Visualize the detected bounding box
                         h, w, _ = frame.shape
                         x, y, w, h = map(int, detection[0:4] * [w, h, w, h])
-
+                        pt1 = (int(x), int(y))
+                        pt2 = (int(x + w), int(y + h))
                         # Modify the original frame
-                        cv2.rectangle(frame, (int(x), int(y)), (int(x + w), int(y + h)), (0, 255, 0), 2, cv2.LINE_AA)
+                        cv2.rectangle(frame, pt1, pt2, (0, 255, 0), 2, cv2.LINE_AA)
 
                         # Trigger video recording
                         if not recording:
@@ -121,6 +127,8 @@ with picamera.PiCamera() as camera:
         
     #  Pressing 'q' will exit the script.
     # After loop, the script release camera and closes the OpenCV windows
+    if camera is not None:
+        camera.close()  # Release the camera resources
     if video_writer is not None:
         video_writer.release()
     cv2.destroyAllWindows()
