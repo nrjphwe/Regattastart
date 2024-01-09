@@ -162,7 +162,6 @@ def cv_annotate_video(frame, start_time_sec):
     color=(0,0,255) #(B, G, R)
     thickness = 1
     lineType = cv2.LINE_AA
-    #cv2.putText(frame,label,(105,105),fontFace=cv2.FONT_HERSHEY_COMPLEX_SMALL,fontScale=1,color=(0,0,255))
     cv2.putText(frame,label,org,fontFace,fontScale,color,thickness,lineType)
 
 def detect_boat(frame):
@@ -174,6 +173,8 @@ def detect_boat(frame):
         classes = f.read().strip().split('\n')
     # Load the configuration and weights for YOLO
     layer_names = net.getUnconnectedOutLayersNames()
+
+    today = time.strftime("%Y%m%d")
 
     # Function to prepare the input image (frame) for the neural network.
     scalefactor = 0.00392 # A scale factor to normalize the pixel values. This is often set to 1/255.0.
@@ -206,8 +207,9 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
     cap = open_camera()
 
     # Initialize variables
-    additional_seconds = 1  # Set the number seconds to record after detecting a boat
-    start_time_recording = time.time()  # Record the start time of the recording
+    number_of_detected_frames = 5 # Set the number of frames to record after detecting a boat
+    number_of_non_detected_frames = 5
+    start_time = time.time()  # Record the start time of the recording
     fps = 24  # frames per second
     width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH) + 0.5)
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT) + 0.5)
@@ -227,23 +229,44 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
         if not ret:
             logger.info("End of video stream. Or can't receive frame (stream end?). Exiting ...")
             break
+        
+         # Variable to check if any boat is detected in the current frame
+        boat_detected = False
 
         # Detect and write boats
         boat_detected = detect_boat(frame)
-        if boat_detected:
-            start_time_detection = time.time()
-            while True:
-                elapsed_writing_duration = time.time() - start_time_detection
+        if boat_detected == True:
+        # Confidence > 0.2
+        # Write detected frames to the video file
+            i = 1
+            while i < number_of_detected_frames:
                 cv_annotate_video(frame, start_time_sec)
-                video_writer.write(frame)  # Write frame to video file
-                if elapsed_writing_duration >= additional_seconds:
-                    start_time_detection = time.time()
-                    break
+                video_writer.write(frame)
+                i += 1
+            
+        else:
+            # Confidence < 0.2
+            if boat_detected == True:
+                i = 1
+                while i < number_of_non_detected_frames:
+                    cv_annotate_video(frame, start_time_sec)
+                    video_writer.write(frame)
+                    i += 1
+                boat_detected = False
+
+            #start_time_detection = time.time()
+            #while True:
+            #    elapsed_writing_duration = time.time() - start_time_detection
+            #    cv_annotate_video(frame, start_time_sec)
+            #    video_writer.write(frame)  # Write frame to video file
+            #    if elapsed_writing_duration >= additional_seconds:
+            #        start_time_detection = time.time()
+            #        break
 
         # Check if the maximum recording duration has been reached
-        elapsed_recording_time = time.time() - start_time_recording
-        print(f"elapsed recording time= {elapsed_recording_time}")
-        if elapsed_recording_time >= 60 * (video_end + 5 * (num_starts - 1)):
+        elapsed_time = time.time() - start_time
+        print(f"elapsed recording time= {elapsed_time}")
+        if elapsed_time >= 60 * (video_end + 5 * (num_starts - 1)):
             break
 
     cap.release()  # Don't forget to release the camera resources when done
