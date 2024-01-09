@@ -174,8 +174,6 @@ def detect_boat(frame):
     # Load the configuration and weights for YOLO
     layer_names = net.getUnconnectedOutLayersNames()
 
-    today = time.strftime("%Y%m%d")
-
     # Function to prepare the input image (frame) for the neural network.
     scalefactor = 0.00392 # A scale factor to normalize the pixel values. This is often set to 1/255.0.
     size = (416, 416) # The size to which the input image is resized. YOLO models are often trained on 416x416 images.
@@ -226,6 +224,7 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
             break
 
         # if frame is read correctly ret is True
+        ret, frame = cap.read()
         if not ret:
             logger.info("End of video stream. Or can't receive frame (stream end?). Exiting ...")
             break
@@ -277,7 +276,6 @@ def main():
     logger = setup_logging()  # Initialize the logger
     camera = None # Initialize the camera variable
     signal = None # Initialize the signal relay/variable
-    video_recording_started = False
 
     # Check if a command-line argument (JSON data) is provided
     if len(sys.argv) < 2:
