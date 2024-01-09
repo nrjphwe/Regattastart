@@ -1,4 +1,3 @@
-
 #!/usr/bin/python3 -u
 import os
 import sys
@@ -9,10 +8,6 @@ import datetime as dt
 import logging
 import logging.config
 import json
-
-# image recognition
-import cv2
-print(cv2.__file__)
 
 import subprocess
 import RPi.GPIO as GPIO
