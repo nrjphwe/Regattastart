@@ -14,7 +14,7 @@ import cv2
 import numpy as np
 
 import subprocess
-import gpiozero
+from gpiozero import OutputDevice
 import RPi.GPIO as GPIO
 from picamera import PiCamera, Color
 
@@ -23,8 +23,10 @@ signal_dur = 0.3 # 0.3 sec
 log_path = '/usr/lib/cgi-bin/'
 mp4_path = '/var/www/html/images/'
 photo_path = '/var/www/html/images/'
-ON = GPIO.HIGH
-OFF = GPIO.LOW
+#ON = GPIO.HIGH
+#OFF = GPIO.LOW
+ON = True
+OFF = False
 
 def setup_logging():
     global logger  # Make logger variable global
@@ -49,17 +51,17 @@ def setup_camera():
 
 def setup_gpio():
     try:
-        GPIO.setmode(GPIO.BCM)
-        GPIO.setwarnings(True)
-        signal = 26
-        lamp1 = 20
-        lamp2 = 21
-        #signal = gpiozero.OutputDevice(signal)
-        #lamp1 = gpiozero.OutputDevice(lamp1)
-        #lamp2 = gpiozero.OutputDevice(lamp2)
-        GPIO.setup(signal, GPIO.OUT, initial=GPIO.HIGH)
-        GPIO.setup(lamp1, GPIO.OUT, initial=GPIO.HIGH)
-        GPIO.setup(lamp2, GPIO.OUT, initial=GPIO.HIGH)
+        #GPIO.setmode(GPIO.BCM)
+        #GPIO.setwarnings(True)
+        signal_pin = 26
+        lamp1_pin = 20
+        lamp2_pin = 21
+        signal = OutputDevice(signal_pin)
+        lamp1 = OutputDevice(lamp1_pin)
+        lamp2 = OutputDevice(lamp2_pin)
+        #GPIO.setup(signal, GPIO.OUT, initial=GPIO.HIGH)
+        #GPIO.setup(lamp1, GPIO.OUT, initial=GPIO.HIGH)
+        #GPIO.setup(lamp2, GPIO.OUT, initial=GPIO.HIGH)
         return signal, lamp1, lamp2
     except Exception as e:
         logger.error(f"Failed to initialize GPIO: {e}")
@@ -80,9 +82,9 @@ def remove_video_files(directory, pattern):
             os.remove(file_path)
 
 def trigger_warning_signal(signal):
-    GPIO.output(signal, ON)
+    signal.ON
     time.sleep(signal_dur)
-    GPIO.output(signal, OFF)
+    signal.OFF
     time.sleep(1 - signal_dur)
     logger.info ("     Trigger signal %s sec, then wait for 1 - %s sec", signal_dur, signal_dur)
 
