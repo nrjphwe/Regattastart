@@ -51,8 +51,8 @@ def setup_camera():
 
 def setup_gpio():
     try:
-        #GPIO.setmode(GPIO.BCM)
-        #GPIO.setwarnings(True)
+        GPIO.setmode(GPIO.BCM)
+        GPIO.setwarnings(True)
         signal_pin = 26
         lamp1_pin = 20
         lamp2_pin = 21
