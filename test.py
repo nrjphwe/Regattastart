@@ -21,11 +21,9 @@ def annotate_video(frame, start_time_sec):
    
 # Load the pre-trained object detection model -- YOLO (You Only Look Once) 
 net = cv2.dnn.readNet('../darknet/yolov3-tiny.weights', '../darknet/cfg/yolov3-tiny.cfg')
-
 # Load COCO names (class labels) 
 with open('../darknet/data/coco.names', 'r') as f:
     classes = f.read().strip().split('\n')
-
 # Load the configuration and weights for YOLO
 layer_names = net.getUnconnectedOutLayersNames()
 
@@ -51,7 +49,14 @@ start_time = time.time()
 
 while True:
     ret, frame = cap.read()
+    if frame is None:
+        print("Frame is None. Ending loop.")
+        break
+
+    # if frame is read correctly ret is True
+    ret, frame = cap.read()
     if not ret:
+        print("Frame is not ret. Ending loop.")
         break
 
     # Variable to check if any boat is detected in the current frame
@@ -68,6 +73,7 @@ while True:
             confidence = scores[class_id]
         
             if confidence > 0.2 and classes[class_id] == 'boat':
+                print("boat detected")
                 boat_detected = True
                 #print(time.strftime("%Y-%m-%d-%H:%M:%S"), f"Class: {classes[class_id]}, Confidence: {confidence}")
                 # Visualize the detected bounding box
