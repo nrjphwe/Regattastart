@@ -14,6 +14,7 @@ import cv2
 import numpy as np
 
 import subprocess
+import gpiozero
 import RPi.GPIO as GPIO
 from picamera import PiCamera, Color
 
@@ -52,9 +53,12 @@ def setup_gpio():
     signal = 26
     lamp1 = 20
     lamp2 = 21
-    GPIO.setup(signal, GPIO.OUT, initial=GPIO.HIGH)
-    GPIO.setup(lamp1, GPIO.OUT, initial=GPIO.HIGH)
-    GPIO.setup(lamp2, GPIO.OUT, initial=GPIO.HIGH)
+    signal = gpiozero.OutputDevice(signal)
+    lamp1 = gpiozero.OutputDevice(lamp1)
+    lamp2 = gpiozero.OutputDevice(lamp2)
+    #GPIO.setup(signal, GPIO.OUT, initial=GPIO.HIGH)
+    #GPIO.setup(lamp1, GPIO.OUT, initial=GPIO.HIGH)
+    #GPIO.setup(lamp2, GPIO.OUT, initial=GPIO.HIGH)
     return signal, lamp1, lamp2
 
 def remove_picture_files(directory, pattern):
