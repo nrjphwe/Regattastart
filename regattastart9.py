@@ -48,18 +48,22 @@ def setup_camera():
         return None
 
 def setup_gpio():
-    GPIO.setmode(GPIO.BCM)
-    GPIO.setwarnings(True)
-    signal = 26
-    lamp1 = 20
-    lamp2 = 21
-    signal = gpiozero.OutputDevice(signal)
-    lamp1 = gpiozero.OutputDevice(lamp1)
-    lamp2 = gpiozero.OutputDevice(lamp2)
-    #GPIO.setup(signal, GPIO.OUT, initial=GPIO.HIGH)
-    #GPIO.setup(lamp1, GPIO.OUT, initial=GPIO.HIGH)
-    #GPIO.setup(lamp2, GPIO.OUT, initial=GPIO.HIGH)
-    return signal, lamp1, lamp2
+    try:
+        GPIO.setmode(GPIO.BCM)
+        GPIO.setwarnings(True)
+        signal = 26
+        lamp1 = 20
+        lamp2 = 21
+        #signal = gpiozero.OutputDevice(signal)
+        #lamp1 = gpiozero.OutputDevice(lamp1)
+        #lamp2 = gpiozero.OutputDevice(lamp2)
+        GPIO.setup(signal, GPIO.OUT, initial=GPIO.HIGH)
+        GPIO.setup(lamp1, GPIO.OUT, initial=GPIO.HIGH)
+        GPIO.setup(lamp2, GPIO.OUT, initial=GPIO.HIGH)
+        return signal, lamp1, lamp2
+    except Exception as e:
+        logger.error(f"Failed to initialize GPIO: {e}")
+        return None
 
 def remove_picture_files(directory, pattern):
     files = os.listdir(directory)
