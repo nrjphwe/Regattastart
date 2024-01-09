@@ -189,7 +189,7 @@ def detect_boat(frame):
             scores = detection[5:]
             class_id = np.argmax(scores)
             confidence = scores[class_id]
-            if confidence > 0.3 and classes[class_id] == 'boat':
+            if confidence > 0.2 and classes[class_id] == 'boat':
                 boat_detected = True  # Set detection flag to True
                 logger.info(f"Boat detected! Confidence = {confidence}")
                 # Visualize the detected bounding box
@@ -206,7 +206,7 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
     cap = open_camera()
 
     # Initialize variables
-    additional_seconds = 5  # Set the number seconds to record after detecting a boat
+    additional_seconds = 1  # Set the number seconds to record after detecting a boat
     start_time_recording = time.time()  # Record the start time of the recording
     fps = 24  # frames per second
     width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH) + 0.5)
@@ -245,7 +245,7 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
         print(f"elapsed recording time= {elapsed_recording_time}")
         if elapsed_recording_time >= 60 * (video_end + 5 * (num_starts - 1)):
             break
-        
+
     cap.release()  # Don't forget to release the camera resources when done
     video_writer.release()  # Release the video writer
     logger.info("Exited finish_recording loop.")
