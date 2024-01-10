@@ -154,8 +154,9 @@ def finish_recording(camera, mp4_path, video_delay, video_dur, start_time_sec):
 
         start_video_recording(camera, mp4_path, f"video1.h264")
         while True:
-            # Capture a frame
-            frame = camera.capture()
+            ## Capture a frame
+            frame = "dummy"
+            #frame = camera.capture()
 
             # Check if sailboat is visible
             if is_sailboat_visible(frame):
