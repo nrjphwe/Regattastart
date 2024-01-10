@@ -1,5 +1,5 @@
 <?php
-    define('APP_VERSION', '23.12.24'); // You can replace '1.0.0' with your desired version number
+    define('APP_VERSION', '24.01.10'); // You can replace '1.0.0' with your desired version number
     session_id("regattastart");
     session_start();
     //echo "Session id = " . Session_id() . " ";
@@ -50,7 +50,7 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
 </style>
 </head>
 <div class="w3-container w3-blue">
-    <h2>Regattastart image detetion </h2>
+    <h2>Regattastart with boat-image detection </h2>
 </div>
 <p></p>
 <header>
