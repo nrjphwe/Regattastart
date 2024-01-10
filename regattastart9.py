@@ -79,9 +79,9 @@ def remove_video_files(directory, pattern):
             os.remove(file_path)
 
 def trigger_warning_signal(signal):
-    signal.ON
+    signal.on()
     time.sleep(signal_dur)
-    signal.OFF
+    signal.off()
     time.sleep(1 - signal_dur)
     logger.info ("     Trigger signal %s sec, then wait for 1 - %s sec", signal_dur, signal_dur)
 
@@ -360,7 +360,7 @@ def main():
         if camera is not None:
             camera.close()  # Release the camera resources
         if signal is not None:
-            GPIO.output(signal, OFF)  # Turn off the signal output
+            signal.off() # Turn off the signal output
         GPIO.cleanup()
 
 if __name__ == "__main__":
