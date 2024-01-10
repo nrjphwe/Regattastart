@@ -153,22 +153,22 @@ def finish_recording(camera, mp4_path, video_delay, video_dur, start_time_sec):
     while (dt.datetime.now() - t2).seconds < (60 * video_dur):
 
         start_video_recording(camera, mp4_path, f"video1.h264")
-        while True:
-            ## Capture a frame
-            frame = "dummy"
-            #frame = camera.capture()
+        #while True:
+        ## Capture a frame
+        frame = "dummy"
+        #frame = camera.capture()
 
-            # Check if sailboat is visible
-            if is_sailboat_visible(frame):
-                # Sailboat is visible, continue recording
-                camera.wait_recording(0.5)
-                annotate_video_duration(camera, start_time_sec)
-            else:
-                # Sailboat is not visible, pause recording
-                stop_video_recording(camera)
-                break  # Exit the inner loop
+        # Check if sailboat is visible
+        if is_sailboat_visible(frame):
+            # Sailboat is visible, continue recording
+            camera.wait_recording(0.5)
+            annotate_video_duration(camera, start_time_sec)
+        else:
+            # Sailboat is not visible, pause recording
+            stop_video_recording(camera)
+            break  # Exit the inner loop
 
-            convert_video_to_mp4(mp4_path, f"video1.h264", f"video1.mp4")
+        convert_video_to_mp4(mp4_path, f"video1.h264", f"video1.mp4")
         logger.info("This was the last video =====")
 
 def main():
