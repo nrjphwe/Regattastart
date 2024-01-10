@@ -59,9 +59,6 @@ def setup_gpio():
         signal = OutputDevice(signal_pin)
         lamp1 = OutputDevice(lamp1_pin)
         lamp2 = OutputDevice(lamp2_pin)
-        #GPIO.setup(signal, GPIO.OUT, initial=GPIO.HIGH)
-        #GPIO.setup(lamp1, GPIO.OUT, initial=GPIO.HIGH)
-        #GPIO.setup(lamp2, GPIO.OUT, initial=GPIO.HIGH)
         return signal, lamp1, lamp2
     except Exception as e:
         logger.error(f"Failed to initialize GPIO: {e}")
