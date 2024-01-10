@@ -23,8 +23,6 @@ signal_dur = 0.3 # 0.3 sec
 log_path = '/usr/lib/cgi-bin/'
 mp4_path = '/var/www/html/images/'
 photo_path = '/var/www/html/images/'
-#ON = GPIO.HIGH
-#OFF = GPIO.LOW
 ON = True
 OFF = False
 
@@ -242,8 +240,9 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
         # Detect and write boats
         boat_detected = detect_boat(frame)
         if boat_detected == True:
-        # Confidence > 0.2
-        # Write detected frames to the video file
+            logger.info("boat detected 243")
+            # Confidence > 0.2
+            # Write detected frames to the video file
             i = 1
             while i < number_of_detected_frames:
                 cv_annotate_video(frame, start_time_sec)
@@ -260,18 +259,9 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
                     i += 1
                 boat_detected = False
 
-            #start_time_detection = time.time()
-            #while True:
-            #    elapsed_writing_duration = time.time() - start_time_detection
-            #    cv_annotate_video(frame, start_time_sec)
-            #    video_writer.write(frame)  # Write frame to video file
-            #    if elapsed_writing_duration >= additional_seconds:
-            #        start_time_detection = time.time()
-            #        break
-
         # Check if the maximum recording duration has been reached
         elapsed_time = time.time() - start_time
-        print(f"elapsed recording time= {elapsed_time}")
+        logger.info(f"elapsed recording time= {elapsed_time}")
         if elapsed_time >= 60 * (video_end + 5 * (num_starts - 1)):
             break
 
