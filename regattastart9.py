@@ -2,7 +2,6 @@
 import os
 import sys
 sys.path.append('/home/pi/opencv/build/lib/python3')
-import cgitb
 import time
 from datetime import datetime
 import datetime as dt
@@ -16,6 +15,7 @@ import numpy as np
 
 import subprocess
 import RPi.GPIO as GPIO
+from gpiozero import OutputDevice, Device
 from picamera import PiCamera, Color
 
 # parameter data
@@ -23,8 +23,8 @@ signal_dur = 0.3 # 0.3 sec
 log_path = '/usr/lib/cgi-bin/'
 mp4_path = '/var/www/html/images/'
 photo_path = '/var/www/html/images/'
-ON = GPIO.HIGH
-OFF = GPIO.LOW
+ON = True
+OFF = False
 
 def setup_logging():
     global logger  # Make logger variable global
@@ -48,15 +48,21 @@ def setup_camera():
         return None
 
 def setup_gpio():
-    GPIO.setmode(GPIO.BCM)
-    GPIO.setwarnings(True)
-    signal = 26
-    lamp1 = 20
-    lamp2 = 21
-    GPIO.setup(signal, GPIO.OUT, initial=GPIO.HIGH)
-    GPIO.setup(lamp1, GPIO.OUT, initial=GPIO.HIGH)
-    GPIO.setup(lamp2, GPIO.OUT, initial=GPIO.HIGH)
-    return signal, lamp1, lamp2
+    try:
+        # Set the pin factory to use BCM numbering mode
+        Device._default_pin_factory()
+        GPIO.setwarnings(True)
+        GPIO.setmode(GPIO.BCM)
+        signal_pin = 26
+        lamp1_pin = 20
+        lamp2_pin = 21
+        signal = OutputDevice(signal_pin)
+        lamp1 = OutputDevice(lamp1_pin)
+        lamp2 = OutputDevice(lamp2_pin)
+        return signal, lamp1, lamp2
+    except Exception as e:
+        logger.error(f"Failed to initialize GPIO: {e}")
+        return None
 
 def remove_picture_files(directory, pattern):
     files = os.listdir(directory)
@@ -73,9 +79,9 @@ def remove_video_files(directory, pattern):
             os.remove(file_path)
 
 def trigger_warning_signal(signal):
-    GPIO.output(signal, ON)
+    signal.on()
     time.sleep(signal_dur)
-    GPIO.output(signal, OFF)
+    signal.off()
     time.sleep(1 - signal_dur)
     logger.info ("     Trigger signal %s sec, then wait for 1 - %s sec", signal_dur, signal_dur)
 
@@ -142,22 +148,31 @@ def start_sequence(camera, signal, start_time_sec, num_starts, photo_path):
                     logger.info(f"     Start_sequence, seconds_since_midnight: {seconds_since_midnight}, start_time_sec: {start_time_sec}")
         logger.info(f" Start_sequence, End of iteration: {i}")
 
+def open_camera():
+    """
+    Opens the camera and returns the VideoCapture object.
+    """
+    cap = cv2.VideoCapture(0)
+    if not cap.isOpened():
+        print("Cannot open camera")
+        exit()
+    return cap
+
 def cv_annotate_video(frame, start_time_sec):
     time_now = dt.datetime.now()
     seconds_since_midnight = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
     elapsed_time = seconds_since_midnight - start_time_sec #elapsed since last start until now)
     label = str(dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) +  " Seconds since last start: " +  str(elapsed_time)
-    org = (30,40)
+    org = (30,60)
     fontFace=cv2.FONT_HERSHEY_DUPLEX
     fontScale = 0.6
     color=(0,0,255) #(B, G, R)
     thickness = 1
     lineType = cv2.LINE_AA
-    #cv2.putText(frame,label,(105,105),fontFace=cv2.FONT_HERSHEY_COMPLEX_SMALL,fontScale=1,color=(0,0,255))
     cv2.putText(frame,label,org,fontFace,fontScale,color,thickness,lineType)
 
-def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec):
-
+def detect_boat(frame):
+    boat_detected = False  # Reset detection flag for each frame
     # Load the pre-trained object detection model -- YOLO (You Only Look Once)
     net = cv2.dnn.readNet('/home/pi/darknet/yolov3-tiny.weights', '/home/pi/darknet/cfg/yolov3-tiny.cfg')
     # Load COCO names (class labels)
@@ -166,137 +181,100 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
     # Load the configuration and weights for YOLO
     layer_names = net.getUnconnectedOutLayersNames()
 
+    # Function to prepare the input image (frame) for the neural network.
+    scalefactor = 0.00392 # A scale factor to normalize the pixel values. This is often set to 1/255.0.
+    size = (416, 416) # The size to which the input image is resized. YOLO models are often trained on 416x416 images.
+    swapRB = True # This swaps the Red and Blue channels, as OpenCV loads images in BGR format by default, but many pre-trained models expect RGB.
+    crop = False # The image is not cropped.
+    blob = cv2.dnn.blobFromImage(frame, scalefactor, size, swapRB, crop)
+    net.setInput(blob) # Sets the input blob as the input to the neural network
+    outs = net.forward(layer_names)
+   
+    for out in outs:
+        for detection in out:
+            scores = detection[5:]
+            class_id = np.argmax(scores)
+            confidence = scores[class_id]
+            if confidence > 0.2 and classes[class_id] == 'boat':
+                boat_detected = True  # Set detection flag to True
+                logger.info(f"Boat detected! Confidence = {confidence}")
+                # Visualize the detected bounding box
+                h, w, _ = frame.shape
+                x, y, w, h = map(int, detection[0:4] * [w, h, w, h])
+                pt1 = (int(x), int(y))
+                pt2 = (int(x + w), int(y + h))
+                cv2.rectangle(frame, pt1, pt2, (0, 255, 0), 2, cv2.LINE_AA)
+    return boat_detected
+
+def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec):
     # Open a video capture object (replace 'your_video_file.mp4' with the actual video file or use 0 for webcam)
     #cap = cv2.VideoCapture(os.path.join(mp4_path, "finish21-6.mp4"))
-    cap = cv2.VideoCapture(0)
-    if not cap.isOpened():
-        print("Cannot open camera")
-        exit()
+    cap = open_camera()
 
-    # adjust the output recording resolution to camera setting.
+    # Initialize variables
+    number_of_detected_frames = 10 # Set the number of frames to record after detecting a boat
+    number_of_non_detected_frames = 10
+    start_time = time.time()  # Record the start time of the recording
+    fps = 24  # frames per second
     width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH) + 0.5)
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT) + 0.5)
     frame_size = (width, height)
-    logger.info(f"frame size= {frame_size}")
-    
-    fps = 25 # frames per second
-    # Timer variables
-    number_of_detected_frames = 24
-     # Set the number of additional frames or seconds to record after detecting a boat
-    extra_seconds = 1
-    additional_seconds = 6  # Adjust the value as needed
-    number_of_non_detected_frames = fps * additional_seconds
-   
+
+    # setup cv2 writer 
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # H.264 codec with MP4 container
     video_writer = cv2.VideoWriter(mp4_path + 'video1' + '.mp4', fourcc, fps, frame_size)
 
     while True:
-        # Initialize variables
-        boat_detected = False
-        start_time_detection = 0
-
-        # Capture frame-by-frame
         ret, frame = cap.read()
         if frame is None:
-            print("Frame is None. Ending loop.")
+            logger.info("Frame is None. Ending loop.")
             break
 
         # if frame is read correctly ret is True
+        ret, frame = cap.read()
         if not ret:
-            print("End of video stream. Or can't receive frame (stream end?). Exiting ...")
+            logger.info("End of video stream. Or can't receive frame (stream end?). Exiting ...")
             break
+        
+         # Variable to check if any boat is detected in the current frame
+        boat_detected = False
 
-        # Function to prepare the input image (frame) for the neural network.
-        # Frame = The input image/frame.
-        scalefactor = 0.00392 # A scale factor to normalize the pixel values. This is often set to 1/255.0.
-        size = (416, 416) # The size to which the input image is resized. YOLO models are often trained on 416x416 images.
-        swapRB = True # This swaps the Red and Blue channels, as OpenCV loads images in BGR format by default, but many pre-trained models expect RGB.
-        crop = False # The image is not cropped.
-        blob = cv2.dnn.blobFromImage(frame, scalefactor, size, swapRB, crop)
+        # Detect and write boats
+        boat_detected = detect_boat(frame)
+        if boat_detected == True:
+            logger.info("boat detected 243")
+            # Confidence > 0.2
+            # Write detected frames to the video file
+            i = 1
+            while i < number_of_detected_frames:
+                cv_annotate_video(frame, start_time_sec)
+                video_writer.write(frame)
+                i += 1
+            
+        else:
+            # Confidence < 0.2
+            if boat_detected == True:
+                i = 1
+                while i < number_of_non_detected_frames:
+                    cv_annotate_video(frame, start_time_sec)
+                    video_writer.write(frame)
+                    i += 1
+                boat_detected = False
 
-        net.setInput(blob) # Sets the input blob as the input to the neural network
-        # Performs a forward pass through the neural network. The layer_names represent the names of the output layers of the network.
-        outs = net.forward(layer_names)
-
-        for out in outs: #  Iterates over the outputs of the network (there might be multiple output layers).
-            for detection in out: # Iterates over the detections in a particular output
-                scores = detection[5:] # Extracts the confidence scores for each class.
-                class_id = np.argmax(scores) # Determines the class (object) with the highest confidence.
-                confidence = scores[class_id] # Retrieves the confidence score for the detected class.
-
-                if confidence > 0.4 and classes[class_id] == 'boat':
-                    boat_detected = True
-                    logger.info(f"boat_detected {time.strftime('%Y-%m-%d-%H:%M:%S')} Confidence = {confidence}")
-                    start_time_detection = time.time()
-
-                    # Visualize the detected bounding box
-                    h, w, _ = frame.shape
-                    # Map the scaled values to integers because pixel coordinates must be whole numbers.
-                    # The resulting integers represent the coordinates and dimensions of the bounding box.
-                    x, y, w, h = map(int, detection[0:4] * [w, h, w, h])
-
-                    # Modify the original frame
-                    pt1 = (int(x), int(y)) # The starting point of the rectangle (top-left corner)
-                    pt2 = (int(x + w), int(y + h)) # The ending point of the rectangle (bottom-right corner)
-                    # cv2.rectangle(image, pt1, pt2, color, thickness, lineType)
-                    cv2.rectangle(frame, pt1, pt2, (0, 255, 0), 2, cv2.LINE_AA)
-
-                    while (time.time() - start_time_detection) < extra_seconds:
-                        #ret, frame = cap.read()  # Read new frames
-                        cv_annotate_video(frame, start_time_sec)
-                        video_writer.write(frame)
-
-                    # Write detected frames to the video file
-                    #i = 1
-                    #while i < number_of_detected_frames:
-                    #    # Write frames to the video file
-                    #    #ret, frame = cap.read()  # Read new frames
-                    #    cv_annotate_video(frame, start_time_sec)
-                    #    video_writer.write(frame)
-                    #    i += 1
-
-                elif boat_detected:
-                    # Check if additional_seconds have passed since the last boat detection
-                    start_time_detection = time.time()
-                    if boat_detected:
-                        while (time.time() - start_time_detection) < additional_seconds:
-                            # Record new frames for additional_seconds after the last boat detection
-                            ret, frame = cap.read()  # Read new frames
-                            if frame is None or not ret:
-                                print("End of video stream. Ending loop elif boat detected.")
-                                break
-
-                            cv_annotate_video(frame, start_time_sec)
-                            video_writer.write(frame)
-
-                    #i = 1
-                    #while i < number_of_non_detected_frames:
-                    #    # Record new frames for additional_seconds after the last boat detection
-                    #    ret, frame = cap.read()  # Read new frames
-                    #    if frame is None or not ret:
-                    #        print("End of video stream. Ending loop elif boat detected.")
-                    #        break
-                    #
-                    #    cv_annotate_video(frame, start_time_sec)
-                    #    video_writer.write(frame)
-                    #    i += 1
-                    boat_detected = False
-
-        # Check if the maximum duration has been reached
-        elapsed_time = (datetime.combine(datetime.today(), datetime.now().time()) - datetime.combine(datetime.today(), start_time)).total_seconds()
-        #print("elapsed time", elapsed_time)
+        # Check if the maximum recording duration has been reached
+        elapsed_time = time.time() - start_time
+        logger.info(f"elapsed recording time= {elapsed_time}")
         if elapsed_time >= 60 * (video_end + 5 * (num_starts - 1)):
             break
 
-    # Release the video capture object and close all windows
-    cap.release()
-    video_writer.release()
+    cap.release()  # Don't forget to release the camera resources when done
+    video_writer.release()  # Release the video writer
+    logger.info("Exited finish_recording loop.")
 
 def main():
     logger = setup_logging()  # Initialize the logger
     camera = None # Initialize the camera variable
     signal = None # Initialize the signal relay/variable
-    video_recording_started = False
 
     # Check if a command-line argument (JSON data) is provided
     if len(sys.argv) < 2:
@@ -304,7 +282,7 @@ def main():
         sys.exit(1)
 
     try:
-         #logger.info("form_data: %s", form_data)
+        #logger.info("form_data: %s", form_data)
         form_data = json.loads(sys.argv[1])
         week_day = str(form_data["day"])
         video_end = int(form_data["video_end"])
@@ -313,14 +291,11 @@ def main():
 
         # Convert to datetime object
         start_time = datetime.strptime(start_time_str, "%H:%M").time()
-
-         #start_hour, start_minute = start_time.split(':')
         # Extract hour and minute
         start_hour = start_time.hour
         start_minute = start_time.minute
         # Calculate start_time_sec
         start_time_sec = 60 * start_minute + 3600 * start_hour
-
         t5min_warning = start_time_sec - 5 * 60 # time when the start-machine should begin to execute.
         wd = dt.datetime.today().strftime("%A")
 
@@ -377,8 +352,10 @@ def main():
         if camera is not None:
             camera.close()  # Release the camera resources
         if signal is not None:
-            GPIO.output(signal, OFF)  # Turn off the signal output
-        GPIO.cleanup()
+            signal.off() # Turn off the signal output
+            signal.close() # Turn off the signal output
+            lamp1.close() # Turn off the lamp1
+            lamp2.close() # Turn off the lamp2
 
 if __name__ == "__main__":
     #logging.basicConfig(level=logging.WARNING)  # Set log level to WARNING
