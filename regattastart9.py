@@ -353,7 +353,10 @@ def main():
             camera.close()  # Release the camera resources
         if signal is not None:
             signal.off() # Turn off the signal output
-        GPIO.cleanup()
+            signal.close() # Turn off the signal output
+            lamp1.close() # Turn off the lamp1
+            lamp2.close() # Turn off the lamp2
+        #GPIO.cleanup()
 
 if __name__ == "__main__":
     #logging.basicConfig(level=logging.WARNING)  # Set log level to WARNING
