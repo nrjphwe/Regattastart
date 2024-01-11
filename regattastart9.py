@@ -15,7 +15,7 @@ import numpy as np
 
 import subprocess
 import RPi.GPIO as GPIO
-from gpiozero import OutputDevice
+from gpiozero import OutputDevice, Device
 from picamera import PiCamera, Color
 
 # parameter data
@@ -50,6 +50,7 @@ def setup_camera():
 def setup_gpio():
     try:
         # Set the pin factory to use BCM numbering mode
+        Device._default_pin_factory()
         GPIO.setwarnings(True)
         GPIO.setmode(GPIO.BCM)
         signal_pin = 26
