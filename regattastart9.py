@@ -212,8 +212,8 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
     cap = open_camera()
 
     # Initialize variables
-    number_of_detected_frames = 5 # Set the number of frames to record after detecting a boat
-    number_of_non_detected_frames = 5
+    number_of_detected_frames = 15 # Set the number of frames to record after detecting a boat
+    number_of_non_detected_frames = 15
     start_time = time.time()  # Record the start time of the recording
     fps = 24  # frames per second
     width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH) + 0.5)
