@@ -136,40 +136,26 @@ def start_sequence(camera, signal, start_time_sec, num_starts, photo_path):
                     logger.info(f"  Start_sequence, seconds_since_midnight: {seconds_since_midnight}, start_time_sec: {start_time_sec}")
         logger.info(f"  Start_sequence, End of iteration: {i}")
 
-# image recognition
-def is_sailboat_visible(frame):
-    # Implement your sailboat detection logic here
-    # This could involve using a pre-trained model or custom logic
-    # For simplicity, let's assume sailboat detection is always True
-    return True
-
-
-def finish_recording(camera, mp4_path, video_delay, video_dur, start_time_sec):
+def finish_recording(camera, mp4_path, video_delay, num_video, video_dur, start_time_sec):
     # Wait for finish, when the next video will start (delay)
     time.sleep((video_delay - 2) * 60)  # Convert delay (minus 2 minutes after start) to seconds 
-    
-    t2 = dt.datetime.now()  
-    start_time = dt.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) + dt.timedelta(seconds=start_time_sec)
-    while (dt.datetime.now() - t2).seconds < (60 * video_dur):
 
-        start_video_recording(camera, mp4_path, f"video1.h264")
-        #while True:
-        ## Capture a frame
-        frame = "dummy"
-        #frame = camera.capture()
+    # Result video, chopped into numeral videos with duration at "video_dur"
+    stop = num_video + 1
+    for i in range(1, stop):
+        start_video_recording(camera, mp4_path, f"video{i}.h264")
+        # Video running, duration at "video_dur"
+        t2 = dt.datetime.now()
+        start_time = dt.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) + dt.timedelta(seconds=start_time_sec)
 
-        # Check if sailboat is visible
-        if is_sailboat_visible(frame):
-            # Sailboat is visible, continue recording
-            camera.wait_recording(0.5)
+        while (dt.datetime.now() - t2).seconds < (60 * video_dur):
             annotate_video_duration(camera, start_time_sec)
-        else:
-            # Sailboat is not visible, pause recording
-            stop_video_recording(camera)
-            break  # Exit the inner loop
+            #camera.annotate_text = f"{dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Seconds since first start: {elapsed_time.seconds}"
+            camera.wait_recording(0) # was 0.5
 
-        convert_video_to_mp4(mp4_path, f"video1.h264", f"video1.mp4")
-        logger.info("This was the last video =====")
+        stop_video_recording(camera)
+        convert_video_to_mp4(mp4_path, f"video{i}.h264", f"video{i}.mp4")
+    logger.info("This was the last video =====")
 
 def main():
     logger = setup_logging()  # Initialize the logger
