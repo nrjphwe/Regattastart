@@ -23,13 +23,22 @@ sudo cp -v w3.css /var/www/html
 sudo chmod -R 755 /var/www/html/
 sudo chown -R www-data:www-data /var/www/html
 
+
 echo "=> setup for videocamera ...\n"
 sudo usermod -a -G video www-data
 sudo adduser www-data video
-sudo chmod 777 /dev/vchiq
+echo: maybe not needed sudo chmod 777 /dev/vchiq
 sudo chown root:gpio /dev/gpiomem
 sudo chmod g+rw /dev/gpiomem
 sudo usermod -a -G gpio www-data
+
+echo: "to let above commands survice reboot"
+echo: Create a file, e.g., /etc/udev/rules.d/99-mem.rules, with the following content:
+sudo mkdir -v -p /etc/udev/rules.d/99-mem.rules
+echo 'KERNEL=="mem", MODE="0660"' | sudo tee -a /etc/udev/rules.d/99-mem.rules
+
+sudo mkdir -v -p /etc/udev/rules.d/99-gpioomem.rules
+echo 'KERNEL=="gpiomem", GROUP="gpio", MODE="0660"' | sudo tee -a /etc/udev/rules.d/99-gpiomem.rules
 
 echo "=> setup for video encoding...\n"
 sudo apt install -y gpac
