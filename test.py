@@ -45,8 +45,8 @@ video_writer = cv2.VideoWriter('output'+ today + '.mp4', fourcc, 50, size)
 video_end = 10
 start_time_= 0
 start_time_sec = 0
-number_of_detected_frames = 5
-number_of_non_detected_frames = 5
+number_of_detected_frames = 10
+number_of_non_detected_frames = 10
 
 start_time = time.time()
 
