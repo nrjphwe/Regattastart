@@ -1,5 +1,5 @@
 <?php
-    define('APP_VERSION', '24.01.10'); // You can replace '1.0.0' with your desired version number
+    define('APP_VERSION', '24.02.09'); // You can replace '1.0.0' with your desired version number
     session_id("regattastart");
     session_start();
     //echo "Session id = " . Session_id() . " ";
