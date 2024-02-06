@@ -237,13 +237,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         ?>
     </div>
     <script>
-    function stepFrame(videoNum, step) {
-        var video = document.getElementById('video' + videoNum);
-        if (video) {
-            video.pause();
-            video.currentTime += step * (1 / video.playbackRate/20); // 
+        function stepFrame(videoNum, step) {
+            var video = document.getElementById('video' + videoNum);
+            if (video) {
+                video.pause();
+                video.currentTime += step * (1 / video.playbackRate/20); // 
+            }
         }
-    }
     </script>
     <div class="w3-panel w3-grey">
         <?php
