@@ -13,17 +13,16 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     //exit; // Stop further execution after including the script
 }
 ?>
-<body onload="showPlaceholder()">
 <!-- Your HTML to display data from the session -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <! -- meta http-equiv="refresh" content="200" -->
+    <!-- meta http-equiv="refresh" content="200" -->
     <title>Regattastart</title>
-    <! -- JavaScript to dynamically add a placeholder text or an image to the page when -->
-    <! -- there are no pictures available yet. -->
+    <!-- JavaScript to dynamically add a placeholder text or an image to the page when -->
+    <!-- there are no pictures available yet. -->
     <script>
         function showPlaceholder() {
             var imageContainer = document.getElementById('image-container');
@@ -47,8 +46,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         max-width: 100%;
         height: auto;
     }
-    </style>
-    <style>
     video {
         max-width: 100%;
         height: auto;
@@ -56,6 +53,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     </style>
     <link rel="stylesheet" href="/w3.css">
 </head>
+<body onload="showPlaceholder()">
 <?php
     if (isset($_SESSION['form_data']) && is_array($_SESSION['form_data'])) {
 
@@ -254,6 +252,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             hideStopRecordingButton();
         });
     </script>
+    </main>
     <div class="w3-panel w3-grey">
         <?php
         // output index.php was last modified.
@@ -265,9 +264,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     </div>
     <div class="w3-panel w3-grey">
         <?php 
-        echo " Time now: " .date("H:i:s")
+        echo " Time now: " .date("H:i:s");
         ?> 
     </div>
-</main>
 </body>
 </html>
