@@ -13,6 +13,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     //exit; // Stop further execution after including the script
 }
 ?>
+<body onload="showPlaceholder()">
 <!-- Your HTML to display data from the session -->
 <!DOCTYPE html>
 <html lang="en">
@@ -244,6 +245,20 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 video.currentTime += step * (1 / video.playbackRate/20); // 
             }
         }
+    </script>
+    <script>
+        // Function to hide the stop recording button after it's pressed
+        function hideStopRecordingButton() {
+            var stopRecordingButtonDiv = document.getElementById('stopRecordingButtonDiv');
+            if (stopRecordingButtonDiv) {
+                stopRecordingButtonDiv.style.display = 'none';
+            }
+        }
+
+        // Event listener to trigger hiding of the button when the form is submitted
+        document.getElementById('stopRecordingForm').addEventListener('submit', function() {
+            hideStopRecordingButton();
+        });
     </script>
     <div class="w3-panel w3-grey">
         <?php
