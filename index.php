@@ -98,23 +98,22 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         <h2> Regattastart  </h2>
     </div>
 </div>
-<!-- Here is our main header that is used across all the pages of our website -->
- <meta http-equiv="refresh" content="200" >
-</header>
-<body onload="showPlaceholder()">
-    <div align="center">
+//<!-- Here is our main header that is used across all the pages of our website -->
+// <meta http-equiv="refresh" content="200" >
+//</header>
+//<body onload="showPlaceholder()">
+<div align="center">
     <?php 
         echo "     Version: " . APP_VERSION . "<br><p></p>"; 
     ?>
+</div>
+<div align="center">
+     <div id="image-container">
+        <!-- Your image elements will be added here dynamically -->
     </div>
-
-    <div align="center">
-        <div id="image-container">
-            <!-- Your image elements will be added here dynamically -->
-        </div>
-    </div>
-    <!-- Here is our page's main content -->
-    <main>
+</div>
+<!-- Here is our page's main content -->
+<main>
     <div align="center">
     <h4><a href="/index6.php" title="Regattastart6 "> Two starts -- Regattastart6 </a></h4>
     <div align="center">
@@ -254,7 +253,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 stopRecordingButtonDiv.style.display = 'none';
             }
         }
-
         // Event listener to trigger hiding of the button when the form is submitted
         document.getElementById('stopRecordingForm').addEventListener('submit', function() {
             hideStopRecordingButton();
@@ -274,6 +272,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         echo " Time now: " .date("H:i:s")
         ?> 
     </div>
-    </main>
+</main>
 </body>
 </html>
