@@ -98,10 +98,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         <h2> Regattastart  </h2>
     </div>
 </div>
-//<!-- Here is our main header that is used across all the pages of our website -->
-// <meta http-equiv="refresh" content="200" >
-//</header>
-//<body onload="showPlaceholder()">
 <div align="center">
     <?php 
         echo "     Version: " . APP_VERSION . "<br><p></p>"; 
