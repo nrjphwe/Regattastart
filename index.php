@@ -210,10 +210,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $video_name = 'images/video0.mp4';
             if (file_exists($video_name)) {
                 echo "<h4> Efter sista båt i mål, kan man stoppa och generera video för målgång </h4>";
-                echo '<div>
-                <form action="' . htmlspecialchars($_SERVER["PHP_SELF"]) . '" method="post">
-                    <input type="submit" value="Stop Recording">
-                </form>
+                echo '<div id="stopRecordingButtonDiv">
+                    <form id="stopRecordingForm" action="' . htmlspecialchars($_SERVER["PHP_SELF"]) . '" method="post">
+                        <input type="submit" id="stopRecordingButton" value="Stop Recording">
+                    </form>
                 </div>';
             }
         ?>
