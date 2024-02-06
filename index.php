@@ -6,6 +6,13 @@
     ini_set('display_errors', 1); 
     error_reporting(E_ALL);
 ?>
+<?php
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    // Form was submitted
+    include "stop_recording.php"; // Include the script to stop recording
+    //exit; // Stop further execution after including the script
+}
+?>
 <!-- Your HTML to display data from the session -->
 <!DOCTYPE html>
 <html lang="en">
@@ -21,7 +28,6 @@
             var imageContainer = document.getElementById('image-container');
             var images = imageContainer.getElementsByTagName('img');
             var placeholderText = 'Pictures pending until 5 minutes before start';
-
             // Check if there are images and if all images have loaded
             if (images.length > 0 && Array.from(images).every(img => img.complete)) {
                 // Remove any existing placeholder text
@@ -51,7 +57,7 @@
 </head>
 <?php
     if (isset($_SESSION['form_data']) && is_array($_SESSION['form_data'])) {
-    
+
         if (array_key_exists('start_time', $_SESSION['form_data'])) {
             // Retrieve the value of the 'start_time' key
             $start_time = $_SESSION['form_data']['start_time'];
@@ -100,6 +106,7 @@
         echo "     Version: " . APP_VERSION . "<br><p></p>"; 
     ?>
     </div>
+
     <div align="center">
         <div id="image-container">
             <!-- Your image elements will be added here dynamically -->
@@ -124,7 +131,7 @@
         if (file_exists($imagePath)) {
             $imagePath .= '?' . filemtime($imagePath);
             echo "<br> ------------------------------------------------- <p></p> ";
-            echo "<h3> Bild vid varningssignal 5 minuter innan 1a start</h3>";
+            echo "<h3> Varningssignal 5 minuter innan 1a start</h3>";
             echo "<img id='$filename' src='$imagePath' alt='1a_start 5 min picture' width='720' height='480'>";     
         }
         // Check and display the second image
@@ -160,7 +167,7 @@
             $imagePath .= '?' . filemtime($imagePath);
             echo "<h3> Bilder tagna vid varje signal innan 2a start  </h3> ";
             echo "<br> ------------------------------------------------- <p></p> ";
-            echo "<h3> Bild vid varningssignal 5 minuter innan 2a start</h3>";
+            echo "<h3> Varningssignal 5 minuter innan 2a start</h3>";
             echo "<img id='$filename' src='$imagePath' alt='2a_start 5 min picture' width='720' height=480'>";
         }
         // Check and display the second image
@@ -192,23 +199,52 @@
         <?php
             $video_name = 'images/video0.mp4';
             if (file_exists($video_name)) {
-                echo "<h3> Video 5 min före start och 2 min efter, eller vid 2 starter, till 2 min efter andra start </h3>";
+                echo "<h4> Video 5 min före start och 2 min efter, eller vid 2 starter, till 2 min efter andra start </h4>";
                 echo '<video width = "720" height="480" controls><source src= ' . $video_name . ' type="video/mp4"></video><p>';
             }
         ?>
     </div>
-
+    <div class="w3-panel w3-pale-green">
+        <?php
+            $video_name = 'images/video0.mp4';
+            if (file_exists($video_name)) {
+                echo "<h4> Efter sista båt i mål, kan man stoppa och generera video för målgång </h4>";
+                echo '<div>
+                <form action="' . htmlspecialchars($_SERVER["PHP_SELF"]) . '" method="post">
+                    <input type="submit" value="Stop Recording">
+                </form>
+                </div>';
+            }
+        ?>
+    </div>
     <div class="w3-panel w3-pale-red">
         <?php
             for ($x = 1; $x <= $num_video; $x++) {
                 $video_name = 'images/video' . $x . '.mp4';
                 if (file_exists($video_name)) {
-                    echo "<h2> Finish video, this is video $x for the finish</h2><br>";
-                    echo '<video width = "720" height="480" controls><source src= ' . $video_name . ' type="video/mp4"></video><p>';
-                }
+                    echo "<h3> Finish video, this is video $x for the finish</h3><br>";
+                    echo '<div>
+                    <video id="video' . $x . '" width="720" height="480" controls>
+                        <source src="' . $video_name . '" type="video/mp4">
+                    </video>
+                    <div>
+                        <button onclick="stepFrame(' . $x . ', -1)">Previous Frame</button>
+                        <button onclick="stepFrame(' . $x . ', 1)">Next Frame</button>
+                    </div>
+                  </div>';
+               }
             }
-        ?>  
+        ?>
     </div>
+    <script>
+    function stepFrame(videoNum, step) {
+        var video = document.getElementById('video' + videoNum);
+        if (video) {
+            video.pause();
+            video.currentTime += step * (1 / video.playbackRate/20); // 
+        }
+    }
+    </script>
     <div class="w3-panel w3-grey">
         <?php
         // output index.php was last modified.
