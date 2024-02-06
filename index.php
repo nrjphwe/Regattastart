@@ -1,5 +1,5 @@
 <?php
-    define('APP_VERSION', '23.12.25'); // You can replace '1.0.0' with your desired version number
+    define('APP_VERSION', '24.02.06'); // You can replace '1.0.0' with your desired version number
     session_id("regattastart");
     session_start();
     // after "git pull", "sudo cp /home/pi/Regattastart/index.php /var/www/html/"
