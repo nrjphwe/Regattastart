@@ -10,8 +10,9 @@
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     // Form was submitted
     include "stop_recording.php"; // Include the script to stop recording
+    error_log('Line 13: The stop_recording.php was inluded in index.php');
     //exit; // Stop further execution after including the script
-}
+    }
 ?>
 <!-- Your HTML to display data from the session -->
 <!DOCTYPE html>
@@ -23,6 +24,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <title>Regattastart</title>
     <!-- JavaScript to dynamically add a placeholder text or an image to the page when -->
     <!-- there are no pictures available yet. -->
+
     <script>
         function showPlaceholder() {
             var imageContainer = document.getElementById('image-container');
@@ -42,14 +44,20 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         }
     </script>
     <style>
-    img {
-        max-width: 100%;
-        height: auto;
-    }
-    video {
-        max-width: 100%;
-        height: auto;
-    }
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+        video {
+            max-width: 100%;
+            height: auto;
+        }
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh; /* Optional: Makes the container full height */
+        }
     </style>
     <link rel="stylesheet" href="/w3.css">
 </head>
@@ -91,31 +99,31 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     }
 ?>
 <header>
-<div align="center">
-    <div class="w3-panel w3-blue">
-        <h2> Regattastart  </h2>
+    <div align="center">
+        <div class="w3-panel w3-blue">
+            <h2> Regattastart  </h2>
+        </div>
     </div>
-</div>
-<div align="center">
-    <?php 
-        echo "     Version: " . APP_VERSION . "<br><p></p>"; 
-    ?>
-</div>
-<div align="center">
-     <div id="image-container">
-        <!-- Your image elements will be added here dynamically -->
+    <div align="center">
+        <?php 
+            echo "     Version: " . APP_VERSION . "<br><p></p>"; 
+        ?>
     </div>
-</div>
+    <div align="center">
+        <div id="image-container">
+            <!-- Your image elements will be added here dynamically -->
+        </div>
+    </div>
+</header>
 <!-- Here is our page's main content -->
 <main>
     <div align="center">
-    <h4><a href="/index6.php" title="Regattastart6 "> Two starts -- Regattastart6 </a></h4>
+        <h4><a href="/index6.php" title="Regattastart6 "> Two starts -- Regattastart6 </a></h4>
     <div align="center">
-    <div align="center">
-    <h4><a href="/index9.php" title="Setup page Regattastart9"> New version with image detection -- Regattastart9 </a></h4>
+        <h4><a href="/index9.php" title="Setup page Regattastart9"> New version with image detection -- Regattastart9 </a></h4>
     <div align="center">    
     <div class="w3-panel w3-pale-blue">
-    <h3> Bilder tagna vid varje signal innan 1a start </h3>
+        <h3> Bilder tagna vid varje signal innan 1a start </h3>
     </div> 
     <div align="center">
     <?php
