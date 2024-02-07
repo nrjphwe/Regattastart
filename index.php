@@ -13,9 +13,8 @@
 <?php
     if ($_SERVER["REQUEST_METHOD"] === "POST") {
         // Form was submitted
-        include "stop_recording.php"; // Include the script to stop recording
+        include_once "stop_recording.php"; // Include the script to stop recording
         error_log('Line 13: The stop_recording.php was included in index.php');
-        // exit; // Stop further execution after including the script
     } elseif ($_SERVER["REQUEST_METHOD"] !== "GET") {
         // Log an error only if the request method is neither "POST" nor "GET"
         error_log('Line 16: $_SERVER["REQUEST_METHOD"] < > "POST" NOR "GET" ');
@@ -141,7 +140,7 @@
         <?php
             $video_name = 'images/video1.mp4';
             if (file_exists($video_name)) {
-                echo "<h3> Finish video, this is video1 for the finish</h3><br>";
+                echo "<h3> Finish video, this is video for the finish</h3><br>";
                 echo '<div>
                 <video id="video1.mp4" width="720" height="480" controls>
                     <source src="' . $video_name . '" type="video/mp4">
