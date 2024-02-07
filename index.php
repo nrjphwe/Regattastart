@@ -7,12 +7,12 @@
     error_reporting(E_ALL);
 ?>
 <?php
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    // Form was submitted
-    include "stop_recording.php"; // Include the script to stop recording
-    error_log('Line 13: The stop_recording.php was inluded in index.php');
-    //exit; // Stop further execution after including the script
-    }
+    if ($_SERVER["REQUEST_METHOD"] === "POST") {
+        // Form was submitted
+        include "stop_recording.php"; // Include the script to stop recording
+        error_log('Line 13: The stop_recording.php was inluded in index.php');
+        //exit; // Stop further execution after including the script
+        }
 ?>
 <!-- Your HTML to display data from the session -->
 <!DOCTYPE html>
@@ -62,7 +62,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <link rel="stylesheet" href="/w3.css">
 </head>
 <body onload="showPlaceholder()">
-<?php
+<?php // form
     if (isset($_SESSION['form_data']) && is_array($_SESSION['form_data'])) {
 
         if (array_key_exists('start_time', $_SESSION['form_data'])) {
