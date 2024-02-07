@@ -206,7 +206,7 @@
         ?>
     </div>
     <!-- Video0 -->
-    <div class="w3-panel w3-pale-blue">
+    <div style="text-align: center;" class="w3-panel w3-pale-blue">
         <?php
             $video_name = 'images/video0.mp4';
             if (file_exists($video_name)) {
@@ -216,7 +216,7 @@
         ?>
     </div>
     <!-- Stop recording button -->
-    <div class="w3-panel w3-pale-green">
+    <div style="text-align: center;" class="w3-panel w3-pale-green">
         <?php
             $video_name = 'images/video0.mp4';
             if (file_exists($video_name)) {
@@ -230,7 +230,7 @@
         ?>
     </div>
     <!-- remaining videos -->
-    <div class="w3-panel w3-pale-red">
+    <div style="text-align: center;" class="w3-panel w3-pale-red">
         <?php
             for ($x = 1; $x <= $num_video; $x++) {
                 $video_name = 'images/video' . $x . '.mp4';
