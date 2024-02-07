@@ -275,7 +275,7 @@
     </script>
     </main>
     <!-- footer s -->
-    <div class="w3-panel w3-grey">
+    <div style="text-align: center;" class="w3-panel w3-grey">
         <?php
         // output index.php was last modified.
         $filename = 'index.php';
@@ -284,7 +284,7 @@
         }
         ?>
     </div>
-    <div class="w3-panel w3-grey">
+    <div style="text-align: center;" class="w3-panel w3-grey">
         <?php 
         echo " Time now: " .date("H:i:s");
         ?> 
