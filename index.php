@@ -14,7 +14,6 @@
         // exit; // Stop further execution after including the script
     } else {
         error_log('Line 16: $_SERVER["REQUEST_METHOD"] < > "POST" ');
-        exit;
     }
 ?>
 <!-- Your HTML to display data from the session -->
