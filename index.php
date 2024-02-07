@@ -24,7 +24,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <title>Regattastart</title>
     <!-- JavaScript to dynamically add a placeholder text or an image to the page when -->
     <!-- there are no pictures available yet. -->
-
     <script>
         function showPlaceholder() {
             var imageContainer = document.getElementById('image-container');
