@@ -11,9 +11,10 @@
         // Form was submitted
         include "stop_recording.php"; // Include the script to stop recording
         error_log('Line 13: The stop_recording.php was inluded in index.php');
-        exit; // Stop further execution after including the script
+        // exit; // Stop further execution after including the script
     } else {
         error_log('Line 16: $_SERVER["REQUEST_METHOD"] < > "POST" ');
+        exit;
     }
 ?>
 <!-- Your HTML to display data from the session -->
