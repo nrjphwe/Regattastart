@@ -69,7 +69,7 @@
         if (array_key_exists('start_time', $_SESSION['form_data'])) {
             // Retrieve the value of the 'start_time' key
             $start_time = $_SESSION['form_data']['start_time'];
-            echo "First Start time: " . $start_time;
+            echo "First start time: " . $start_time;
         }
         if (array_key_exists('video_end', $_SESSION['form_data'])) {
             $video_end = $_SESSION['form_data']['video_end'];
@@ -118,13 +118,12 @@
 </header>
 <!-- Here is our page's main content -->
 <main>
-<div style="text-align: center;">
+    <div style="text-align: center;">
         <h4><a href="/index6.php" title="Regattastart6 "> Two starts -- Regattastart6 </a></h4>
     </div>
     <<div style="text-align: center;">
-        <h4><a href="/index9.php" title="Setup page Regattastart9"> New version with image detection -- Regattastart9 </a></h4>
-    </div>
-    <div style="text-align: center;">   
+        <h4><a href="/index9.php" title="Setup page Regattastart9">  Regattastart9 -- with image detection </a></h4>
+    </div> 
     <div class="w3-panel w3-pale-blue">
         <h3> Bilder tagna vid varje signal innan 1a start </h3>
     </div> 
@@ -163,7 +162,7 @@
                 echo "<h3> Foto vid 1a start </h3>";
                 echo "<img id='$filename' src='$imagePath' alt='1a start picture' width='720' height='480'>";
             }
-    ?>
+        ?>
     </div> 
     <div style="text-align: center;">
         <?php
@@ -239,11 +238,12 @@
                         <button onclick="stepFrame(' . $x . ', -1)">Previous Frame</button>
                         <button onclick="stepFrame(' . $x . ', 1)">Next Frame</button>
                     </div>
-                  </div>';
-               }
+                </div>';
+            }
             }
         ?>
     </div>
+    <!-- function to step frames -->
     <script>
         function stepFrame(videoNum, step) {
             var video = document.getElementById('video' + videoNum);
@@ -253,6 +253,7 @@
             }
         }
     </script>
+    <!-- function to hide the step tecording button -->
     <script>
         // Function to hide the stop recording button after it's pressed
         function hideStopRecordingButton() {
