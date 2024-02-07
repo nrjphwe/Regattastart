@@ -99,17 +99,17 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     }
 ?>
 <header>
-    <div class="w3-container">
+    <div class="container">
         <div class="w3-panel w3-blue">
             <h2> Regattastart  </h2>
         </div>
     </div>
-    <div class="w3-container">
+    <div class="container">
         <?php 
             echo "     Version: " . APP_VERSION . "<br><p></p>"; 
         ?>
     </div>
-    <div class="w3-container">
+    <div class="container">
         <div id="image-container">
             <!-- Your image elements will be added here dynamically -->
         </div>
