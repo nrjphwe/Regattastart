@@ -26,7 +26,7 @@ if (fclose($pipeHandle) === false) {
     error_log('Failed to close pipe.');
 } else {
     // Log success message
-    error_log('succesfully closed the pipe: ' . $pipeHandle);
+    error_log('succesfully closed the pipe:');
 }
 
 ?>
