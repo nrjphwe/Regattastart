@@ -10,10 +10,11 @@
     if ($_SERVER["REQUEST_METHOD"] === "POST") {
         // Form was submitted
         include "stop_recording.php"; // Include the script to stop recording
-        error_log('Line 13: The stop_recording.php was inluded in index.php');
+        error_log('Line 13: The stop_recording.php was included in index.php');
         // exit; // Stop further execution after including the script
-    } else {
-        error_log('Line 16: $_SERVER["REQUEST_METHOD"] < > "POST" ');
+    } elseif ($_SERVER["REQUEST_METHOD"] !== "GET") {
+        // Log an error only if the request method is neither "POST" nor "GET"
+        error_log('Line 16: $_SERVER["REQUEST_METHOD"] < > "POST" NOR "GET" ');
     }
 ?>
 <!-- Your HTML to display data from the session -->
