@@ -5,6 +5,10 @@
     // after "git pull", "sudo cp /home/pi/Regattastart/index.php /var/www/html/"
     ini_set('display_errors', 1); 
     error_reporting(E_ALL);
+    print_r($_SESSION);
+    echo "<br/>";
+    print_r($_POST);
+    echo "<br/>";
 ?>
 <?php
     if ($_SERVER["REQUEST_METHOD"] === "POST") {
