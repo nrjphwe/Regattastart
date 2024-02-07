@@ -109,7 +109,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             echo "     Version: " . APP_VERSION . "<br><p></p>"; 
         ?>
     </div>
-    <div class="container">
+    <div style="text-align: center;">
         <div id="image-container">
             <!-- Your image elements will be added here dynamically -->
         </div>
@@ -117,17 +117,17 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 </header>
 <!-- Here is our page's main content -->
 <main>
-    <div class="w3-container">
+<div style="text-align: center;">
         <h4><a href="/index6.php" title="Regattastart6 "> Two starts -- Regattastart6 </a></h4>
     </div>
-    <div class="w3-container">
+    <<div style="text-align: center;">
         <h4><a href="/index9.php" title="Setup page Regattastart9"> New version with image detection -- Regattastart9 </a></h4>
     </div>
-    <div class="container">   
+    <div style="text-align: center;">   
     <div class="w3-panel w3-pale-blue">
         <h3> Bilder tagna vid varje signal innan 1a start </h3>
     </div> 
-    <div class="w3-container">
+    <div style="text-align: center;">
         <?php
             // Check and display the first image
             $filename = '1a_start_5_min.jpg';
@@ -164,7 +164,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             }
     ?>
     </div> 
-    <div class="w3-container">
+    <div style="text-align: center;">
         <?php
             // Check and display the first image
             $filename = '2a_start_5_min.jpg';
