@@ -104,7 +104,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             <h2> Regattastart  </h2>
         </div>
     </div>
-    <div class="container">
+    <div style="text-align: center;">
         <?php 
             echo "     Version: " . APP_VERSION . "<br><p></p>"; 
         ?>
