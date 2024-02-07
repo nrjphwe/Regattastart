@@ -116,10 +116,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 </header>
 <!-- Here is our page's main content -->
 <main>
-    <div align="center">
-        <h4><a href="/index6.php" title="Regattastart6 "> Two starts -- Regattastart6 </a></h4>
-    <div align="center">
-        <h4><a href="/index9.php" title="Setup page Regattastart9"> New version with image detection -- Regattastart9 </a></h4>
+    <h4><a href="/index6.php" title="Regattastart6 "> Two starts -- Regattastart6 </a></h4>
+    <h4><a href="/index9.php" title="Setup page Regattastart9"> New version with image detection -- Regattastart9 </a></h4>
     <div align="center">    
     <div class="w3-panel w3-pale-blue">
         <h3> Bilder tagna vid varje signal innan 1a start </h3>
