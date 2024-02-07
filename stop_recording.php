@@ -22,5 +22,11 @@ if (fwrite($pipeHandle, $message) === false) {
     error_log('Message sent to named pipe: ' . $message);
 }
 
-fclose($pipeHandle); // Close the pipe handle
+if (fclose($pipeHandle) === false) {
+    error_log('Failed to close pipe.');
+} else {
+    // Log success message
+    error_log('succesfully closed the pipe: ' . $pipeHandle);
+}
+
 ?>
