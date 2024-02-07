@@ -24,6 +24,7 @@
     <title>Regattastart</title>
     <!-- JavaScript to dynamically add a placeholder text or an image to the page when -->
     <!-- there are no pictures available yet. -->
+    <!-- function showPlaceholder -->
     <script>
         function showPlaceholder() {
             var imageContainer = document.getElementById('image-container');
@@ -124,9 +125,10 @@
     <<div style="text-align: center;">
         <h4><a href="/index9.php" title="Setup page Regattastart9">  Regattastart9 -- with image detection </a></h4>
     </div> 
-    <div class="w3-panel w3-pale-blue">
+    <<div style="text-align: center;" class="w3-panel w3-pale-blue">
         <h3> Bilder tagna vid varje signal innan 1a start </h3>
-    </div> 
+    </div>
+    <!-- First pictures for the start -->
     <div style="text-align: center;">
         <?php
             // Check and display the first image
@@ -164,6 +166,7 @@
             }
         ?>
     </div> 
+    <!-- First pictures for the 2nd start -->
     <div style="text-align: center;">
         <?php
             // Check and display the first image
@@ -202,6 +205,7 @@
             }
         ?>
     </div>
+    <!-- Video0 -->
     <div class="w3-panel w3-pale-blue">
         <?php
             $video_name = 'images/video0.mp4';
@@ -211,6 +215,7 @@
             }
         ?>
     </div>
+    <!-- Stop recording button -->
     <div class="w3-panel w3-pale-green">
         <?php
             $video_name = 'images/video0.mp4';
@@ -224,6 +229,7 @@
             }
         ?>
     </div>
+    <!-- remaining videos -->
     <div class="w3-panel w3-pale-red">
         <?php
             for ($x = 1; $x <= $num_video; $x++) {
@@ -268,6 +274,7 @@
         });
     </script>
     </main>
+    <!-- footer s -->
     <div class="w3-panel w3-grey">
         <?php
         // output index.php was last modified.
