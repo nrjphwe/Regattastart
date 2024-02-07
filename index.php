@@ -53,6 +53,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         }
         .container {
             display: flex;
+            flex-direction: column; /* Ensure items are stacked vertically */
             justify-content: center;
             align-items: center;
             height: 100vh; /* Optional: Makes the container full height */
@@ -116,10 +117,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 </header>
 <!-- Here is our page's main content -->
 <main>
-    <div class="container">
+    <div class="w3-container">
         <h4><a href="/index6.php" title="Regattastart6 "> Two starts -- Regattastart6 </a></h4>
     </div>
-    <div class="container">
+    <div class="w3-container">
         <h4><a href="/index9.php" title="Setup page Regattastart9"> New version with image detection -- Regattastart9 </a></h4>
     </div>
     <div class="container">   
@@ -163,7 +164,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             }
     ?>
     </div> 
-    <div class="container">
+    <div class="w3-container">
         <?php
             // Check and display the first image
             $filename = '2a_start_5_min.jpg';
