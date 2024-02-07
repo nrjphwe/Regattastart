@@ -126,7 +126,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <div class="w3-panel w3-pale-blue">
         <h3> Bilder tagna vid varje signal innan 1a start </h3>
     </div> 
-    <div class="container">
+    <div class="w3-container">
         <?php
             // Check and display the first image
             $filename = '1a_start_5_min.jpg';
