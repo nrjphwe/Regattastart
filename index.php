@@ -141,7 +141,7 @@
         <?php
             $video_name = 'images/video1.mp4';
             if (file_exists($video_name)) {
-                echo "<h3> Finish video, this is video $x for the finish</h3><br>";
+                echo "<h3> Finish video, this is video1 for the finish</h3><br>";
                 echo '<div>
                 <video id="video1.mp4" width="720" height="480" controls>
                     <source src="' . $video_name . '" type="video/mp4">
