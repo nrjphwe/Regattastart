@@ -62,7 +62,8 @@
     <link rel="stylesheet" href="/w3.css">
 </head>
 <body onload="showPlaceholder()">
-<?php // form
+<!-- Text on top of page retrieved from index6 or index9 -->
+<?php
     if (isset($_SESSION['form_data']) && is_array($_SESSION['form_data'])) {
 
         if (array_key_exists('start_time', $_SESSION['form_data'])) {
