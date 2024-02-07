@@ -146,9 +146,6 @@
                 <video id="video1.mp4" width="720" height="480" controls>
                     <source src="' . $video_name . '" type="video/mp4">
                 </video>
-                <div>
-                    <button onclick="stepFrame(' . $x . ', -1)">Previous Frame</button>
-                    <button onclick="stepFrame(' . $x . ', 1)">Next Frame</button>
             </div>';
             }
         ?>
