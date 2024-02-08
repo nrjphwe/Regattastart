@@ -15,6 +15,7 @@
         // Form was submitted
         include_once "stop_recording.php"; // Include the script to stop recording
         error_log('Line 13: The stop_recording.php was included in index.php');
+        // exit; // Stop further execution after including the script
     } elseif ($_SERVER["REQUEST_METHOD"] !== "GET") {
         // Log an error only if the request method is neither "POST" nor "GET"
         error_log('Line 16: $_SERVER["REQUEST_METHOD"] < > "POST" NOR "GET" ');
@@ -96,7 +97,7 @@
         }
         if (array_key_exists('num_video', $_SESSION['form_data'])) {
             $num_video = $_SESSION['form_data']['num_video'];
-            echo " Number of videos during finish: " . $num_video;
+            echo " Number of videos durinhg finish: " . $num_video;
         } else {
             $num_video = 1;
         }
@@ -107,6 +108,16 @@
     }
 ?>
 <header>
+    <div style="text-align: center;">
+        <div class="w3-panel w3-blue">
+            <h2> Regattastart  </h2>
+        </div>
+    </div>
+    <div style="text-align: center;">
+        <?php 
+            echo "     Version: " . APP_VERSION . "<br><p></p>"; 
+        ?>
+    </div>
     <div style="text-align: center;">
         <div id="image-container">
             <!-- Your image elements will be added here dynamically -->
@@ -121,6 +132,96 @@
     <div style="text-align: center;">
         <h4><a href="/index9.php" title="Setup page Regattastart9">  Regattastart9 -- with image detection </a></h4>
     </div> 
+    <div style="text-align: center;" class="w3-panel w3-pale-blue">
+        <h3> Bilder tagna vid varje signal innan 1a start </h3>
+    </div>
+    <!-- First pictures for the start -->
+    <div style="text-align: center;">
+        <?php
+            // Check and display the first image
+            $filename = '1a_start_5_min.jpg';
+            $imagePath = 'images/' . $filename; // Relative path
+            if (file_exists($imagePath)) {
+                $imagePath .= '?' . filemtime($imagePath);
+                echo "<br> ------------------------------------------------- <p></p> ";
+                echo "<h3> Varningssignal 5 minuter innan 1a start</h3>";
+                echo "<img id='$filename' src='$imagePath' alt='1a_start 5 min picture' width='720' height='480'>";     
+            }
+            // Check and display the second image
+            $filename = '1a_start_4_min.jpg';
+            $imagePath = 'images/' . $filename; // Relative path
+            if (file_exists($imagePath)) {
+                $imagePath .= '?' . filemtime($imagePath);
+                echo "<h3> Signal 4 minuter innan 1a start </h3>";
+                echo "<img id='$filename' src='$imagePath' alt='1a_start 4 min picture' width='720' height='480'>";
+            }
+            // Check and display the third image
+            $filename = '1a_start_1_min.jpg';
+            $imagePath = 'images/' . $filename; // Relative path
+            if (file_exists($imagePath)) {
+                $imagePath .= '?' . filemtime($imagePath);
+                echo "<h3> Signal 1 minuter innan 1a start </h3>";
+                echo "<img id='$filename' src='$imagePath' alt='1a_start 1 min picture' width='720' height='480'>";
+            }
+            // Check and display the start image
+            $filename = '1a_start_Start.jpg';
+            $imagePath = 'images/' . $filename; // Relative path
+            if (file_exists($imagePath)) {
+                $imagePath .= '?' . filemtime($imagePath);
+                echo "<h3> Foto vid 1a start </h3>";
+                echo "<img id='$filename' src='$imagePath' alt='1a start picture' width='720' height='480'>";
+            }
+        ?>
+    </div> 
+    <!-- First pictures for the 2nd start -->
+    <div style="text-align: center;">
+        <?php
+            // Check and display the first image
+            $filename = '2a_start_5_min.jpg';
+            $imagePath = 'images/' . $filename; // Relative path
+            if (file_exists($imagePath)) {
+                $imagePath .= '?' . filemtime($imagePath);
+                echo "<h3> Bilder tagna vid varje signal innan 2a start  </h3> ";
+                echo "<br> ------------------------------------------------- <p></p> ";
+                echo "<h3> Varningssignal 5 minuter innan 2a start</h3>";
+                echo "<img id='$filename' src='$imagePath' alt='2a_start 5 min picture' width='720' height=480'>";
+            }
+            // Check and display the second image
+            $filename = '2a_start_4_min.jpg';
+            $imagePath = 'images/' . $filename; // Relative path
+            if (file_exists($imagePath)) {
+                $imagePath .= '?' . filemtime($imagePath);
+                echo "<h3> Signal 4 minuter innan 2a start </h3>";
+                echo "<img id='$filename' src='$imagePath' alt='2a_start 4 min picture' width='720' height='480'>";
+            }
+            // Check and display the third image
+            $filename = '2a_start_1_min.jpg';
+            $imagePath = 'images/' . $filename; // Relative path
+            if (file_exists($imagePath)) {
+                $imagePath .= '?' . filemtime($imagePath);
+                echo "<h3> Signal 1 minuter innan 2a start </h3>";
+                echo "<img id='$filename' src='$imagePath' alt='2a_start 1 min picture' width='720' height='480'>";
+            }
+            // Check and display the start image
+            $filename = '2a_start_Start.jpg';
+            $imagePath = 'images/' . $filename; // Relative path
+            if (file_exists($imagePath)) {
+                $imagePath .= '?' . filemtime($imagePath);
+                echo "<h3> Foto vid 2a start </h3>";
+                echo "<img id='$filename' src='$imagePath' alt='2a start picture' width='720' height='480'>";
+            }
+        ?>
+    </div>
+    <!-- Video0 -->
+    <div style="text-align: center;" class="w3-panel w3-pale-blue">
+        <?php
+            $video_name = 'images/video0.mp4';
+            if (file_exists($video_name)) {
+                echo "<h4> Video 5 min före start och 2 min efter, eller vid 2 starter, till 2 min efter andra start </h4>";
+                echo '<video width = "720" height="480" controls><source src= ' . $video_name . ' type="video/mp4"></video><p>';
+            }
+        ?>
+    </div>
     <!-- Stop recording button -->
     <div style="text-align: center;" class="w3-panel w3-pale-green">
         <?php
@@ -138,18 +239,34 @@
     <!-- remaining videos -->
     <div style="text-align: center;" class="w3-panel w3-pale-red">
         <?php
-            $video_name = 'images/video1.mp4';
-            if (file_exists($video_name)) {
-                echo "<h3> Finish video, this is video for the finish</h3><br>";
-                echo '<div>
-                <video id="video1.mp4" width="720" height="480" controls>
-                    <source src="' . $video_name . '" type="video/mp4">
-                </video>
-            </div>';
+            for ($x = 1; $x <= $num_video; $x++) {
+                $video_name = 'images/video' . $x . '.mp4';
+                if (file_exists($video_name)) {
+                    echo "<h3> Finish video, this is video $x for the finish</h3><br>";
+                    echo '<div>
+                    <video id="video' . $x . '" width="720" height="480" controls>
+                        <source src="' . $video_name . '" type="video/mp4">
+                    </video>
+                    <div>
+                        <button onclick="stepFrame(' . $x . ', -1)">Previous Frame</button>
+                        <button onclick="stepFrame(' . $x . ', 1)">Next Frame</button>
+                    </div>
+                </div>';
+            }
             }
         ?>
     </div>
-    <!-- function to hide the tecording button -->
+    <!-- function to step frames -->
+    <script>
+        function stepFrame(videoNum, step) {
+            var video = document.getElementById('video' + videoNum);
+            if (video) {
+                video.pause();
+                video.currentTime += step * (1 / video.playbackRate/20); // 
+            }
+        }
+    </script>
+    <!-- function to hide the step tecording button -->
     <script>
         // Function to hide the stop recording button after it's pressed
         function hideStopRecordingButton() {
@@ -164,5 +281,20 @@
         });
     </script>
     </main>
+    <!-- footer s -->
+    <div style="text-align: center;" class="w3-panel w3-grey">
+        <?php
+        // output index.php was last modified.
+        $filename = 'index.php';
+        if (file_exists($filename)) {
+            echo "This web-page was last modified: \n" . date ("Y-m-d H:i:s.", filemtime($filename));
+        }
+        ?>
+    </div>
+    <div style="text-align: center;" class="w3-panel w3-grey">
+        <?php 
+        echo " Time now: " .date("H:i:s");
+        ?> 
+    </div>
 </body>
 </html>
