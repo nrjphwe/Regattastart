@@ -98,7 +98,7 @@
         }
         if (array_key_exists('num_video', $_SESSION['form_data'])) {
             $num_video = $_SESSION['form_data']['num_video'];
-            echo " Number of videos durinhg finish: " . $num_video;
+            echo " Number of videos during finish: " . $num_video;
         } else {
             $num_video = 1;
         }
@@ -243,21 +243,24 @@
     </div>
     <!-- Stop recording button -->
     <div style="text-align: center;" class="w3-panel w3-pale-green">
-        <?php
-            if $num_video = "1" {
-                $video_name = 'images/video0.mp4';
-                if (file_exists($video_name)) {
-                    echo "<h4> Efter sista båt i mål, kan man stoppa och generera video för målgång </h4>";
-                    echo '<div id="stopRecordingButtonDiv">
-                        <form id="stopRecordingForm" action="' . htmlspecialchars($_SERVER["PHP_SELF"]) . '" method="post">
-                            <input type="submit" id="stopRecordingButton" value="Stop Recording">
-                        </form>
-                    </div>';
-                } else {
-                    error_log('Line 255 video 0 do not exists');
-                }
+    <?php
+        if ($num_video == 1){
+            $video_name = 'images/video0.mp4';
+            if (file_exists($video_name)) {
+                echo "<h4> Efter sista båt i mål, kan man stoppa och generera video för målgång </h4>";
+                echo '<div id="stopRecordingButtonDiv">
+                    <form id="stopRecordingForm" action="' . htmlspecialchars($_SERVER["PHP_SELF"]) . '" method="post">
+                        <input type="submit" id="stopRecordingButton" value="Stop Recording">
+                    </form>
+                </div>';
+            } else {
+                // If video0.mp4 does not exist yet, do not show the button
+                error_log('Line 258 video 0 does not exist');
             }
-        ?>
+        } else { // Log an error if the video file doesn't exist
+            error_log("Line 261 $num_video is not 1");
+        }
+    ?>
     </div>
     <!-- remaining videos -->
     <div style="text-align: center;" class="w3-panel w3-pale-red">
