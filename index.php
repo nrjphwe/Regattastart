@@ -256,15 +256,19 @@
                         <input type="submit" id="stopRecordingButton" value="Stop Recording">
                     </form>
                 </div>';
-            } else {
-                // If video0.mp4 does not exist yet, do not show the button
-                error_log('Line 258 video 0 does not exist');
+            } 
+            else 
+            {
+                // If video1.mp4 exists or video0.mp4 does not exist, do not show the button
+                error_log('Line 258: video 0 does not exist or video 1 exists');
             }
-        } else { // Log an error if the video file doesn't exist
-            error_log("Line 261 $num_video is not 1");
+        } 
+        else 
+        { 
+            // Log an error if $num_video is not equal to 1
+            error_log("Line 261: $num_video is not 1");
         }
     ?>
-    </div>
     <!-- remaining videos -->
     <div style="text-align: center;" class="w3-panel w3-pale-red">
         <?php
