@@ -158,7 +158,7 @@
                 echo "<h3> Signal 4 minuter innan 1a start </h3>";
                 echo "<img id='$filename' src='$imagePath' alt='1a_start 4 min picture' width='720' height='480'>";
             } else {
-                error_log('picture 4 min do not exists');
+                error_log('Line 161: picture 4 min do not exists');
             }
             // Check and display the third image
             $filename = '1a_start_1_min.jpg';
@@ -168,7 +168,7 @@
                 echo "<h3> Signal 1 minuter innan 1a start </h3>";
                 echo "<img id='$filename' src='$imagePath' alt='1a_start 1 min picture' width='720' height='480'>";
             } else {
-                error_log('picture 1 min do not exists');
+                error_log('Line 171: picture 1 min do not exists');
             }
             // Check and display the start image
             $filename = '1a_start_Start.jpg';
@@ -178,7 +178,7 @@
                 echo "<h3> Foto vid 1a start </h3>";
                 echo "<img id='$filename' src='$imagePath' alt='1a start picture' width='720' height='480'>";
             }else {
-                error_log('picture start do not exists');
+                error_log('Line 181: picture start do not exists');
             }
         ?>
     </div> 
@@ -195,7 +195,7 @@
                 echo "<h3> Varningssignal 5 minuter innan 2a start</h3>";
                 echo "<img id='$filename' src='$imagePath' alt='2a_start 5 min picture' width='720' height=480'>";
             } else {
-                error_log('picture 5 min 2nd start do not exists');
+                error_log('Line 198: picture 5 min 2nd start do not exists');
             }
             // Check and display the second image
             $filename = '2a_start_4_min.jpg';
@@ -205,7 +205,7 @@
                 echo "<h3> Signal 4 minuter innan 2a start </h3>";
                 echo "<img id='$filename' src='$imagePath' alt='2a_start 4 min picture' width='720' height='480'>";
             } else {
-                error_log('picture 4 min 2nd start do not exists');
+                error_log('Line 208: picture 4 min 2nd start do not exists');
             }
             // Check and display the third image
             $filename = '2a_start_1_min.jpg';
@@ -215,7 +215,7 @@
                 echo "<h3> Signal 1 minuter innan 2a start </h3>";
                 echo "<img id='$filename' src='$imagePath' alt='2a_start 1 min picture' width='720' height='480'>";
             } else {
-                error_log('picture 1 min 2nd start do not exists');
+                error_log('Line 218: picture 1 min 2nd start do not exists');
             }
             // Check and display the start image
             $filename = '2a_start_Start.jpg';
@@ -225,7 +225,7 @@
                 echo "<h3> Foto vid 2a start </h3>";
                 echo "<img id='$filename' src='$imagePath' alt='2a start picture' width='720' height='480'>";
             } else {
-                error_log('picture start 2nd start do not exists');
+                error_log('Line 228: picture start 2nd start do not exists');
             }
         ?>
     </div>
