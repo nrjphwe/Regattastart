@@ -243,33 +243,33 @@
     </div>
     <!-- Stop recording button -->
     <div style="text-align: center;" class="w3-panel w3-pale-green">
-    <?php
-        if ($num_video == 1)
-        {
-            $video_name0 = 'images/video0.mp4';
-            $video_name1 = 'images/video1.mp4';
-            if (file_exists($video_name0) && !file_exists($video_name1))
+        <?php
+            if ($num_video == 1)
             {
-                error_log("Line 253: video0 and not video1");
-                echo "<h4> Efter sista båt i mål, kan man stoppa och generera video för målgång </h4>";
-                echo '<div id="stopRecordingButtonDiv">
-                    <form id="stopRecordingForm" action="' . htmlspecialchars($_SERVER["PHP_SELF"]) . '" method="post">
-                        <input type="submit" id="stopRecordingButton" value="Stop Recording">
-                    </form>
-                </div>';
+                $video_name0 = 'images/video0.mp4';
+                $video_name1 = 'images/video1.mp4';
+                if (file_exists($video_name0) && !file_exists($video_name1))
+                {
+                    error_log("Line 253: video0 and not video1");
+                    echo "<h4> Efter sista båt i mål, kan man stoppa och generera video för målgång </h4>";
+                    echo '<div id="stopRecordingButtonDiv">
+                        <form id="stopRecordingForm" action="' . htmlspecialchars($_SERVER["PHP_SELF"]) . '" method="post">
+                            <input type="submit" id="stopRecordingButton" value="Stop Recording">
+                        </form>
+                    </div>';
+                } 
+                else 
+                {
+                    // If video1.mp4 exists or video0.mp4 does not exist, do not show the button
+                    error_log('Line 258: video 0 does not exist or video 1 exists');
+                }
             } 
             else 
-            {
-                // If video1.mp4 exists or video0.mp4 does not exist, do not show the button
-                error_log('Line 258: video 0 does not exist or video 1 exists');
+            { 
+                // Log an error if $num_video is not equal to 1
+                error_log('Line 270: $num_video is not 1');
             }
-        } 
-        else 
-        { 
-            // Log an error if $num_video is not equal to 1
-            error_log('Line 270: $num_video is not 1');
-        }
-    ?>
+        ?>
     <!-- remaining videos -->
     <div style="text-align: center;" class="w3-panel w3-pale-red">
         <?php
@@ -281,6 +281,7 @@
                 for ($x = 1; $x <= $num_video; $x++) {
                     $video_name = 'images/video' . $x . '.mp4';
                     if (file_exists($video_name)) {
+                        error_log("Line 283 video $video_name");
                         // Display the video
                         echo "<h3> Finish video, this is video $x for the finish</h3><br>";
                         echo '<div>
