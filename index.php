@@ -314,13 +314,13 @@
     <!-- function to hide the stop recording button -->
     <script>
         // Function to hide the stop recording button after it's pressed
-        function hideStopRecordingButton() 
-        {
+        function hideStopRecordingButton() {
             var stopRecordingButtonDiv = document.getElementById('stopRecordingButtonDiv');
-            if (stopRecordingButtonDiv) 
-            {
+            if (stopRecordingButtonDiv) {
                 stopRecordingButtonDiv.style.display = 'none';
             }
+        }
+        
         // Event listener to trigger hiding of the button when the form is submitted
         document.getElementById('stopRecordingForm').addEventListener('submit', function() {
             hideStopRecordingButton();
