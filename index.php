@@ -260,23 +260,34 @@
     <!-- remaining videos -->
     <div style="text-align: center;" class="w3-panel w3-pale-red">
         <?php
-        for ($x = 1; $x <= $num_video; $x++) {
-            $video_name = 'images/video' . $x . '.mp4';
-            if (file_exists($video_name)) {
-                echo "<h3> Finish video, this is video $x for the finish</h3><br>";
-                echo '<div>
-                    <video id="video' . $x . '" width="720" height="480" controls>
-                        <source src="' . $video_name . '" type="video/mp4">
-                    </video>
-                    <div>
-                        <button onclick="stepFrame(' . $x . ', -1)">Previous Frame</button>
-                        <button onclick="stepFrame(' . $x . ', 1)">Next Frame</button>
-                    </div>
-                </div>';
+            // Check if the "stop_recording" signal is present
+            $stopRecordingSignal = '/var/www/html/tmp/stop_recording_pipe'; // Update with the actual path
+            if (file_exists($stopRecordingSignal)) {
+                // The "stop_recording" signal is present, indicating that the video recording is completed
+                for ($x = 1; $x <= $num_video; $x++) {
+                    $video_name = 'images/video' . $x . '.mp4';
+                    if (file_exists($video_name)) {
+                        // Display the video
+                        echo "<h3> Finish video, this is video $x for the finish</h3><br>";
+                        echo '<div>
+                            <video id="video' . $x . '" width="720" height="480" controls>
+                                <source src="' . $video_name . '" type="video/mp4">
+                            </video>
+                            <div>
+                                <button onclick="stepFrame(' . $x . ', -1)">Previous Frame</button>
+                                <button onclick="stepFrame(' . $x . ', 1)">Next Frame</button>
+                            </div>
+                        </div>';
+                    } else {
+                        // Log an error if the video file doesn't exist
+                        error_log("Line 283 video $x does not exist");
+                    }
+                }
             } else {
-                error_log("Line 276 video $x do not exists");
+                // The "stop_recording" signal is not present, indicating that the video recording is still ongoing
+                // You can display a message or take appropriate action here
+                error_log("line 289 Video recording is still ongoing. Please wait...");
             }
-        }
         ?>
     </div>
     <!-- function to step frames -->
