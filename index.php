@@ -248,9 +248,8 @@
             {
                 $video_name0 = 'images/video0.mp4';
                 $video_name1 = 'images/video1.mp4';
-                if (file_exists($video_name0) && !file_exists($video_name1))
+                if (file_exists($video_name0))
                 {
-                    error_log("Line 253: video0 and not video1");
                     echo "<h4> Efter sista båt i mål, kan man stoppa och generera video för målgång </h4>";
                     echo '<div id="stopRecordingButtonDiv">
                         <form id="stopRecordingForm" action="' . htmlspecialchars($_SERVER["PHP_SELF"]) . '" method="post">
@@ -261,7 +260,7 @@
                 else 
                 {
                     // If video1.mp4 exists or video0.mp4 does not exist, do not show the button
-                    error_log('Line 258: video 0 does not exist or video 1 exists');
+                    error_log('Line 258: video 0');
                 }
             } 
             else 
@@ -285,7 +284,7 @@
                         // Display the video
                         echo "<h3> Finish video, this is video $x for the finish</h3><br>";
                         echo '<video id="video' . $x . '" width="720" height="480" controls>
-                                <source src=' . $video_name . ' type="video/mp4"></video>
+                                <source src= ' . $video_name . ' type="video/mp4"></video><p>
                             <div>
                                 <button onclick="stepFrame(' . $x . ', -1)">Previous Frame</button>
                                 <button onclick="stepFrame(' . $x . ', 1)">Next Frame</button>
@@ -319,6 +318,7 @@
             var stopRecordingButtonDiv = document.getElementById('stopRecordingButtonDiv');
             if (stopRecordingButtonDiv) {
                 stopRecordingButtonDiv.style.display = 'none';
+                error_log("Line 322 stoprecording = none ");
             } else {
                 error_log("Line 325 stoprecording button <> none");
             }
