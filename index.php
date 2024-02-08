@@ -284,15 +284,12 @@
                         error_log("Line 283 video $video_name");
                         // Display the video
                         echo "<h3> Finish video, this is video $x for the finish</h3><br>";
-                        echo '<div>
-                            <video id="video' . $x . '" width="720" height="480" controls>
-                                <source src="' . $video_name . '" type="video/mp4">
-                            </video>
+                        echo '<video id="video' . $x . '" width="720" height="480" controls>
+                                <source src=' . $video_name . ' type="video/mp4"></video>
                             <div>
                                 <button onclick="stepFrame(' . $x . ', -1)">Previous Frame</button>
                                 <button onclick="stepFrame(' . $x . ', 1)">Next Frame</button>
-                            </div>
-                        </div>';
+                            </div>';
                     } else {
                         // Log an error if the video file doesn't exist
                         error_log("Line 297 video $x does not exist");
