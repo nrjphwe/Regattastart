@@ -244,16 +244,18 @@
     <!-- Stop recording button -->
     <div style="text-align: center;" class="w3-panel w3-pale-green">
         <?php
-            $video_name = 'images/video0.mp4';
-            if (file_exists($video_name)) {
-                echo "<h4> Efter sista båt i mål, kan man stoppa och generera video för målgång </h4>";
-                echo '<div id="stopRecordingButtonDiv">
-                    <form id="stopRecordingForm" action="' . htmlspecialchars($_SERVER["PHP_SELF"]) . '" method="post">
-                        <input type="submit" id="stopRecordingButton" value="Stop Recording">
-                    </form>
-                </div>';
-            } else {
-                error_log('Line 255 video 0 do not exists');
+            if $num_video = "1" {
+                $video_name = 'images/video0.mp4';
+                if (file_exists($video_name)) {
+                    echo "<h4> Efter sista båt i mål, kan man stoppa och generera video för målgång </h4>";
+                    echo '<div id="stopRecordingButtonDiv">
+                        <form id="stopRecordingForm" action="' . htmlspecialchars($_SERVER["PHP_SELF"]) . '" method="post">
+                            <input type="submit" id="stopRecordingButton" value="Stop Recording">
+                        </form>
+                    </div>';
+                } else {
+                    error_log('Line 255 video 0 do not exists');
+                }
             }
         ?>
     </div>
@@ -301,7 +303,7 @@
             }
         }
     </script>
-    <!-- function to hide the step tecording button -->
+    <!-- function to hide the stop recording button -->
     <script>
         // Function to hide the stop recording button after it's pressed
         function hideStopRecordingButton() {
