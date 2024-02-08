@@ -47,6 +47,7 @@
                 // Add a placeholder text
                 var textNode = document.createTextNode(placeholderText);
                 imageContainer.appendChild(textNode);
+                error_log('Line 50, placeholder function');
             }
         }
     </script>
@@ -104,7 +105,7 @@
     }
     else {
         // 'form_data' array not set or not an array
-        echo "No form data found in the session.";
+        echo "Line 107, No form data found in the session.";
     }
 ?>
 <header>
@@ -146,6 +147,8 @@
                 echo "<br> ------------------------------------------------- <p></p> ";
                 echo "<h3> Varningssignal 5 minuter innan 1a start</h3>";
                 echo "<img id='$filename' src='$imagePath' alt='1a_start 5 min picture' width='720' height='480'>";     
+            } else {
+                error_log('Line 150: picture 5 min do not exists');
             }
             // Check and display the second image
             $filename = '1a_start_4_min.jpg';
@@ -154,6 +157,8 @@
                 $imagePath .= '?' . filemtime($imagePath);
                 echo "<h3> Signal 4 minuter innan 1a start </h3>";
                 echo "<img id='$filename' src='$imagePath' alt='1a_start 4 min picture' width='720' height='480'>";
+            } else {
+                error_log('picture 4 min do not exists');
             }
             // Check and display the third image
             $filename = '1a_start_1_min.jpg';
@@ -162,6 +167,8 @@
                 $imagePath .= '?' . filemtime($imagePath);
                 echo "<h3> Signal 1 minuter innan 1a start </h3>";
                 echo "<img id='$filename' src='$imagePath' alt='1a_start 1 min picture' width='720' height='480'>";
+            } else {
+                error_log('picture 1 min do not exists');
             }
             // Check and display the start image
             $filename = '1a_start_Start.jpg';
@@ -170,6 +177,8 @@
                 $imagePath .= '?' . filemtime($imagePath);
                 echo "<h3> Foto vid 1a start </h3>";
                 echo "<img id='$filename' src='$imagePath' alt='1a start picture' width='720' height='480'>";
+            }else {
+                error_log('picture start do not exists');
             }
         ?>
     </div> 
@@ -185,6 +194,8 @@
                 echo "<br> ------------------------------------------------- <p></p> ";
                 echo "<h3> Varningssignal 5 minuter innan 2a start</h3>";
                 echo "<img id='$filename' src='$imagePath' alt='2a_start 5 min picture' width='720' height=480'>";
+            } else {
+                error_log('picture 5 min 2nd start do not exists');
             }
             // Check and display the second image
             $filename = '2a_start_4_min.jpg';
@@ -193,6 +204,8 @@
                 $imagePath .= '?' . filemtime($imagePath);
                 echo "<h3> Signal 4 minuter innan 2a start </h3>";
                 echo "<img id='$filename' src='$imagePath' alt='2a_start 4 min picture' width='720' height='480'>";
+            } else {
+                error_log('picture 4 min 2nd start do not exists');
             }
             // Check and display the third image
             $filename = '2a_start_1_min.jpg';
@@ -201,6 +214,8 @@
                 $imagePath .= '?' . filemtime($imagePath);
                 echo "<h3> Signal 1 minuter innan 2a start </h3>";
                 echo "<img id='$filename' src='$imagePath' alt='2a_start 1 min picture' width='720' height='480'>";
+            } else {
+                error_log('picture 1 min 2nd start do not exists');
             }
             // Check and display the start image
             $filename = '2a_start_Start.jpg';
@@ -209,6 +224,8 @@
                 $imagePath .= '?' . filemtime($imagePath);
                 echo "<h3> Foto vid 2a start </h3>";
                 echo "<img id='$filename' src='$imagePath' alt='2a start picture' width='720' height='480'>";
+            } else {
+                error_log('picture start 2nd start do not exists');
             }
         ?>
     </div>
@@ -219,6 +236,8 @@
             if (file_exists($video_name)) {
                 echo "<h4> Video 5 min före start och 2 min efter, eller vid 2 starter, till 2 min efter andra start </h4>";
                 echo '<video width = "720" height="480" controls><source src= ' . $video_name . ' type="video/mp4"></video><p>';
+            } else {
+                error_log('line 239 video 0 do not exists');
             }
         ?>
     </div>
@@ -233,17 +252,19 @@
                         <input type="submit" id="stopRecordingButton" value="Stop Recording">
                     </form>
                 </div>';
+            } else {
+                error_log('Line 255 video 0 do not exists');
             }
         ?>
     </div>
     <!-- remaining videos -->
     <div style="text-align: center;" class="w3-panel w3-pale-red">
         <?php
-            for ($x = 1; $x <= $num_video; $x++) {
-                $video_name = 'images/video' . $x . '.mp4';
-                if (file_exists($video_name)) {
-                    echo "<h3> Finish video, this is video $x for the finish</h3><br>";
-                    echo '<div>
+        for ($x = 1; $x <= $num_video; $x++) {
+            $video_name = 'images/video' . $x . '.mp4';
+            if (file_exists($video_name)) {
+                echo "<h3> Finish video, this is video $x for the finish</h3><br>";
+                echo '<div>
                     <video id="video' . $x . '" width="720" height="480" controls>
                         <source src="' . $video_name . '" type="video/mp4">
                     </video>
@@ -252,8 +273,10 @@
                         <button onclick="stepFrame(' . $x . ', 1)">Next Frame</button>
                     </div>
                 </div>';
+            } else {
+                error_log("Line 276 video $x do not exists");
             }
-            }
+        }
         ?>
     </div>
     <!-- function to step frames -->
@@ -273,6 +296,8 @@
             var stopRecordingButtonDiv = document.getElementById('stopRecordingButtonDiv');
             if (stopRecordingButtonDiv) {
                 stopRecordingButtonDiv.style.display = 'none';
+            } else {
+                error_log("Line 299 stoprecording button <> none");
             }
         }
         // Event listener to trigger hiding of the button when the form is submitted
@@ -288,6 +313,8 @@
         $filename = 'index.php';
         if (file_exists($filename)) {
             echo "This web-page was last modified: \n" . date ("Y-m-d H:i:s.", filemtime($filename));
+        } else {
+            error_log("Line 316 $filename do not exists");
         }
         ?>
     </div>
