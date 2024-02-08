@@ -14,11 +14,11 @@
     if ($_SERVER["REQUEST_METHOD"] === "POST") {
         // Form was submitted
         include_once "stop_recording.php"; // Include the script to stop recording
-        error_log('Line 13: The stop_recording.php was included in index.php');
+        error_log('Line 17: The stop_recording.php was included in index.php');
         // exit; // Stop further execution after including the script
     } elseif ($_SERVER["REQUEST_METHOD"] !== "GET") {
         // Log an error only if the request method is neither "POST" nor "GET"
-        error_log('Line 16: $_SERVER["REQUEST_METHOD"] < > "POST" NOR "GET" ');
+        error_log('Line 21: $_SERVER["REQUEST_METHOD"] < > "POST" NOR "GET" ');
     }
 ?>
 <!-- Your HTML to display data from the session -->
@@ -105,7 +105,7 @@
     }
     else {
         // 'form_data' array not set or not an array
-        echo "Line 107, No form data found in the session.";
+        echo "Line 108, No form data found in the session.";
     }
 ?>
 <header>
@@ -148,7 +148,7 @@
                 echo "<h3> Varningssignal 5 minuter innan 1a start</h3>";
                 echo "<img id='$filename' src='$imagePath' alt='1a_start 5 min picture' width='720' height='480'>";     
             } else {
-                error_log('Line 150: picture 5 min do not exists');
+                error_log('Line 151: picture 5 min do not exists');
             }
             // Check and display the second image
             $filename = '1a_start_4_min.jpg';
@@ -237,7 +237,7 @@
                 echo "<h4> Video 5 min före start och 2 min efter, eller vid 2 starter, till 2 min efter andra start </h4>";
                 echo '<video id="video0" width = "720" height="480" controls><source src= ' . $video_name . ' type="video/mp4"></video><p>';
             } else {
-                error_log('line 239 video 0 do not exists');
+                error_log('line 230 video 0 do not exists');
             }
         ?>
     </div>
@@ -250,6 +250,7 @@
             $video_name1 = 'images/video1.mp4';
             if (file_exists($video_name0) && !file_exists($video_name1))
             {
+                error_log("Line 253: video0 and not video1");
                 echo "<h4> Efter sista båt i mål, kan man stoppa och generera video för målgång </h4>";
                 echo '<div id="stopRecordingButtonDiv">
                     <form id="stopRecordingForm" action="' . htmlspecialchars($_SERVER["PHP_SELF"]) . '" method="post">
@@ -266,7 +267,7 @@
         else 
         { 
             // Log an error if $num_video is not equal to 1
-            error_log("Line 261: $num_video is not 1");
+            error_log('Line 270: $num_video is not 1');
         }
     ?>
     <!-- remaining videos -->
@@ -276,7 +277,7 @@
             $stopRecordingSignal = '/var/www/html/tmp/stop_recording_pipe'; // Update with the actual path
             if (file_exists($stopRecordingSignal)) {
                 // The "stop_recording" signal is present, indicating that the video recording is completed
-                error_log("Line 272, The stop_recording signal is present");
+                error_log("Line 280, The stop_recording signal is present");
                 for ($x = 1; $x <= $num_video; $x++) {
                     $video_name = 'images/video' . $x . '.mp4';
                     if (file_exists($video_name)) {
@@ -293,13 +294,13 @@
                         </div>';
                     } else {
                         // Log an error if the video file doesn't exist
-                        error_log("Line 289 video $x does not exist");
+                        error_log("Line 297 video $x does not exist");
                     }
                 }
             } else {
                 // The "stop_recording" signal is not present, indicating that the video recording is still ongoing
                 // You can display a message or take appropriate action here
-                error_log("line 295 Video recording is still ongoing. Please wait...");
+                error_log("line 303 Video recording is still ongoing. Please wait...");
             }
         ?>
     </div>
@@ -321,7 +322,7 @@
             if (stopRecordingButtonDiv) {
                 stopRecordingButtonDiv.style.display = 'none';
             } else {
-                error_log("Line 317 stoprecording button <> none");
+                error_log("Line 325 stoprecording button <> none");
             }
         }
         // Event listener to trigger hiding of the button when the form is submitted
@@ -338,7 +339,7 @@
         if (file_exists($filename)) {
             echo "This web-page was last modified: \n" . date ("Y-m-d H:i:s.", filemtime($filename));
         } else {
-            error_log("Line 334 $filename do not exists");
+            error_log("Line 342 $filename do not exists");
         }
         ?>
     </div>
