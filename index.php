@@ -260,7 +260,7 @@
                 else 
                 {
                     // If video1.mp4 exists or video0.mp4 does not exist, do not show the button
-                    error_log('Line 258: video 0');
+                    error_log('Line 258: video 0 do not exist');
                 }
             } 
             else 
