@@ -383,7 +383,7 @@ def main():
                         start_sequence(camera, signal, start_time_sec, num_starts, photo_path)
                         if num_starts == 2:
                             start_time_sec = start_time_sec + (5 * 60)
-                        logger.info(" Wait 2 minutes then stop video recording")
+                        logger.info(" Wait 2 minutes then stop video0 recording")
                         t0 = dt.datetime.now()
                         logger.info(" start_time_sec= %s, t0= %s",start_time_sec, t0)  #test
                         while (dt.datetime.now() - t0).seconds < (119):
