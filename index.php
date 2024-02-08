@@ -235,7 +235,7 @@
             $video_name = 'images/video0.mp4';
             if (file_exists($video_name)) {
                 echo "<h4> Video 5 min före start och 2 min efter, eller vid 2 starter, till 2 min efter andra start </h4>";
-                echo '<video width = "720" height="480" controls><source src= ' . $video_name . ' type="video/mp4"></video><p>';
+                echo '<video id="video0" width = "720" height="480" controls><source src= ' . $video_name . ' type="video/mp4"></video><p>';
             } else {
                 error_log('line 239 video 0 do not exists');
             }
@@ -264,6 +264,7 @@
             $stopRecordingSignal = '/var/www/html/tmp/stop_recording_pipe'; // Update with the actual path
             if (file_exists($stopRecordingSignal)) {
                 // The "stop_recording" signal is present, indicating that the video recording is completed
+                error_log("Line 267, The stop_recording signal is present");
                 for ($x = 1; $x <= $num_video; $x++) {
                     $video_name = 'images/video' . $x . '.mp4';
                     if (file_exists($video_name)) {
