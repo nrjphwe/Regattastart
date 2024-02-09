@@ -230,6 +230,7 @@
         <?php
             $video_name = 'images/video0.mp4';
             if (file_exists($video_name)) {
+                error_log('Line 233: video 0 is available');
                 echo "<h4> Video 5 min före start och 2 min efter, eller vid 2 starter, till 2 min efter andra start </h4>";
                 echo '<video id="video0" width = "720" height="480" controls><source src= ' . $video_name . ' type="video/mp4"></video><p>';
             } else {
@@ -245,6 +246,7 @@
                 $video_name0 = 'images/video0.mp4';
                 if (file_exists($video_name0))
                 {
+                    error_log('Line 249: check for video 0 to activate button');
                     echo "<h4> Efter sista båt i mål, kan man stoppa och generera video för målgång </h4>";
                     echo '<div id="stopRecordingButtonDiv">
                         <form id="stopRecordingForm" action="' . htmlspecialchars($_SERVER["PHP_SELF"]) . '" method="post">
