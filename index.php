@@ -133,6 +133,9 @@
     <div style="text-align: center;" class="w3-panel w3-pale-blue">
         <h3> Bilder tagna vid varje signal innan 1a start </h3>
     </div>
+    <?php
+    echo "Line 137: regattastart9 variable = $regattastart9_stopped"
+    ?>
     <!-- First pictures for the start -->
     <div style="text-align: center;">
         <?php
