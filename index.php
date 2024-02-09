@@ -5,6 +5,7 @@
     // after "git pull", "sudo cp /home/pi/Regattastart/index.php /var/www/html/"
     ini_set('display_errors', 1); 
     error_reporting(E_ALL);
+    $regattastart9_stopped = []
 ?>
 <?php
     if ($_SERVER["REQUEST_METHOD"] === "POST") {
@@ -265,7 +266,7 @@
     <!-- remaining videos -->
     <div style="text-align: center;" class="w3-panel w3-pale-red">
         <?php
-            if ($regattastart9_stopped === True)
+            if ($regattastart9_stopped == True)
             {
                 // Check if the stop-recording signal is present
                 error_log("Line 268: Variable regattastart9_stopped = $regattastart9_stopped");
