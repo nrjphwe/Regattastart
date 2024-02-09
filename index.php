@@ -268,7 +268,7 @@
                 error_log('Line 265: $num_video is not 1');
             }
         } else {
-            error_log(" stop_recording was pressed $stop_recording__button_pressed"); 
+            error_log("Line 271: Stop_recording was pressed $stop_recording__button_pressed"); 
         }
         ?>
     <!-- remaining videos -->
