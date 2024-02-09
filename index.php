@@ -5,7 +5,7 @@
     // after "git pull", "sudo cp /home/pi/Regattastart/index.php /var/www/html/"
     ini_set('display_errors', 1); 
     error_reporting(E_ALL);
-    $regattastart9_stopped = False
+    $regattastart9_stopped = 0
 ?>
 <?php
     if ($_SERVER["REQUEST_METHOD"] === "POST") {
