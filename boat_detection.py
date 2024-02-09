@@ -34,7 +34,7 @@ last_detection_time = time.time()
 
 #Define the codec
 today = time.strftime("%Y-%m-%d")
-fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # H.264 codec with MP4 container
+fourcc = cv2.VideoWriter_fourcc(*'x264')  # H.264 codec with MP4 container
 fps_out = 25.0
 frame_size = (640, 480)
 
@@ -42,7 +42,7 @@ frame_size = (640, 480)
 # video_writer = None
 # Open a video capture object 0 for webcam)
 cap = cv2.VideoCapture(0)
-out = video_writer = cv2.VideoWriter('output'+ today + '.x2644', fourcc, fps_out, frame_size)
+out = video_writer = cv2.VideoWriter('output'+ today + '.x264', fourcc, fps_out, frame_size)
 fps = 24  # frames per second
 width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH) + 0.5)
 height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT) + 0.5)
