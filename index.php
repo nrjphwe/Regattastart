@@ -241,6 +241,8 @@
     <!-- Stop recording button -->
     <div style="text-align: center;" class="w3-panel w3-pale-green">
         <?php
+        if ($stop_recording__button_pressed = true) 
+        {
             if ($num_video == 1)
             {
                 $video_name0 = 'images/video0.mp4';
@@ -265,6 +267,9 @@
                 // Log an error if $num_video is not equal to 1
                 error_log('Line 265: $num_video is not 1');
             }
+        } else {
+            error_log(" stop_recording not yet pressed $stop_recording__button_pressed"); 
+        }
         ?>
     <!-- remaining videos -->
     <div style="text-align: center;" class="w3-panel w3-pale-red">
