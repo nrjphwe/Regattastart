@@ -318,6 +318,7 @@
             var stopRecordingButtonDiv = document.getElementById('stopRecordingButtonDiv');
             if (stopRecordingButtonDiv) {
                 stopRecordingButtonDiv.style.display = 'none';
+                sessionStorage.setItem('stopRecordingButtonHidden', 'true'); // Set flag in session storage
             }
         }
         
@@ -325,6 +326,16 @@
         document.getElementById('stopRecordingForm').addEventListener('submit', function() {
             hideStopRecordingButton();
         });
+        // Check if the button should be hidden on page load
+        window.addEventListener('load', function() {
+        var stopRecordingButtonHidden = sessionStorage.getItem('stopRecordingButtonHidden');
+        if (stopRecordingButtonHidden === 'true') {
+            var stopRecordingButtonDiv = document.getElementById('stopRecordingButtonDiv');
+            if (stopRecordingButtonDiv) {
+                stopRecordingButtonDiv.style.display = 'none';
+            }
+        }
+    });
     </script>
     </main>
     <!-- footer s -->
