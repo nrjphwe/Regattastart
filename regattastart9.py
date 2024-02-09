@@ -416,8 +416,10 @@ def main():
         if signal is not None:
             signal.off() # Turn off the signal output
             signal.close() # Turn off the signal output
+            lamp1.off() # Turn off the lamp1
             lamp1.close() # Turn off the lamp1
             lamp2.close() # Turn off the lamp2
+            lamp2.off() # Turn off the lamp2
 
 if __name__ == "__main__":
     #logging.basicConfig(level=logging.WARNING)  # Set log level to WARNING
