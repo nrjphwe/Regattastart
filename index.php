@@ -243,7 +243,6 @@
             if ($num_video == 1)
             {
                 $video_name0 = 'images/video0.mp4';
-                $video_name1 = 'images/video1.mp4';
                 if (file_exists($video_name0))
                 {
                     echo "<h4> Efter sista båt i mål, kan man stoppa och generera video för målgång </h4>";
