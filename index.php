@@ -10,7 +10,6 @@
     if ($_SERVER["REQUEST_METHOD"] === "POST") {
         // Form was submitted
         include_once "stop_recording.php"; // Include the script to stop recording
-        $stop_recording_button_pressed = true;
         error_log('Line 13: The stop_recording.php was included in index.php');
         // exit; // Stop further execution after including the script
     } elseif ($_SERVER["REQUEST_METHOD"] !== "GET") {
@@ -241,8 +240,6 @@
     <!-- Stop recording button -->
     <div style="text-align: center;" class="w3-panel w3-pale-green">
         <?php
-        if ($stop_recording__button_pressed = false) 
-        {
             if ($num_video == 1)
             {
                 $video_name0 = 'images/video0.mp4';
@@ -255,21 +252,14 @@
                             <input type="submit" id="stopRecordingButton" value="Stop Recording">
                         </form>
                     </div>';
-                } 
-                else 
-                {
+                } else {
                     // If video1.mp4 exists or video0.mp4 does not exist, do not show the button
                     error_log('Line 259: video 0 do not exist');
                 }
-            } 
-            else 
-            { 
+            } else {
                 // Log an error if $num_video is not equal to 1
-                error_log('Line 265: $num_video is not 1');
+                error_log('Line 262: $num_video is not 1');
             }
-        } else {
-            error_log("Line 271: Stop_recording was pressed $stop_recording__button_pressed"); 
-        }
         ?>
     <!-- remaining videos -->
     <div style="text-align: center;" class="w3-panel w3-pale-red">
