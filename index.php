@@ -10,7 +10,7 @@
     if ($_SERVER["REQUEST_METHOD"] === "POST") {
         // Form was submitted
         include_once "stop_recording.php"; // Include the script to stop recording
-        $stop_recording__button_pressed = true;
+        $stop_recording_button_pressed = true;
         error_log('Line 13: The stop_recording.php was included in index.php');
         // exit; // Stop further execution after including the script
     } elseif ($_SERVER["REQUEST_METHOD"] !== "GET") {
