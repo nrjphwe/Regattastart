@@ -233,7 +233,7 @@
                 echo "<h4> Video 5 min före start och 2 min efter, eller vid 2 starter, till 2 min efter andra start </h4>";
                 echo '<video id="video0" width = "720" height="480" controls><source src= ' . $video_name . ' type="video/mp4"></video><p>';
             } else {
-                error_log('line 230 video 0 do not exists');
+                error_log('Line 236: video 0 do not exists');
             }
         ?>
     </div>
@@ -272,11 +272,11 @@
             $stopRecordingSignal = '/var/www/html/tmp/stop_recording_pipe'; // Update with the actual path
             if (file_exists($stopRecordingSignal)) {
                 // The "stop_recording" signal is present, indicating that the video recording is completed
-                error_log("Line 280, The stop_recording signal is present");
+                error_log("Line 275: The stop_recording signal is present");
                 for ($x = 1; $x <= $num_video; $x++) {
                     $video_name = 'images/video' . $x . '.mp4';
                     if (file_exists($video_name)) {
-                        error_log("Line 283 video $video_name");
+                        error_log("Line 279: video $video_name");
                         // Display the video
                         echo "<h3> Finish video, this is video $x for the finish</h3><br>";
                         echo '<video id="video' . $x . '" width="720" height="480" controls>
@@ -287,13 +287,13 @@
                             </div>';
                     } else {
                         // Log an error if the video file doesn't exist
-                        error_log("Line 297 video $x does not exist");
+                        error_log("Line: 290 video $x does not exist");
                     }
                 }
             } else {
                 // The "stop_recording" signal is not present, indicating that the video recording is still ongoing
                 // You can display a message or take appropriate action here
-                error_log("line 303 Video recording is still ongoing. Please wait...");
+                error_log("Line: 296 Video recording is still ongoing. Please wait...");
             }
         ?>
     </div>
@@ -317,7 +317,6 @@
                 sessionStorage.setItem('stopRecordingButtonHidden', 'true'); // Set flag in session storage
             }
         }
-        
         // Event listener to trigger hiding of the button when the form is submitted
         document.getElementById('stopRecordingForm').addEventListener('submit', function() {
             hideStopRecordingButton();
@@ -342,7 +341,7 @@
         if (file_exists($filename)) {
             echo "This web-page was last modified: \n" . date ("Y-m-d H:i:s.", filemtime($filename));
         } else {
-            error_log("Line 342 $filename do not exists");
+            error_log("Line: 344 $filename do not exists");
         }
         ?>
     </div>
