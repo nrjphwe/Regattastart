@@ -265,6 +265,7 @@
     <!-- remaining videos -->
     <div style="text-align: center;" class="w3-panel w3-pale-red">
         <?php
+            error_log("Line 268: Variable regattastart9_stopped = $regattastart9_stopped);
             // Check if the "stop_recording" signal is present
             $stopRecordingSignal = '/var/www/html/tmp/stop_recording_pipe'; // Update with the actual path
             if (file_exists($stopRecordingSignal)) {
