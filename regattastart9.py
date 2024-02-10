@@ -412,7 +412,7 @@ def main():
         logger.info("Line 412, Finally section, before 'Finish recording'. start_time=%s video_end%s", start_time, video_end)
         finish_recording(video_path, num_starts, video_end, start_time, start_time_sec)
         convert_video_to_mp4(video_path, "video1.h264", "video1.mp4")
-        logger.info("Line 414, Finished with finish_recording")
+        logger.info("Line 415, Finished with finish_recording and recording converted to mp4")
         if camera is not None:
             camera.close()  # Release the camera resources
         if signal is not None:
@@ -420,8 +420,8 @@ def main():
             signal.close() # Turn off the signal output
             lamp1.off() # Turn off the lamp1
             lamp1.close() # Turn off the lamp1
-            lamp2.close() # Turn off the lamp2
             lamp2.off() # Turn off the lamp2
+            lamp2.close() # Turn off the lamp2
 
 if __name__ == "__main__":
     #logging.basicConfig(level=logging.WARNING)  # Set log level to WARNING
