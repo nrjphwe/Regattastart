@@ -271,13 +271,19 @@
         <?php
             $video_name = 'images/video1.mp4';
             if (file_exists($video_name)) {
-                error_log('Line 273: video 1 is available');
-                echo "<h4> Finish video, this is video 1 for the finish </h4>";
-                echo '<video id="video0" width = "720" height="480" controls><source src= ' . $video_name . ' type="video/mp4"></video><p>';
-                echo '<div>
-                    <button onclick="stepFrame(' . $x . ', -1)">Previous Frame</button>
-                    <button onclick="stepFrame(' . $x . ', 1)">Next Frame</button>
-                </div>';
+                for ($x = 1; $x <= $num_video; $x++) {
+                    $video_name = 'images/video' . $x . '.mp4';
+                    error_log("Line 282: for loop video = $video_name");
+                    if (file_exists($video_name)) {
+                        error_log("Line 279: video $video_name exists");
+                        // Display the video
+                        echo "<h3> Finish video, this is video $x for the finish</h3><br>";
+                        echo '<video id="video' . $x . '" width="720" height="480" controls>
+                                <source src= ' . $video_name . ' type="video/mp4"></video><p>
+                            <div>
+                                <button onclick="stepFrame(' . $x . ', -1)">Previous Frame</button>
+                                <button onclick="stepFrame(' . $x . ', 1)">Next Frame</button>
+                            </div>';
             } else {
                 error_log('Line 277: video 0 do not exists');
             }
