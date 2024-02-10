@@ -268,41 +268,17 @@
     <!-- remaining videos -->
     <div style="text-align: center;" class="w3-panel w3-pale-red">
         <?php
-            if ($regattastart9_stopped == True)
-            {
-                // Check if the stop-recording signal is present
-                error_log("Line 268: Variable regattastart9_stopped = $regattastart9_stopped");
-                $stopRecordingSignal = '/var/www/html/tmp/stop_recording_pipe'; // Update with the actual path
-                sleep(5);
-                if (file_exists($stopRecordingSignal)) {
-                    // The "stop_recording" signal is present, indicating that the video recording is completed
-                    error_log("Line 275: The stop_recording signal is present");
-                    for ($x = 1; $x <= $num_video; $x++) {
-                        $video_name = 'images/video' . $x . '.mp4';
-                        error_log("Line 282: for loop video = $video_name");
-                        if (file_exists($video_name)) {
-                            error_log("Line 279: video $video_name exists");
-                            // Display the video
-                            echo "<h3> Finish video, this is video $x for the finish</h3><br>";
-                            echo '<video id="video' . $x . '" width="720" height="480" controls>
-                                    <source src= ' . $video_name . ' type="video/mp4"></video><p>
-                                <div>
-                                    <button onclick="stepFrame(' . $x . ', -1)">Previous Frame</button>
-                                    <button onclick="stepFrame(' . $x . ', 1)">Next Frame</button>
-                                </div>';
-                        } else {
-                            // Log an error if the video file doesn't exist
-                            error_log("Line 293: video $x does not exist");
-                        }
-                    }
-                } else {
-                    // The "stop_recording" signal is not present, indicating that the video recording is still ongoing
-                    // You can display a message or take appropriate action here
-                    error_log("Line 296: Video recording is still ongoing. Please wait...");
-                }
-            } else { 
-                // The "regattastart9_stopped signal is not present
-                error_log("Line 304: The regattastart9_stopped signal (from stop_recording.php) is not yet set");
+            $video_name = 'images/video1.mp4';
+            if (file_exists($video_name)) {
+                error_log('Line 273: video 1 is available');
+                echo "<h4> Finish video, this is video 1 for the finish </h4>";
+                echo '<video id="video0" width = "720" height="480" controls><source src= ' . $video_name . ' type="video/mp4"></video><p>';
+                echo '<div>
+                    <button onclick="stepFrame(' . $x . ', -1)">Previous Frame</button>
+                    <button onclick="stepFrame(' . $x . ', 1)">Next Frame</button>
+                </div>';
+            } else {
+                error_log('Line 277: video 0 do not exists');
             }
         ?>
     </div>
