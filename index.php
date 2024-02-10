@@ -279,6 +279,7 @@
                     error_log("Line 275: The stop_recording signal is present");
                     for ($x = 1; $x <= $num_video; $x++) {
                         $video_name = 'images/video' . $x . '.mp4';
+                        error_log("Line 282: for loop video = $video_name");
                         if (file_exists($video_name)) {
                             error_log("Line 279: video $video_name exists");
                             // Display the video
