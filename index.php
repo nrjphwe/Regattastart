@@ -248,7 +248,7 @@
             {
                 $video_name0 = 'images/video0.mp4';
                 $video_name1 = 'images/video1.mp4';
-                if (file_exists($video_name0) && !file_exists($video_name1))
+                if (file_exists($video_name0) && !(file_exists($video_name1)))
                 {
                     error_log('Line 253: check for video 0 to activate button');
                     echo "<h4> Efter sista båt i mål, kan man stoppa och generera video för målgång </h4>";
@@ -258,12 +258,12 @@
                         </form>
                     </div>';
                 } else {
-                    // If video0.mp4 do not exist, do not show the button
-                    error_log('Line 259: video 0 do not exist');
+                    // If video0.mp4 exist but not video1.mp4, do not show the button
+                    error_log("Line 262: video 0 do not exist");
                 }
             } else {
                 // Log an error if $num_video is not equal to 1
-                error_log('Line 262: $num_video is not 1');
+                error_log("Line 262: $num_video is not 1");
             }
         ?>
     <!-- remaining videos -->
