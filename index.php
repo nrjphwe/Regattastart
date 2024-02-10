@@ -47,6 +47,7 @@
             }
         }
     </script>
+    <!-- set styles -->
     <style>
         img {
             max-width: 100%;
@@ -135,7 +136,7 @@
     <?php
     echo "Line 137: regattastart9 variable = $regattastart9_stopped"
     ?>
-    <!-- First pictures for the start -->
+    <!-- Pictures for the 1st start  -->
     <div style="text-align: center;">
         <?php
             // Check and display the first image
@@ -147,7 +148,7 @@
                 echo "<h3> Varningssignal 5 minuter innan 1a start</h3>";
                 echo "<img id='$filename' src='$imagePath' alt='1a_start 5 min picture' width='720' height='480'>";     
             } else {
-                error_log('Line 147: picture 5 min do not exists');
+                error_log('Line 151: picture 5 min do not exists');
             }
             // Check and display the second image
             $filename = '1a_start_4_min.jpg';
@@ -157,7 +158,7 @@
                 echo "<h3> Signal 4 minuter innan 1a start </h3>";
                 echo "<img id='$filename' src='$imagePath' alt='1a_start 4 min picture' width='720' height='480'>";
             } else {
-                error_log('Line 157: picture 4 min do not exists');
+                error_log('Line 161: picture 4 min do not exists');
             }
             // Check and display the third image
             $filename = '1a_start_1_min.jpg';
@@ -167,7 +168,7 @@
                 echo "<h3> Signal 1 minuter innan 1a start </h3>";
                 echo "<img id='$filename' src='$imagePath' alt='1a_start 1 min picture' width='720' height='480'>";
             } else {
-                error_log('Line 167: picture 1 min do not exists');
+                error_log('Line 171: picture 1 min do not exists');
             }
             // Check and display the start image
             $filename = '1a_start_Start.jpg';
@@ -176,12 +177,12 @@
                 $imagePath .= '?' . filemtime($imagePath);
                 echo "<h3> Foto vid 1a start </h3>";
                 echo "<img id='$filename' src='$imagePath' alt='1a start picture' width='720' height='480'>";
-            }else {
-                error_log('Line 177: picture start do not exists');
+            } else {
+                error_log('Line 181: picture for the start do not exists');
             }
         ?>
     </div> 
-    <!-- First pictures for the 2nd start -->
+    <!-- Pictures for the 2nd start -->
     <div style="text-align: center;">
         <?php
             // Check and display the first image
@@ -194,7 +195,7 @@
                 echo "<h3> Varningssignal 5 minuter innan 2a start</h3>";
                 echo "<img id='$filename' src='$imagePath' alt='2a_start 5 min picture' width='720' height=480'>";
             } else {
-                error_log('Line 194: picture 5 min 2nd start do not exists');
+                error_log('Line 198: picture 5 min 2nd start do not exists');
             }
             // Check and display the second image
             $filename = '2a_start_4_min.jpg';
@@ -204,7 +205,7 @@
                 echo "<h3> Signal 4 minuter innan 2a start </h3>";
                 echo "<img id='$filename' src='$imagePath' alt='2a_start 4 min picture' width='720' height='480'>";
             } else {
-                error_log('Line 204: picture 4 min 2nd start do not exists');
+                error_log('Line 208: picture 4 min 2nd start do not exists');
             }
             // Check and display the third image
             $filename = '2a_start_1_min.jpg';
@@ -214,7 +215,7 @@
                 echo "<h3> Signal 1 minuter innan 2a start </h3>";
                 echo "<img id='$filename' src='$imagePath' alt='2a_start 1 min picture' width='720' height='480'>";
             } else {
-                error_log('Line 214: picture 1 min 2nd start do not exists');
+                error_log('Line 218: picture 1 min 2nd start do not exists');
             }
             // Check and display the start image
             $filename = '2a_start_Start.jpg';
@@ -224,11 +225,11 @@
                 echo "<h3> Foto vid 2a start </h3>";
                 echo "<img id='$filename' src='$imagePath' alt='2a start picture' width='720' height='480'>";
             } else {
-                error_log('Line 224: picture start 2nd start do not exists');
+                error_log('Line 228: picture start 2nd start do not exists');
             }
         ?>
     </div>
-    <!-- Video0 -->
+    <!-- Display of video0  when it is available -->
     <div style="text-align: center;" class="w3-panel w3-pale-blue">
         <?php
             $video_name = 'images/video0.mp4';
@@ -237,11 +238,11 @@
                 echo "<h4> Video 5 min före start och 2 min efter, eller vid 2 starter, till 2 min efter andra start </h4>";
                 echo '<video id="video0" width = "720" height="480" controls><source src= ' . $video_name . ' type="video/mp4"></video><p>';
             } else {
-                error_log('Line 241: video 0 do not exists');
+                error_log("Line 241: $video_name do not exists");
             }
         ?>
     </div>
-    <!-- Stop recording button -->
+    <!-- Stop recording button visbible after video is ready , but not when video1 exists -->
     <div style="text-align: center;" class="w3-panel w3-pale-green">
         <?php
             if ($num_video == 1) // which is valid for regattastart9
@@ -250,7 +251,7 @@
                 $video_name1 = 'images/video1.mp4';
                 if (file_exists($video_name0) && !(file_exists($video_name1)))
                 {
-                    error_log('Line 253: check for video 0 to activate button');
+                    error_log('Line 254: A check for video0 was amde to show stop button');
                     echo "<h4> Efter sista båt i mål, kan man stoppa och generera video för målgång </h4>";
                     echo '<div id="stopRecordingButtonDiv">
                         <form id="stopRecordingForm" action="' . htmlspecialchars($_SERVER["PHP_SELF"]) . '" method="post">
@@ -259,11 +260,11 @@
                     </div>';
                 } else {
                     // If video0.mp4 exist but not video1.mp4, do not show the button
-                    error_log("Line 262: video 0 do not exist");
+                    error_log("Line 266: video 0 do not exist");
                 }
             } else {
                 // Log an error if $num_video is not equal to 1
-                error_log("Line 262: $num_video is not 1");
+                error_log("Line 267: $num_video is not 1");
             }
         ?>
     <!-- remaining videos -->
