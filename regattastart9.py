@@ -256,7 +256,7 @@ def finish_recording(video_path, num_starts, video_end, start_time, start_time_s
     fourcc = cv2.VideoWriter_fourcc(*'XVID')  # H.264 codec with MP4 container
     #fourcc = 0
     #video_writer = cv2.VideoWriter(video_path + 'video1' + '.mp4', fourcc, fpsw, frame_size)
-    video_writer = cv2.VideoWriter(video_path + 'video1' + '.h264', fourcc, fpsw, frame_size)
+    video_writer = cv2.VideoWriter(video_path + 'video1' + '.avi', fourcc, fpsw, frame_size)
 
     number_of_non_detected_frames = 30
     number_of_detected_frames = 3 # Set the number of frames to record after detecting a boat
