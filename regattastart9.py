@@ -303,7 +303,7 @@ def finish_recording(video_path, num_starts, video_end, start_time, start_time_s
                     pt2 = (int(x + w), int(y + h))
                     cv2.rectangle(frame, pt1, pt2, (0, 255, 0), 2, cv2.LINE_AA)
                     for i in range(number_of_detected_frames):
-                        logger.info("Line 247 boat detected.")
+                        logger.info("Line 306: boat detected.")
                         cv_annotate_video(frame, start_time_sec)
                         video_writer.write(frame)
 
@@ -322,13 +322,13 @@ def finish_recording(video_path, num_starts, video_end, start_time, start_time_s
         if elapsed_time >= 60 * (video_end + 5 * (num_starts - 1)):
             break
 
-        logger.info(f"Line 304, Recording stopped: {recording_stopped}")
+        logger.info(f"Line 325, Recording stopped: {recording_stopped}")
         if recording_stopped == True:
             break
 
     cap.release()  # Don't forget to release the camera resources when done
     video_writer.release()  # Release the video writer
-    logger.info("Line 310, Exited finish_recording module.")
+    logger.info("Line 331, Exited finish_recording module.")
 
 def main():
     logger = setup_logging()  # Initialize the logger
