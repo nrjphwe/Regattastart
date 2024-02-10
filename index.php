@@ -287,7 +287,8 @@
                                 <button onclick="stepFrame(' . $x . ', 1)">Next Frame</button>
                             </div>';
                     } else {
-                        error_log('Line 290: video $x do not exists');
+                        // Log an error if the video file doesn't exist
+                        error_log("Line 291: video $x does not exist");
                     }
                 }
             }
