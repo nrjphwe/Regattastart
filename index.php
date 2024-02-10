@@ -280,7 +280,7 @@
                     {
                         error_log("Line 279: video $video_name exists");
                         // Display the video
-                        echo "<h3> Finish video, this is video $x for the finish</h3><br>";
+                        echo "<h3> Finish video, this is video $x for the finish</h3>";
                         echo '<video id="video' . $x . '" width="720" height="480" controls>
                                 <source src= ' . $video_name . ' type="video/mp4"></video><p>
                             <div>
