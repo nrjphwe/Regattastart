@@ -234,11 +234,11 @@
         <?php
             $video_name = 'images/video0.mp4';
             if (file_exists($video_name)) {
-                error_log('Line 233: video 0 is available');
+                error_log('Line 237: video 0 is available');
                 echo "<h4> Video 5 min före start och 2 min efter, eller vid 2 starter, till 2 min efter andra start </h4>";
                 echo '<video id="video0" width = "720" height="480" controls><source src= ' . $video_name . ' type="video/mp4"></video><p>';
             } else {
-                error_log('Line 236: video 0 do not exists');
+                error_log('Line 241: video 0 do not exists');
             }
         ?>
     </div>
@@ -250,7 +250,7 @@
                 $video_name0 = 'images/video0.mp4';
                 if (file_exists($video_name0))
                 {
-                    error_log('Line 249: check for video 0 to activate button');
+                    error_log('Line 253: check for video 0 to activate button');
                     echo "<h4> Efter sista båt i mål, kan man stoppa och generera video för målgång </h4>";
                     echo '<div id="stopRecordingButtonDiv">
                         <form id="stopRecordingForm" action="' . htmlspecialchars($_SERVER["PHP_SELF"]) . '" method="post">
@@ -299,6 +299,9 @@
                     // You can display a message or take appropriate action here
                     error_log("Line 296: Video recording is still ongoing. Please wait...");
                 }
+            } else { 
+                // The "regattastart9_stopped signal is not present
+                error_log("Line 304: The regattastart9_stopped signal (from stoip_recording.php) is not yet set");
             }
         ?>
     </div>
