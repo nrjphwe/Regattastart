@@ -412,7 +412,7 @@ def main():
         listen_thread.start()
         logger.info("Line 412, Finally section, before 'Finish recording'. start_time=%s video_end%s", start_time, video_end)
         finish_recording(video_path, num_starts, video_end, start_time, start_time_sec)
-        convert_video_to_mp4(video_path, "video1.h264", "video1.mp4")
+        convert_video_to_mp4(video_path, "video1.avi", "video1.mp4")
         logger.info("Line 415, Finished with finish_recording and recording converted to mp4")
         if camera is not None:
             camera.close()  # Release the camera resources
