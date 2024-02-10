@@ -244,11 +244,11 @@
     <!-- Stop recording button -->
     <div style="text-align: center;" class="w3-panel w3-pale-green">
         <?php
-            if ($num_video == 1)
+            if ($num_video == 1) // which is valid for regattastart9
             {
                 $video_name0 = 'images/video0.mp4';
                 $video_name1 = 'images/video1.mp4';
-                if (file_exists($video_name0) &&! file_exists($video_name0))
+                if (file_exists($video_name0) && !file_exists($video_name1))
                 {
                     error_log('Line 253: check for video 0 to activate button');
                     echo "<h4> Efter sista båt i mål, kan man stoppa och generera video för målgång </h4>";
