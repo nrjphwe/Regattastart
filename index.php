@@ -260,7 +260,7 @@
                     </div>';
                 } else {
                     // If video0.mp4 exist but not video1.mp4, do not show the button
-                    error_log("Line 266: video 0 do not exist");
+                    error_log("Line 266: both video0 and video1 exist, do not show button");
                 }
             } else {
                 // Log an error if $num_video is not equal to 1
@@ -304,31 +304,6 @@
                 video.currentTime += step * (1 / video.playbackRate/20); // 
             }
         }
-    </script>
-    <!-- function to hide the stop recording button -->
-    <script>
-        // Function to hide the stop recording button after it's pressed
-        function hideStopRecordingButton() {
-            var stopRecordingButtonDiv = document.getElementById('stopRecordingButtonDiv');
-            if (stopRecordingButtonDiv) {
-                stopRecordingButtonDiv.style.display = 'none';
-                sessionStorage.setItem('stopRecordingButtonHidden', 'true'); // Set flag in session storage
-            }
-        }
-        // Event listener to trigger hiding of the button when the form is submitted
-        document.getElementById('stopRecordingForm').addEventListener('submit', function() {
-            hideStopRecordingButton();
-        });
-        // Check if the button should be hidden on page load
-        window.addEventListener('load', function() {
-        var stopRecordingButtonHidden = sessionStorage.getItem('stopRecordingButtonHidden');
-        if (stopRecordingButtonHidden === 'true') {
-            var stopRecordingButtonDiv = document.getElementById('stopRecordingButtonDiv');
-            if (stopRecordingButtonDiv) {
-                stopRecordingButtonDiv.style.display = 'none';
-            }
-        }
-    });
     </script>
     </main>
     <!-- footer s -->
