@@ -44,7 +44,6 @@
                 // Add a placeholder text
                 var textNode = document.createTextNode(placeholderText);
                 imageContainer.appendChild(textNode);
-                error_log('Line 50, placeholder function');
             }
         }
     </script>
@@ -301,7 +300,7 @@
                 }
             } else { 
                 // The "regattastart9_stopped signal is not present
-                error_log("Line 304: The regattastart9_stopped signal (from stoip_recording.php) is not yet set");
+                error_log("Line 304: The regattastart9_stopped signal (from stop_recording.php) is not yet set");
             }
         ?>
     </div>
