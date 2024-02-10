@@ -25,7 +25,7 @@ from picamera import PiCamera, Color
 # parameter data
 signal_dur = 0.3 # 0.3 sec
 log_path = '/usr/lib/cgi-bin/'
-mp4_path = '/var/www/html/images/'
+video_path = '/var/www/html/images/'
 photo_path = '/var/www/html/images/'
 ON = True
 OFF = False
@@ -96,10 +96,10 @@ def capture_picture(camera, photo_path, file_name):
     camera.capture(os.path.join(photo_path, file_name), use_video_port=True)
     logger.info ("     Capture picture = %s ", file_name)
 
-def start_video_recording(camera, mp4_path, file_name):
+def start_video_recording(camera, video_path, file_name):
     if camera.recording:
         camera.stop_recording()
-    camera.start_recording(os.path.join(mp4_path, file_name))
+    camera.start_recording(os.path.join(video_path, file_name))
     logger.info (" Started recording of %s ", file_name)
 
 def stop_video_recording(camera):
@@ -112,8 +112,8 @@ def annotate_video_duration(camera, start_time_sec):
     elapsed_time = seconds_since_midnight - start_time_sec #elapsed since last star until now)
     camera.annotate_text = f"{dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Seconds since last start: {elapsed_time}"
 
-def convert_video_to_mp4(mp4_path, source_file, destination_file):
-    convert_video_str = "MP4Box -add {} -new {}".format(os.path.join(mp4_path,source_file), os.path.join(mp4_path,destination_file))
+def convert_video_to_mp4(video_path, source_file, destination_file):
+    convert_video_str = "MP4Box -add {} -new {}".format(os.path.join(video_path,source_file), os.path.join(video_path,destination_file))
     subprocess.run(convert_video_str, shell=True)
     logger.info (" Video recording %s converted ", destination_file)
 
@@ -203,9 +203,9 @@ listening = True
 
 def listen_for_messages(timeout=0.1):
     global listening  # Use global flag
-    logger.info(" Line 207 Example: listen for messages from PHP script via a named pipe")
+    logger.info(" Line 206: Listen for messages from PHP script via a named pipe")
     pipe_path = '/var/www/html/tmp/stop_recording_pipe'
-    logger.info(f"Line 209, pipepath {pipe_path}")
+    logger.info(f"Line 209:, pipepath {pipe_path}")
 
     try:
         os.unlink(pipe_path)  # Remove existing pipe
@@ -232,9 +232,9 @@ def listen_for_messages(timeout=0.1):
                 # Handle timeout (no input received within timeout period)
                 # You can perform any necessary actions here
 
-def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec):
+def finish_recording(video_path, num_starts, video_end, start_time, start_time_sec):
     # Open a video capture object (replace 'your_video_file.mp4' with the actual video file or use 0 for webcam)
-    #cap = cv2.VideoCapture(os.path.join(mp4_path, "finish21-6.mp4"))
+    #cap = cv2.VideoCapture(os.path.join(video_path, "finish21-6.mp4"))
     cap = open_camera()
 
     # Load the pre-trained object detection model -- YOLO (You Only Look Once)
@@ -253,8 +253,9 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
     frame_size = (width, height)
     # setup cv2 writer 
-    fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # H.264 codec with MP4 container
-    video_writer = cv2.VideoWriter(mp4_path + 'video1' + '.mp4', fourcc, fpsw, frame_size)
+    #fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # H.264 codec with MP4 container
+    fourcc = cv2.VideoWriter_fourcc(*'x264')  # H.264 codec with MP4 container
+    video_writer = cv2.VideoWriter(video_path + 'video1' + '.h2644', fourcc, fpsw, frame_size)
 
     number_of_non_detected_frames = 30
     number_of_detected_frames = 3 # Set the number of frames to record after detecting a boat
@@ -378,7 +379,7 @@ def main():
 
                     if num_starts == 1 or num_starts == 2:
                         # Start video recording just before 5 minutes before the first start
-                        start_video_recording(camera, mp4_path, "video0.h264")
+                        start_video_recording(camera, video_path, "video0.h264")
                         logger.info("Inner loop, entering the start sequence block.")
                         start_sequence(camera, signal, start_time_sec, num_starts, photo_path)
                         if num_starts == 2:
@@ -392,7 +393,7 @@ def main():
                             annotate_video_duration(camera, start_time_sec)
                             camera.wait_recording(0)
                         stop_video_recording(camera)
-                        convert_video_to_mp4(mp4_path, "video0.h264", "video0.mp4")
+                        convert_video_to_mp4(video_path, "video0.h264", "video0.mp4")
                     # Exit the loop after the if condition is met
                     break
 
@@ -409,7 +410,8 @@ def main():
         listen_thread = threading.Thread(target=listen_for_messages)
         listen_thread.start()
         logger.info("Line 412, Finally section, before 'Finish recording'. start_time=%s video_end%s", start_time, video_end)
-        finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec)
+        finish_recording(video_path, num_starts, video_end, start_time, start_time_sec)
+        convert_video_to_mp4(video_path, "video1.h264", "video1.mp4")
         logger.info("Line 414, Finished with finish_recording")
         if camera is not None:
             camera.close()  # Release the camera resources
