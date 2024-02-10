@@ -115,15 +115,15 @@ def annotate_video_duration(camera, start_time_sec):
 def convert_video_to_mp4(video_path, source_file, destination_file):
     convert_video_str = "MP4Box -add {} -new {}".format(os.path.join(video_path,source_file), os.path.join(video_path,destination_file))
     subprocess.run(convert_video_str, shell=True)
-    logger.info (" Video recording %s converted ", destination_file)
+    logger.info ("Line 118: Video recording %s converted ", destination_file)
 
 def start_sequence(camera, signal, start_time_sec, num_starts, photo_path):
     for i in range(num_starts):
-        logger.info(f" Start_sequence. Start of iteration {i}")
+        logger.info(f"  Line 122: Start_sequence. Start of iteration {i}")
         # Adjust the start_time_sec for the second iteration
         if i == 1:
             start_time_sec += 5 * 60  # Add 5 minutes for the second iteration
-            logger.info(f"  Start_sequence, Next start_time_sec: {start_time_sec}")
+            logger.info(f"  Line 126Start_sequence, Next start_time_sec: {start_time_sec}")
 
         # Define time intervals for each iteration
         time_intervals = [
@@ -153,7 +153,7 @@ def start_sequence(camera, signal, start_time_sec, num_starts, photo_path):
                     capture_picture(camera, photo_path, picture_name)
                     logger.info(f"     Start_sequence, log_message: {log_message}")
                     logger.info(f"     Start_sequence, seconds_since_midnight: {seconds_since_midnight}, start_time_sec: {start_time_sec}")
-        logger.info(f" Start_sequence, End of iteration: {i}")
+        logger.info(f" Line 156: Start_sequence, End of iteration: {i}")
 
 def open_camera():
     """
@@ -187,16 +187,6 @@ def stop_recording():
     global recording_stopped
     recording_stopped = True
     listening = False  # Set flag to False to terminate the loop in listen_for_messages
-
-def get_php_temp_dir():
-    php_command = "php -r 'echo sys_get_temp_dir();'"
-    result = subprocess.run(php_command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-    logging.info("Line 192, get_php_temp", result)
-    if result.returncode == 0:
-        return result.stdout.strip()
-    else:
-        logger.info("Line 195 php error")
-        return None
 
 # Flag to control the loop in listen_for_messages
 listening = True
