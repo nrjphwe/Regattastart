@@ -79,7 +79,7 @@
         }
         if (array_key_exists('video_end', $_SESSION['form_data'])) {
             $video_end = $_SESSION['form_data']['video_end'];
-            echo " Video end duration: " . $video_end;
+            echo ", Video end duration:  . $video_end minutes after start ";
         }
         if (array_key_exists('num_starts', $_SESSION['form_data'])) {
             $num_starts = $_SESSION['form_data']['num_starts'];
@@ -234,7 +234,7 @@
         <?php
             $video_name = 'images/video0.mp4';
             if (file_exists($video_name)) {
-                error_log('Line 237: video 0 is available');
+                error_log("Line 237: $video_name is available");
                 echo "<h4> Video 5 min före start och 2 min efter, eller vid 2 starter, till 2 min efter andra start </h4>";
                 echo '<video id="video0" width = "720" height="480" controls><source src= ' . $video_name . ' type="video/mp4"></video><p>';
             } else {
@@ -278,7 +278,7 @@
                     error_log("Line 282: for loop video = $video_name");
                     if (file_exists($video_name)) 
                     {
-                        error_log("Line 279: video $video_name exists");
+                        error_log("Line 281: video $video_name exists");
                         // Display the video
                         echo "<h3> Finish video, this is video $x for the finish</h3>";
                         echo '<video id="video' . $x . '" width="720" height="480" controls>
