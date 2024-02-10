@@ -257,7 +257,7 @@
                         </form>
                     </div>';
                 } else {
-                    // If video1.mp4 exists or video0.mp4 does not exist, do not show the button
+                    // If video0.mp4 do not exist, do not show the button
                     error_log('Line 259: video 0 do not exist');
                 }
             } else {
@@ -273,7 +273,7 @@
                 // Check if the stop-recording signal is present
                 error_log("Line 268: Variable regattastart9_stopped = $regattastart9_stopped");
                 $stopRecordingSignal = '/var/www/html/tmp/stop_recording_pipe'; // Update with the actual path
-                sleep(1);
+                sleep(5);
                 if (file_exists($stopRecordingSignal)) {
                     // The "stop_recording" signal is present, indicating that the video recording is completed
                     error_log("Line 275: The stop_recording signal is present");
