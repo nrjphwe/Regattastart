@@ -256,7 +256,7 @@
                     </div>';
                 } else {
                     // If video0.mp4 exist but not video1.mp4, do not show the button
-                    error_log("Line 266: both video0 and video1 exist, do not show button");
+                    error_log("Line 259: video0 do not exist");
                 }
             } else {
                 // Log an error if $num_video is not equal to 1
