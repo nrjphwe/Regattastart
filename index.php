@@ -5,7 +5,6 @@
     // after "git pull", "sudo cp /home/pi/Regattastart/index.php /var/www/html/"
     ini_set('display_errors', 1); 
     error_reporting(E_ALL);
-    $regattastart9_stopped = 0
 ?>
 <?php
     if ($_SERVER["REQUEST_METHOD"] === "POST") {
@@ -79,7 +78,7 @@
         }
         if (array_key_exists('video_end', $_SESSION['form_data'])) {
             $video_end = $_SESSION['form_data']['video_end'];
-            echo ", Video end duration :  $video_end minutes after start, ";
+            echo ", Video end duration :  $video_end + 2 minutes after start, ";
         }
         if (array_key_exists('num_starts', $_SESSION['form_data'])) {
             $num_starts = $_SESSION['form_data']['num_starts'];
