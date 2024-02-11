@@ -28,5 +28,4 @@ if (fclose($pipeHandle) === false) {
     // Log success message
     error_log('Line 29: succesfully closed the pipe:');
 }
-$regattastart9_stopped = True 
 ?>
