@@ -101,7 +101,7 @@
     }
     else {
         // 'form_data' array not set or not an array
-        echo "Line 108: No form data found in the session.";
+        echo "Line 104: No form data found in the session.";
     }
 ?>
 <header>
@@ -123,12 +123,15 @@
 </header>
 <!-- Here is our page's main content -->
 <main>
+    <!-- Link to index6 -->
     <div style="text-align: center;">
         <h4><a href="/index6.php" title="Regattastart6 "> Two starts -- Regattastart6 </a></h4>
     </div>
+    <!-- Link to index9 -->
     <div style="text-align: center;">
         <h4><a href="/index9.php" title="Setup page Regattastart9">  Regattastart9 -- with image detection </a></h4>
     </div> 
+    <!-- Bilder tagna vid varje signal innan 1a start  -->
     <div style="text-align: center;" class="w3-panel w3-pale-blue">
         <h3> Bilder tagna vid varje signal innan 1a start </h3>
     </div>
@@ -191,7 +194,7 @@
                 echo "<h3> Varningssignal 5 minuter innan 2a start</h3>";
                 echo "<img id='$filename' src='$imagePath' alt='2a_start 5 min picture' width='720' height=480'>";
             } else {
-                error_log('Line 198: picture 5 min 2nd start do not exists');
+                error_log('Line 194: picture 5 min 2nd start do not exists');
             }
             // Check and display the second image
             $filename = '2a_start_4_min.jpg';
@@ -201,7 +204,7 @@
                 echo "<h3> Signal 4 minuter innan 2a start </h3>";
                 echo "<img id='$filename' src='$imagePath' alt='2a_start 4 min picture' width='720' height='480'>";
             } else {
-                error_log('Line 208: picture 4 min 2nd start do not exists');
+                error_log('Line 204: picture 4 min 2nd start do not exists');
             }
             // Check and display the third image
             $filename = '2a_start_1_min.jpg';
@@ -211,7 +214,7 @@
                 echo "<h3> Signal 1 minuter innan 2a start </h3>";
                 echo "<img id='$filename' src='$imagePath' alt='2a_start 1 min picture' width='720' height='480'>";
             } else {
-                error_log('Line 218: picture 1 min 2nd start do not exists');
+                error_log('Line 214: picture 1 min 2nd start do not exists');
             }
             // Check and display the start image
             $filename = '2a_start_Start.jpg';
@@ -221,7 +224,7 @@
                 echo "<h3> Foto vid 2a start </h3>";
                 echo "<img id='$filename' src='$imagePath' alt='2a start picture' width='720' height='480'>";
             } else {
-                error_log('Line 228: picture start 2nd start do not exists');
+                error_log('Line 224: picture start 2nd start do not exists');
             }
         ?>
     </div>
@@ -230,11 +233,11 @@
         <?php
             $video_name = 'images/video0.mp4';
             if (file_exists($video_name)) {
-                error_log("Line 237: $video_name is available");
+                error_log("Line 233: $video_name is available");
                 echo "<h4> Video 5 min före start och 2 min efter, eller vid 2 starter, till 2 min efter andra start </h4>";
                 echo '<video id="video0" width = "720" height="480" controls><source src= ' . $video_name . ' type="video/mp4"></video><p>';
             } else {
-                error_log("Line 241: $video_name do not exists");
+                error_log("Line 237: $video_name do not exists");
             }
         ?>
     </div>
@@ -247,7 +250,7 @@
                 $video_name1 = 'images/video1.mp4';
                 if (file_exists($video_name0) && !(file_exists($video_name1)))
                 {
-                    error_log('Line 254: A check for video0 was amde to show stop button');
+                    error_log("Line 250: A check for video0 was made to show stop button");
                     echo "<h4> Efter sista båt i mål, kan man stoppa och generera video för målgång </h4>";
                     echo '<div id="stopRecordingButtonDiv">
                         <form id="stopRecordingForm" action="' . htmlspecialchars($_SERVER["PHP_SELF"]) . '" method="post">
@@ -260,7 +263,7 @@
                 }
             } else {
                 // Log an error if $num_video is not equal to 1
-                error_log("Line 267: $num_video is not 1");
+                error_log("Line 263: $num_video is not 1");
             }
         ?>
     <!-- remaining videos -->
@@ -271,10 +274,10 @@
             {
                 for ($x = 1; $x <= $num_video; $x++) {
                     $video_name = 'images/video' . $x . '.mp4';
-                    error_log("Line 282: for loop video = $video_name");
+                    error_log("Line 274: for loop video = $video_name");
                     if (file_exists($video_name)) 
                     {
-                        error_log("Line 281: video $video_name exists");
+                        error_log("Line 277: video $video_name exists");
                         // Display the video
                         echo "<h3> Finish video, this is video $x for the finish</h3>";
                         echo '<video id="video' . $x . '" width="720" height="480" controls>
@@ -285,7 +288,7 @@
                             </div>';
                     } else {
                         // Log an error if the video file doesn't exist
-                        error_log("Line 291: video $x does not exist");
+                        error_log("Line 288: video $x does not exist");
                     }
                 }
             }
@@ -310,7 +313,7 @@
         if (file_exists($filename)) {
             echo "This web-page was last modified: \n" . date ("Y-m-d H:i:s.", filemtime($filename));
         } else {
-            error_log("Line 344: $filename do not exists");
+            error_log("Line 313: $filename do not exists");
         }
         ?>
     </div>
