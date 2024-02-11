@@ -7,9 +7,6 @@
     echo "Session";
     print_r($_SESSION);
     echo "<br/>";
-    echo "post";
-    print_r($_POST);
-    echo "post <br/>";
     ini_set('display_errors', 1);
     error_reporting(E_ALL);
 ?>
@@ -49,6 +46,44 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
 
 </style>
 </head>
+<!-- Text on top of page retrieved from index6 or index9 -->
+<?php
+    if (isset($_SESSION['form_data']) && is_array($_SESSION['form_data'])) {
+
+        if (array_key_exists('start_time', $_SESSION['form_data'])) {
+            // Retrieve the value of the 'start_time' key
+            $start_time = $_SESSION['form_data']['start_time'];
+            echo "First start time: " . $start_time;
+        }
+        if (array_key_exists('video_end', $_SESSION['form_data'])) {
+            $video_end = $_SESSION['form_data']['video_end'];
+            echo ", Video end duration :  $video_end minutes after start, ";
+        }
+        if (array_key_exists('num_starts', $_SESSION['form_data'])) {
+            $num_starts = $_SESSION['form_data']['num_starts'];
+            echo " Number of starts: $num_starts";
+        }
+        if (array_key_exists('video_dur', $_SESSION['form_data'])) {
+            $video_dur = $_SESSION['form_data']['video_dur'];
+            echo " Video duration: $video_dur";
+        }
+        if (array_key_exists('video_delay', $_SESSION['form_data'])) {
+            $video_delay = $_SESSION['form_data']['video_delay'];
+            echo " Video delay after start: " . $video_delay;
+        }
+        if (array_key_exists('num_video', $_SESSION['form_data'])) {
+            $num_video = $_SESSION['form_data']['num_video'];
+            echo " Number of videos during finish: " . $num_video;
+        } else {
+            $num_video = 1;
+        }
+    }
+    else {
+        // 'form_data' array not set or not an array
+        echo "Line 108: No form data found in the session.";
+    }
+?>
+
 <div class="w3-container w3-blue">
     <h2>Regattastart with boat-image detection </h2>
 </div>
