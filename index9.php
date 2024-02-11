@@ -2,11 +2,6 @@
     define('APP_VERSION', '24.02.09'); // You can replace '1.0.0' with your desired version number
     session_id("regattastart");
     session_start();
-    //echo "Session id = " . Session_id() . " ";
-    // ini_set('session.gc_maxlifetime', 86400); is set in /etc/php/7.3/apache2/php.ini
-    echo "Session";
-    print_r($_SESSION);
-    echo "<br/>";
     ini_set('display_errors', 1);
     error_reporting(E_ALL);
 ?>
@@ -57,7 +52,7 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
         }
         if (array_key_exists('video_end', $_SESSION['form_data'])) {
             $video_end = $_SESSION['form_data']['video_end'];
-            echo ", Video end duration :  $video_end minutes after start, ";
+            echo ", Video end duration :  $video_end + 2 minutes after start, ";
         }
         if (array_key_exists('num_starts', $_SESSION['form_data'])) {
             $num_starts = $_SESSION['form_data']['num_starts'];
