@@ -250,7 +250,7 @@
                 $video_name1 = 'images/video1.mp4';
                 if (file_exists($video_name0) && !(file_exists($video_name1)))
                 {
-                    error_log("Line 250: A check for video0 was made to show stop button");
+                    error_log("Line 250: Video && !video1 to show stop button");
                     echo "<h4> Efter sista båt i mål, kan man stoppa och generera video för målgång </h4>";
                     echo '<div id="stopRecordingButtonDiv">
                         <form id="stopRecordingForm" action="' . htmlspecialchars($_SERVER["PHP_SELF"]) . '" method="post">
@@ -259,7 +259,7 @@
                     </div>';
                 } else {
                     // If video0.mp4 exist but not video1.mp4, do not show the button
-                    error_log("Line 259: video0 do not exist");
+                    error_log("Line 259: video0.mp4 and video1.mp4 exists");
                 }
             } else {
                 // Log an error if $num_video is not equal to 1
