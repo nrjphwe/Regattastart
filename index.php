@@ -273,13 +273,13 @@
             $video_name = 'images/video1.mp4';
             if (file_exists($video_name)) 
             {
-                error_log("Line 276: if file exists video1 $video_name");
+                error_log("Line 276: Now file $video_name exists");
                 for ($x = 1; $x <= $num_video; $x++) {
                     $video_name = 'images/video' . $x . '.mp4';
                     error_log("Line 279: for loop video = $video_name");
                     if (file_exists($video_name)) 
                     {
-                        error_log("Line 282: video $video_name exists");
+                        error_log("Line 282: Now video $video_name do exists");
                         // Display the video
                         echo "<h3> Finish video, this is video $x for the finish</h3>";
                         echo '<video id="video' . $x . '" width="720" height="480" controls>
