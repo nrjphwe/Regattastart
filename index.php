@@ -293,6 +293,8 @@
                         error_log("Line 288: video $x does not exist");
                     }
                 }
+            } else {
+                error_log("Line 297: video1 $video_name do not exist");
             }
         ?>
     </div>
