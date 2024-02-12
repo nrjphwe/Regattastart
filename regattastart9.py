@@ -115,10 +115,10 @@ def annotate_video_duration(camera, start_time_sec):
 
 def convert_video_to_mp4(video_path, source_file, destination_file):
     #convert_video_str = "MP4Box -add {} -new {}".format(os.path.join(video_path,source_file), os.path.join(video_path,destination_file))
-    convert_video_str = "MP4Box -add {} -fps 30 -new {}".format(
+    convert_video_str = "MP4Box -add {} -fps 10 -new {}".format(
         os.path.join(video_path, source_file),
         os.path.join(video_path, destination_file)
-    )   
+    )
     subprocess.run(convert_video_str, shell=True)
     logger.info ("Line 118: Video recording %s converted ", destination_file)
 
