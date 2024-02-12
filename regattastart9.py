@@ -1,4 +1,5 @@
 #!/usr/bin/python3 -u
+# after git pull, do: sudo cp regattastart9.py /usr/lib/cgi-bin/
 import os
 import errno
 import select
@@ -114,7 +115,10 @@ def annotate_video_duration(camera, start_time_sec):
 
 def convert_video_to_mp4(video_path, source_file, destination_file):
     #convert_video_str = "MP4Box -add {} -new {}".format(os.path.join(video_path,source_file), os.path.join(video_path,destination_file))
-    convert_video_str = "MP4Box -add {} -new {}".format(os.path.join(video_path,source_file), enc:c=mp4:b=30, os.path.join(video_path,destination_file))
+    convert_video_str = "MP4Box -add {} -fps 30 -new {}".format(
+        os.path.join(video_path, source_file),
+        os.path.join(video_path, destination_file)
+    )   
     subprocess.run(convert_video_str, shell=True)
     logger.info ("Line 118: Video recording %s converted ", destination_file)
 
@@ -322,7 +326,7 @@ def finish_recording(video_path, num_starts, video_end, start_time, start_time_s
 
     cap.release()  # Don't forget to release the camera resources when done
     video_writer.release()  # Release the video writer
-    logger.info("Line 331, Exited finish_recording module.")
+    logger.info("Line 326, Exited finish_recording module.")
 
 def main():
     logger = setup_logging()  # Initialize the logger
