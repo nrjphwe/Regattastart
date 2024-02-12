@@ -270,11 +270,13 @@
     <div style="text-align: center;" class="w3-panel w3-pale-red">
         <?php
             $video_name = 'images/video1.mp4';
+            
             if (file_exists($video_name)) 
             {
+                error_log("Line 276: if file exists video1 $video_name");
                 for ($x = 1; $x <= $num_video; $x++) {
                     $video_name = 'images/video' . $x . '.mp4';
-                    error_log("Line 274: for loop video = $video_name");
+                    error_log("Line 279: for loop video = $video_name");
                     if (file_exists($video_name)) 
                     {
                         error_log("Line 277: video $video_name exists");
