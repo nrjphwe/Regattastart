@@ -113,7 +113,8 @@ def annotate_video_duration(camera, start_time_sec):
     camera.annotate_text = f"{dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Seconds since last start: {elapsed_time}"
 
 def convert_video_to_mp4(video_path, source_file, destination_file):
-    convert_video_str = "MP4Box -add {} -new {}".format(os.path.join(video_path,source_file), os.path.join(video_path,destination_file))
+    #convert_video_str = "MP4Box -add {} -new {}".format(os.path.join(video_path,source_file), os.path.join(video_path,destination_file))
+    convert_video_str = "MP4Box -add {} -new {}".format(os.path.join(video_path,source_file), enc:c=mp4:b=30, os.path.join(video_path,destination_file))
     subprocess.run(convert_video_str, shell=True)
     logger.info ("Line 118: Video recording %s converted ", destination_file)
 
@@ -175,6 +176,8 @@ def cv_annotate_video(frame, start_time_sec):
     elapsed_time = seconds_since_midnight - start_time_sec #elapsed since last start until now)
     label = str(dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) +  " Seconds since last start: " +  str(elapsed_time)
     org = (30,60)
+    font = cv2.FONT_HERSHEY_SIMPLEX
+    font = ImageFont.truetype("PAPYRUS.ttf", 80) 
     fontFace=cv2.FONT_HERSHEY_DUPLEX
     fontScale = 0.6
     color=(0,0,255) #(B, G, R)
