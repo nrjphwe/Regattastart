@@ -263,14 +263,14 @@
                 }
             } else {
                 // Log an error if $num_video is not equal to 1
-                error_log("Line 263: $num_video is not 1");
+                error_log("Line 266: $num_video is not 1");
             }
         ?>
+    </div>
     <!-- remaining videos -->
     <div style="text-align: center;" class="w3-panel w3-pale-red">
         <?php
             $video_name = 'images/video1.mp4';
-            
             if (file_exists($video_name)) 
             {
                 error_log("Line 276: if file exists video1 $video_name");
@@ -279,7 +279,7 @@
                     error_log("Line 279: for loop video = $video_name");
                     if (file_exists($video_name)) 
                     {
-                        error_log("Line 277: video $video_name exists");
+                        error_log("Line 282: video $video_name exists");
                         // Display the video
                         echo "<h3> Finish video, this is video $x for the finish</h3>";
                         echo '<video id="video' . $x . '" width="720" height="480" controls>
