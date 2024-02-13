@@ -47,6 +47,7 @@ fps = 24  # frames per second
 width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH) + 0.5)
 height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT) + 0.5)
 frame_size = (width, height)
+print("Line 50")
     
 while True:
 
