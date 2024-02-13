@@ -48,6 +48,7 @@ width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH) + 0.5)
 height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT) + 0.5)
 frame_size = (width, height)
 
+
 # Initialize PiCamera outside the loop
 with picamera.PiCamera() as camera:
     camera.resolution = (640, 480)
@@ -109,6 +110,17 @@ with picamera.PiCamera() as camera:
                         pt2 = (int(x + w), int(y + h))
                         # Modify the original frame
                         cv2.rectangle(frame, pt1, pt2, (0, 255, 0), 2, cv2.LINE_AA)
+
+                        label = "text"
+                        org = (30,60)
+                        #font = cv2.FONT_HERSHEY_SIMPLEX
+                        #font = ImageFont.truetype("PAPYRUS.ttf", 80) 
+                        fontFace=cv2.FONT_HERSHEY_DUPLEX
+                        fontScale = 0.7
+                        color=(0,0,255) #(B, G, R)
+                        thickness = 1
+                        lineType = cv2.LINE_AA
+                        cv2.putText(frame,label,org,fontFace,fontScale,color,thickness,lineType)
 
                         # Trigger video recording
                         if not recording:
