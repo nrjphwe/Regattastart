@@ -123,7 +123,7 @@ def convert_video_to_mp4(video_path, source_file, destination_file):
     logger.info ("Line 118: Video recording %s converted ", destination_file)
 
 def re_encode_video(video_path, source_file, destination_file):
-    re_encode_video_str = "ffmpeg -i -vcodec libx264 -f mp4 {}".format(
+    re_encode_video_str = "ffmpeg -i {} -vf fps=10 -vcodec libx264 -f mp4 {}".format(
         os.path.join(video_path, source_file),
         os.path.join(video_path, destination_file)
     )
@@ -417,8 +417,8 @@ def main():
         listen_thread.start()
         logger.info("Line 412, Finally section, before 'Finish recording'. start_time=%s video_end%s", start_time, video_end)
         finish_recording(video_path, num_starts, video_end, start_time, start_time_sec)
-        convert_video_to_mp4(video_path, "video1.avi", "video1x.mp4")
-        re_encode_video(video_path, "video1x.mp4", "video1.mp4")
+        #convert_video_to_mp4(video_path, "video1.avi", "video1x.mp4")
+        re_encode_video(video_path, "video1.avi", "video1.mp4")
         logger.info("Line 415, Finished with finish_recording and recording converted to mp4")
         if camera is not None:
             camera.close()  # Release the camera resources
