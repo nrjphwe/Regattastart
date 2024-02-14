@@ -308,6 +308,16 @@ def finish_recording(video_path, num_starts, video_end, start_time, start_time_s
                     pt1 = (int(x), int(y))
                     pt2 = (int(x + w), int(y + h))
                     cv2.rectangle(frame, pt1, pt2, (0, 255, 0), 2, cv2.LINE_AA)
+                    # time in rectangle
+                    fontFace=cv2.FONT_HERSHEY_PLAIN
+                    detect_time= time.strftime("%H:%M:%S")
+                    posx = int(x) + 5
+                    posy = int(y +h) - 5 
+                    org = (posx,posy)
+                    fontScale = 0.7
+                    color=(0,0,255) #(B, G, R)
+                    cv2.putText(frame,detect_time,org,fontFace,fontScale,color,1,cv2.LINE_AA)
+
                     for i in range(number_of_detected_frames):
                         logger.info("Line 306: boat detected.")
                         cv_annotate_video(frame, start_time_sec)
