@@ -66,7 +66,7 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
     <h2>Regattastart for 1 or 2 starts </h2>
 </div>
 <header>
-<div> style="text-align: center;"
+<div style="text-align: center;">
     <?php 
         echo "     Version: " . APP_VERSION . "<p></p>"; 
     ?>
