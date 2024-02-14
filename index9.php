@@ -6,37 +6,37 @@
     error_reporting(E_ALL);
 ?>
 <?php
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Process and store the form data
-    $_SESSION["form_data"] = $_POST;
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        // Process and store the form data
+        $_SESSION["form_data"] = $_POST;
 
-    // Execute the Python script
-    $command = 'python3 /usr/lib/cgi-bin/regattastart9.py ' . escapeshellarg(json_encode($_POST)) . ' > /var/www/html/output.txt 2>&1 &';
-    shell_exec($command);
+        // Execute the Python script
+        $command = 'python3 /usr/lib/cgi-bin/regattastart9.py ' . escapeshellarg(json_encode($_POST)) . ' > /var/www/html/output.txt 2>&1 &';
+        shell_exec($command);
 
-    echo date('h:i:s') . "<br>";
-    echo "execution started";
-    sleep(3);
+        echo date('h:i:s') . "<br>";
+        echo "execution started";
+        sleep(3);
 
-    //exec('python3 /usr/lib/cgi-bin/regattastart9.py ' . escapeshellarg(json_encode($_POST)));
-    // Redirect to index.php
-    header("Location: index.php");
-    exit;
-}
+        //exec('python3 /usr/lib/cgi-bin/regattastart9.py ' . escapeshellarg(json_encode($_POST)));
+        // Redirect to index.php
+        header("Location: index.php");
+        exit;
+    }
 
-$day = date("l");
-$start_time = "18:25"; // You need to initialize $start_time
-$video_end = isset($_SESSION["form_data"]["video_end"]) ? $_SESSION["form_data"]["video_end"] : "";
-$num_video = isset($_SESSION["form_data"]["num_video"]) ? $_SESSION["form_data"]["num_video"] : "";
-$num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data"]["num_starts"] : "";
+    $day = date("l");
+    $start_time = "18:25"; // You need to initialize $start_time
+    $video_end = isset($_SESSION["form_data"]["video_end"]) ? $_SESSION["form_data"]["video_end"] : "";
+    $num_video = isset($_SESSION["form_data"]["num_video"]) ? $_SESSION["form_data"]["num_video"] : "";
+    $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data"]["num_starts"] : "";
 
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title> Regattastart 2024 image detection </title>   
+    <title> Regattastart 2024 image detection </title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="/w3.css"
     <!-- set styles -->
@@ -112,6 +112,7 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
 <div style="text-align: center;">
     <form action="index9.php" method="POST">
         <!-- Your form fields -->
+        <div style="text-align: center;">
         <div class="w3-container w3-pale-yellow w3-cell">
             <fieldset>
                 <legend>Day and time setup: </legend>
@@ -149,6 +150,7 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
                 (First start in case of 2 starts)
                 <br>
             </fieldset>
+        </div>
         </div>
         <div class="w3-container w3-pale-yellow w3-cell">
             <fieldset>
