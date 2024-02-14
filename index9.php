@@ -81,7 +81,7 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
 ?>
 </div>
 <div class="w3-container w3-blue">
-    <h2>Regattastart with boat-image detection </h2>
+    <h2>Regattastart with image detection </h2>
 </div>
 <p></p>
 <header>
@@ -90,93 +90,93 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
 ?>
 <!-- HTML form -->
 <body>
-<div align="center">
-<form action="index9.php" method="POST">
-    <!-- Your form fields -->
-    <div class="w3-container w3-pale-yellow w3-cell">
-        <fieldset>
-            <legend>Day and time setup: </legend>
-            <?php $day = date("l") ?>
-            <br>
-            Day for race <select name = "day" id="day">
-                <option <?php if(isset($day) && $day == "Monday"){echo "selected=\"selected\"";} ?> value="Monday">Monday</option>
-                <option <?php if(isset($day) && $day == "Tuesday"){echo "selected=\"selected\"";} ?> value="Tuesday">Tuesday</option>
-                <option <?php if(isset($day) && $day == "Wednesday"){echo "selected=\"selected\"";} ?> value="Wednesday">Wednesday</option>
-                <option <?php if(isset($day) && $day == "Thursday"){echo "selected=\"selected\"";} ?> value="Thursday">Thursday</option>
-                <option <?php if(isset($day) && $day == "Friday"){echo "selected=\"selected\"";} ?> value="Friday">Friday</option>
-                <option <?php if(isset($day) && $day == "Saturday"){echo "selected=\"selected\"";} ?> value="Saturday">Saturday</option>
-                <option <?php if(isset($day) && $day == "Sunday"){echo "selected=\"selected\"";} ?> value="Sunday">Sunday</option>
-            </select>
-            <p></p>
-            <div data-tap-disabled="true">
-            <?php
-                $start_time = isset($_SESSION["form_data"]["start_time"]) ? $_SESSION["form_data"]["start_time"] : "";
-                $steps = 5; // Set to 10, for test set to 5, You can adjust the value of $steps according to your needs
-                $loops = 24 * (60 / $steps); // Define $loops here or wherever it makes sense in your code
-                $current = 0; // Initialize $current
-            ?>
-            Start Time: <select name="start_time" id="start_time">
-                <?php
-                for ($i = 0; $i < $loops; $i++) {
-                    $start_time_option = sprintf('%02d:%02d', $i / (60 / $steps), $current % 60);
-                    $selected = ($start_time == $start_time_option) ? "selected" : ""; // Check if this option should be selected
-                    echo '<option value="' . $start_time_option . '" ' . $selected . '>' . $start_time_option . '</option>';
-                    $current += $steps;
-                }
-                ?>
-            </select>
-            <br>
-            <p style="font-size:11px">
-            (First start in case of 2 starts)
-            <br>
-        </fieldset>
-    </div>
-    <div class="w3-container w3-pale-yellow w3-cell">
-        <fieldset>
-            <legend>Video Setup: </legend>
-            <p></p>
-            End for finish video, duration from last start: 
-            <select name = "video_end" id = "video_end">
-                <option value="10"  <?php if(isset($video_end) && $video_end == "5"){echo "selected=\"selected\"";} ?> value="10">10</option> 
-                <option value="20"  <?php if(isset($video_end) && $video_end == "20"){echo "selected=\"selected\"";} ?> value="20">20</option> 
-                <option value="60" <?php if(isset($video_end) && $video_end == "60"){echo "selected=\"selected\"";} ?> value="60">60</option>
-                <option value="90" <?php if(isset($video_end) && $video_end == "90"){echo "selected=\"selected\"";}?> value="90">90</option>
-                <option value="120" <?php if(isset($video_end) && $video_end == "120"){echo "selected=\"selected\"";} ?> value="120">120</option>
-            </select>
-            <p></p>
-        </fieldset>
-        <p></p>
-    </div>
-    <br>
-    <div class="w3-row-padding" align="center">
-        <div class="w3-container w3-light-grey w3-cell">
+<div style="text-align: center;">
+    <form action="index9.php" method="POST">
+        <!-- Your form fields -->
+        <div class="w3-container w3-pale-yellow w3-cell">
             <fieldset>
-                <legend> Setup of 1 or 2 starts </legend>
-                <p></p>
-                Number of starts: <select name="num_starts" id="num_starts">
-                    <option <?php if(isset($num_starts) && $num_starts == "1"){echo "selected=\"selected\"";} ?> value="1">1</option>
-                    <option <?php if(isset($num_starts) && $num_starts == "2"){echo "selected=\"selected\"";} ?> value="2">2</option>
+                <legend>Day and time setup: </legend>
+                <?php $day = date("l") ?>
+                <br>
+                Day for race <select name = "day" id="day">
+                    <option <?php if(isset($day) && $day == "Monday"){echo "selected=\"selected\"";} ?> value="Monday">Monday</option>
+                    <option <?php if(isset($day) && $day == "Tuesday"){echo "selected=\"selected\"";} ?> value="Tuesday">Tuesday</option>
+                    <option <?php if(isset($day) && $day == "Wednesday"){echo "selected=\"selected\"";} ?> value="Wednesday">Wednesday</option>
+                    <option <?php if(isset($day) && $day == "Thursday"){echo "selected=\"selected\"";} ?> value="Thursday">Thursday</option>
+                    <option <?php if(isset($day) && $day == "Friday"){echo "selected=\"selected\"";} ?> value="Friday">Friday</option>
+                    <option <?php if(isset($day) && $day == "Saturday"){echo "selected=\"selected\"";} ?> value="Saturday">Saturday</option>
+                    <option <?php if(isset($day) && $day == "Sunday"){echo "selected=\"selected\"";} ?> value="Sunday">Sunday</option>
                 </select>
+                <p></p>
+                <div data-tap-disabled="true">
+                <?php
+                    $start_time = isset($_SESSION["form_data"]["start_time"]) ? $_SESSION["form_data"]["start_time"] : "";
+                    $steps = 5; // Set to 10, for test set to 5, You can adjust the value of $steps according to your needs
+                    $loops = 24 * (60 / $steps); // Define $loops here or wherever it makes sense in your code
+                    $current = 0; // Initialize $current
+                ?>
+                Start Time: <select name="start_time" id="start_time">
+                    <?php
+                    for ($i = 0; $i < $loops; $i++) {
+                        $start_time_option = sprintf('%02d:%02d', $i / (60 / $steps), $current % 60);
+                        $selected = ($start_time == $start_time_option) ? "selected" : ""; // Check if this option should be selected
+                        echo '<option value="' . $start_time_option . '" ' . $selected . '>' . $start_time_option . '</option>';
+                        $current += $steps;
+                    }
+                    ?>
+                </select>
+                <br>
+                <p style="font-size:11px">
+                (First start in case of 2 starts)
+                <br>
             </fieldset>
-            <p></p>
         </div>
-    </div>
-    <br>
-    <div class="w3-row-padding" align="center">
-        <div class="w3-container w3-blue w3-cell">
+        <div class="w3-container w3-pale-yellow w3-cell">
             <fieldset>
-                <legend>Execute</legend>
-                <div id="submit" align="center"></div>
-                    <div class="w3" align="center">
-                        <p>
-                    <button type="submit">Submit</button>
-                </div>
+                <legend>Video Setup: </legend>
+                <p></p>
+                End for finish video, duration from last start: 
+                <select name = "video_end" id = "video_end">
+                    <option value="10"  <?php if(isset($video_end) && $video_end == "5"){echo "selected=\"selected\"";} ?> value="10">10</option> 
+                    <option value="20"  <?php if(isset($video_end) && $video_end == "20"){echo "selected=\"selected\"";} ?> value="20">20</option> 
+                    <option value="60" <?php if(isset($video_end) && $video_end == "60"){echo "selected=\"selected\"";} ?> value="60">60</option>
+                    <option value="90" <?php if(isset($video_end) && $video_end == "90"){echo "selected=\"selected\"";}?> value="90">90</option>
+                    <option value="120" <?php if(isset($video_end) && $video_end == "120"){echo "selected=\"selected\"";} ?> value="120">120</option>
+                </select>
                 <p></p>
             </fieldset>
             <p></p>
         </div>
-    </div>
-</form>
+        <br>
+        <div class="w3-row-padding" align="center">
+            <div class="w3-container w3-light-grey w3-cell">
+                <fieldset>
+                    <legend> Setup of 1 or 2 starts </legend>
+                    <p></p>
+                    Number of starts: <select name="num_starts" id="num_starts">
+                        <option <?php if(isset($num_starts) && $num_starts == "1"){echo "selected=\"selected\"";} ?> value="1">1</option>
+                        <option <?php if(isset($num_starts) && $num_starts == "2"){echo "selected=\"selected\"";} ?> value="2">2</option>
+                    </select>
+                </fieldset>
+                <p></p>
+            </div>
+        </div>
+        <br>
+        <div class="w3-row-padding" align="center">
+            <div class="w3-container w3-blue w3-cell">
+                <fieldset>
+                    <legend>Execute</legend>
+                    <div id="submit" align="center"></div>
+                        <div class="w3" align="center">
+                            <p>
+                        <button type="submit">Submit</button>
+                    </div>
+                    <p></p>
+                </fieldset>
+                <p></p>
+            </div>
+        </div>
+    </form>
 </div>     
 <!-- Here is our page's main content -->
 <main>
