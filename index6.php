@@ -76,7 +76,7 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
 <div style="text-align: center;">
     <form action="index6.php" method="POST">
         <!-- Your form fields -->
-        <div class="w3-row-padding w3-display-middle">
+        <div class="w3-row-padding">
             <div class="w3-container w3-cell w3-pale-yellow">
                 <fieldset>
                 <legend>Day and time setup: </legend>
@@ -158,7 +158,7 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
             </div>
         </div>
         <div class="w3-row-padding">
-            <div class="w3-container w3-light-grey w3-cell">
+            <div class="w3-display-container w3-light-grey w3-cell">
                 <fieldset>
                     <legend> Setup of 1 or 2 starts </legend>
                     <p></p>
