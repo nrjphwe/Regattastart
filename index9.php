@@ -97,11 +97,12 @@
     }
 ?>
 </div>
-<div class="w3-container w3-blue">
-    <h2>Regattastart with image detection </h2>
-</div>
-<p></p>
 <header>
+<div style="text-align: center;">
+    <div class="w3-container w3-blue">
+        <h2>Regattastart with image detection </h2>
+    </div>
+</div>
 <div style="text-align: center;">
     <?php 
         echo "Version: " . APP_VERSION . "<p></p>"; 
