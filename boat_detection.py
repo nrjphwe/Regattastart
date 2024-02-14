@@ -83,7 +83,7 @@ while True:
                 fontFace=cv2.FONT_HERSHEY_DUPLEX
                 cv2.rectangle(frame, pt1, pt2, (0, 255, 0), 2, cv2.LINE_AA)
                 
-                detect_time= time.strftime("H:%M:%S")
+                detect_time= time.strftime("%H:%M:%S")
                 org_center= (300,200)
                 fontScale = 0.5
                 color=(0,0,255) #(B, G, R)
