@@ -3,8 +3,6 @@ import sys
 sys.path.append('/home/pi/opencv/build/lib/python3')
 import time
 import datetime
-import picamera
-import picamera.array
 import cv2
 import numpy as np
 
@@ -17,10 +15,6 @@ with open('../darknet/data/coco.names', 'r') as f:
 
 # Load the configuration and weights for YOLO
 layer_names = net.getUnconnectedOutLayersNames()
-
-# Set the frame skipping factor
-frame_skip_factor = 1
-frame_counter = 0
 
 # Flag to indicate if recording is in progress
 recording = False
@@ -39,7 +33,7 @@ fps_out = 25.0
 frame_size = (640, 480)
 
 # Initialize video writer outside the loop
-# video_writer = None
+video_writer = None
 # Open a video capture object 0 for webcam)
 cap = cv2.VideoCapture(0)
 out = video_writer = cv2.VideoWriter('output'+ today + '.x264', fourcc, fps_out, frame_size)
