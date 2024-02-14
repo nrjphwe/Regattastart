@@ -62,7 +62,7 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
     </style>
     <link rel="stylesheet" href="/w3.css">
 </head>
-<div class="w3-container w3-blue">
+<div style="text-align: center;" class="w3-container w3-blue">
     <h2>Regattastart for 1 or 2 starts </h2>
 </div>
 <p></p>
