@@ -113,7 +113,7 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
             <br>
         </fieldset>
     </div>
-    <div class="w3-container w3-pale-yellow w3-cell">
+    <div style="text-align: center;" class="w3-container w3-pale-yellow w3-cell">
         <fieldset>
             <legend>Video Setup: </legend>
             <p></p>
