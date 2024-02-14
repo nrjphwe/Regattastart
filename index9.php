@@ -38,7 +38,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title> Regattastart 2024 image detection </title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="/w3.css">
     <!-- set styles -->
     <style>
         img {
@@ -57,6 +56,7 @@
             height: 100vh; /* Optional: Makes the container full height */
         }
     </style>
+    <link rel="stylesheet" href="/w3.css">
 </head>
 <!-- Text on top of page retrieved from index6 or index9 -->
 <div style="text-align: center;">
