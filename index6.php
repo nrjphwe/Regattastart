@@ -156,7 +156,7 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
         <p></p>
     </div>
     <br>
-    <div class="w3-row-padding" align="center">
+    <div class="w3-row-padding" style="text-align: center;">
         <div class="w3-container w3-light-grey w3-cell">
             <fieldset>
                 <legend> Setup of 1 or 2 starts </legend>
