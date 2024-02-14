@@ -83,11 +83,12 @@ while True:
                 fontFace=cv2.FONT_HERSHEY_DUPLEX
                 cv2.rectangle(frame, pt1, pt2, (0, 255, 0), 2, cv2.LINE_AA)
                 
-                org_center= (200,300)
+                last_detection_time
+                org_center= (300,200)
                 fontScale = 0.5
                 color=(0,0,255) #(B, G, R)
 
-                cv2.putText(frame,today,org_center,fontFace,fontScale,color,1,cv2.LINE_AA)
+                cv2.putText(frame,last_detection_time,org_center,fontFace,fontScale,color,1,cv2.LINE_AA)
 
 
                 # header label
