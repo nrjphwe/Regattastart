@@ -85,9 +85,9 @@ while True:
                 # time in rectangle
                 detect_time= time.strftime("%H:%M:%S")
                 posx = int(x) + 5
-                posy = int(y) - 5 
+                posy = int(y +h) - 5 
                 org = (posx,posy)
-                fontScale = 0.5
+                fontScale = 0.3
                 color=(0,0,255) #(B, G, R)
                 cv2.putText(frame,detect_time,org,fontFace,fontScale,color,1,cv2.LINE_AA)
 
