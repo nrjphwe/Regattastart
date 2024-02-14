@@ -109,10 +109,8 @@
 </div>
 <!-- HTML form -->
 <body>
-<div style="text-align: center;">
     <form action="index9.php" method="POST">
         <!-- Your form fields -->
-        <div style="text-align: center;">
         <div class="w3-container w3-pale-yellow w3-cell">
             <fieldset>
                 <legend>Day and time setup: </legend>
@@ -150,7 +148,6 @@
                 (First start in case of 2 starts)
                 <br>
             </fieldset>
-        </div>
         </div>
         <div class="w3-container w3-pale-yellow w3-cell">
             <fieldset>
@@ -198,7 +195,6 @@
             </div>
         </div>
     </form>
-</div>     
 <!-- Here is our page's main content -->
 <main>
     <br>
