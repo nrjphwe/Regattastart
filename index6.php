@@ -78,7 +78,7 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
         <!-- Your form fields -->
         <div class="w3-row">
             <div class="w3-half w3-container w3-pale-yellow">
-            <fieldset>
+                <fieldset>
                 <legend>Day and time setup: </legend>
                 <?php $day = date("l") ?>
                 <br>
@@ -113,11 +113,9 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
                 <p style="font-size:11px">
                 (First start in case of 2 starts)
                 <br>
-            </fieldset>
-        </div>
-        <div class="w3-row">
-           <div class= "w3-half w3-container w3-pale-yellow">
-            <fieldset>
+                </fieldset>
+            <div class= "w3-half w3-container w3-pale-yellow">
+                <fieldset>
                 <legend>Video Setup: </legend>
                 <p></p>
                 Duration between start and estimated finish: 
@@ -155,7 +153,7 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
                     <option <?php if(isset($num_video) && $num_video == "2"){echo "selected=\"selected\"";} ?> value="2">2</option>
                     <option <?php if(isset($num_video) && $num_video == "1"){echo "selected=\"selected\"";} ?> value="1">1</option>
                 </select>
-            </fieldset>
+                </fieldset>
         </div>
         <br>
         <div class="w3-row-padding">
