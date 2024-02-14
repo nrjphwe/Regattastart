@@ -73,6 +73,9 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
 </div>
 <!-- HTML form -->
 <body>
+<div class="w3-container">
+    test
+</div>
 <div style="text-align: center;">
     <form action="index6.php" method="POST">
         <!-- Your form fields -->
@@ -114,6 +117,7 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
                 (First start in case of 2 starts)
                 <br>
                 </fieldset>
+            </div>
             <div class="w3-container w3-half w3-pale-yellow">
                 <fieldset>
                 <legend>Video Setup: </legend>
@@ -169,15 +173,13 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
             </div>
         </div>
         <br>
-        <div style="text-align: center;" class="w3-row-padding">
+        <div class="w3-row-padding w3-border">
             <div class="w3-container w3-blue w3-cell">
                 <fieldset>
                     <legend>Execute</legend>
                     <div style="text-align: center" id="submit"></div>
                         <button type="submit">Submit</button>
-                    <p></p>
                 </fieldset>
-                <p></p>
             </div>
         </div>
     </form>
