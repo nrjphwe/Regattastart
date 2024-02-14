@@ -312,7 +312,7 @@ def finish_recording(video_path, num_starts, video_end, start_time, start_time_s
                     fontFace=cv2.FONT_HERSHEY_PLAIN
                     detect_time= time.strftime("%H:%M:%S")
                     posx = int(x) + 5
-                    posy = int(y +h) - 5 
+                    posy = int(y + h - 5) 
                     org = (posx,posy)
                     fontScale = 0.7
                     color=(0,0,255) #(B, G, R)
@@ -418,18 +418,19 @@ def main():
         time.sleep(2)  # Introduce a delay of 2 seconds
 
     except json.JSONDecodeError as e:
-        logger.info ("Line 405, Failed to parse JSON: %", str(e))
+        logger.info ("Line 421, Failed to parse JSON: %", str(e))
         sys.exit(1)
     finally:
-        logger.info("Line 408 Finally section, before listen_for_message")
+        logger.info("Line 424 Finally section, before listen_for_message")
           # Start a thread for listening for messages
         listen_thread = threading.Thread(target=listen_for_messages)
         listen_thread.start()
-        logger.info("Line 412, Finally section, before 'Finish recording'. start_time=%s video_end%s", start_time, video_end)
+        logger.info("Line 428, Finally section, before 'Finish recording'. start_time=%s video_end%s", start_time, video_end)
+        time.sleep(2)
         finish_recording(video_path, num_starts, video_end, start_time, start_time_sec)
-        #convert_video_to_mp4(video_path, "video1.avi", "video1x.mp4")
+        time.sleep(2)
         re_encode_video(video_path, "video1.avi", "video1.mp4")
-        logger.info("Line 415, Finished with finish_recording and recording converted to mp4")
+        logger.info("Line 432, Finished with finish_recording and recording converted to mp4")
         if camera is not None:
             camera.close()  # Release the camera resources
         if signal is not None:
