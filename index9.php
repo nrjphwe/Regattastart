@@ -33,13 +33,30 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
 ?>
 <!DOCTYPE html>
 <html>
-<div align="center">
-<head><title> Regattastart 2024 image detection </title>   
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="/w3.css"
-<style>
-
-</style>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title> Regattastart 2024 image detection </title>   
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/w3.css"
+    <!-- set styles -->
+    <style>
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+        video {
+            max-width: 100%;
+            height: auto;
+        }
+        .container {
+            display: flex;
+            flex-direction: column; /* Ensure items are stacked vertically */
+            justify-content: center;
+            align-items: center;
+            height: 100vh; /* Optional: Makes the container full height */
+        }
+    </style>
 </head>
 <!-- Text on top of page retrieved from index6 or index9 -->
 <div style="text-align: center;">
