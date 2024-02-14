@@ -49,6 +49,8 @@ while True:
     if not ret:
         break
 
+    frame = cv2.flip(frame, flipCode = -1) # camera is upside down"
+    
     # Perform object detection, preprocess the frame for object 
     # detection using YOLO. The frame is converted into a blob, and
     # the YOLO model is fed with this blob to obtain the detection results.
