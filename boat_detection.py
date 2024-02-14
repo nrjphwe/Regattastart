@@ -79,13 +79,17 @@ while True:
                 pt1 = (int(x), int(y))
                 pt2 = (int(x + w), int(y + h))
                 # Modify the original frame
+                fontFace=cv2.FONT_HERSHEY_DUPLEX
+                fontScale = 0.5
+                color=(0,0,255) #(B, G, R)
                 cv2.rectangle(frame, pt1, pt2, (0, 255, 0), 2, cv2.LINE_AA)
+                cv2.putText(frame,today,(pt1, pt2),fontFace,fontScale,color,1)
 
                 label = "2024-02-14 19:30:30 Seconds since last start: 401"
                 org = (20,60)
                 #font = cv2.FONT_HERSHEY_SIMPLEX
                 #font = ImageFont.truetype("PAPYRUS.ttf", 80) 
-                fontFace=cv2.FONT_HERSHEY_DUPLEX
+                
                 fontScale = 0.7
                 color=(0,0,255) #(B, G, R)
                 thickness = 1
