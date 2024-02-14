@@ -85,9 +85,11 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
 </div>
 <p></p>
 <header>
-<?php 
-    echo "     Version: " . APP_VERSION . "<p></p>"; 
-?>
+<div style="text-align: center;">
+    <?php 
+        echo "Version: " . APP_VERSION . "<p></p>"; 
+    ?>
+</div>
 <!-- HTML form -->
 <body>
 <div style="text-align: center;">
