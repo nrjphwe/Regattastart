@@ -76,8 +76,8 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
 <div style="text-align: center;">
     <form action="index6.php" method="POST">
         <!-- Your form fields -->
-        <div class="w3-row">
-            <div class="w3-half w3-container w3-pale-yellow">
+        <div class="w3-row w3-border">
+            <div class="w3-container w3-half w3-pale-yellow">
                 <fieldset>
                 <legend>Day and time setup: </legend>
                 <?php $day = date("l") ?>
@@ -114,7 +114,7 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
                 (First start in case of 2 starts)
                 <br>
                 </fieldset>
-            <div class= "w3-half w3-container w3-pale-yellow">
+            <div class="w3-container w3-half w3-pale-yellow">
                 <fieldset>
                 <legend>Video Setup: </legend>
                 <p></p>
