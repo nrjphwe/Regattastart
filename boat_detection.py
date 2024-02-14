@@ -85,7 +85,7 @@ while True:
                 # time in rectangle
                 detect_time= time.strftime("%H:%M:%S")
                 posx = int(x) + 5
-                posy = int(y) 5 
+                posy = int(y) - 5 
                 org = (posx,posy)
                 fontScale = 0.5
                 color=(0,0,255) #(B, G, R)
