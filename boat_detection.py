@@ -32,17 +32,13 @@ fourcc = cv2.VideoWriter_fourcc(*'x264')  # H.264 codec with MP4 container
 fps_out = 25.0
 frame_size = (640, 480)
 
-# Initialize video writer outside the loop
-video_writer = None
 # Open a video capture object 0 for webcam)
 cap = cv2.VideoCapture(0)
-out = video_writer = cv2.VideoWriter('output'+ today + '.x264', fourcc, fps_out, frame_size)
-fps = 24  # frames per second
 width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH) + 0.5)
 height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT) + 0.5)
 frame_size = (width, height)
-print("Line 50")
-    
+video_writer = cv2.VideoWriter('output'+ today + '.x264', fourcc, fps_out, frame_size)
+
 while True:
 
     ret, frame = cap.read()
@@ -50,7 +46,7 @@ while True:
         break
 
     frame = cv2.flip(frame, flipCode = -1) # camera is upside down"
-    
+
     # Perform object detection, preprocess the frame for object 
     # detection using YOLO. The frame is converted into a blob, and
     # the YOLO model is fed with this blob to obtain the detection results.
@@ -61,8 +57,6 @@ while True:
     net.setInput(blob)
     outs = net.forward(layer_names)
 
-    print(today, "After object detection")
-
     # Variable to check if any boat is detected in the current frame
     boat_detected = False
 
@@ -72,7 +66,7 @@ while True:
             scores = detection[5:]
             class_id = np.argmax(scores)
             confidence = scores[class_id]
-        
+
             if confidence > 0.2 and classes[class_id] == 'boat':
                 # Update the time when the last boat was detected
                 last_detection_time = time.time()
@@ -97,13 +91,8 @@ while True:
                 thickness = 1
                 lineType = cv2.LINE_AA
                 cv2.putText(frame,label,org,fontFace,fontScale,color,thickness,lineType)
+                video_writer.write(frame)
 
-                # Trigger video recording
-                if not recording:
-                    recording = True
-                    out.write(frame)
-                    print(today, "Recording started, line 110")
-                    boat_detected = True
             else:
                 boat_detected = False
 
@@ -115,8 +104,6 @@ while True:
     
 #  Pressing 'q' will exit the script.
 # After loop, the script release camera and closes the OpenCV windows
-if camera is not None:
-    camera.close()  # Release the camera resources
 if video_writer is not None:
     video_writer.release()
 cv2.destroyAllWindows()
