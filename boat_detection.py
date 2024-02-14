@@ -77,11 +77,11 @@ while True:
                 h, w, _ = frame.shape
                 x, y, w, h = map(int, detection[0:4] * [w, h, w, h])
                 pt1 = (int(x), int(y))
-                pt2 = (int(x + w), int(y + h))
-                # Modify the original frame
-                fontFace=cv2.FONT_HERSHEY_DUPLEX
+                pt2 = (int(x + w), int(y + h))                
                 cv2.rectangle(frame, pt1, pt2, (0, 255, 0), 2, cv2.LINE_AA)
-                
+
+
+                fontFace=cv2.FONT_HERSHEY_SIMPLEX
                 # time in rectangle
                 detect_time= time.strftime("%H:%M:%S")
                 posx = int(x) + 5
@@ -91,11 +91,10 @@ while True:
                 color=(0,0,255) #(B, G, R)
                 cv2.putText(frame,detect_time,org,fontFace,fontScale,color,1,cv2.LINE_AA)
 
-
                 # header label
                 label = "2024-02-14 19:30:30 Seconds since last start: 401"
                 org = (20,60)
-                #font = cv2.FONT_HERSHEY_SIMPLEX
+                fontface = cv2.FONT_HERSHEY_DUPLEX
                 #font = ImageFont.truetype("PAPYRUS.ttf", 80) 
                 fontScale = 0.7
                 color=(0,0,255) #(B, G, R)
