@@ -42,6 +42,7 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
 </style>
 </head>
 <!-- Text on top of page retrieved from index6 or index9 -->
+<div style="text-align: center;">
 <?php
     if (isset($_SESSION['form_data']) && is_array($_SESSION['form_data'])) {
 
@@ -78,7 +79,7 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
         echo "Line 108: No form data found in the session.";
     }
 ?>
-
+</div>
 <div class="w3-container w3-blue">
     <h2>Regattastart with boat-image detection </h2>
 </div>
