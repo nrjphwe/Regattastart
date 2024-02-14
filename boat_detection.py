@@ -81,7 +81,7 @@ while True:
                 # Modify the original frame
                 cv2.rectangle(frame, pt1, pt2, (0, 255, 0), 2, cv2.LINE_AA)
 
-                label = "text"
+                label = "2024-02-14 19:30:30 Seconds since last start: 401"
                 org = (30,60)
                 #font = cv2.FONT_HERSHEY_SIMPLEX
                 #font = ImageFont.truetype("PAPYRUS.ttf", 80) 
