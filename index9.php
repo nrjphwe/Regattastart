@@ -105,7 +105,7 @@
 </div>
 <div style="text-align: center;">
     <?php 
-        echo "Version: " . APP_VERSION .; 
+        echo "     Version: " . APP_VERSION . "<br><p></p>"; 
     ?>
 </div>
 <!-- HTML form -->
