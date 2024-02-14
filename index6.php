@@ -76,7 +76,7 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
 <div style="text-align: center;">
     <form action="index6.php" method="POST">
         <!-- Your form fields -->
-        <div class="w3-row w3-border">
+        <div class="w3-row-padding w3-border">
             <div class="w3-container w3-half w3-pale-yellow">
                 <fieldset>
                 <legend>Day and time setup: </legend>
@@ -154,10 +154,10 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
                     <option <?php if(isset($num_video) && $num_video == "1"){echo "selected=\"selected\"";} ?> value="1">1</option>
                 </select>
                 </fieldset>
+            </div>
         </div>
-        <br>
-        <div class="w3-row-padding">
-            <div style="text-align: center;" class="w3-container w3-light-grey w3-cell">
+        <div class="w3-row-padding w3-border">
+            <div class="w3-container w3-light-grey w3-cell">
                 <fieldset>
                     <legend> Setup of 1 or 2 starts </legend>
                     <p></p>
@@ -166,7 +166,6 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
                         <option <?php if(isset($num_starts) && $num_starts == "2"){echo "selected=\"selected\"";} ?> value="2">2</option>
                     </select>
                 </fieldset>
-                <p></p>
             </div>
         </div>
         <br>
