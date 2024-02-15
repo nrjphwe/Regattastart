@@ -52,6 +52,15 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
             align-items: flex-start;
             height: 100vh; /* Adjust as needed */
         }
+        /* Style for the form container */
+        .form-container {
+            width: 80%; /* Adjust width as needed */
+            margin: 0 auto; /* Center horizontally */
+            padding: 20px; /* Add padding for better spacing */
+            background-color: #f0f0f0; /* Example background color */
+            border-radius: 10px; /* Example border radius */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Example box shadow */
+        }
     </style>
 </head>
 <body>
@@ -66,7 +75,7 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
 <!-- Content Wrapper with center alignment -->
 <div class="content-wrapper">
 <!-- HTML form -->
-<div class="w3-container" style="text-align: center;">
+<div class="form-container" style="text-align: center;">
     <form action="index6.php" method="POST">
         <div class="w3-row-padding">
             <div class="w3-cell">
