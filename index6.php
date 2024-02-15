@@ -62,7 +62,7 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh; /* Adjust as needed */
+            /* height: 100vh; /* Adjust as needed */
             width: 80%; /* Adjust width as needed */
             margin: 0 auto; /* Center horizontally */
         }
