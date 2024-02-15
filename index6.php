@@ -214,16 +214,15 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
     <div class="w3-row-padding" align="center">
         <br><p> - phwe - <br></p>
     </div>
-    <div class="w3-row-padding" align="center">
+    <div style="text-align: center;" class="w3-panel w3-grey">
         <?php
             // output when index6.php was last modified.
             $filename = 'index6.php';
             if (file_exists($filename)) {
-                echo "        This web-page: $filename was last modified: " . date ("Y-m-d H:i:s.", filemtime($filename));
+                echo "This web-page: $filename was last modified: " . date ("Y-m-d H:i:s.", filemtime($filename));
             }
         ?>
     </div>
 </footer>
 </body>
 </html>
-
