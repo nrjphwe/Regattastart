@@ -101,44 +101,44 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
 <!-- Your form fields -->
 <div class="form-container" style="text-align: center;">
     <form action="index6.php" method="POST">
-        <div class="w3-row">
+        <div class="w3-row-padding">
             <div class="w3-cell">
                 <div class="w3-pale-yellow">
                     <fieldset>
-                    <legend>Day and time setup: </legend>
-                    <?php $day = date("l") ?>
-                    <br>
-                    Day for race <select name = "day" id="day">
-                        <option <?php if(isset($day) && $day == "Monday"){echo "selected=\"selected\"";} ?> value="Monday">Monday</option>
-                        <option <?php if(isset($day) && $day == "Tuesday"){echo "selected=\"selected\"";} ?> value="Tuesday">Tuesday</option>
-                        <option <?php if(isset($day) && $day == "Wednesday"){echo "selected=\"selected\"";} ?> value="Wednesday">Wednesday</option>
-                        <option <?php if(isset($day) && $day == "Thursday"){echo "selected=\"selected\"";} ?> value="Thursday">Thursday</option>
-                        <option <?php if(isset($day) && $day == "Friday"){echo "selected=\"selected\"";} ?> value="Friday">Friday</option>
-                        <option <?php if(isset($day) && $day == "Saturday"){echo "selected=\"selected\"";} ?> value="Saturday">Saturday</option>
-                        <option <?php if(isset($day) && $day == "Sunday"){echo "selected=\"selected\"";} ?> value="Sunday">Sunday</option>
-                    </select>
-                    <p></p>
-                    <div data-tap-disabled="true">
-                    <?php
-                        $start_time = isset($_SESSION["form_data"]["start_time"]) ? $_SESSION["form_data"]["start_time"] : "";
-                        $steps = 5; // Set to 10, for test set to 5, You can adjust the value of $steps according to your needs
-                        $loops = 24 * (60 / $steps); // Define $loops here or wherever it makes sense in your code
-                        $current = 0; // Initialize $current
-                    ?>
-                    Start Time: <select name="start_time" id="start_time">
+                        <legend>Day and time setup: </legend>
+                        <?php $day = date("l") ?>
+                        <br>
+                        Day for race <select name = "day" id="day">
+                            <option <?php if(isset($day) && $day == "Monday"){echo "selected=\"selected\"";} ?> value="Monday">Monday</option>
+                            <option <?php if(isset($day) && $day == "Tuesday"){echo "selected=\"selected\"";} ?> value="Tuesday">Tuesday</option>
+                            <option <?php if(isset($day) && $day == "Wednesday"){echo "selected=\"selected\"";} ?> value="Wednesday">Wednesday</option>
+                            <option <?php if(isset($day) && $day == "Thursday"){echo "selected=\"selected\"";} ?> value="Thursday">Thursday</option>
+                            <option <?php if(isset($day) && $day == "Friday"){echo "selected=\"selected\"";} ?> value="Friday">Friday</option>
+                            <option <?php if(isset($day) && $day == "Saturday"){echo "selected=\"selected\"";} ?> value="Saturday">Saturday</option>
+                            <option <?php if(isset($day) && $day == "Sunday"){echo "selected=\"selected\"";} ?> value="Sunday">Sunday</option>
+                        </select>
+                        <p></p>
+                        <div data-tap-disabled="true">
                         <?php
-                        for ($i = 0; $i < $loops; $i++) {
-                            $start_time_option = sprintf('%02d:%02d', $i / (60 / $steps), $current % 60);
-                            $selected = ($start_time == $start_time_option) ? "selected" : ""; // Check if this option should be selected
-                            echo '<option value="' . $start_time_option . '" ' . $selected . '>' . $start_time_option . '</option>';
-                            $current += $steps;
-                        }
+                            $start_time = isset($_SESSION["form_data"]["start_time"]) ? $_SESSION["form_data"]["start_time"] : "";
+                            $steps = 5; // Set to 10, for test set to 5, You can adjust the value of $steps according to your needs
+                            $loops = 24 * (60 / $steps); // Define $loops here or wherever it makes sense in your code
+                            $current = 0; // Initialize $current
                         ?>
-                    </select>
-                    <br>
-                    <p style="font-size:11px">
-                    (First start in case of 2 starts)
-                    <br>
+                        Start Time: <select name="start_time" id="start_time">
+                            <?php
+                            for ($i = 0; $i < $loops; $i++) {
+                                $start_time_option = sprintf('%02d:%02d', $i / (60 / $steps), $current % 60);
+                                $selected = ($start_time == $start_time_option) ? "selected" : ""; // Check if this option should be selected
+                                echo '<option value="' . $start_time_option . '" ' . $selected . '>' . $start_time_option . '</option>';
+                                $current += $steps;
+                            }
+                            ?>
+                        </select>
+                        <br>
+                        <p style="font-size:11px">
+                        (First start in case of 2 starts)
+                        <br>
                     </fieldset>
                 </div>
             </div>
