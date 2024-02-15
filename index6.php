@@ -215,7 +215,7 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
         <div class="w3-row-padding">
             <div id="result" ></div>
         </div>
-    <h5> <a href="/index.php">  Resultat sida  </a></h5>
+        <h5><a href="/index.php">  Resultat sida  </a></h5>
     </div>
 </main>
 <footer>
