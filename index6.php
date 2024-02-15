@@ -56,7 +56,7 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh; /* Optional: Makes the container full height */
+            /* height: 100vh; /* Optional: Makes the container full height */
         }
         .form-container {
             display: flex;
@@ -210,14 +210,12 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
 </div>
 <!-- Here is our page's main content -->
 <main>
-<div>
     <div class="container" style="text-align: center;">
         <div class="w3-row-padding">
             <div id="result" ></div>
         </div>
         <h5><a href="/index.php">  Resultat sida  </a></h5>
     </div>
-</div>
 </main>
 <footer>
     <div class="w3-row-padding" align="center">
