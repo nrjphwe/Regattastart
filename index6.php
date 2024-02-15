@@ -103,7 +103,7 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
             <form action="index6.php" method="POST">
                 <!-- Your form fields -->
                 <div class="w3-row-padding">
-                    <div class="w3-form-container w3-cell w3-pale-yellow">
+                    <div class="w3-cell w3-pale-yellow">
                         <fieldset>
                         <legend>Day and time setup: </legend>
                         <?php $day = date("l") ?>
