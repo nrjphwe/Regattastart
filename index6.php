@@ -42,65 +42,31 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
 <head>
     <title> Regattastart 2024 för setup av en eller 2 starter </title> 
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/w3.css">
     <!-- set styles -->
     <style>
-        img {
-            max-width: 100%;
-            height: auto;
-        }
-        video {
-            max-width: 100%;
-            height: auto;
-        }
-        .container {
+        /* Center align the content */
+        .content-wrapper {
             display: flex;
             justify-content: center;
             align-items: center;
-            /* height: 100vh; /* Optional: Makes the container full height */
-        }
-        .form-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            /* height: 100vh; /* Adjust as needed */
-            width: 80%; /* Adjust width as needed */
-            margin: 0 auto; /* Center horizontally */
-        }
-        .form-container fieldset {
-            margin-bottom: 20px;
-        }
-        .form-container select {
-            width: 100%;
-            padding: 10px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-            margin-bottom: 10px;
-        }
-        .form-container button[type="submit"] {
-            padding: 10px 20px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            background-color: #007bff;
-            color: #fff;
-            cursor: pointer;
+            height: 100vh; /* Adjust as needed */
         }
     </style>
-    <link rel="stylesheet" href="/w3.css">
 </head>
+<body>
 <div style="text-align: center;" class="w3-container w3-blue">
     <h2>Regattastart for 1 or 2 starts </h2>
 </div>
 <header>
-<div style="text-align: center;">
-    <?php 
-        echo "     Version: " . APP_VERSION . "<p></p>"; 
-    ?>
-</div>
+    <div style="text-align: center;">
+        <?php echo "     Version: " . APP_VERSION . "<p></p>"; ?>
+    </div>
+</header>
+<!-- Content Wrapper with center alignment -->
+<div class="content-wrapper">
 <!-- HTML form -->
-<body>
-<!-- Your form fields -->
-<!--div class="form-container" style="text-align: center;"-->
-<div class="w3-card" style="text-align: center;">
+<div class="form-container" style="text-align: center;">
     <form action="index6.php" method="POST">
         <div class="w3-row-padding">
             <div class="w3-cell">
@@ -214,15 +180,15 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
             </div>
         </div>
     </form>
-</div>
 
-<!-- Here is our page's main content -->
-<main>
-    <div class="w3-auto w3-row-padding" align="center" style="text-align: center;">
-        <div id="result" ></div>
-    </div>
-    <h5><a href="/index.php">  Resultat sida  </a></h5>
-</main>
+    <!-- Here is our page's main content -->
+    <main>
+        <div class="w3-auto w3-row-padding" align="center" style="text-align: center;">
+            <div id="result" ></div>
+        </div>
+        <h5><a href="/index.php">  Resultat sida  </a></h5>
+    </main>
+</div>
 <footer>
     <div class="w3-row-padding" align="center">
         <br><p> - phwe - <br></p>
