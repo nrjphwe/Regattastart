@@ -49,7 +49,7 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
         .content-wrapper {
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start;
             height: 100vh; /* Adjust as needed */
         }
     </style>
@@ -66,7 +66,7 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
 <!-- Content Wrapper with center alignment -->
 <div class="content-wrapper">
 <!-- HTML form -->
-<div class="form-container" style="text-align: center;">
+<div class="w3-container" style="text-align: center;">
     <form action="index6.php" method="POST">
         <div class="w3-row-padding">
             <div class="w3-cell">
@@ -153,7 +153,7 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
                 </div>
             </div>
         </div>
-        <div class="w3-auto">
+        <div class="w3-cell">
             <div class="w3-row-padding">
                 <div class="w3-cell w3-light-grey">
                     <fieldset>
