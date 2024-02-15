@@ -186,6 +186,9 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
                     </fieldset>
                 </div>
             </div>
+            <div>
+                <p>
+            </div>
             <div class="w3-row-padding">
                 <div class="w3-round w3-blue w3-cell">
                     <fieldset>
