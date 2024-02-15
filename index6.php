@@ -83,7 +83,7 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
             <form action="index6.php" method="POST">
                 <!-- Your form fields -->
                 <div class="w3-row-padding">
-                    <div class="w3-container w3-cell w3-pale-yellow">
+                    <div class="w3-form-container w3-cell w3-pale-yellow">
                         <fieldset>
                         <legend>Day and time setup: </legend>
                         <?php $day = date("l") ?>
@@ -121,7 +121,7 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
                         <br>
                         </fieldset>
                     </div>
-                    <div class="w3-container w3-cell w3-pale-yellow">
+                    <div class="w3-form-container w3-cell w3-pale-yellow">
                         <fieldset>
                         <legend>Video Setup: </legend>
                         <p></p>
@@ -164,7 +164,7 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
                     </div>
                 </div>
                 <div class="w3-row-padding">
-                    <div class="w3-display-container w3-light-grey w3-cell">
+                    <div class="w3-form-container w3-light-grey w3-cell">
                         <fieldset>
                             <legend> Setup of 1 or 2 starts </legend>
                             <p></p>
@@ -177,7 +177,7 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
                 </div>
                 <br>
                 <div class="w3-row-padding">
-                    <div class="w3-container w3-blue w3-cell">
+                    <div class="w3-form-container w3-blue w3-cell">
                         <fieldset>
                             <legend>Execute</legend>
                             <div style="text-align: center" id="submit"></div>
