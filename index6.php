@@ -183,24 +183,22 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
                         </fieldset>
                     </div>
                 </div>
-                    <div class="w3-light-grey w3-cell">
-                        <fieldset>
-                            <legend> Setup of 1 or 2 starts </legend>
-                            <p></p>
-                            Number of starts: <select name="num_starts" id="num_starts">
-                                <option <?php if(isset($num_starts) && $num_starts == "1"){echo "selected=\"selected\"";} ?> value="1">1</option>
-                                <option <?php if(isset($num_starts) && $num_starts == "2"){echo "selected=\"selected\"";} ?> value="2">2</option>
-                            </select>
-                        </fieldset>
-                    </div>
+                <div class="w3-light-grey w3-cell">
+                    <fieldset>
+                        <legend> Setup of 1 or 2 starts </legend>
+                        <p></p>
+                        Number of starts: <select name="num_starts" id="num_starts">
+                            <option <?php if(isset($num_starts) && $num_starts == "1"){echo "selected=\"selected\"";} ?> value="1">1</option>
+                            <option <?php if(isset($num_starts) && $num_starts == "2"){echo "selected=\"selected\"";} ?> value="2">2</option>
+                        </select>
+                    </fieldset>
                 </div>
-                    <div class="w3-blue w3-cell">
-                        <fieldset>
-                            <legend>Execute</legend>
-                            <div style="text-align: center" id="submit"></div>
-                                <button type="submit">Submit</button>
-                        </fieldset>
-                    </div>
+                <div class="w3-blue w3-cell">
+                    <fieldset>
+                        <legend>Execute</legend>
+                        <div style="text-align: center" id="submit"></div>
+                            <button type="submit">Submit</button>
+                    </fieldset>
                 </div>
             </form>
         </div>
