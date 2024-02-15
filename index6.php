@@ -211,7 +211,7 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
 <!-- Here is our page's main content -->
 <main>
     <br>
-    <div class="form-container" style="text-align: center;">
+    <div class="container" style="text-align: center;">
         <div class="w3-row-padding">
             <div id="result" ></div>
         </div>
