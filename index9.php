@@ -181,8 +181,8 @@
             </div>
         </div>
         <br>
-        <div class="w3-auto w3-row-padding" align="center">
-            <div class="w3-container w3-blue w3-cell">
+        <div class="w3-row-padding" align="center">
+            <div class="w3-container w3-blue">
                 <fieldset>
                     <legend>Execute</legend>
                     <div id="submit" align="center"></div>
