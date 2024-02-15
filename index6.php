@@ -84,7 +84,7 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
 <!-- HTML form -->
 <div class="w3-container" style="text-align: center;">
     <!-- Content Wrapper with center alignment -->
-    <div class="w3-margin w3-padding content-wrapper">
+    <div class="w3-margin w3-padding-large content-wrapper">
         <form action="index6.php" method="POST">
             <div class="w3-row-padding">
                 <div class="w3-half">
