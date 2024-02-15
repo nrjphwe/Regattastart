@@ -54,7 +54,6 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
         }
         .container {
             display: flex;
-            flex-direction: column; /* Ensure items are stacked vertically */
             justify-content: center;
             align-items: center;
             height: 100vh; /* Optional: Makes the container full height */
@@ -62,6 +61,24 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
         .form-container {
             width: 80%; /* Adjust width as needed */
             margin: 0 auto; /* Center horizontally */
+        }
+        .form-container fieldset {
+            margin-bottom: 20px;
+        }
+        .form-container select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            margin-bottom: 10px;
+        }
+        .form-container button[type="submit"] {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: #fff;
+            cursor: pointer;
         }
     </style>
     <link rel="stylesheet" href="/w3.css">
