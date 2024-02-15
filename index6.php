@@ -51,6 +51,24 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
             justify-content: center;
             align-items: flex-start;
         }
+        /* Ensure the form fields are displayed in a row */
+        .w3-row-padding {
+            display: flex;
+            flex-wrap: wrap; /* Allow wrapping of elements */
+            justify-content: space-around; /* Align elements evenly horizontally */
+        }
+        /* Style for individual form field containers */
+        .w3-container {
+            flex: 1; /* Let each container take up equal space */
+            margin-bottom: 10px; /* Add some bottom margin for spacing between rows */
+        }
+
+        /* Adjust the width of the columns for smaller screens */
+        @media screen and (max-width: 600px) {
+            .w3-half {
+                width: 100%; /* Make each column take up full width on smaller screens */
+            }
+        }
     </style>
 </head>
 <body>
@@ -68,9 +86,9 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
     <!-- Content Wrapper with center alignment -->
     <div class="w3-margin w3-padding content-wrapper">
         <form action="index6.php" method="POST">
-           <div class="w3-half">
-                <div class="w3-row-padding">
-                <!-- Left side content -->
+            <div class="w3-row-padding">
+                <div class="w3-container">
+                    <!-- Left side content -->
                     <div class="w3-pale-yellow" style="text-align: center;">
                         <fieldset>
                             <legend>Day and time setup: </legend>
@@ -109,7 +127,8 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
                             <br>
                         </fieldset>
                     </div>
-                <div class="w3-row-padding">
+                </div>
+                <div class="w3-container">
                     <!-- Right side content -->
                     <div class="w3-pale-yellow" style="text-align: center;">
                         <fieldset>
@@ -153,33 +172,30 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
                         </fieldset>
                     </div>
                 </div>
-            </div>
-            <div class="w3-container w3-light-grey w3-cell">
-                <!-- central below pale-yellow -->
-                <fieldset>
-                    <legend> Setup of 1 or 2 starts </legend>
-                    <p></p>
-                    Number of starts: <select name="num_starts" id="num_starts">
-                        <option <?php if(isset($num_starts) && $num_starts == "1"){echo "selected=\"selected\"";} ?> value="1">1</option>
-                        <option <?php if(isset($num_starts) && $num_starts == "2"){echo "selected=\"selected\"";} ?> value="2">2</option>
-                    </select>
-                </fieldset>
-            </div>
-
-            <div class="w3-container w3-blue w3-cell">
-                <fieldset>
-                    <legend>Execute</legend>
-                    <div id="submit" align="center"></div>
+                <div class="w3-container w3-light-grey">
+                    <!-- central below pale-yellow -->
+                    <fieldset>
+                        <legend> Setup of 1 or 2 starts </legend>
+                        <p></p>
+                        Number of starts: <select name="num_starts" id="num_starts">
+                            <option <?php if(isset($num_starts) && $num_starts == "1"){echo "selected=\"selected\"";} ?> value="1">1</option>
+                            <option <?php if(isset($num_starts) && $num_starts == "2"){echo "selected=\"selected\"";} ?> value="2">2</option>
+                        </select>
+                    </fieldset>
+                </div>
+                <div class="w3-container w3-blue">
+                    <fieldset>
+                        <legend>Execute</legend>
+                        <div id="submit" align="center"></div>
                         <div class="w3" align="center">
-                            <p>
-                        <button type="submit">Submit</button>
-                    </div>
-                    <p></p>
-                </fieldset>
-                <p></p>
+                            <button type="submit">Submit</button>
+                        </div>
+                    </fieldset>
+                </div>
             </div>
         </form>
-    </div>
+     </div>
+</div>
     <!-- Here is our page's main content -->
     <main>
         <div class="w3-auto w3-row-padding" align="center" style="text-align: center;">
