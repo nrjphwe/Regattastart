@@ -70,6 +70,7 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
             padding: 10px;
             border-radius: 5px;
             border: 1px solid #ccc;
+            margin: 0 auto; /* Center horizontally */
             margin-bottom: 10px;
         }
         .form-container button[type="submit"] {
