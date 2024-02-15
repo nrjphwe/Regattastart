@@ -182,7 +182,7 @@
         </div>
         <br>
         <div class="w3-row-padding" align="center">
-            <div class="w3-container w3-blue">
+            <div class="w3-container w3-blue w3-cell">
                 <fieldset>
                     <legend>Execute</legend>
                     <div id="submit" align="center"></div>
@@ -200,7 +200,7 @@
 <main>
     <br>
     <div id="result" align="center"></div>
-    <div class="w3" align="center">
+    <div class="w3-container" align="center">
     <br>
     <h5> <a href="/index.php">  Resultat sida  </a></h5>
     </div>
