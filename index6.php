@@ -87,7 +87,7 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
     <div class="w3-margin w3-padding content-wrapper">
         <form action="index6.php" method="POST">
             <div class="w3-row-padding">
-                <div class="w3-container">
+                <div class="w3-half">
                     <!-- Left side content -->
                     <div class="w3-pale-yellow" style="text-align: center;">
                         <fieldset>
@@ -128,7 +128,7 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
                         </fieldset>
                     </div>
                 </div>
-                <div class="w3-container">
+                <div class="w3-half">
                     <!-- Right side content -->
                     <div class="w3-pale-yellow" style="text-align: center;">
                         <fieldset>
