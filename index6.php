@@ -187,27 +187,30 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
                 </div>
             </div>
         </div>
-        <div class="w3-row-padding">
-            <div class="w3-cell w3-light-grey">
-                <fieldset>
-                    <legend> Setup of 1 or 2 starts </legend>
-                    <p></p>
-                    Number of starts: <select name="num_starts" id="num_starts">
-                        <option <?php if(isset($num_starts) && $num_starts == "1"){echo "selected=\"selected\"";} ?> value="1">1</option>
-                        <option <?php if(isset($num_starts) && $num_starts == "2"){echo "selected=\"selected\"";} ?> value="2">2</option>
-                    </select>
-                </fieldset>
+        <div class="w3-auto">
+            <div class="w3-row-padding">
+                <div class="w3-cell w3-light-grey">
+                    <fieldset>
+                        <legend> Setup of 1 or 2 starts </legend>
+                        <p></p>
+                        Number of starts: <select name="num_starts" id="num_starts">
+                            <option <?php if(isset($num_starts) && $num_starts == "1"){echo "selected=\"selected\"";} ?> value="1">1</option>
+                            <option <?php if(isset($num_starts) && $num_starts == "2"){echo "selected=\"selected\"";} ?> value="2">2</option>
+                        </select>
+                    </fieldset>
+                </div>
             </div>
-        <div class="w3-row-padding">
-            <div class="w3-cell w3-light-blue">
-                <fieldset>
-                    <legend>Execute</legend>
-                        <div id="submit" align="center"></div>
-                            <div class="w3" align="center">
-                            <button type="submit">Submit</button>
-                        </div>
-                    <p></p>
-                </fieldset>
+            <div class="w3-row-padding">
+                <div class="w3-cell w3-light-blue">
+                    <fieldset>
+                        <legend>Execute</legend>
+                            <div id="submit" align="center"></div>
+                                <div class="w3" align="center">
+                                <button type="submit">Submit</button>
+                            </div>
+                        <p></p>
+                    </fieldset>
+                </div>
             </div>
         </div>
     </form>
