@@ -100,7 +100,7 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
 <body>
 <!-- Your form fields -->
 <!--div class="form-container" style="text-align: center;"-->
-<div class="w3-container" style="text-align: center;">
+<div class="w3-container w3-centered" style="text-align: center;">
     <form action="index6.php" method="POST">
         <div class="w3-row-padding">
             <div class="w3-cell">
