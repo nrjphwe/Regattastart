@@ -192,9 +192,9 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
                     <fieldset>
                         <legend>Execute</legend>
                         <div id="submit" align="center"></div>
-                        <div class="w3" align="center">
-                            <button type="submit">Submit</button>
-                        </div>
+                            <div class="w3" align="center">
+                                <button type="submit">Submit</button>
+                            </div>
                     </fieldset>
                 </div>
             </div>
