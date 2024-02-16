@@ -35,7 +35,7 @@ def setup_camera():
         camera.framerate = 5
         camera.annotate_background = Color('black')
         camera.annotate_foreground = Color('white')
-        # camera.rotation = (180) # Depends on how camera is mounted
+        camera.rotation = (180) # Depends on how camera is mounted
         return camera  # Add this line to return the camera object
     except Exception as e:
         logger.error(f"Failed to initialize camera: {e}")
@@ -227,7 +227,7 @@ def main():
                     break
                 
         logger.info("Finish recording outside inner loop. start_time_sec=%s", start_time_sec)
-        finish_recording(camera, mp4_path, video_delay, video_dur, start_time_sec)
+        finish_recording(camera, mp4_path, video_delay, num_video, video_dur, start_time_sec)
 
     except json.JSONDecodeError as e:
         logger.info ("Failed to parse JSON: %", str(e))

@@ -1,4 +1,5 @@
 #!/usr/bin/python3 -u
+# after git pull, do: sudo cp regattastart9.py /usr/lib/cgi-bin/
 import os
 import errno
 import select
@@ -25,7 +26,7 @@ from picamera import PiCamera, Color
 # parameter data
 signal_dur = 0.3 # 0.3 sec
 log_path = '/usr/lib/cgi-bin/'
-mp4_path = '/var/www/html/images/'
+video_path = '/var/www/html/images/'
 photo_path = '/var/www/html/images/'
 ON = True
 OFF = False
@@ -96,10 +97,10 @@ def capture_picture(camera, photo_path, file_name):
     camera.capture(os.path.join(photo_path, file_name), use_video_port=True)
     logger.info ("     Capture picture = %s ", file_name)
 
-def start_video_recording(camera, mp4_path, file_name):
+def start_video_recording(camera, video_path, file_name):
     if camera.recording:
         camera.stop_recording()
-    camera.start_recording(os.path.join(mp4_path, file_name))
+    camera.start_recording(os.path.join(video_path, file_name))
     logger.info (" Started recording of %s ", file_name)
 
 def stop_video_recording(camera):
@@ -112,18 +113,30 @@ def annotate_video_duration(camera, start_time_sec):
     elapsed_time = seconds_since_midnight - start_time_sec #elapsed since last star until now)
     camera.annotate_text = f"{dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Seconds since last start: {elapsed_time}"
 
-def convert_video_to_mp4(mp4_path, source_file, destination_file):
-    convert_video_str = "MP4Box -add {} -new {}".format(os.path.join(mp4_path,source_file), os.path.join(mp4_path,destination_file))
+def convert_video_to_mp4(video_path, source_file, destination_file):
+    #convert_video_str = "MP4Box -add {} -new {}".format(os.path.join(video_path,source_file), os.path.join(video_path,destination_file))
+    convert_video_str = "MP4Box -add {} -fps 10 -new {}".format(
+        os.path.join(video_path, source_file),
+        os.path.join(video_path, destination_file)
+    )
     subprocess.run(convert_video_str, shell=True)
-    logger.info (" Video recording %s converted ", destination_file)
+    logger.info ("Line 118: Video recording %s converted ", destination_file)
+
+def re_encode_video(video_path, source_file, destination_file):
+    re_encode_video_str = "ffmpeg -i {} -vf fps=10 -vcodec libx264 -f mp4 {}".format(
+        os.path.join(video_path, source_file),
+        os.path.join(video_path, destination_file)
+    )
+    subprocess.run(re_encode_video_str, shell=True)
+    logger.info ("Line 131: Video %s re-encoded ", destination_file)
 
 def start_sequence(camera, signal, start_time_sec, num_starts, photo_path):
     for i in range(num_starts):
-        logger.info(f" Start_sequence. Start of iteration {i}")
+        logger.info(f"  Line 122: Start_sequence. Start of iteration {i}")
         # Adjust the start_time_sec for the second iteration
         if i == 1:
             start_time_sec += 5 * 60  # Add 5 minutes for the second iteration
-            logger.info(f"  Start_sequence, Next start_time_sec: {start_time_sec}")
+            logger.info(f"  Line 126Start_sequence, Next start_time_sec: {start_time_sec}")
 
         # Define time intervals for each iteration
         time_intervals = [
@@ -153,7 +166,7 @@ def start_sequence(camera, signal, start_time_sec, num_starts, photo_path):
                     capture_picture(camera, photo_path, picture_name)
                     logger.info(f"     Start_sequence, log_message: {log_message}")
                     logger.info(f"     Start_sequence, seconds_since_midnight: {seconds_since_midnight}, start_time_sec: {start_time_sec}")
-        logger.info(f" Start_sequence, End of iteration: {i}")
+        logger.info(f" Line 156: Start_sequence, End of iteration: {i}")
 
 def open_camera():
     """
@@ -175,8 +188,10 @@ def cv_annotate_video(frame, start_time_sec):
     elapsed_time = seconds_since_midnight - start_time_sec #elapsed since last start until now)
     label = str(dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) +  " Seconds since last start: " +  str(elapsed_time)
     org = (30,60)
+    #font = cv2.FONT_HERSHEY_SIMPLEX
+    #font = ImageFont.truetype("PAPYRUS.ttf", 80) 
     fontFace=cv2.FONT_HERSHEY_DUPLEX
-    fontScale = 0.6
+    fontScale = 0.7
     color=(0,0,255) #(B, G, R)
     thickness = 1
     lineType = cv2.LINE_AA
@@ -188,24 +203,14 @@ def stop_recording():
     recording_stopped = True
     listening = False  # Set flag to False to terminate the loop in listen_for_messages
 
-def get_php_temp_dir():
-    php_command = "php -r 'echo sys_get_temp_dir();'"
-    result = subprocess.run(php_command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-    logging.info("Line 192, get_php_temp", result)
-    if result.returncode == 0:
-        return result.stdout.strip()
-    else:
-        logger.info("Line 195 php error")
-        return None
-
 # Flag to control the loop in listen_for_messages
 listening = True
 
 def listen_for_messages(timeout=0.1):
     global listening  # Use global flag
-    logger.info(" Line 207 Example: listen for messages from PHP script via a named pipe")
+    logger.info(" Line 206: Listen for messages from PHP script via a named pipe")
     pipe_path = '/var/www/html/tmp/stop_recording_pipe'
-    logger.info(f"Line 209, pipepath {pipe_path}")
+    logger.info(f"Line 209:, pipepath {pipe_path}")
 
     try:
         os.unlink(pipe_path)  # Remove existing pipe
@@ -232,9 +237,9 @@ def listen_for_messages(timeout=0.1):
                 # Handle timeout (no input received within timeout period)
                 # You can perform any necessary actions here
 
-def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec):
+def finish_recording(video_path, num_starts, video_end, start_time, start_time_sec):
     # Open a video capture object (replace 'your_video_file.mp4' with the actual video file or use 0 for webcam)
-    #cap = cv2.VideoCapture(os.path.join(mp4_path, "finish21-6.mp4"))
+    #cap = cv2.VideoCapture(os.path.join(video_path, "finish21-6.mp4"))
     cap = open_camera()
 
     # Load the pre-trained object detection model -- YOLO (You Only Look Once)
@@ -253,8 +258,10 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
     frame_size = (width, height)
     # setup cv2 writer 
-    fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # H.264 codec with MP4 container
-    video_writer = cv2.VideoWriter(mp4_path + 'video1' + '.mp4', fourcc, fpsw, frame_size)
+    fourcc = cv2.VideoWriter_fourcc(*'XVID')  # H.264 codec with MP4 container
+    #fourcc = 0
+    #video_writer = cv2.VideoWriter(video_path + 'video1' + '.mp4', fourcc, fpsw, frame_size)
+    video_writer = cv2.VideoWriter(video_path + 'video1' + '.avi', fourcc, fpsw, frame_size)
 
     number_of_non_detected_frames = 30
     number_of_detected_frames = 3 # Set the number of frames to record after detecting a boat
@@ -301,8 +308,18 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
                     pt1 = (int(x), int(y))
                     pt2 = (int(x + w), int(y + h))
                     cv2.rectangle(frame, pt1, pt2, (0, 255, 0), 2, cv2.LINE_AA)
+                    # time in rectangle
+                    fontFace=cv2.FONT_HERSHEY_PLAIN
+                    detect_time= time.strftime("%H:%M:%S")
+                    posx = int(x) + 5
+                    posy = int(y + h - 5) 
+                    org = (posx,posy)
+                    fontScale = 0.7
+                    color=(0,0,255) #(B, G, R)
+                    cv2.putText(frame,detect_time,org,fontFace,fontScale,color,1,cv2.LINE_AA)
+
                     for i in range(number_of_detected_frames):
-                        logger.info("Line 247 boat detected.")
+                        logger.info("Line 306: boat detected.")
                         cv_annotate_video(frame, start_time_sec)
                         video_writer.write(frame)
 
@@ -321,13 +338,13 @@ def finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec
         if elapsed_time >= 60 * (video_end + 5 * (num_starts - 1)):
             break
 
-        logger.info(f"Line 304, Recording stopped: {recording_stopped}")
+        logger.info(f"Line 325, Recording stopped: {recording_stopped}")
         if recording_stopped == True:
             break
 
     cap.release()  # Don't forget to release the camera resources when done
     video_writer.release()  # Release the video writer
-    logger.info("Line 310, Exited finish_recording module.")
+    logger.info("Line 326, Exited finish_recording module.")
 
 def main():
     logger = setup_logging()  # Initialize the logger
@@ -378,12 +395,12 @@ def main():
 
                     if num_starts == 1 or num_starts == 2:
                         # Start video recording just before 5 minutes before the first start
-                        start_video_recording(camera, mp4_path, "video0.h264")
+                        start_video_recording(camera, video_path, "video0.h264")
                         logger.info("Inner loop, entering the start sequence block.")
                         start_sequence(camera, signal, start_time_sec, num_starts, photo_path)
                         if num_starts == 2:
                             start_time_sec = start_time_sec + (5 * 60)
-                        logger.info(" Wait 2 minutes then stop video recording")
+                        logger.info(" Wait 2 minutes then stop video0 recording")
                         t0 = dt.datetime.now()
                         logger.info(" start_time_sec= %s, t0= %s",start_time_sec, t0)  #test
                         while (dt.datetime.now() - t0).seconds < (119):
@@ -392,7 +409,7 @@ def main():
                             annotate_video_duration(camera, start_time_sec)
                             camera.wait_recording(0)
                         stop_video_recording(camera)
-                        convert_video_to_mp4(mp4_path, "video0.h264", "video0.mp4")
+                        convert_video_to_mp4(video_path, "video0.h264", "video0.mp4")
                     # Exit the loop after the if condition is met
                     break
 
@@ -401,22 +418,27 @@ def main():
         time.sleep(2)  # Introduce a delay of 2 seconds
 
     except json.JSONDecodeError as e:
-        logger.info ("Line 405, Failed to parse JSON: %", str(e))
+        logger.info ("Line 421, Failed to parse JSON: %", str(e))
         sys.exit(1)
     finally:
-        logger.info("Line 408 Finally section, before listen_for_message")
+        logger.info("Line 424 Finally section, before listen_for_message")
           # Start a thread for listening for messages
         listen_thread = threading.Thread(target=listen_for_messages)
         listen_thread.start()
-        logger.info("Line 412, Finally section, before 'Finish recording'. start_time=%s video_end%s", start_time, video_end)
-        finish_recording(mp4_path, num_starts, video_end, start_time, start_time_sec)
-        logger.info("Line 414, Finished with finish_recording")
+        logger.info("Line 428, Finally section, before 'Finish recording'. start_time=%s video_end%s", start_time, video_end)
+        time.sleep(2)
+        finish_recording(video_path, num_starts, video_end, start_time, start_time_sec)
+        time.sleep(2)
+        re_encode_video(video_path, "video1.avi", "video1.mp4")
+        logger.info("Line 432, Finished with finish_recording and recording converted to mp4")
         if camera is not None:
             camera.close()  # Release the camera resources
         if signal is not None:
             signal.off() # Turn off the signal output
             signal.close() # Turn off the signal output
+            lamp1.off() # Turn off the lamp1
             lamp1.close() # Turn off the lamp1
+            lamp2.off() # Turn off the lamp2
             lamp2.close() # Turn off the lamp2
 
 if __name__ == "__main__":

@@ -10,17 +10,22 @@ if ($pipeHandle === false) {
     error_log('Failed to open named pipe: ' . $lastError['message']);
     die('Failed to open named pipe.');
 } else {
-    error_log('Opened pipe handle successfully: ' . $pipeHandle);
+    error_log('Line 13: Opened pipe handle successfully: ' . $pipeHandle);
 }
 
 $message = 'stop_recording';
 if (fwrite($pipeHandle, $message) === false) {
     // Log error if writing to pipe fails
-    error_log('Failed to write message to named pipe.');
+    error_log('Line 19: Failed to write message to named pipe.');
 } else {
     // Log success message
-    error_log('Message sent to named pipe: ' . $message);
+    error_log('Line 22: Message sent to named pipe: ' . $message);
 }
 
-fclose($pipeHandle); // Close the pipe handle
+if (fclose($pipeHandle) === false) {
+    error_log('Line 26: Failed to close pipe.');
+} else {
+    // Log success message
+    error_log('Line 29: succesfully closed the pipe:');
+}
 ?>

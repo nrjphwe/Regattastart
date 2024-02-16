@@ -116,7 +116,7 @@ while True:
     if elapsed_time >= 60 * video_end:
         break
 
-# Release the video capture object and close all windows
+# Release the  video capture object and close all windows
 cap.release()
 video_writer.release()
 cv2.destroyAllWindows()
