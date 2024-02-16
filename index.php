@@ -297,8 +297,10 @@
                         }
                     }
                 } else {
-                    error_log("Line 298: video1 $video_name do not exist or file size = $file_size");
+                    error_log("Line 300: video1 file size $file_size is zero");
                 }
+            }  else {
+                error_log("Line 303: video1 $video_name do not exist");
             }
         ?>
     </div>
