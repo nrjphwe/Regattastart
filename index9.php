@@ -35,9 +35,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title> Regattastart9 image detection </title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/w3.css">
     <!-- set styles -->
     <style>
         /* Center align the content */
@@ -65,7 +65,6 @@
             }
         }
     </style>
-    <link rel="stylesheet" href="/w3.css">
 </head>
 <body>
 <!-- Text on top of page retrieved from index6 or index9 -->
