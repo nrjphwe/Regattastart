@@ -69,54 +69,54 @@
 <body>
 <!-- Text on top of page retrieved from index6 or index9 -->
 <div style="text-align: center;">
-<?php
-    if (isset($_SESSION['form_data']) && is_array($_SESSION['form_data'])) {
+    <?php
+        if (isset($_SESSION['form_data']) && is_array($_SESSION['form_data'])) {
 
-        if (array_key_exists('start_time', $_SESSION['form_data'])) {
-            // Retrieve the value of the 'start_time' key
-            $start_time = $_SESSION['form_data']['start_time'];
-            echo "First start time: " . $start_time;
+            if (array_key_exists('start_time', $_SESSION['form_data'])) {
+                // Retrieve the value of the 'start_time' key
+                $start_time = $_SESSION['form_data']['start_time'];
+                echo "First start time: " . $start_time;
+            }
+            if (array_key_exists('video_end', $_SESSION['form_data'])) {
+                $video_end = $_SESSION['form_data']['video_end'];
+                echo ", Video end duration :  $video_end + 2 minutes after start, ";
+            }
+            if (array_key_exists('num_starts', $_SESSION['form_data'])) {
+                $num_starts = $_SESSION['form_data']['num_starts'];
+                echo " Number of starts: $num_starts";
+            }
+            if (array_key_exists('video_dur', $_SESSION['form_data'])) {
+                $video_dur = $_SESSION['form_data']['video_dur'];
+                echo " Video duration: $video_dur";
+            }
+            if (array_key_exists('video_delay', $_SESSION['form_data'])) {
+                $video_delay = $_SESSION['form_data']['video_delay'];
+                echo " Video delay after start: " . $video_delay;
+            }
+            if (array_key_exists('num_video', $_SESSION['form_data'])) {
+                $num_video = $_SESSION['form_data']['num_video'];
+                echo " Number of videos during finish: " . $num_video;
+            } else {
+                $num_video = 1;
+            }
         }
-        if (array_key_exists('video_end', $_SESSION['form_data'])) {
-            $video_end = $_SESSION['form_data']['video_end'];
-            echo ", Video end duration :  $video_end + 2 minutes after start, ";
+        else {
+            // 'form_data' array not set or not an array
+            echo "Line 108: No form data found in the session.";
         }
-        if (array_key_exists('num_starts', $_SESSION['form_data'])) {
-            $num_starts = $_SESSION['form_data']['num_starts'];
-            echo " Number of starts: $num_starts";
-        }
-        if (array_key_exists('video_dur', $_SESSION['form_data'])) {
-            $video_dur = $_SESSION['form_data']['video_dur'];
-            echo " Video duration: $video_dur";
-        }
-        if (array_key_exists('video_delay', $_SESSION['form_data'])) {
-            $video_delay = $_SESSION['form_data']['video_delay'];
-            echo " Video delay after start: " . $video_delay;
-        }
-        if (array_key_exists('num_video', $_SESSION['form_data'])) {
-            $num_video = $_SESSION['form_data']['num_video'];
-            echo " Number of videos during finish: " . $num_video;
-        } else {
-            $num_video = 1;
-        }
-    }
-    else {
-        // 'form_data' array not set or not an array
-        echo "Line 108: No form data found in the session.";
-    }
-?>
-</div>
-<header>
-<div style="text-align: center;">
-    <div class="w3-container w3-blue">
-        <h2>Regattastart with image detection </h2>
-    </div>
-</div>
-<div style="text-align: center;">
-    <?php 
-        echo "     Version: " . APP_VERSION . "<br><p></p>"; 
     ?>
 </div>
+<header>
+    <div style="text-align: center;">
+        <div class="w3-container w3-blue">
+            <h2>Regattastart9 with image detection </h2>
+        </div>
+    </div>
+    <div style="text-align: center;">
+        <?php 
+            echo "     Version: " . APP_VERSION . "<br><p></p>"; 
+        ?>
+    </div>
 </header>
 <!-- HTML form -->
 <div class="w3-container" style="text-align: center;">
@@ -124,8 +124,8 @@
     <div class="w3-margin w3-padding-large content-wrapper">
         <form action="index9.php" method="POST">
             <div class="w3-row-padding">
+                <!-- Left side content -->
                 <div class="w3-half">
-                    <!-- Left side content -->
                     <div class="w3-pale-yellow" style="text-align: center;">
                         <fieldset>
                             <legend>Day and time setup: </legend>
@@ -165,8 +165,8 @@
                         </fieldset>
                     </div>
                 </div>
+                <!-- Right side content -->
                 <div class="w3-half">
-                    <!-- Right side content -->
                     <div class="w3-pale-yellow" style="text-align: center;">
                     <fieldset>
                         <legend>Video Setup: </legend>
@@ -183,9 +183,9 @@
                     </fieldset>
                </div>
             </div>
+            <!-- central below pale-yellow -->
             <div class="w3-row-padding">
                 <div class="w3-round w3-light-grey w3-cell">
-                    <!-- central below pale-yellow -->
                     <fieldset>
                         <legend> Setup of 1 or 2 starts </legend>
                         <p></p>
@@ -199,6 +199,7 @@
             <div>
                 <p>
             </div>
+            <!-- central below ligth-grey -->
             <div class="w3-row-padding">
                 <div class="w3-round w3-blue w3-cell">
                     <fieldset>
@@ -207,7 +208,6 @@
                         <div class="w3" align="center">
                             <button type="submit">Submit</button>
                         </div>
-                        <p></p>
                     </fieldset>
                 </div>
             </div>
