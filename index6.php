@@ -133,7 +133,6 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
                             <p></p>
                             Duration between start and estimated finish: 
                             <select name = "video_delay" id = "video_delay">
-                                <option value="5" <?php if(isset($video_delay) && $video_delay == "5"){echo "selected=\"selected\"";}  ?>>5</option>
                                 <option value="20" <?php if(isset($video_delay) && $video_delay == "20"){echo "selected=\"selected\"";} ?>>20</option>
                                 <option value="30" <?php if(isset($video_delay) && $video_delay == "30"){echo "selected=\"selected\"";} ?>>30</option>
                                 <option value="40" <?php if(isset($video_delay) && $video_delay == "40"){echo "selected=\"selected\"";} ?>>40</option>
@@ -141,17 +140,18 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
                                 <option value="60" <?php if(isset($video_delay) && $video_delay == "60"){echo "selected=\"selected\"";} ?>>60</option>
                                 <option value="70" <?php if(isset($video_delay) && $video_delay == "70"){echo "selected=\"selected\"";} ?>>70</option>
                                 <option value="80" <?php if(isset($video_delay) && $video_delay == "80"){echo "selected=\"selected\"";} ?>>80</option>
+                                <option value="5" <?php if(isset($video_delay) && $video_delay == "5"){echo "selected=\"selected\"";}  ?>>5</option>
                             </select>
                             <p></p>
                             Duration for each video: 
                             <select name = "video_dur" id = "video_dur">
-                                <option value="2"  <?php if(isset($video_dur) && $video_dur == "2"){echo "selected=\"selected\"";} ?> value="2">2</option> 
                                 <option value="10" <?php if(isset($video_dur) && $video_dur == "10"){echo "selected=\"selected\"";} ?> value="10">10</option>
-                                <option value="15" <?php if(isset($video_dur) && $video_dur == "15"){echo "selected=\"selected\"";}?> value="15">15</option>
+                                <option value="15" <?php if(isset($video_dur) && $video_dur == "15"){echo "selected=\"selected\"";} ?> value="15">15</option>
                                 <option value="20" <?php if(isset($video_dur) && $video_dur == "20"){echo "selected=\"selected\"";} ?> value="20">20</option>
                                 <option value="30" <?php if(isset($video_dur) && $video_dur == "30"){echo "selected=\"selected\"";} ?> value="30">30</option>
                                 <option value="50" <?php if(isset($video_dur) && $video_dur == "50"){echo "selected=\"selected\"";} ?> value="50">50</option>
-                                <option value="60" <?php if(isset($video_dur) && $video_dur == "60"){echo "selected=\"selected\"";} ?> value="60">60</option> 
+                                <option value="60" <?php if(isset($video_dur) && $video_dur == "60"){echo "selected=\"selected\"";} ?> value="60">60</option>
+                                <option value="2"  <?php if(isset($video_dur) && $video_dur == "2"){echo "selected=\"selected\"";} ?> value="2">2</option> 
                             </select>
                             <p></p>
                             Number of video's: 
