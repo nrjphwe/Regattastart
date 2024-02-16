@@ -10,11 +10,13 @@
     if ($_SERVER["REQUEST_METHOD"] === "POST") {
         // Form was submitted
         include_once "stop_recording.php"; // Include the script to stop recording
-        error_log('Line 13: The stop_recording.php was included in index.php');
-        // exit; // Stop further execution after including the script
+        error_log('Line 13: The stop_recording.php was included in index.php')
+
+        // Trigger a refresh of the page after a certain time interval (e.g., 20 seconds)
+        echo '<meta http-equiv="refresh" content="20">';
     } elseif ($_SERVER["REQUEST_METHOD"] !== "GET") {
         // Log an error only if the request method is neither "POST" nor "GET"
-        error_log('Line 17: $_SERVER["REQUEST_METHOD"] < > "POST" NOR "GET" ');
+        error_log('Line 19: $_SERVER["REQUEST_METHOD"] < > "POST" NOR "GET" ');
     }
 ?>
 <!-- Your HTML to display data from the session -->
