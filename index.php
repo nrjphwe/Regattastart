@@ -241,7 +241,7 @@
             }
         ?>
     </div>
-    <!-- Stop recording button visbible after video is ready , but not when video1 exists -->
+    <!-- Show "Stop recording" button after video0 is ready , but not when video1 exists -->
     <div style="text-align: center;" class="w3-panel w3-pale-green">
         <?php
             if ($num_video == 1) // which is valid for regattastart9
@@ -267,19 +267,20 @@
             }
         ?>
     </div>
-    <!-- remaining videos -->
+    <!-- Display remaining videos -->
     <div style="text-align: center;" class="w3-panel w3-pale-red">
         <?php
             $video_name = 'images/video1.mp4';
-            if (file_exists($video_name)) 
+            $file_size = filesize($video_name):
+            if (file_exists($video_name)) && ($file_size > 500kb)
             {
-                error_log("Line 276: Now file $video_name exists");
+                error_log("Line 277: Now file $video_name exists");
                 for ($x = 1; $x <= $num_video; $x++) {
                     $video_name = 'images/video' . $x . '.mp4';
                     error_log("Line 279: for loop video = $video_name");
                     if (file_exists($video_name)) 
                     {
-                        error_log("Line 282: Now video $video_name do exists");
+                        error_log("Line 283: Now video $video_name do exists");
                         // Display the video
                         echo "<h3> Finish video, this is video $x for the finish</h3>";
                         echo '<video id="video' . $x . '" width="720" height="480" controls>
@@ -290,11 +291,11 @@
                             </div>';
                     } else {
                         // Log an error if the video file doesn't exist
-                        error_log("Line 288: video $x does not exist");
+                        error_log("Line 294: video $x does not exist");
                     }
                 }
             } else {
-                error_log("Line 297: video1 $video_name do not exist");
+                error_log("Line 298: video1 $video_name do not exist or file size = $file_size");
             }
         ?>
     </div>
@@ -317,7 +318,7 @@
         if (file_exists($filename)) {
             echo "This web-page was last modified: \n" . date ("Y-m-d H:i:s.", filemtime($filename));
         } else {
-            error_log("Line 313: $filename do not exists");
+            error_log("Line 321: $filename do not exists");
         }
         ?>
     </div>
