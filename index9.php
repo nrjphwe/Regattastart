@@ -117,6 +117,7 @@
         echo "     Version: " . APP_VERSION . "<br><p></p>"; 
     ?>
 </div>
+</header>
 <!-- HTML form -->
 <div class="w3-container" style="text-align: center;">
     <!-- Content Wrapper with center alignment -->
@@ -195,7 +196,9 @@
                     </fieldset>
                 </div>
             </div>
-            <br>
+            <div>
+                <p>
+            </div>
             <div class="w3-row-padding">
                 <div class="w3-round w3-blue w3-cell">
                     <fieldset>
