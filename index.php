@@ -271,10 +271,10 @@
     <div style="text-align: center;" class="w3-panel w3-pale-red">
         <?php
             $video_name = 'images/video1.mp4';
-            if (filesize($video_name) != False)
+            if (file_exists($video_name))
             {
                 $file_size = filesize($video_name);
-                if (file_exists($video_name))
+                if (filesize($video_name) !== False)
                 { 
                     if ($file_size > 0)
                     {
@@ -295,15 +295,17 @@
                                     </div>';
                             } else {
                                 // Log an error if the video file doesn't exist
-                                error_log("Line 294: video $x does not exist");
+                                error_log("Line 298: video $x does not exist");
                             }
                         }
                     } else {
-                        error_log("Line 300: video1 file size $file_size is zero");
+                        error_log("Line 302: video1 file size $file_size is zero");
                     }
-                }  else {
-                    error_log("Line 303: video1 $video_name do not exist");
+                } else {
+                    error_log("Line 304: cannot read filesize for video1");
                 }
+            } else {
+                error_log("Line 306: video1 do not exists");
             }
         ?>
     </div>
