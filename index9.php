@@ -183,6 +183,7 @@
                     </div>
                 </div>
             </div>
+            <br>
             <!-- Central content below pale-yellow -->
             <div class="w3-row-padding">
                 <div class="w3-round w3-light-grey w3-cell">
@@ -195,6 +196,9 @@
                         </select>
                     </fieldset>
                 </div>
+            </div>
+            <div>
+                <p>
             </div>
             <!-- Execute button, central below ligth-grey -->
             <div class="w3-row-padding">
