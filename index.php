@@ -259,7 +259,7 @@
                     </div>';
                 } else {
                     // If video0.mp4 exist but not video1.mp4, do not show the button
-                    error_log("Line 262: video0.mp4 do not exist or video1.mp4 exists");
+                    error_log("Line 262: Stop Recording button can be hidden, video0.mp4 may exist as well as video1.mp4 exists");
                 }
             } else {
                 // Log an error if $num_video is not equal to 1
@@ -278,13 +278,12 @@
                 { 
                     if ($file_size > 0)
                     {
-                        error_log("Line 277: Now file $video_name exists");
+                        error_log("Line 281: File $video_name exists");
                         for ($x = 1; $x <= $num_video; $x++) {
                             $video_name = 'images/video' . $x . '.mp4';
-                            error_log("Line 279: for loop video = $video_name");
+                            error_log("Line 279: Loop to display video = $video_name");
                             if (file_exists($video_name)) 
                             {
-                                error_log("Line 283: Now video $video_name do exists");
                                 // Display the video
                                 echo "<h3> Finish video, this is video $x for the finish</h3>";
                                 echo '<video id="video' . $x . '" width="720" height="480" controls>
