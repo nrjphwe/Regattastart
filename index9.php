@@ -32,7 +32,6 @@
 
 ?>
 <!DOCTYPE html>
-<html lang="en">
 <head>
     <meta charset="UTF-8">
     <title> Regattastart9 image detection </title>
@@ -216,19 +215,14 @@
 </div>
 <!-- Here is our page's main content -->
 <main>
-    <br>
     <div id="result" align="center"></div>
-    <div class="w3-container" align="center">
-    <div class="w3-row-padding" style="text-align: center;">
-        <div id="result" ></div>
-    </div>
+        <div class="w3-container" align="center">
+        <div class="w3-row-padding" style="text-align: center;">
+            <div id="result" ></div>
+        </div>
     <h5><a href="/index.php">  Resultat sida  </a></h5>
-    </div>
 </main>
 <footer>
-    <div class="w3-row-padding" align="center">
-        <br><p> - phwe - <br></p>
-    </div>
     <div style="text-align: center;" class="w3-panel w3-grey">
         <?php
             // output when index6.php was last modified.
@@ -237,6 +231,9 @@
                 echo "This web-page: $filename was last modified: " . date ("Y-m-d H:i:s.", filemtime($filename));
             }
         ?>
+    </div>
+    <div class="w3-row-padding" align="center">
+        <br><p> - phwe - <br></p>
     </div>
 </footer>
 </body>
