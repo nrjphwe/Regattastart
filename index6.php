@@ -38,7 +38,7 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
 <!DOCTYPE html>
 <html>
 <head>
-    <title> Regattastart 2024 för setup av en eller 2 starter </title> 
+    <title> Regattastart6 för setup av en eller 2 starter </title> 
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="/w3.css">
     <!-- set styles -->
@@ -84,8 +84,8 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
     <div class="w3-margin w3-padding-large content-wrapper">
         <form action="index6.php" method="POST">
             <div class="w3-row-padding">
+                <!-- Left side content -->
                 <div class="w3-half">
-                    <!-- Left side content -->
                     <div class="w3-pale-yellow" style="text-align: center;">
                         <fieldset>
                             <legend>Day and time setup: </legend>
@@ -125,8 +125,8 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
                         </fieldset>
                     </div>
                 </div>
+                <!-- Right side content -->
                 <div class="w3-half">
-                    <!-- Right side content -->
                     <div class="w3-pale-yellow" style="text-align: center;">
                         <fieldset>
                         <legend>Video Setup: </legend>
@@ -170,9 +170,9 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
                     </div>
                 </div>
             </div>
+            <!-- central below pale-yellow -->
             <div class="w3-row-padding">
                 <div class="w3-round w3-light-grey w3-cell">
-                    <!-- central below pale-yellow -->
                     <fieldset>
                         <legend> Setup of 1 or 2 starts </legend>
                         <p></p>
@@ -186,6 +186,7 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
             <div>
                 <p>
             </div>
+            <!-- central below ligth-grey -->
             <div class="w3-row-padding">
                 <div class="w3-round w3-blue w3-cell">
                     <fieldset>
@@ -200,20 +201,16 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
         </form>
      </div>
 </div>
-    <!-- Here is our page's main content -->
-    <main>
-        <div id="result" align="center"></div>
+<!-- Here is our page's main content -->
+<main>
+    <div id="result" align="center"></div>
         <div class="w3-container" align="center">
         <div class="w3-row-padding" style="text-align: center;">
             <div id="result" ></div>
         </div>
-        <h5><a href="/index.php">  Resultat sida  </a></h5>
-    </main>
-</div>
+    <h5><a href="/index.php">  Resultat sida  </a></h5>
+</main>
 <footer>
-    <div class="w3-row-padding" align="center">
-        <br><p> - phwe - <br></p>
-    </div>
     <div style="text-align: center;" class="w3-panel w3-grey">
         <?php
             // output when index6.php was last modified.
@@ -222,6 +219,9 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
                 echo "This web-page: $filename was last modified: " . date ("Y-m-d H:i:s.", filemtime($filename));
             }
         ?>
+    </div>
+    <div class="w3-row-padding" align="center">
+        <br><p> - phwe - <br></p>
     </div>
 </footer>
 </body>
