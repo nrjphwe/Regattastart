@@ -167,23 +167,21 @@
                 <!-- Right side content -->
                 <div class="w3-half">
                     <div class="w3-pale-yellow" style="text-align: center;">
-                    <fieldset>
-                        <legend>Video Setup: </legend>
-                        <p></p>
-                        End for finish video, duration from last start:
-                        <select name = "video_end" id = "video_end">
-                            <option value="10" <?php if(isset($video_end) && $video_end == "5"){echo "selected=\"selected\"";} ?> value="10">10</option>
-                            <option value="20" <?php if(isset($video_end) && $video_end == "20"){echo "selected=\"selected\"";} ?> value="20">20</option>
-                            <option value="60" <?php if(isset($video_end) && $video_end == "60"){echo "selected=\"selected\"";} ?> value="60">60</option>
-                            <option value="90" <?php if(isset($video_end) && $video_end == "90"){echo "selected=\"selected\"";}?> value="90">90</option>
-                            <option value="120" <?php if(isset($video_end) && $video_end == "120"){echo "selected=\"selected\"";} ?> value="120">120</option>
-                        </select>
-                        <p></p>
-                    </fieldset>
+                        <fieldset>
+                            <legend>Video Setup: </legend>
+                            <p></p>
+                            End for finish video, duration from last start:
+                            <select name = "video_end" id = "video_end">
+                                <option value="10" <?php if(isset($video_end) && $video_end == "5"){echo "selected=\"selected\"";} ?> value="10">10</option>
+                                <option value="20" <?php if(isset($video_end) && $video_end == "20"){echo "selected=\"selected\"";} ?> value="20">20</option>
+                                <option value="60" <?php if(isset($video_end) && $video_end == "60"){echo "selected=\"selected\"";} ?> value="60">60</option>
+                                <option value="90" <?php if(isset($video_end) && $video_end == "90"){echo "selected=\"selected\"";}?> value="90">90</option>
+                                <option value="120" <?php if(isset($video_end) && $video_end == "120"){echo "selected=\"selected\"";} ?> value="120">120</option>
+                            </select>
+                            <p></p>
+                        </fieldset>
+                    </div>
                 </div>
-            </div>
-            <div>
-                <p>
             </div>
             <!-- Central content below pale-yellow -->
             <div class="w3-row-padding">
@@ -197,9 +195,6 @@
                         </select>
                     </fieldset>
                 </div>
-            </div>
-            <div>
-                <p>
             </div>
             <!-- Execute button, central below ligth-grey -->
             <div class="w3-row-padding">
