@@ -272,7 +272,8 @@
         <?php
             $video_name = 'images/video1.mp4';
             $file_size = filesize($video_name);
-            if (file_exists($video_name) and ($file_size > 500 kb))
+            print($file_size);
+            if (file_exists($video_name))
             {
                 error_log("Line 277: Now file $video_name exists");
                 for ($x = 1; $x <= $num_video; $x++) {
