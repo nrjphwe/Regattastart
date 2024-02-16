@@ -180,7 +180,7 @@
                         </select>
                         <p></p>
                     </fieldset>
-               </div>
+                </div>
             </div>
             <!-- central below pale-yellow -->
             <div class="w3-row-padding">
