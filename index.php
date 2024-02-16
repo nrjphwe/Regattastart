@@ -271,7 +271,7 @@
     <div style="text-align: center;" class="w3-panel w3-pale-red">
         <?php
             $video_name = 'images/video1.mp4';
-            if filesize($video_name)
+            if (filesize($video_name) != False)
             {
                 $file_size = filesize($video_name);
                 if (file_exists($video_name))
