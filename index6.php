@@ -171,7 +171,7 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
                 </div>
             </div>
             <br>
-            <!-- central below pale-yellow -->
+            <!-- central content below pale-yellow -->
             <div class="w3-row-padding">
                 <div class="w3-round w3-light-grey w3-cell">
                     <fieldset>
@@ -187,7 +187,7 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
             <div>
                 <p>
             </div>
-            <!-- central below ligth-grey -->
+            <!-- Execute button, central below ligth-grey -->
             <div class="w3-row-padding">
                 <div class="w3-round w3-blue w3-cell">
                     <fieldset>
