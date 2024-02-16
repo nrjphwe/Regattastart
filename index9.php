@@ -183,7 +183,7 @@
                 </div>
             </div>
             <!-- central below pale-yellow -->
-            <div class="w3-row-padding">
+            <div class="w3-row-padding" style="align-center">
                 <div class="w3-round w3-light-grey w3-cell">
                     <fieldset>
                         <legend> Setup of 1 or 2 starts </legend>
