@@ -163,7 +163,7 @@
                             <br>
                         </fieldset>
                     </div>
-                    </div>
+                </div>
                 <div class="w3-half">
                     <!-- Right side content -->
                     <div class="w3-pale-yellow" style="text-align: center;">
