@@ -2,8 +2,6 @@
     define('APP_VERSION', '24.02.09'); // You can replace '1.0.0' with your desired version number
     session_id("regattastart");
     session_start();
-    //echo "Session id = " . Session_id() . " ";
-    // ini_set('session.gc_maxlifetime', 86400); is set in /etc/php/7.3/apache2/php.ini
     //print_r($_SESSION);
     //echo "<br/>";
     //print_r($_POST);
@@ -23,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     echo date('h:i:s') . "<br>";
     echo "execution started";
     sleep(3);
-    
+
     //exec('python3 /usr/lib/cgi-bin/regattastart6.py ' . escapeshellarg(json_encode($_POST)));
     // Redirect to index.php
     header("Location: index.php");
@@ -80,7 +78,6 @@ $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data
         <?php echo "     Version: " . APP_VERSION . "<p></p>"; ?>
     </div>
 </header>
-
 <!-- HTML form -->
 <div class="w3-container" style="text-align: center;">
     <!-- Content Wrapper with center alignment -->
