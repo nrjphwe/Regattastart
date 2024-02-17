@@ -178,7 +178,10 @@
                                 <option value="180" <?php if(isset($video_end) && $video_end == "180"){echo "selected=\"selected\"";} ?> value="180">180</option>
                                 <option value="10" <?php if(isset($video_end) && $video_end == "10"){echo "selected=\"selected\"";} ?> value="10">10</option>
                             </select>
-                            <p></p>
+                            <br>
+                            <p style="font-size:11px">
+                            (Max duration of raace)
+                            <br>
                         </fieldset>
                     </div>
                 </div>
