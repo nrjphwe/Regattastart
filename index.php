@@ -258,6 +258,7 @@
                 {
                     // error_log("Line 259: Video && !video1 to show stop button");
                     echo "<h4> Efter sista båt i mål, kan man stoppa och generera video för målgång </h4>";
+                    echo "<h4> Vänta minst 10 sec efter 'Stop Recording' knappen tryckts </h4>";
                     echo '<div id="stopRecordingButtonDiv">
                         <form id="stopRecordingForm" action="' . htmlspecialchars($_SERVER["PHP_SELF"]) . '" method="post">
                             <input type="submit" id="stopRecordingButton" value="Stop Recording">
