@@ -13,8 +13,8 @@
         include_once "stop_recording.php"; // Include the script to stop recording
         error_log('Line 13: The stop_recording.php was included in index.php');
 
-        // Trigger a refresh of the page after a certain time interval e.g., 10
-        echo '<meta http-equiv="refresh" content="10" />';
+        // Trigger a refresh of the page after a certain time interval e.g., 5
+        echo '<meta http-equiv="refresh" content="50" />';
 
     } elseif ($_SERVER["REQUEST_METHOD"] !== "GET") 
     {
@@ -284,7 +284,7 @@
                 { 
                     if ($file_size > 0)
                     {
-                        error_log("Line 287: File $video_name exists");
+                        // error_log("Line 287: File $video_name exists");
                         for ($x = 1; $x <= $num_video; $x++) {
                             $video_name = 'images/video' . $x . '.mp4';
                             // error_log("Line 279: Loop to display video = $video_name");
