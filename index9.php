@@ -170,7 +170,7 @@
                         <fieldset>
                             <legend>Video Setup: </legend>
                             <p></p>
-                            End for finish video, duration from last start:
+                            End for the finish video, duration from last start:
                             <select name = "video_end" id = "video_end">
                                 <option value="60" <?php if(isset($video_end) && $video_end == "60"){echo "selected=\"selected\"";} ?> value="60">60</option>
                                 <option value="90" <?php if(isset($video_end) && $video_end == "90"){echo "selected=\"selected\"";} ?> value="90">90</option>
@@ -180,7 +180,7 @@
                             </select>
                             <br>
                             <p style="font-size:11px">
-                            (Max duration of raace)
+                            (Max duration of race)
                             <br>
                         </fieldset>
                     </div>
