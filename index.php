@@ -7,16 +7,22 @@
     error_reporting(E_ALL);
 ?>
 <?php
-    if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    if ($_SERVER["REQUEST_METHOD"] === "POST") 
+    {
         // Form was submitted
         include_once "stop_recording.php"; // Include the script to stop recording
         error_log('Line 13: The stop_recording.php was included in index.php');
-        // exit; // Stop further execution after including the script
-    } elseif ($_SERVER["REQUEST_METHOD"] !== "GET") {
+
+        // Trigger a refresh of the page after a certain time interval e.g., 5
+        echo '<meta http-equiv="refresh" content="50" />';
+
+    } elseif ($_SERVER["REQUEST_METHOD"] !== "GET") 
+    {
         // Log an error only if the request method is neither "POST" nor "GET"
         error_log('Line 17: $_SERVER["REQUEST_METHOD"] < > "POST" NOR "GET" ');
     }
 ?>
+
 <!-- Your HTML to display data from the session -->
 <!DOCTYPE html>
 <html lang="en">
@@ -177,7 +183,7 @@
                 echo "<h3> Foto vid 1a start </h3>";
                 echo "<img id='$filename' src='$imagePath' alt='1a start picture' width='720' height='480'>";
             } else {
-                error_log('Line 181: picture for the start do not exists');
+                error_log('Line 186: picture for the start do not exists');
             }
         ?>
     </div> 
@@ -233,11 +239,11 @@
         <?php
             $video_name = 'images/video0.mp4';
             if (file_exists($video_name)) {
-                error_log("Line 233: $video_name is available");
+                //error_log("Line 242: $video_name is available");
                 echo "<h4> Video 5 min före start och 2 min efter, eller vid 2 starter, till 2 min efter andra start </h4>";
                 echo '<video id="video0" width = "720" height="480" controls><source src= ' . $video_name . ' type="video/mp4"></video><p>';
             } else {
-                error_log("Line 237: $video_name do not exists");
+                error_log("Line 246: $video_name do not exists");
             }
         ?>
     </div>
@@ -250,8 +256,9 @@
                 $video_name1 = 'images/video1.mp4';
                 if (file_exists($video_name0) && !(file_exists($video_name1)))
                 {
-                    error_log("Line 253: Video && !video1 to show stop button");
+                    // error_log("Line 259: Video && !video1 to show stop button");
                     echo "<h4> Efter sista båt i mål, kan man stoppa och generera video för målgång </h4>";
+                    echo "<h4> Vänta minst 10 sec efter 'Stop Recording' knappen tryckts </h4>";
                     echo '<div id="stopRecordingButtonDiv">
                         <form id="stopRecordingForm" action="' . htmlspecialchars($_SERVER["PHP_SELF"]) . '" method="post">
                             <input type="submit" id="stopRecordingButton" value="Stop Recording">
@@ -259,7 +266,7 @@
                     </div>';
                 } else {
                     // If video0.mp4 exist but not video1.mp4, do not show the button
-                    error_log("Line 262: Stop Recording button can be hidden, video0.mp4 may exist as well as video1.mp4 exists");
+                    // error_log("Line 268: Stop Recording button can be hidden, video0.mp4 may exist as well as video1.mp4 exists");
                 }
             } else {
                 // Log an error if $num_video is not equal to 1
@@ -278,10 +285,10 @@
                 { 
                     if ($file_size > 0)
                     {
-                        error_log("Line 281: File $video_name exists");
+                        // error_log("Line 287: File $video_name exists");
                         for ($x = 1; $x <= $num_video; $x++) {
                             $video_name = 'images/video' . $x . '.mp4';
-                            error_log("Line 279: Loop to display video = $video_name");
+                            // error_log("Line 279: Loop to display video = $video_name");
                             if (file_exists($video_name)) 
                             {
                                 // Display the video
@@ -294,14 +301,14 @@
                                     </div>';
                             } else {
                                 // Log an error if the video file doesn't exist
-                                error_log("Line 298: video $x does not exist");
+                                error_log("Line 303: video $x does not exist");
                             }
                         }
                     } else {
-                        error_log("Line 302: video1 file size $file_size is zero");
+                        error_log("Line 307: video1 file size $file_size is zero");
                     }
                 } else {
-                    error_log("Line 304: cannot read filesize for video1");
+                    error_log("Line 310: cannot read filesize for video1");
                 }
             } else {
                 error_log("Line 306: video1 do not exists");
