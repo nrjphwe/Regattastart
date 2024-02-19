@@ -255,18 +255,27 @@
         <br><p> - phwe - <br></p>
     </div>
 </footer>
-<script>
-    // JavaScript to show/hide the second option based on the condition 1 or 2 starts
-    document.addEventListener('DOMContentLoaded', function() {
-        var numStarts = <?php echo json_encode($num_starts); ?>;
-        var secondOption = document.querySelector('select[name="dur_between_starts"] option[value="10"]');
-        if (numStarts == 2) {
-            secondOption.style.display = 'block';
-        } else {
-            secondOption.style.display = 'none';
-        }
-    });
-</script>
+<!-- JavaScript to show/hide the second option based on the condition 1 or 2 starts -->
+    <script>
+        // JavaScript to show/hide the second option based on the condition 1 or 2 starts
+        document.addEventListener('DOMContentLoaded', function() {
+            var numStarts = <?php echo json_encode($num_starts); ?>;
+            var secondOption = document.querySelector('select[name="dur_between_starts"]');
+            toggleSecondOption(numStarts, secondOption);
 
+            document.querySelector('select[name="num_starts"]').addEventListener('change', function(event) {
+                var selectedValue = event.target.value;
+                toggleSecondOption(selectedValue, secondOption);
+            });
+        });
+
+        function toggleSecondOption(numStarts, optionElement) {
+            if (numStarts == 2) {
+                optionElement.style.display = 'block';
+            } else {
+                optionElement.style.display = 'none';
+            }
+        }
+    </script>
 </body>
 </html>
