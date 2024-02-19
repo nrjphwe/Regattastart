@@ -205,6 +205,7 @@
                         <?php
                             if ($num_starts == 2) {
                                 // In case of 2 starts, duration between the starts:
+                                echo "In case of 2 starts, duration between the starts:";
                                 echo '<select name="dur_between_starts" id="dur_between_starts">';
                                 echo '<option ' . (isset($dur_between_starts) && $dur_between_starts == "5" ? 'selected="selected"' : '') . ' value="5">5</option>';
                                 echo '<option ' . (isset($dur_between_starts) && $dur_between_starts == "10" ? 'selected="selected"' : '') . ' value="10">10</option>';
