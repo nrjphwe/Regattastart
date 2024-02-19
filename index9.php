@@ -84,6 +84,10 @@
                 $num_starts = $_SESSION['form_data']['num_starts'];
                 echo " Number of starts: $num_starts";
             }
+            if (array_key_exists('dur_between_starts', $_SESSION['form_data'])) {
+                $dur_between_starts = $_SESSION['form_data']['dur_between_starts'];
+                echo "Duration between starts: $dur_between_starts";
+            }
             if (array_key_exists('video_dur', $_SESSION['form_data'])) {
                 $video_dur = $_SESSION['form_data']['video_dur'];
                 echo " Video duration: $video_dur";
@@ -198,10 +202,10 @@
                             <option <?php if(isset($num_starts) && $num_starts == "2"){echo "selected=\"selected\"";} ?> value="2">2</option>
                         </select>
                         <p></p>
-                            In case 2 starts, duration between starts: <select name="dur_between_starts" id="dur_between_starts">
-                                <option <?php if(isset($dur_between_starts) && $dur_between_starts == "5"){echo "selected=\"selected\"";} ?> value="5">5</option>
-                                <option <?php if(isset($dur_between_starts) && $dur_between_starts == "10"){echo "selected=\"selected\"";} ?> value="10">10</option>
-                            </select>
+                        In case 2 starts, duration between the starts: <select name="dur_between_starts" id="dur_between_starts">
+                            <option <?php if(isset($dur_between_starts) && $dur_between_starts == "5"){echo "selected=\"selected\"";} ?> value="5">5</option>
+                            <option <?php if(isset($dur_between_starts) && $dur_between_starts == "10"){echo "selected=\"selected\"";} ?> value="10">10</option>
+                        </select>
                     </fieldset>
                 </div>
             </div>
