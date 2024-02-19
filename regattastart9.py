@@ -187,7 +187,7 @@ def cv_annotate_video(frame, start_time_sec):
     seconds_since_midnight = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
     elapsed_time = seconds_since_midnight - start_time_sec #elapsed since last start until now)
     label = str(dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) +  " Seconds since last start: " +  str(elapsed_time)
-    org = (30,60)
+    org = (15,60)
     #font = cv2.FONT_HERSHEY_SIMPLEX
     #font = ImageFont.truetype("PAPYRUS.ttf", 80) 
     fontFace=cv2.FONT_HERSHEY_DUPLEX
