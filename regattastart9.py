@@ -114,7 +114,6 @@ def annotate_video_duration(camera, start_time_sec):
     camera.annotate_text = f"{dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Seconds since last start: {elapsed_time}"
 
 def convert_video_to_mp4(video_path, source_file, destination_file):
-    #convert_video_str = "MP4Box -add {} -new {}".format(os.path.join(video_path,source_file), os.path.join(video_path,destination_file))
     convert_video_str = "MP4Box -add {} -fps 10 -new {}".format(
         os.path.join(video_path, source_file),
         os.path.join(video_path, destination_file)
@@ -130,12 +129,12 @@ def re_encode_video(video_path, source_file, destination_file):
     subprocess.run(re_encode_video_str, shell=True)
     logger.info ("Line 131: Video %s re-encoded ", destination_file)
 
-def start_sequence(camera, signal, start_time_sec, num_starts, photo_path):
+def start_sequence(camera, signal, start_time_sec, num_starts, dur_between_starts, photo_path,):
     for i in range(num_starts):
         logger.info(f"  Line 122: Start_sequence. Start of iteration {i}")
         # Adjust the start_time_sec for the second iteration
         if i == 1:
-            start_time_sec += 5 * 60  # Add 5 minutes for the second iteration
+            start_time_sec += dur_between_starts * 60  # Add 5 minutes for the second iteration
             logger.info(f"  Line 126Start_sequence, Next start_time_sec: {start_time_sec}")
 
         # Define time intervals for each iteration
@@ -398,7 +397,7 @@ def main():
                         # Start video recording just before 5 minutes before the first start
                         start_video_recording(camera, video_path, "video0.h264")
                         logger.info("Inner loop, entering the start sequence block.")
-                        start_sequence(camera, signal, start_time_sec, num_starts, photo_path)
+                        start_sequence(camera, signal, start_time_sec, num_starts, dur_between_starts, photo_path)
                         if num_starts == 2:
                             start_time_sec = start_time_sec + (dur_between_starts * 60)
                         logger.info(" Wait 2 minutes then stop video0 recording")
