@@ -203,15 +203,14 @@
                         </select>
                         <p></p>
                         <?php
-                            if ($num_starts == 2) {
-                                // In case of 2 starts, duration between the starts:
-                                echo "In case of 2 starts, duration between the starts:";
-                                echo '<select name="dur_between_starts" id="dur_between_starts">';
-                                echo '<option ' . (isset($dur_between_starts) && $dur_between_starts == "5" ? 'selected="selected"' : '') . ' value="5">5</option>';
-                                echo '<option ' . (isset($dur_between_starts) && $dur_between_starts == "10" ? 'selected="selected"' : '') . ' value="10">10</option>';
-                                echo '</select>';
-                            }
+                            // PHP code to determine visibility
+                            $showSecondOption = ($num_starts == 2);
                         ?>
+                        <!-- Option that should be hidden when only one start -->
+                        In case of 2 starts, duration between the starts: <select name="dur_between_starts" id="dur_between_starts">
+                            <option <?php if(isset($dur_between_starts) && $dur_between_starts == "5"){echo "selected=\"selected\"";} ?> value="5">5</option>
+                            <option <?php if(isset($dur_between_starts) && $dur_between_starts == "10"){echo "selected=\"selected\"";} ?> value="10" <?php if (!$showSecondOption) echo 'style="display: none;"'; ?>>10</option>
+                        </select>
                     </fieldset>
                 </div>
             </div>
@@ -256,5 +255,18 @@
         <br><p> - phwe - <br></p>
     </div>
 </footer>
+<script>
+    // JavaScript to show/hide the second option based on the condition 1 or 2 starts
+    document.addEventListener('DOMContentLoaded', function() {
+        var numStarts = <?php echo json_encode($num_starts); ?>;
+        var secondOption = document.querySelector('select[name="dur_between_starts"] option[value="10"]');
+        if (numStarts == 2) {
+            secondOption.style.display = 'block';
+        } else {
+            secondOption.style.display = 'none';
+        }
+    });
+</script>
+
 </body>
 </html>
