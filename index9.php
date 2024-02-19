@@ -259,23 +259,20 @@
     // JavaScript to show/hide the second option based on the condition 1 or 2 starts
     document.addEventListener('DOMContentLoaded', function() {
         var numStarts = <?php echo json_encode($num_starts); ?>;
-        var secondOptionText = document.getElementById('secondOptionText');
-        var secondOption = document.getElementById('dur_between_starts');
-        toggleSecondOption(numStarts, secondOptionText, secondOption);
+        var secondOptionContainer = document.getElementById('secondOptionContainer');
+        toggleSecondOption(numStarts, secondOptionContainer);
 
         document.querySelector('select[name="num_starts"]').addEventListener('change', function(event) {
             var selectedValue = event.target.value;
-            toggleSecondOption(selectedValue, secondOptionText, secondOption);
+            toggleSecondOption(selectedValue, secondOptionContainer);
         });
     });
 
-    function toggleSecondOption(numStarts, textElement, optionElement) {
+    function toggleSecondOption(numStarts, containerElement) {
         if (numStarts == 2) {
-            textElement.style.display = 'block';
-            optionElement.style.display = 'block';
+            containerElement.style.display = 'block';
         } else {
-            textElement.style.display = 'none';
-            optionElement.style.display = 'none';
+            containerElement.style.display = 'none';
         }
     }
 </script>
