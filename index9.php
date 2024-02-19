@@ -206,7 +206,7 @@
                         <span id="secondOptionText">In case of 2 starts, duration between the starts:</span>
                         <select name="dur_between_starts" id="dur_between_starts">
                             <option <?php if(isset($dur_between_starts) && $dur_between_starts == "5"){echo "selected=\"selected\"";} ?> value="5">5</option>
-                            <option <?php if(isset($dur_between_starts) && $dur_between_starts == "10"){echo "selected=\"selected\"";} ?> value="10" <?php if (!$showSecondOption) echo 'style="display: none;"'; ?>>10</option>
+                            <option <?php if(isset($dur_between_starts) && $dur_between_starts == "10"){echo "selected=\"selected\"";} ?> value="10">10</option>
                         </select>
                     </fieldset>
                 </div>
