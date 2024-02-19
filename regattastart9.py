@@ -131,11 +131,11 @@ def re_encode_video(video_path, source_file, destination_file):
 
 def start_sequence(camera, signal, start_time_sec, num_starts, dur_between_starts, photo_path,):
     for i in range(num_starts):
-        logger.info(f"  Line 122: Start_sequence. Start of iteration {i}")
+        logger.info(f"  Line 134: Start_sequence. Start of iteration {i}")
         # Adjust the start_time_sec for the second iteration
         if i == 1:
             start_time_sec += dur_between_starts * 60  # Add 5 minutes for the second iteration
-            logger.info(f"  Line 126Start_sequence, Next start_time_sec: {start_time_sec}")
+            logger.info(f"  Line 138 Start_sequence, Next start_time_sec: {start_time_sec}")
 
         # Define time intervals for each iteration
         time_intervals = [
@@ -163,8 +163,8 @@ def start_sequence(camera, signal, start_time_sec, num_starts, dur_between_start
                         action()
                     picture_name = f"{i + 1}a_start_{log_message[:5]}.jpg"
                     capture_picture(camera, photo_path, picture_name)
-                    logger.info(f"     Start_sequence, log_message: {log_message}")
-                    logger.info(f"     Start_sequence, seconds_since_midnight: {seconds_since_midnight}, start_time_sec: {start_time_sec}")
+                    logger.info(f"     Line 166: Start_sequence, log_message: {log_message}")
+                    logger.info(f"     Line 167: Start_sequence, seconds_since_midnight: {seconds_since_midnight}, start_time_sec: {start_time_sec}")
         logger.info(f" Line 156: Start_sequence, End of iteration: {i}")
 
 def open_camera():
@@ -207,15 +207,15 @@ listening = True
 
 def listen_for_messages(timeout=0.1):
     global listening  # Use global flag
-    logger.info(" Line 206: Listen for messages from PHP script via a named pipe")
+    logger.info(" Line 210: Listen for messages from PHP script via a named pipe")
     pipe_path = '/var/www/html/tmp/stop_recording_pipe'
-    logger.info(f"Line 209:, pipepath {pipe_path}")
+    logger.info(f"Line 212:, pipepath {pipe_path}")
 
     try:
         os.unlink(pipe_path)  # Remove existing pipe
     except OSError as e:
         if e.errno != errno.ENOENT:  # Ignore if file doesn't exist
-            logger.info(f"Line 215, OS error: {e.errno}")
+            logger.info(f"Line 218, OS error: {e.errno}")
             raise
 
     os.mkfifo(pipe_path)  # Create a new named pipe
