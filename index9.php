@@ -86,7 +86,7 @@
             }
             if (array_key_exists('dur_between_starts', $_SESSION['form_data'])) {
                 $dur_between_starts = $_SESSION['form_data']['dur_between_starts'];
-                echo "Duration between starts: $dur_between_starts";
+                echo ", Duration between starts: $dur_between_starts";
             }
             if (array_key_exists('video_dur', $_SESSION['form_data'])) {
                 $video_dur = $_SESSION['form_data']['video_dur'];
