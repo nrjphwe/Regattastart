@@ -202,12 +202,9 @@
                             <option <?php if(isset($num_starts) && $num_starts == "2"){echo "selected=\"selected\"";} ?> value="2">2</option>
                         </select>
                         <p></p>
-                        <?php
-                            // PHP code to determine visibility
-                            $showSecondOption = ($num_starts == 2);
-                        ?>
                         <!-- Option that should be hidden when only one start -->
-                        In case of 2 starts, duration between the starts: <select name="dur_between_starts" id="dur_between_starts">
+                        <span id="secondOptionText">In case of 2 starts, duration between the starts:</span>
+                        <select name="dur_between_starts" id="dur_between_starts">
                             <option <?php if(isset($dur_between_starts) && $dur_between_starts == "5"){echo "selected=\"selected\"";} ?> value="5">5</option>
                             <option <?php if(isset($dur_between_starts) && $dur_between_starts == "10"){echo "selected=\"selected\"";} ?> value="10" <?php if (!$showSecondOption) echo 'style="display: none;"'; ?>>10</option>
                         </select>
@@ -256,26 +253,29 @@
     </div>
 </footer>
 <!-- JavaScript to show/hide the second option based on the condition 1 or 2 starts -->
-    <script>
-        // JavaScript to show/hide the second option based on the condition 1 or 2 starts
-        document.addEventListener('DOMContentLoaded', function() {
-            var numStarts = <?php echo json_encode($num_starts); ?>;
-            var secondOption = document.querySelector('select[name="dur_between_starts"]');
-            toggleSecondOption(numStarts, secondOption);
+<script>
+    // JavaScript to show/hide the second option based on the condition 1 or 2 starts
+    document.addEventListener('DOMContentLoaded', function() {
+        var numStarts = <?php echo json_encode($num_starts); ?>;
+        var secondOptionText = document.getElementById('secondOptionText');
+        var secondOption = document.getElementById('dur_between_starts');
+        toggleSecondOption(numStarts, secondOptionText, secondOption);
 
-            document.querySelector('select[name="num_starts"]').addEventListener('change', function(event) {
-                var selectedValue = event.target.value;
-                toggleSecondOption(selectedValue, secondOption);
-            });
+        document.querySelector('select[name="num_starts"]').addEventListener('change', function(event) {
+            var selectedValue = event.target.value;
+            toggleSecondOption(selectedValue, secondOptionText, secondOption);
         });
+    });
 
-        function toggleSecondOption(numStarts, optionElement) {
-            if (numStarts == 2) {
-                optionElement.style.display = 'block';
-            } else {
-                optionElement.style.display = 'none';
-            }
+    function toggleSecondOption(numStarts, textElement, optionElement) {
+        if (numStarts == 2) {
+            textElement.style.display = 'block';
+            optionElement.style.display = 'block';
+        } else {
+            textElement.style.display = 'none';
+            optionElement.style.display = 'none';
         }
-    </script>
+    }
+</script>
 </body>
 </html>
