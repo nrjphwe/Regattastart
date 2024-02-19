@@ -90,6 +90,12 @@
             $num_starts = $_SESSION['form_data']['num_starts'];
             echo " Number of starts: $num_starts";
         }
+        if ($num_starts == 2) {
+            if (array_key_exists('dur_between_starts', $_SESSION['form_data'])) {
+                $dur_between_starts = $_SESSION['form_data']['dur_between_starts'];
+                echo "Duration between startss: $dur_between_starts";
+            }
+        }
         if (array_key_exists('video_dur', $_SESSION['form_data'])) {
             $video_dur = $_SESSION['form_data']['video_dur'];
             echo " Video duration: $video_dur";
