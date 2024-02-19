@@ -333,7 +333,7 @@ def finish_recording(video_path, num_starts, video_end, start_time, start_time_s
 
         # Check if the maximum recording duration has been reached
         elapsed_time = time.time() - start_time
-        logger.info(f"elapsed time: {elapsed_time}")
+        logger.info(f"Line 336: elapsed time: {elapsed_time}")
         if elapsed_time >= 60 * (video_end + 5 * (num_starts - 1)):
             break
 
@@ -430,7 +430,7 @@ def main():
         finish_recording(video_path, num_starts, video_end, start_time, start_time_sec)
         time.sleep(2)
         re_encode_video(video_path, "video1.avi", "video1.mp4")
-        logger.info("Line 432, Finished with finish_recording and recording converted to mp4")
+        logger.info("Line 433, Finished with finish_recording and recording converted to mp4")
         if camera is not None:
             camera.close()  # Release the camera resources
         if signal is not None:
