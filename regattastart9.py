@@ -318,7 +318,7 @@ def finish_recording(video_path, num_starts, video_end, start_time, start_time_s
                     cv2.putText(frame,detect_time,org,fontFace,fontScale,color,1,cv2.LINE_AA)
 
                     for i in range(number_of_detected_frames):
-                        logger.info("Line 306: boat detected.")
+                        # logger.info("Line 321: boat detected.")
                         cv_annotate_video(frame, start_time_sec)
                         video_writer.write(frame)
 
