@@ -363,6 +363,7 @@ def main():
         video_end = int(form_data["video_end"])
         num_starts = int(form_data["num_starts"])
         start_time_str = str(form_data["start_time"]) # this is the first start
+        dur_between_starts = int(form_data["dur_between_starts"])
 
         # Convert to datetime object
         start_time = datetime.strptime(start_time_str, "%H:%M").time()
@@ -399,7 +400,7 @@ def main():
                         logger.info("Inner loop, entering the start sequence block.")
                         start_sequence(camera, signal, start_time_sec, num_starts, photo_path)
                         if num_starts == 2:
-                            start_time_sec = start_time_sec + (5 * 60)
+                            start_time_sec = start_time_sec + (dur_between_starts * 60)
                         logger.info(" Wait 2 minutes then stop video0 recording")
                         t0 = dt.datetime.now()
                         logger.info(" start_time_sec= %s, t0= %s",start_time_sec, t0)  #test
