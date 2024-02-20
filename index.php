@@ -244,13 +244,17 @@
     <!-- Display of video0 when it is available -->
     <div style="text-align: center;" class="w3-panel w3-pale-blue">
         <?php
-            $video_name = 'images/video0.mp4';
-            if (file_exists($video_name)) {
-                //error_log("Line 248: $video_name is available");
-                echo "<h4> Video 5 min före start och 2 min efter, eller vid 2 starter, till 2 min efter andra start </h4>";
-                echo '<video id="video0" width = "720" height="480" controls><source src= ' . $video_name . ' type="video/mp4"></video><p>';
-            } else {
-                error_log("Line 246: $video_name do not exists");
+            // Check and display the start image
+            if (file_exists('images/1a_start_Start.jpg'))
+            {
+                $video_name = 'images/video0.mp4';
+                if (file_exists($video_name)) {
+                    //error_log("Line 252: $video_name is available");
+                    echo "<h4> Video 5 min före start och 2 min efter, eller vid 2 starter, till 2 min efter andra start </h4>";
+                    echo '<video id="video0" width = "720" height="480" controls><source src= ' . $video_name . ' type="video/mp4"></video><p>';
+                } else {
+                    error_log("Line 256: $video_name do not exists");
+                }
             }
         ?>
     </div>
