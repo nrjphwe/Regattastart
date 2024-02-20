@@ -30,8 +30,7 @@
     <title>Regattastart</title>
     <!-- JavaScript to dynamically add a placeholder text or an image to the page when -->
     <!-- there are no pictures available yet. -->
-    <!-- function showPlaceholder -->
-    <script>
+    <script> // function showPlaceholder 
         function showPlaceholder() {
             var imageContainer = document.getElementById('image-container');
             var images = imageContainer.getElementsByTagName('img');
@@ -120,7 +119,7 @@
     }
     else {
         // 'form_data' array not set or not an array
-        echo "Line 116: No form data found in the session.";
+        echo "Line 123: No form data found in the session.";
     }
 ?>
 <header>
@@ -150,7 +149,7 @@
     <div style="text-align: center;">
         <h4><a href="/index9.php" title="Setup page Regattastart9">  Regattastart9 -- with image detection </a></h4>
     </div> 
-    <!-- Bilder tagna vid varje signal innan start  -->
+    <!-- Bilder från varje signal innan start  -->
     <div style="text-align: center;" class="w3-panel w3-pale-blue">
         <h3> Bilder tagna vid varje signal innan 1a start </h3>
     </div>
@@ -261,12 +260,12 @@
             if (file_exists('images/1a_start_Start.jpg'))
             {
                 $video_name = 'images/video0.mp4';
-                if (file_exists($video_name)) {
-                    //error_log("Line 256: $video_name is available");
-                    echo "<h4> Video 5 min före start och 2 min efter, eller vid 2 starter, till 2 min efter andra start </h4>";
+                if ($video0Exists) {
+                    //error_log("Line 264: $video_name is available");
+                    echo "<h4> Video från 5 min före start och 2 min efter sista start</h4>";
                     echo '<video id="video0" width = "720" height="480" controls><source src= ' . $video_name . ' type="video/mp4"></video><p>';
                 } else {
-                    error_log("Line 260: $video_name do not exists");
+                    error_log("Line 268: $video_name do not exists");
                 }
             }
         ?>
