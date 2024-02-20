@@ -73,31 +73,6 @@
 </head>
 <body onload="showPlaceholder()">
 <!-- Data on top of page retrieved from index6 or index9 -->
-<script>
-        // Function to disable refresh
-        function disableRefresh() {
-            window.location.reload = function(){};
-            alert("Refreshing is disabled for 15 minutes. Please wait.");
-            setTimeout(function() {
-                // Re-enable refresh after 15 minutess
-                enableRefresh();
-                alert("Refreshing is now enabled.");
-            }, 60000*15); // 60 seconds * 15 
-        }
-
-        // Function to enable refresh
-        function enableRefresh() {
-            window.location.reload = function(){ location.reload(); };
-        }
-
-        // Initial call to disable refresh
-        disableRefresh();
-
-        // Automatic refresh every 5 seconds
-        setInterval(function() {
-            location.reload();
-        }, 60000); // 60 seconds
-    </script>
 <?php
     if (isset($_SESSION['form_data']) && is_array($_SESSION['form_data'])) {
 
@@ -296,6 +271,29 @@
                             <input type="submit" id="stopRecordingButton" value="Stop Recording">
                         </form>
                     </div>';
+                    // Add JavaScript to handle the blocking period and automatic refresh
+                    echo '<script>
+                                document.getElementById("stopRecordingForm").addEventListener("submit", function(event) {
+                                    // Prevent the default form submission behavior
+                                    event.preventDefault();
+
+                                    // Disable the button
+                                    document.getElementById("stopRecordingButton").disabled = true;
+
+                                    // Disable manual refresh
+                                    window.location.reload = function(){};
+                                    
+                                    // Alert the user about the blocking period
+                                    alert("Refreshing is disabled for 10 seconds. Please wait.");
+
+                                    // Set a timeout to re-enable the button and manual refresh after 10 seconds
+                                    setTimeout(function() {
+                                        document.getElementById("stopRecordingButton").disabled = false;
+                                        window.location.reload = function(){ location.reload(); };
+                                        alert("Refreshing is now enabled.");
+                                    }, 60000); // 60 seconds
+                                });
+                            </script>';
                 } else {
                     // If video0.mp4 exist but not video1.mp4, do not show the button
                     // error_log("Line 274: Stop Recording button can be hidden, video0.mp4 may exist as well as video1.mp4 exists");
