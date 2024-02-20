@@ -281,8 +281,7 @@
             }
         ?>
     </div>
-    !-- JavaScript to periodically check for the existence of video0.mp4 and video1.mp4 -->
-    <script>
+    <script> // JavaScript to periodically check for the existence of video0.mp4 and video1.mp4
         // This script runs every 5 seconds
         setInterval(function() {
             // Check if video0.mp4 exists
