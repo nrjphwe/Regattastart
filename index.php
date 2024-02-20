@@ -9,9 +9,9 @@
 <!--  // Stop-recording form was submitted -->
 <?php
     // Check if video0.mp4 exists
-    $video0Exists = file_exists("video0.mp4");
+    $video0Exists = file_exists("images/video0.mp4");
     // Check if video1.mp4 exists
-    $video1Exists = file_exists("video1.mp4");
+    $video1Exists = file_exists("images/video1.mp4");
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['stop_recording'])) {
         // Handle stop recording logic here
