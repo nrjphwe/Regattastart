@@ -305,7 +305,7 @@
             // Refresh the page after 5 seconds
             setTimeout(function() {
                 location.reload();
-            }, 5000); // 5000 milliseconds = 5 seconds
+            }, 60000); // 5000 milliseconds = 60 seconds
         }
 
         // Call the autoRefresh function after the page is loaded
