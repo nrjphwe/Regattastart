@@ -267,8 +267,7 @@
                             <input type="submit" id="stopRecordingButton" value="Stop Recording">
                         </form>
                     </div>';
-                } 
-
+                } endif;
             } else {
                 // Log an error if $num_video is not equal to 1
                 error_log("Line 303: $num_video is not 1");
