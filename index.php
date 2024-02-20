@@ -72,7 +72,7 @@
     <link rel="stylesheet" href="/w3.css">
 </head>
 <body onload="showPlaceholder()">
-<!-- Text on top of page retrieved from index6 or index9 -->
+<!-- Data on top of page retrieved from index6 or index9 -->
 <?php
     if (isset($_SESSION['form_data']) && is_array($_SESSION['form_data'])) {
 
@@ -93,6 +93,9 @@
             if (array_key_exists('dur_between_starts', $_SESSION['form_data'])) {
                 $dur_between_starts = $_SESSION['form_data']['dur_between_starts'];
                 echo ", Duration between starts: $dur_between_starts min";
+                // calculate and print time for 2nd start if exists
+                $second_start = $start_time + $dur_between_starts
+                echo ", 2nd start at:  $second_start"
             }
         }
         if (array_key_exists('video_dur', $_SESSION['form_data'])) {
@@ -142,7 +145,7 @@
     <div style="text-align: center;">
         <h4><a href="/index9.php" title="Setup page Regattastart9">  Regattastart9 -- with image detection </a></h4>
     </div> 
-    <!-- Bilder tagna vid varje signal innan 1a start  -->
+    <!-- Bilder tagna vid varje signal innan start  -->
     <div style="text-align: center;" class="w3-panel w3-pale-blue">
         <h3> Bilder tagna vid varje signal innan 1a start </h3>
     </div>
@@ -345,7 +348,7 @@
     </div>
     <div style="text-align: center;" class="w3-panel w3-grey">
         <?php 
-        echo " Time now: " .date("H:i:s");
+            echo " Time now: " .date("H:i:s");
         ?> 
     </div>
 </body>
