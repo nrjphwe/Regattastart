@@ -300,41 +300,29 @@
     <!-- Display remaining videos -->
     <div style="text-align: center;" class="w3-panel w3-pale-red">
         <?php
-            $video_name = 'images/video1.mp4';
-            if (file_exists($video_name))
+            if ($video1Exists)
             {
-                $file_size = filesize($video_name);
-                if (filesize($video_name) !== False)
-                { 
-                    if ($file_size > 0)
+                // error_log("Line 318: File $video_name exists");
+                for ($x = 1; $x <= $num_video; $x++) {
+                    $video_name = 'images/video' . $x . '.mp4';
+                    // error_log("Line 308: Loop to display video = $video_name");
+                    if (file_exists($video_name)) 
                     {
-                        // error_log("Line 318: File $video_name exists");
-                        for ($x = 1; $x <= $num_video; $x++) {
-                            $video_name = 'images/video' . $x . '.mp4';
-                            // error_log("Line 321: Loop to display video = $video_name");
-                            if (file_exists($video_name)) 
-                            {
-                                // Display the video
-                                echo "<h3> Finish video, this is video $x for the finish</h3>";
-                                echo '<video id="video' . $x . '" width="720" height="480" controls>
-                                        <source src= ' . $video_name . ' type="video/mp4"></video><p>
-                                    <div>
-                                        <button onclick="stepFrame(' . $x . ', -1)">Previous Frame</button>
-                                        <button onclick="stepFrame(' . $x . ', 1)">Next Frame</button>
-                                    </div>';
-                            } else {
-                                // Log an error if the video file doesn't exist
-                                error_log("Line 334: video $x does not exist");
-                            }
-                        }
+                        // Display the video
+                        echo "<h3> Finish video, this is video $x for the finish</h3>";
+                        echo '<video id="video' . $x . '" width="720" height="480" controls>
+                                <source src= ' . $video_name . ' type="video/mp4"></video><p>
+                            <div>
+                                <button onclick="stepFrame(' . $x . ', -1)">Previous Frame</button>
+                                <button onclick="stepFrame(' . $x . ', 1)">Next Frame</button>
+                            </div>';
                     } else {
-                        error_log("Line 338: video1 file size $file_size is zero");
+                        // Log an error if the video file doesn't exist
+                        error_log("Line 321: video $x does not exist");
                     }
-                } else {
-                    error_log("Line 341: cannot read filesize for video1");
                 }
             } else {
-                error_log("Line 344: video1 do not exists");
+                error_log("Line 325: video1 do not exists");
             }
         ?>
     </div>
@@ -357,7 +345,7 @@
         if (file_exists($filename)) {
             echo "This web-page was last modified: \n" . date ("Y-m-d H:i:s.", filemtime($filename));
         } else {
-            error_log("Line 367: $filename do not exists");
+            error_log("Line 348: $filename do not exists");
         }
         ?>
     </div>
