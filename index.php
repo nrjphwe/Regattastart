@@ -6,8 +6,7 @@
     ini_set('display_errors', 1); 
     error_reporting(E_ALL);
 ?>
-<!--  // Stop-recording form was submitted -->
-<?php
+<?php // Stop-recording form was submitted 
     // Check if video0.mp4 exists
     $video0Exists = file_exists("images/video0.mp4");
     // Check if video1.mp4 exists
@@ -71,8 +70,7 @@
     <link rel="stylesheet" href="/w3.css">
 </head>
 <body onload="showPlaceholder()">
-<!-- Data on top of page retrieved from index6 or index9 -->
-<?php
+<?php // Data on top of page retrieved from index6 or index9
     if (isset($_SESSION['form_data']) && is_array($_SESSION['form_data'])) {
 
         if (array_key_exists('start_time', $_SESSION['form_data'])) {
@@ -262,7 +260,7 @@
                 {
                     // Show the "Stop Recording" button if video0.mp4 exists
                     echo '<div id="stopRecordingButtonDiv">
-                        <form id="stopRecordingForm" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
+                    <form id="stopRecordingForm" action="' . htmlspecialchars($_SERVER["PHP_SELF"]) . '" method="post">
                             <input type="hidden" name="stop_recording" value="true">
                             <input type="submit" id="stopRecordingButton" value="Stop Recording">
                         </form>
@@ -274,8 +272,7 @@
             }
         ?>
     </div>
-    <script>
-        // JavaScript to periodically check for the existence of video0.mp4 and video1.mp4
+    <script> // JavaScript to periodically check for the existence of video0.mp4 and video1.mp4
         // This script runs every 5 seconds
         setInterval(function() {
             // Check if video0.mp4 exists
@@ -302,10 +299,9 @@
         <?php
             if ($video1Exists)
             {
-                // error_log("Line 318: File $video_name exists");
                 for ($x = 1; $x <= $num_video; $x++) {
                     $video_name = 'images/video' . $x . '.mp4';
-                    // error_log("Line 308: Loop to display video = $video_name");
+                    // error_log("Line 304: Loop to display video = $video_name");
                     if (file_exists($video_name)) 
                     {
                         // Display the video
@@ -318,11 +314,11 @@
                             </div>';
                     } else {
                         // Log an error if the video file doesn't exist
-                        error_log("Line 321: video $x does not exist");
+                        error_log("Line 317: video $x does not exist");
                     }
                 }
             } else {
-                error_log("Line 325: video1 do not exists");
+                error_log("Line 321: video1 do not exists");
             }
         ?>
     </div>
