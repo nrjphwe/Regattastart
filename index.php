@@ -165,6 +165,7 @@
                 echo "<br> ------------------------------------------------- <p></p> ";
                 echo "<h3> Varningssignal 5 minuter innan 1a start</h3>";
                 echo "<img id='$filename' src='$imagePath' alt='1a_start 5 min picture' width='720' height='480'>";
+                
                 // Check and display the second image
                 $filename = '1a_start_4_min.jpg';
                 $imagePath = 'images/' . $filename; // Relative path
@@ -173,6 +174,7 @@
                     $imagePath .= '?' . filemtime($imagePath);
                     echo "<h3> Signal 4 minuter innan 1a start </h3>";
                     echo "<img id='$filename' src='$imagePath' alt='1a_start 4 min picture' width='720' height='480'>";
+                    
                     // Check and display the third image
                     $filename = '1a_start_1_min.jpg';
                     $imagePath = 'images/' . $filename; // Relative path
@@ -181,6 +183,7 @@
                         $imagePath .= '?' . filemtime($imagePath);
                         echo "<h3> Signal 1 minuter innan 1a start </h3>";
                         echo "<img id='$filename' src='$imagePath' alt='1a_start 1 min picture' width='720' height='480'>";
+                        
                         // Check and display the start image
                         $filename = '1a_start_Start.jpg';
                         $imagePath = 'images/' . $filename; // Relative path
@@ -217,6 +220,7 @@
                     echo "<br> ------------------------------------------------- <p></p> ";
                     echo "<h3> Varningssignal 5 minuter innan 2a start</h3>";
                     echo "<img id='$filename' src='$imagePath' alt='2a_start 5 min picture' width='720' height=480'>";
+                    
                     // Check and display the second image
                     $filename = '2a_start_4_min.jpg';
                     $imagePath = 'images/' . $filename; // Relative path
@@ -224,6 +228,7 @@
                         $imagePath .= '?' . filemtime($imagePath);
                         echo "<h3> Signal 4 minuter innan 2a start </h3>";
                         echo "<img id='$filename' src='$imagePath' alt='2a_start 4 min picture' width='720' height='480'>";
+                        
                         // Check and display the third image
                         $filename = '2a_start_1_min.jpg';
                         $imagePath = 'images/' . $filename; // Relative path
@@ -231,6 +236,7 @@
                             $imagePath .= '?' . filemtime($imagePath);
                             echo "<h3> Signal 1 minuter innan 2a start </h3>";
                             echo "<img id='$filename' src='$imagePath' alt='2a_start 1 min picture' width='720' height='480'>";
+                            
                             // Check and display the start image
                             $filename = '2a_start_Start.jpg';
                             $imagePath = 'images/' . $filename; // Relative path
@@ -285,7 +291,7 @@
                 }
             } else {
                 // Log an error if $num_video is not equal to 1
-                error_log("Line 280: $num_video is not 1");
+                error_log("Line 288: $num_video is not 1");
             }
         ?>
     </div>
