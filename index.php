@@ -259,16 +259,16 @@
             if ($num_video == 1) // which is valid for regattastart9
             {
                 if ($video0Exists && !$video1Exists):
-                    {
-                    <!-- Show the "Stop Recording" button if video0.mp4 exists -->
-                    <div id="stopRecordingButtonDiv">
+                {
+                    // Show the "Stop Recording" button if video0.mp4 exists
+                    echo '<div id="stopRecordingButtonDiv">
                         <form id="stopRecordingForm" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
                             <input type="hidden" name="stop_recording" value="true">
                             <input type="submit" id="stopRecordingButton" value="Stop Recording">
                         </form>
-                    </div>
-                    } 
-                endif;
+                    </div>';
+                } 
+
             } else {
                 // Log an error if $num_video is not equal to 1
                 error_log("Line 303: $num_video is not 1");
