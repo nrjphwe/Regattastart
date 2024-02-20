@@ -27,8 +27,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta http-equiv="refresh" content="200">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- <meta http-equiv="refresh" content="200" -->
     <title>Regattastart</title>
     <!-- JavaScript to dynamically add a placeholder text or an image to the page when -->
     <!-- there are no pictures available yet. -->
@@ -73,6 +73,31 @@
 </head>
 <body onload="showPlaceholder()">
 <!-- Data on top of page retrieved from index6 or index9 -->
+<script>
+        // Function to disable refresh
+        function disableRefresh() {
+            window.location.reload = function(){};
+            alert("Refreshing is disabled for 15 minutes. Please wait.");
+            setTimeout(function() {
+                // Re-enable refresh after 15 minutess
+                enableRefresh();
+                alert("Refreshing is now enabled.");
+            }, 60000*15); // 60 seconds * 15 
+        }
+
+        // Function to enable refresh
+        function enableRefresh() {
+            window.location.reload = function(){ location.reload(); };
+        }
+
+        // Initial call to disable refresh
+        disableRefresh();
+
+        // Automatic refresh every 5 seconds
+        setInterval(function() {
+            location.reload();
+        }, 60000); // 60 seconds
+    </script>
 <?php
     if (isset($_SESSION['form_data']) && is_array($_SESSION['form_data'])) {
 
