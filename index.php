@@ -271,6 +271,7 @@
                             <input type="submit" id="stopRecordingButton" value="Stop Recording">
                         </form>
                     </div>';
+
                     // Add JavaScript to handle the blocking period and automatic refresh
                     echo '<script>
                                 document.getElementById("stopRecordingForm").addEventListener("submit", function(event) {
@@ -280,18 +281,17 @@
                                     // Disable the button
                                     document.getElementById("stopRecordingButton").disabled = true;
 
-                                    // Disable manual refresh
-                                    window.location.reload = function(){};
-                                    
                                     // Alert the user about the blocking period
                                     alert("Refreshing is disabled for 10 seconds. Please wait.");
 
-                                    // Set a timeout to re-enable the button and manual refresh after 10 seconds
+                                    // Set a timeout to re-enable the button and manual refresh after 60 seconds
                                     setTimeout(function() {
                                         document.getElementById("stopRecordingButton").disabled = false;
-                                        window.location.reload = function(){ location.reload(); };
                                         alert("Refreshing is now enabled.");
                                     }, 60000); // 60 seconds
+
+                                    // Submit the form
+                                    this.submit();
                                 });
                             </script>';
                 } else {
