@@ -304,7 +304,7 @@
     <!-- Display remaining videos -->
     <div style="text-align: center;" class="w3-panel w3-pale-red">
         <?php
-            if ($video1Exists)
+            if ($video0Exists)
             {
                 if ($video1Exists)
                 {
