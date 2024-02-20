@@ -277,51 +277,41 @@
         ?>
     </div>
     <!-- Show "Stop recording" button after video0 is ready -->
+    <!-- Show "Stop recording" button after video0 is ready, but not when video1 exists -->
     <div style="text-align: center;" class="w3-panel w3-pale-green">
         <?php
-            if ($num_video == 1) {
-                if ($video0Exists && !$video1Exists) {
+            if ($num_video == 1) // which is valid for regattastart9
+            {
+                if ($video0Exists && !$video1Exists):
+                {
                     // Show the "Stop Recording" button if video0.mp4 exists
                     echo '<div id="stopRecordingButtonDiv">
-                        <form id="stopRecordingForm" action="' . htmlspecialchars($_SERVER["PHP_SELF"]) . '" method="post">
+                    <form id="stopRecordingForm" action="' . htmlspecialchars($_SERVER["PHP_SELF"]) . '" method="post">
                             <input type="hidden" name="stop_recording" value="true">
                             <input type="submit" id="stopRecordingButton" value="Stop Recording">
                         </form>
                     </div>';
-                }
+                } endif;
             } else {
                 // Log an error if $num_video is not equal to 1
-                error_log("Line 294: $num_video is not 1");
+                error_log("Line 282: $num_video is not 1");
             }
         ?>
-    </div>
-    <script> // JavaScript to periodically check for the existence of video0.mp4 and video1.mp4
-        // This script runs every 5 seconds
-        setInterval(function() {
-            // Check if video0.mp4 exists
-            var video0Exists = <?php echo json_encode($video0Exists); ?>;
-            // Check if video1.mp4 exists
-            var video1Exists = <?php echo json_encode($video1Exists); ?>;
-
-            if (video0Exists) {
-                // Show the "Stop Recording" button
-                document.getElementById("stopRecordingButtonDiv").style.display = "block";
-            } else {
-                // Hide the "Stop Recording" button
-                document.getElementById("stopRecordingButtonDiv").style.display = "none";
-            }
-
-            // If video1.mp4 exists, reload the page to stop the blocking period
-            if (video1Exists) {
+        </div>
+    <!-- JavaScript to automatically refresh the page after the "Stop Recording" button is pressed -->
+    <script>
+        // Function to refresh the page after a certain interval
+        function autoRefresh() {
+            // Refresh the page after 5 seconds
+            setTimeout(function() {
                 location.reload();
-            }
-        }, 5000); // Check every 5 seconds
+            }, 5000); // 5000 milliseconds = 5 seconds
+        }
 
-        // Function to hide the "Stop Recording" button after it's pressed
-        document.getElementById("stopRecordingForm").addEventListener("submit", function() {
-            document.getElementById("stopRecordingButtonDiv").style.display = "none";
-        });
+        // Call the autoRefresh function after the page is loaded
+        window.onload = autoRefresh;
     </script>
+
     <!-- Display remaining videos -->
     <div style="text-align: center;" class="w3-panel w3-pale-red">
         <?php
