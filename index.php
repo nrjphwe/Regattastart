@@ -253,37 +253,36 @@
             {
                 $video_name = 'images/video0.mp4';
                 if (file_exists($video_name)) {
-                    //error_log("Line 252: $video_name is available");
+                    //error_log("Line 256: $video_name is available");
                     echo "<h4> Video 5 min före start och 2 min efter, eller vid 2 starter, till 2 min efter andra start </h4>";
                     echo '<video id="video0" width = "720" height="480" controls><source src= ' . $video_name . ' type="video/mp4"></video><p>';
                 } else {
-                    error_log("Line 256: $video_name do not exists");
+                    error_log("Line 260: $video_name do not exists");
                 }
             }
         ?>
     </div>
-    <!-- Show "Stop recording" button after video0 is ready, but not when video1 exists -->
+    <!-- Show "Stop recording" button after video0 is ready -->
     <div style="text-align: center;" class="w3-panel w3-pale-green">
         <?php
-            if ($num_video == 1) // which is valid for regattastart9
-            {
-                if ($video0Exists && !$video1Exists):
-                {
+            if ($num_video == 1) {
+                if ($video0Exists && !$video1Exists) {
                     // Show the "Stop Recording" button if video0.mp4 exists
                     echo '<div id="stopRecordingButtonDiv">
-                    <form id="stopRecordingForm" action="' . htmlspecialchars($_SERVER["PHP_SELF"]) . '" method="post">
+                        <form id="stopRecordingForm" action="' . htmlspecialchars($_SERVER["PHP_SELF"]) . '" method="post">
                             <input type="hidden" name="stop_recording" value="true">
                             <input type="submit" id="stopRecordingButton" value="Stop Recording">
                         </form>
                     </div>';
-                } endif;
+                }
             } else {
                 // Log an error if $num_video is not equal to 1
-                error_log("Line 274: $num_video is not 1");
+                error_log("Line 280: $num_video is not 1");
             }
         ?>
     </div>
-    <script> // JavaScript to periodically check for the existence of video0.mp4 and video1.mp4
+    !-- JavaScript to periodically check for the existence of video0.mp4 and video1.mp4 -->
+    <script>
         // This script runs every 5 seconds
         setInterval(function() {
             // Check if video0.mp4 exists
@@ -291,7 +290,7 @@
             // Check if video1.mp4 exists
             var video1Exists = <?php echo json_encode($video1Exists); ?>;
 
-            if (video0Exists && !video1Exists) {
+            if (video0Exists) {
                 // Show the "Stop Recording" button
                 document.getElementById("stopRecordingButtonDiv").style.display = "block";
             } else {
@@ -304,6 +303,11 @@
                 location.reload();
             }
         }, 5000); // Check every 5 seconds
+
+        // Function to hide the "Stop Recording" button after it's pressed
+        document.getElementById("stopRecordingForm").addEventListener("submit", function() {
+            document.getElementById("stopRecordingButtonDiv").style.display = "none";
+        });
     </script>
     <!-- Display remaining videos -->
     <div style="text-align: center;" class="w3-panel w3-pale-red">
@@ -336,8 +340,7 @@
             }
         ?>
     </div>
-    <!-- function to step frames -->
-    <script>
+    <script> // function to step frames 
         function stepFrame(videoNum, step) {
             var video = document.getElementById('video' + videoNum);
             if (video) {
@@ -347,7 +350,7 @@
         }
     </script>
     </main>
-    <!-- footer s -->
+    <!-- footer -->
     <div style="text-align: center;" class="w3-panel w3-grey">
         <?php
         // output index.php was last modified.
