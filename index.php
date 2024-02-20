@@ -6,20 +6,19 @@
     ini_set('display_errors', 1); 
     error_reporting(E_ALL);
 ?>
+<!--  // Stop-recording form was submitted -->
 <?php
-    if ($_SERVER["REQUEST_METHOD"] === "POST") 
-    {
-        // Form was submitted
+    // Check if video0.mp4 exists
+    $video0Exists = file_exists("video0.mp4");
+    // Check if video1.mp4 exists
+    $video1Exists = file_exists("video1.mp4");
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['stop_recording'])) {
+        // Handle stop recording logic here
         include_once "stop_recording.php"; // Include the script to stop recording
-        error_log('Line 14: The stop_recording.php was included in index.php');
-
-        // Trigger a refresh of the page after a certain time interval e.g., 5
-        echo '<meta http-equiv="refresh" content="5" />';
-
-    } elseif ($_SERVER["REQUEST_METHOD"] !== "GET") 
-    {
-        // Log an error only if the request method is neither "POST" nor "GET"
-        error_log('Line 22: $_SERVER["REQUEST_METHOD"] < > "POST" NOR "GET" ');
+        error_log('Line 19: The stop_recording.php was included in index.php');
+        header("Location: {$_SERVER['PHP_SELF']}");
+        exit;
     }
 ?>
 <!-- Your HTML to display data from the session -->
@@ -259,51 +258,46 @@
         <?php
             if ($num_video == 1) // which is valid for regattastart9
             {
-                $video_name0 = 'images/video0.mp4';
-                $video_name1 = 'images/video1.mp4';
-                if (file_exists($video_name0) && !(file_exists($video_name1)))
-                {
-                    // error_log("Line 264: Video && !video1 to show stop button");
-                    echo "<h4> Efter sista båt i mål, kan man stoppa och generera video för målgång </h4>";
-                    echo "<h4> Vänta minst 60 sec efter 'Stop Recording' knappen tryckts </h4>";
-                    echo '<div id="stopRecordingButtonDiv">
-                        <form id="stopRecordingForm" action="' . htmlspecialchars($_SERVER["PHP_SELF"]) . '" method="post">
+                if ($video0Exists && !$video1Exists):
+                    {
+                    <!-- Show the "Stop Recording" button if video0.mp4 exists -->
+                    <div id="stopRecordingButtonDiv">
+                        <form id="stopRecordingForm" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
+                            <input type="hidden" name="stop_recording" value="true">
                             <input type="submit" id="stopRecordingButton" value="Stop Recording">
                         </form>
-                    </div>';
-
-                    // Add JavaScript to handle the blocking period and automatic refresh
-                    echo '<script>
-                                document.getElementById("stopRecordingForm").addEventListener("submit", function(event) {
-                                    // Prevent the default form submission behavior
-                                    event.preventDefault();
-
-                                    // Disable the button
-                                    document.getElementById("stopRecordingButton").disabled = true;
-
-                                    // Alert the user about the blocking period
-                                    alert("Refreshing is disabled for 10 seconds. Please wait.");
-
-                                    // Set a timeout to re-enable the button and manual refresh after 60 seconds
-                                    setTimeout(function() {
-                                        document.getElementById("stopRecordingButton").disabled = false;
-                                        alert("Refreshing is now enabled.");
-                                    }, 60000); // 60 seconds
-
-                                    // Submit the form
-                                    this.submit();
-                                });
-                            </script>';
-                } else {
-                    // If video0.mp4 exist but not video1.mp4, do not show the button
-                    // error_log("Line 299: Stop Recording button can be hidden, video0.mp4 may exist as well as video1.mp4 exists");
-                }
+                    </div>
+                    } 
+                endif;
             } else {
                 // Log an error if $num_video is not equal to 1
                 error_log("Line 303: $num_video is not 1");
             }
         ?>
     </div>
+    <script>
+        // JavaScript to periodically check for the existence of video0.mp4 and video1.mp4
+        // This script runs every 5 seconds
+        setInterval(function() {
+            // Check if video0.mp4 exists
+            var video0Exists = <?php echo json_encode($video0Exists); ?>;
+            // Check if video1.mp4 exists
+            var video1Exists = <?php echo json_encode($video1Exists); ?>;
+
+            if (video0Exists && !video1Exists) {
+                // Show the "Stop Recording" button
+                document.getElementById("stopRecordingButtonDiv").style.display = "block";
+            } else {
+                // Hide the "Stop Recording" button
+                document.getElementById("stopRecordingButtonDiv").style.display = "none";
+            }
+
+            // If video1.mp4 exists, reload the page to stop the blocking period
+            if (video1Exists) {
+                location.reload();
+            }
+        }, 5000); // Check every 5 seconds
+    </script>
     <!-- Display remaining videos -->
     <div style="text-align: center;" class="w3-panel w3-pale-red">
         <?php
