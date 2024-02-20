@@ -267,11 +267,11 @@
             {
                 $video_name = 'images/video0.mp4';
                 if ($video0Exists) {
-                    //error_log("Line 264: $video_name is available");
+                    //error_log("Line 270: $video_name is available");
                     echo "<h4> Video från 5 min före start och 2 min efter sista start</h4>";
                     echo '<video id="video0" width = "720" height="480" controls><source src= ' . $video_name . ' type="video/mp4"></video><p>';
                 } else {
-                    error_log("Line 268: $video_name do not exists");
+                    error_log("Line 274: $video_name do not exists");
                 }
             }
         ?>
@@ -291,7 +291,7 @@
                 }
             } else {
                 // Log an error if $num_video is not equal to 1
-                error_log("Line 288: $num_video is not 1");
+                error_log("Line 294: $num_video is not 1");
             }
         ?>
     </div>
