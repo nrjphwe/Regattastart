@@ -94,7 +94,9 @@
                 $dur_between_starts = $_SESSION['form_data']['dur_between_starts'];
                 echo ", Duration between starts: $dur_between_starts min";
                 // calculate and print time for 2nd start if exists
-                $second_start = $start_time + $dur_between_starts;
+                $t = strotime($start_time);
+                echo $t;
+                $second_start = $t + $dur_between_starts;
                 echo ", 2nd start at: $second_start";
             }
         }
