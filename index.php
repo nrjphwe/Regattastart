@@ -179,7 +179,7 @@
                         if (file_exists($imagePath)) 
                         {
                             $imagePath .= '?' . filemtime($imagePath);
-                            echo "<h3> Foto vid 1a start </h3>";
+                            echo "<h3> Foto vid 1a start $start_time </h3>";
                             echo "<img id='$filename' src='$imagePath' alt='1a start picture' width='720' height='480'>";
                         } else {
                             error_log('Line 182: picture for the start do not exists');
