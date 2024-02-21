@@ -298,6 +298,11 @@
                 error_log('Line 295: video_dur is defined, which is only valid for regattastart6');
             } else
             {
+                 // Check if video0.mp4 exists
+                $video0Exists = file_exists("images/video0.mp4");
+                // Check if video1.mp4 exists
+                $video1Exists = file_exists("images/video1.mp4");
+                
                 if ($num_video == 1) // which is valid for regattastart9
                 {
                     if ($video0Exists && !$stopRecordingPressed) 
