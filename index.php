@@ -316,14 +316,23 @@
     </div>
     <!-- JavaScript to automatically refresh the page after the "Stop Recording" button is pressed -->
     <script> // JavaScript to automatically refresh the page after the "Stop Recording" button was pressed
-        // Function to refresh the page after a certain interval
-        function autoRefresh() 
+        // Function to refresh the page after the "Stop Recording" button is pressed
+
+        function refreshPage() 
         {
+            // Refresh the page after a short delay to allow the form submission to complete
+            setTimeout(function() {
+                location.reload();
+            }, 1000); // 1000 milliseconds = 1 seconds
+        }
+
+        // JavaScript to automatically refresh the page after a certain interval
+        function autoRefresh() {
             // Refresh the page after 5 seconds
             setTimeout(function() {
                 location.reload();
-            }, 60000); // 5000 milliseconds = 60 seconds
-        }
+        }, 60000); // 60000 milliseconds = 60 seconds
+    }
 
         // Call the autoRefresh function after the page is loaded
         window.onload = autoRefresh;
