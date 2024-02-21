@@ -99,13 +99,13 @@ def convert_video_to_mp4(video_path, source_file, destination_file):
     subprocess.run(convert_video_str, shell=True)
     logger.info (" Video recording %s converted ", destination_file)
 
-def start_sequence(camera, signal, start_time_sec, num_starts, photo_path):
+def start_sequence(camera, signal, start_time_sec, num_starts, dur_between_starts, photo_path):
     for i in range(num_starts):
-        logger.info(f"  Start_sequence. Start of iteration {i}")
+        logger.info(f"  Line 104: Start_sequence. Start of iteration {i}")
         # Adjust the start_time_sec for the second iteration
         if i == 1:
-            start_time_sec += 5 * 60  # Add 5 minutes for the second iteration
-            logger.info(f"  Start_sequence, Next start_time_sec: {start_time_sec}")
+            start_time_sec += dur_between_starts * 60  # Add 5 or 10 minutes for the second iteration
+            logger.info(f"  Line 108: Start_sequence, Next start_time_sec: {start_time_sec}")
 
         # Define time intervals for each iteration
         time_intervals = [
@@ -178,6 +178,7 @@ def main():
         video_dur = int(form_data["video_dur"])
         num_video = int(form_data["num_video"])
         num_starts = int(form_data["num_starts"])
+        dur_between_starts = int(form_data["dur_between_starts"])
 
         camera = setup_camera()
         if camera is None:
@@ -203,18 +204,18 @@ def main():
                 seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
     
                 if seconds_since_midnight > t5min_warning - 2:         
-                    logger.info("Start of outer loop iteration. seconds_since_midnight=%s", seconds_since_midnight)
+                    logger.info(" Line 207: Start of outer loop iteration. seconds_since_midnight=%s", seconds_since_midnight)
 
                     if num_starts == 1 or num_starts == 2:
                         # Start video recording just before 5 minutes before the first start
                         start_video_recording(camera, video_path, "video0.h264")
-                        logger.info("Inner loop, entering the start sequence block.")
-                        start_sequence(camera, signal, start_time_sec, num_starts, photo_path)
+                        logger.info(" Line 212: Inner loop, entering the start sequence block.")
+                        start_sequence(camera, signal, start_time_sec, num_starts, dur_between_starts,photo_path)
                         if num_starts == 2:
-                            start_time_sec = start_time_sec + (5 * 60)
-                        logger.info(" Wait 2 minutes then stop video recording")
+                            start_time_sec = start_time_sec + (dur_between_starts * 60)
+                        logger.info(" Line 216: Wait 2 minutes then stop video recording")
                         t0 = dt.datetime.now()
-                        logger.info("start_time_sec= %s, t0= %s",start_time_sec, t0)  #test
+                        logger.info(" Line 218: start_time_sec= %s, t0= %s",start_time_sec, t0)  #test
                         while (dt.datetime.now() - t0).seconds < (119):
                             now = dt.datetime.now()
                             seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
@@ -234,7 +235,7 @@ def main():
         logger.info ("Failed to parse JSON: %", str(e))
         sys.exit(1)
     finally:
-        logger.info("This is finally section")
+        logger.info(" Line 238: This is finally section")
         if camera is not None:
             camera.close()  # Release the camera resources
         if signal is not None:
