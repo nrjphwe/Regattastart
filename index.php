@@ -255,6 +255,12 @@
             }
         ?>
     </div>
+    <?php // Check if video0.mp4 or video1.mp4 exists 
+        // Check if video0.mp4 exists
+        $video0Exists = file_exists("images/video0.mp4");
+        // Check if video1.mp4 exists
+        $video1Exists = file_exists("images/video1.mp4");
+    ?>
     <!-- Display of video0 when it is available -->
     <div style="text-align: center;" class="w3-panel w3-pale-blue">
         <?php
@@ -300,12 +306,6 @@
             }
         ?>
     </div>
-    <?php // Check if video0.mp4 or video1.mp4 exists 
-        // Check if video0.mp4 exists
-        $video0Exists = file_exists("images/video0.mp4");
-        // Check if video1.mp4 exists
-        $video1Exists = file_exists("images/video1.mp4");
-    ?>
     <!-- JavaScript to automatically refresh the page after the "Stop Recording" button is pressed -->
     <script> // JavaScript to automatically refresh the page after the "Stop Recording" button was pressed
         // Function to refresh the page after a certain interval
