@@ -13,7 +13,7 @@
         include_once "stop_recording.php"; // Include the script to stop recording
         error_log('Line 14: The stop_recording.php was included in index.php');
          // Trigger a refresh of the page after a certain time interval e.g., 5
-        echo '<meta http-equiv="refresh" content="10" />';
+        //echo '<meta http-equiv="refresh" content="10" />';
         header("Location: {$_SERVER['PHP_SELF']}");
         //exit;
     }
@@ -208,7 +208,7 @@
                     error_log('Line 188: picture 4 min do not exists');
                 }
             } else {
-                error_log('Line 191: picture 5 min do not exists');
+                //error_log('Line 191: picture 5 min do not exists');
             }
         ?>
     </div> 
