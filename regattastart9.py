@@ -134,7 +134,7 @@ def start_sequence(camera, signal, start_time_sec, num_starts, dur_between_start
         logger.info(f"  Line 134: Start_sequence. Start of iteration {i}")
         # Adjust the start_time_sec for the second iteration
         if i == 1:
-            start_time_sec += dur_between_starts * 60  # Add 5 minutes for the second iteration
+            start_time_sec += dur_between_starts * 60  # Add 5 or 10 minutes for the second iteration
             logger.info(f"  Line 138 Start_sequence, Next start_time_sec: {start_time_sec}")
 
         # Define time intervals for each iteration
