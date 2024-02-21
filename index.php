@@ -6,13 +6,9 @@
     ini_set('display_errors', 1); 
     error_reporting(E_ALL);
 ?>
-<?php // Stop-recording form was submitted 
-    // Check if video0.mp4 exists
-    $video0Exists = file_exists("images/video0.mp4");
-    // Check if video1.mp4 exists
-    $video1Exists = file_exists("images/video1.mp4");
-
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['stop_recording'])) {
+<?php 
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['stop_recording'])) 
+    {
         // Handle stop recording logic here
         include_once "stop_recording.php"; // Include the script to stop recording
         error_log('Line 19: The stop_recording.php was included in index.php');
@@ -303,7 +299,13 @@
                 }
             }
         ?>
-        </div>
+    </div>
+    <?php // Check if video0.mp4 or video1.mp4 exists 
+        // Check if video0.mp4 exists
+        $video0Exists = file_exists("images/video0.mp4");
+        // Check if video1.mp4 exists
+        $video1Exists = file_exists("images/video1.mp4");
+    ?>
     <!-- JavaScript to automatically refresh the page after the "Stop Recording" button is pressed -->
     <script> // JavaScript to automatically refresh the page after the "Stop Recording" button was pressed
         // Function to refresh the page after a certain interval
@@ -345,6 +347,7 @@
         {
             document.getElementById("stopRecordingForm").addEventListener("submit", function() 
             {
+                // Hide the "Stop Recording" button
                 document.getElementById("stopRecordingButtonDiv").style.display = "none";
             });
         });
