@@ -292,6 +292,9 @@
     <!-- Show "Stop recording" button after video0 is ready -->
     <div style="text-align: center;" class="w3-panel w3-pale-green">
         <?php
+             // Check if the "Stop Recording" button was pressed
+            $stopRecordingPressed = isset($_POST['stopRecordingPressed']) && $_POST['stopRecordingPressed'] == "1";
+
             if (isset($video_dur)) // which is valid for regattastart6
             {
                 // my variable video_dur is defined
@@ -302,7 +305,7 @@
                 $video0Exists = file_exists("images/video0.mp4");
                 // Check if video1.mp4 exists
                 $video1Exists = file_exists("images/video1.mp4");
-                
+
                 if ($num_video == 1) // which is valid for regattastart9
                 {
                     if ($video0Exists && !$stopRecordingPressed) 
