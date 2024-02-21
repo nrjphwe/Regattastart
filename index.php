@@ -279,21 +279,24 @@
     <!-- Show "Stop recording" button after video0 is ready -->
     <div style="text-align: center;" class="w3-panel w3-pale-green">
         <?php
-            if ($num_video == 1) // which is valid for regattastart9
+            if ($video_dur == "") // which is valid for regattastart9
             {
-                if ($video0Exists && !$video1Exists):
+                if ($num_video == 1) // which is valid for regattastart9
                 {
-                    // Show the "Stop Recording" button if video0.mp4 exists
-                    echo '<div id="stopRecordingButtonDiv">
-                    <form id="stopRecordingForm" action="' . htmlspecialchars($_SERVER["PHP_SELF"]) . '" method="post">
-                            <input type="hidden" name="stop_recording" value="true">
-                            <input type="submit" id="stopRecordingButton" value="Stop Recording">
-                        </form>
-                    </div>';
-                } endif;
-            } else {
-                // Log an error if $num_video is not equal to 1
-                error_log("Line 282: $num_video is not 1");
+                    if ($video0Exists && !$video1Exists):
+                    {
+                        // Show the "Stop Recording" button if video0.mp4 exists
+                        echo '<div id="stopRecordingButtonDiv">
+                        <form id="stopRecordingForm" action="' . htmlspecialchars($_SERVER["PHP_SELF"]) . '" method="post">
+                                <input type="hidden" name="stop_recording" value="true">
+                                <input type="submit" id="stopRecordingButton" value="Stop Recording">
+                            </form>
+                        </div>';
+                    } endif;
+                } else {
+                    // Log an error if $num_video is not equal to 1
+                    error_log("Line 282: $num_video is not 1");
+                }
             }
         ?>
         </div>
