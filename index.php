@@ -245,16 +245,16 @@
                                 echo "<h3> Foto vid 2a start $second_start_time </h3>";
                                 echo "<img id='$filename' src='$imagePath' alt='2a start picture' width='720' height='480'>";
                             } else {
-                                error_log('Line 243: picture start 2nd start do not exists');
+                                error_log('Line 248: picture start 2nd start do not exists');
                             }
                         } else {
-                            error_log('Line 246: picture 1 min 2nd start do not exists');
+                            error_log('Line 251: picture 1 min 2nd start do not exists');
                         }
                     } else {
-                        error_log('Line 249: picture 4 min 2nd start do not exists');
+                        error_log('Line 254: picture 4 min 2nd start do not exists');
                     }
                 } else {
-                    error_log('Line 252: picture 5 min 2nd start do not exists');
+                    error_log('Line 257: picture 5 min 2nd start do not exists');
                 }
             }
         ?>
