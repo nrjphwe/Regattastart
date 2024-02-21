@@ -279,7 +279,7 @@
             {
                 $video_name = 'images/video0.mp4';
                 if ($video0Exists) {
-                    //error_log("Line 270: $video_name is available");
+                    //error_log("Line 282: $video_name is available");
                     echo "<h4> Video från 5 min före start och 2 min efter sista start</h4>";
                     echo '<video id="video0" width = "720" height="480" controls><source src= ' . $video_name . ' type="video/mp4"></video><p>';
                 } else {
@@ -288,48 +288,53 @@
             }
         ?>
     </div>
+
     <!-- Show "Stop recording" button after video0 is ready -->
     <div style="text-align: center;" class="w3-panel w3-pale-green">
         <?php
             if (isset($video_dur)) // which is valid for regattastart6
             {
-                // $myVar is defined
+                // my variable video_dur is defined
                 error_log('Line 295: video_dur is defined, which is only valid for regattastart6');
             } else
             {
                 if ($num_video == 1) // which is valid for regattastart9
                 {
-                    if ($video0Exists && !$video1Exists):
+                    if ($video0Exists && !$stopRecordingPressed) 
                     {
-                        // Show the "Stop Recording" button if video0.mp4 exists
                         echo '<div id="stopRecordingButtonDiv">
                         <form id="stopRecordingForm" action="' . htmlspecialchars($_SERVER["PHP_SELF"]) . '" method="post" onsubmit="refreshPage()">
                                 <input type="hidden" name="stop_recording" value="true">
                                 <input type="submit" id="stopRecordingButton" value="Stop Recording">
                             </form>
                         </div>';
-                    } endif;
+                    }
                 } else {
                     // Log an error if $num_video is not equal to 1
-                    error_log("Line 312: $num_video is not 1");
+                    error_log("Line 314: $num_video is not 1");
                 }
             }
         ?>
     </div>
     <!-- JavaScript to automatically refresh the page after the "Stop Recording" button is pressed -->
     <script> // JavaScript to automatically refresh the page after the "Stop Recording" button was pressed
+        var stopRecordingPressed = false; // Flag to track if "Stop Recording" button is pressed
+        
         function refreshPage() 
         {
+            // Set the flag to true
+            stopRecordingPressed = true;
             // Refresh the page after a short delay to allow the form submission to complete
             setTimeout(function() 
             {
                 location.reload();
             }, 1000); // 1000 milliseconds = 1 seconds
         }
+
         // JavaScript to automatically refresh the page after a certain interval
         function autoRefresh() 
         {
-            // Refresh the page after 5 seconds
+            // Refresh the page after 60 seconds
             setTimeout(function() 
             {
                 location.reload();
@@ -338,17 +343,26 @@
         // Call the autoRefresh function after the page is loaded
         window.onload = autoRefresh;
 
-        //removed
+        // This script runs every 5 seconds to periodically check for the existence of video0.mp4 and video1.mp4
+        setInterval(function() {
+            // Check if video0.mp4 exists
+            var video0Exists = <?php echo json_encode($video0Exists); ?>;
+            // Check if video1.mp4 exists
+            var video1Exists = <?php echo json_encode($video1Exists); ?>;
 
-        // Function to hide the "Stop Recording" button after it's pressed
-        window.addEventListener("load", function() 
-        {
-            document.getElementById("stopRecordingForm").addEventListener("submit", function() 
-            {
-                // Hide the "Stop Recording" button
+            if (video0Exists && !stopRecordingPressed) {
+                // Show the "Stop Recording" button if video0.mp4 exists and the button is not pressed
+                document.getElementById("stopRecordingButtonDiv").style.display = "block";
+            } else {
+                // Hide the "Stop Recording" button otherwise
                 document.getElementById("stopRecordingButtonDiv").style.display = "none";
-            });
-        });
+            }
+
+            // If video1.mp4 exists, reload the page to stop the blocking period
+            if (video1Exists) {
+                location.reload();
+            }
+        }, 5000); // Check every 5 seconds
     </script>
     <!-- Display remaining videos -->
     <div style="text-align: center;" class="w3-panel w3-pale-red">
@@ -376,7 +390,7 @@
                         }
                     }
                 } else {
-                    error_log("Line 324: video1 do not exists");
+                    error_log("Line 379: video1 do not exists");
                 }
             }
         ?>
