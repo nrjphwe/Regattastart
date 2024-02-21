@@ -11,9 +11,11 @@
     {
         // Handle stop recording logic here
         include_once "stop_recording.php"; // Include the script to stop recording
-        error_log('Line 19: The stop_recording.php was included in index.php');
+        error_log('Line 14: The stop_recording.php was included in index.php');
+         // Trigger a refresh of the page after a certain time interval e.g., 5
+        echo '<meta http-equiv="refresh" content="10" />';
         header("Location: {$_SERVER['PHP_SELF']}");
-        exit;
+        //exit;
     }
 ?>
 <script> // Refresh the page after a short delay to allow the form submission to complete
