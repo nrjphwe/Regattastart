@@ -295,7 +295,7 @@
                     } endif;
                 } else {
                     // Log an error if $num_video is not equal to 1
-                    error_log("Line 282: $num_video is not 1");
+                    error_log("Line 298: $num_video is not 1");
                 }
             }
         ?>
