@@ -292,7 +292,7 @@
             if (isset($video_dur)) // which is valid for regattastart6
             {
                 // $myVar is defined
-                error_log('Line 285: video_dur is defined, which is only valid for regattastart6');
+                error_log('Line 295: video_dur is defined, which is only valid for regattastart6');
             } else
             {
                 if ($num_video == 1) // which is valid for regattastart9
@@ -309,55 +309,34 @@
                     } endif;
                 } else {
                     // Log an error if $num_video is not equal to 1
-                    error_log("Line 302: $num_video is not 1");
+                    error_log("Line 312: $num_video is not 1");
                 }
             }
         ?>
     </div>
     <!-- JavaScript to automatically refresh the page after the "Stop Recording" button is pressed -->
     <script> // JavaScript to automatically refresh the page after the "Stop Recording" button was pressed
-        // Function to refresh the page after the "Stop Recording" button is pressed
-
         function refreshPage() 
         {
             // Refresh the page after a short delay to allow the form submission to complete
-            setTimeout(function() {
+            setTimeout(function() 
+            {
                 location.reload();
             }, 1000); // 1000 milliseconds = 1 seconds
         }
-
         // JavaScript to automatically refresh the page after a certain interval
-        function autoRefresh() {
+        function autoRefresh() 
+        {
             // Refresh the page after 5 seconds
-            setTimeout(function() {
+            setTimeout(function() 
+            {
                 location.reload();
-        }, 60000); // 60000 milliseconds = 60 seconds
-    }
-
+            }, 60000); // 60000 milliseconds = 60 seconds
+        }
         // Call the autoRefresh function after the page is loaded
         window.onload = autoRefresh;
 
-        // This script runs every 5 seconds to periodically check for the existence of video0.mp4 and video1.mp4
-        setInterval(function() 
-        {
-            // Check if video0.mp4 exists
-            var video0Exists = <?php echo json_encode($video0Exists); ?>;
-            // Check if video1.mp4 exists
-            var video1Exists = <?php echo json_encode($video1Exists); ?>;
-
-            if (video0Exists) {
-                // Show the "Stop Recording" button
-                document.getElementById("stopRecordingButtonDiv").style.display = "block";
-            } else {
-                // Hide the "Stop Recording" button
-                document.getElementById("stopRecordingButtonDiv").style.display = "none";
-            }
-
-            // If video1.mp4 exists, reload the page to stop the blocking period
-            if (video1Exists) {
-                location.reload();
-            }
-        }, 5000); // Check every 5 seconds
+        //removed
 
         // Function to hide the "Stop Recording" button after it's pressed
         window.addEventListener("load", function() 
