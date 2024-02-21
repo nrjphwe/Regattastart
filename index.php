@@ -298,9 +298,10 @@
         ?>
         </div>
     <!-- JavaScript to automatically refresh the page after the "Stop Recording" button is pressed -->
-    <script>
+    <script> // JavaScript to automatically refresh the page after the "Stop Recording" button was pressed
         // Function to refresh the page after a certain interval
-        function autoRefresh() {
+        function autoRefresh() 
+        {
             // Refresh the page after 5 seconds
             setTimeout(function() {
                 location.reload();
@@ -309,35 +310,38 @@
 
         // Call the autoRefresh function after the page is loaded
         window.onload = autoRefresh;
+
+        // This script runs every 5 seconds to periodically check for the existence of video0.mp4 and video1.mp4
+        setInterval(function() 
+        {
+            // Check if video0.mp4 exists
+            var video0Exists = <?php echo json_encode($video0Exists); ?>;
+            // Check if video1.mp4 exists
+            var video1Exists = <?php echo json_encode($video1Exists); ?>;
+
+            if (video0Exists) {
+                // Show the "Stop Recording" button
+                document.getElementById("stopRecordingButtonDiv").style.display = "block";
+            } else {
+                // Hide the "Stop Recording" button
+                document.getElementById("stopRecordingButtonDiv").style.display = "none";
+            }
+
+            // If video1.mp4 exists, reload the page to stop the blocking period
+            if (video1Exists) {
+                location.reload();
+            }
+        }, 5000); // Check every 5 seconds
+
+        // Function to hide the "Stop Recording" button after it's pressed
+        window.addEventListener("load", function() 
+        {
+            document.getElementById("stopRecordingForm").addEventListener("submit", function() 
+            {
+                document.getElementById("stopRecordingButtonDiv").style.display = "none";
+            });
+        });
     </script>
-<!-- JavaScript to periodically check for the existence of video0.mp4 and video1.mp4 -->
-<script>
-    // This script runs every 5 seconds
-    setInterval(function() {
-        // Check if video0.mp4 exists
-        var video0Exists = <?php echo json_encode($video0Exists); ?>;
-        // Check if video1.mp4 exists
-        var video1Exists = <?php echo json_encode($video1Exists); ?>;
-
-        if (video0Exists) {
-            // Show the "Stop Recording" button
-            document.getElementById("stopRecordingButtonDiv").style.display = "block";
-        } else {
-            // Hide the "Stop Recording" button
-            document.getElementById("stopRecordingButtonDiv").style.display = "none";
-        }
-
-        // If video1.mp4 exists, reload the page to stop the blocking period
-        if (video1Exists) {
-            location.reload();
-        }
-    }, 5000); // Check every 5 seconds
-
-    // Function to hide the "Stop Recording" button after it's pressed
-    document.getElementById("stopRecordingForm").addEventListener("submit", function() {
-        document.getElementById("stopRecordingButtonDiv").style.display = "none";
-    });
-</script>
     <!-- Display remaining videos -->
     <div style="text-align: center;" class="w3-panel w3-pale-red">
         <?php
