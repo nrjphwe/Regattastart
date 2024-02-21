@@ -16,6 +16,14 @@
         exit;
     }
 ?>
+<script> // Refresh the page after a short delay to allow the form submission to complete
+    function refreshPage() {
+        // Refresh the page after a short delay to allow the form submission to complete
+        setTimeout(function() {
+            location.reload();
+        }, 1000); // 1000 milliseconds = 1 second
+    }
+</script>
 <!-- Your HTML to display data from the session -->
 <!DOCTYPE html>
 <html lang="en">
@@ -293,7 +301,7 @@
                     {
                         // Show the "Stop Recording" button if video0.mp4 exists
                         echo '<div id="stopRecordingButtonDiv">
-                        <form id="stopRecordingForm" action="' . htmlspecialchars($_SERVER["PHP_SELF"]) . '" method="post">
+                        <form id="stopRecordingForm" action="' . htmlspecialchars($_SERVER["PHP_SELF"]) . '" method="post" onsubmit="refreshPage()">
                                 <input type="hidden" name="stop_recording" value="true">
                                 <input type="submit" id="stopRecordingButton" value="Stop Recording">
                             </form>
