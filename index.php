@@ -18,6 +18,12 @@
         //exit;
     }
 ?>
+<?php
+// Check if the "Stop Recording" button was pressed
+$stopRecordingPressed = isset($_POST['stopRecordingPressed']) && $_POST['stopRecordingPressed'] == "1";
+
+// Use $stopRecordingPressed in your PHP code...
+?>
 <!-- Your HTML to display data from the session -->
 <!DOCTYPE html>
 <html lang="en">
@@ -305,6 +311,7 @@
                         echo '<div id="stopRecordingButtonDiv">
                         <form id="stopRecordingForm" action="' . htmlspecialchars($_SERVER["PHP_SELF"]) . '" method="post" onsubmit="refreshPage()">
                                 <input type="hidden" name="stop_recording" value="true">
+                                <input type="hidden" name="stopRecordingPressed" id="stopRecordingPressed" value="0"> <!-- Hidden input field for stopRecordingPressed -->
                                 <input type="submit" id="stopRecordingButton" value="Stop Recording">
                             </form>
                         </div>';
@@ -317,7 +324,12 @@
         ?>
     </div>
     <!-- JavaScript to automatically refresh the page after the "Stop Recording" button is pressed -->
-    <script> // JavaScript to automatically refresh the page after the "Stop Recording" button was pressed
+    <script>
+        // Function to set stopRecordingPressed value to 1 when the form is submitted
+        function refreshPage() {
+            document.getElementById("stopRecordingPressed").value = "1"; // Set stopRecordingPressed value to 1
+        }
+
         var stopRecordingPressed = false; // Flag to track if "Stop Recording" button is pressed
         
         function refreshPage() 
