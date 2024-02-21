@@ -18,7 +18,6 @@
         echo "execution started";
         sleep(3);
 
-        //exec('python3 /usr/lib/cgi-bin/regattastart9.py ' . escapeshellarg(json_encode($_POST)));
         // Redirect to index.php
         header("Location: index.php");
         exit;
@@ -245,7 +244,7 @@
 <footer>
     <div style="text-align: center;" class="w3-panel w3-grey">
         <?php
-            // output when index6.php was last modified.
+            // output when index9.php was last modified.
             $filename = 'index9.php';
             if (file_exists($filename)) {
                 echo "This web-page: $filename was last modified: " . date ("Y-m-d H:i:s.", filemtime($filename));
