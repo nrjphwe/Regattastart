@@ -282,7 +282,7 @@
             if (isset($video_dur)) // which is valid for regattastart6
             {
                 // $myVar is defined
-                echo 'video_dur is defined.';
+                error_log('Line 285: video_dur is defined, which is only valid for regattastart6');
             } else
             {
                 if ($num_video == 1) // which is valid for regattastart9
@@ -299,7 +299,7 @@
                     } endif;
                 } else {
                     // Log an error if $num_video is not equal to 1
-                    error_log("Line 298: $num_video is not 1");
+                    error_log("Line 302: $num_video is not 1");
                 }
             }
         ?>
