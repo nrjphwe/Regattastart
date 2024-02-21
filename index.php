@@ -18,14 +18,6 @@
         //exit;
     }
 ?>
-<script> // Refresh the page after a short delay to allow the form submission to complete
-    function refreshPage() {
-        // Refresh the page after a short delay to allow the form submission to complete
-        setTimeout(function() {
-            location.reload();
-        }, 1000); // 1000 milliseconds = 1 second
-    }
-</script>
 <!-- Your HTML to display data from the session -->
 <!DOCTYPE html>
 <html lang="en">
