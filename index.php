@@ -279,7 +279,11 @@
     <!-- Show "Stop recording" button after video0 is ready -->
     <div style="text-align: center;" class="w3-panel w3-pale-green">
         <?php
-            if ($video_dur == "") // which is valid for regattastart9
+            if (isset($video_dur)) // which is valid for regattastart6
+            {
+                // $myVar is defined
+                echo 'video_dur is defined.';
+            } else
             {
                 if ($num_video == 1) // which is valid for regattastart9
                 {
