@@ -84,7 +84,7 @@
         echo ", Video end duration :  $video_end + 2 minutes after start, ";
         echo " Number of starts: $num_starts";
         if ($num_starts == 2) {
-            if isset($dur_between_starts) {
+            if (isset($dur_between_starts)) {
                 echo ", Duration between starts: $dur_between_starts min";
                 // Convert start time to minutes
                 list($start_hour, $start_minute) = explode(':', $start_time);
@@ -99,7 +99,7 @@
                 echo ", 2nd Start is at: $second_start_time ";
             }
         }
-        if isset($video_dur) {
+        if (isset($video_dur)) {
             echo " Video duration: $video_dur";
             echo " Video delay after start: " . $video_delay;
             // Determine the number of videos during finish
