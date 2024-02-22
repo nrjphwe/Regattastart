@@ -2,6 +2,8 @@
     define('APP_VERSION', '24.02.09'); // You can replace '1.0.0' with your desired version number
     session_id("regattastart");
     session_start();
+    // Unset the session variable set in index.php
+    unset($_SESSION['stopRecordingPressed']);
     ini_set('display_errors', 1);
     error_reporting(E_ALL);
 ?>
