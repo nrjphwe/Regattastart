@@ -370,7 +370,8 @@
         window.onload = autoRefresh;
 
         // This script runs every 60 seconds to periodically check for the existence of video0.mp4 and video1.mp4
-        setInterval(function() {
+        setInterval(function() 
+        {
             // Check if video0.mp4 exists
             var video0Exists = <?php echo json_encode($video0Exists); ?>;
             // Check if video1.mp4 exists
@@ -383,7 +384,6 @@
                 // Hide the "Stop Recording" button otherwise
                 document.getElementById("stopRecordingButtonDiv").style.display = "none";
             }
-
             // If video1.mp4 exists, reload the page to stop the blocking period
             if (video1Exists && stopRecordingPressed) {
                 document.getElementById("stopRecordingButtonDiv").style.display = "none";
