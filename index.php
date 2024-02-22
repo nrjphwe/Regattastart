@@ -9,6 +9,7 @@
     // Check if video0.mp4 or video1.mp4 exists 
     $video0Exists = file_exists("images/video0.mp4");
     $video1Exists = file_exists("images/video1.mp4");
+    $stopRecordingPressed = False;
 
     // Check if the "Stop Recording" button was pressed
     //$stopRecordingPressed = isset($_POST['stopRecordingPressed']) && $_POST['stopRecordingPressed'] == "1";
