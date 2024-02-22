@@ -347,10 +347,12 @@
     </div>
     <!-- JavaScript to automatically refresh the page after the "Stop Recording" button is pressed -->
     <script>
+        var video0Exists = <?php echo json_encode($video0Exists); ?>;
         if (video0Exists) {
             var stopRecordingPressed = <?php echo json_encode($stopRecordingPressed); ?>; // Get the value from PHP
         }
         console.log("stopRecordingPressed value:", stopRecordingPressed); // Log the value
+        
         function refreshPage() 
         {
             // Set the flag to true
