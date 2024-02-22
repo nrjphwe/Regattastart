@@ -266,9 +266,13 @@
         <!-- Show "Stop recording" button after video0 is ready -->
         <div style="text-align: center;" class="w3-panel w3-pale-green">
             <?php
-                // Check if the "Stop Recording" button was pressed
-                $stopRecordingPressed = isset($_POST['stopRecordingPressed']) && $_POST['stopRecordingPressed'] == "1";
-                error_log("Line 275: StopRecordingPressed set to: $stopRecordingPressed");
+                // Retrieve the value of the session variable
+                $stopRecordingPressed = isset($_SESSION['stopRecordingPressed']) ? $_SESSION['stopRecordingPressed'] : false;
+
+                // Return the value as JSON
+                echo json_encode(['stopRecordingPressed' => $stopRecordingPressed]);
+                
+                error_log("Line 271: StopRecordingPressed set to: $stopRecordingPressed");
 
                 if ($num_video == 1) // which is valid for regattastart9 not selectable 
                 {
