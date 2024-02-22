@@ -385,7 +385,7 @@
             
             console.log("video0Exists:", video0Exists);
             console.log("video1Exists:", video1Exists);
-            console.log("stopRecordingPressed:", stopRecordingPressed);
+            console.log("Line 388: stopRecordingPressed:", stopRecordingPressed);
 
             if (video0Exists && !stopRecordingPressed) {
                 // Show the "Stop Recording" button if video0.mp4 exists and the button is not pressed
