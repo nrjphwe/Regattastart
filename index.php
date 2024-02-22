@@ -350,6 +350,8 @@
             // Set the value of the hidden input field
             document.getElementById("stopRecordingPressed").value = "1"; // Set stopRecordingPressed value to 1
             // Refresh the page after a short delay to allow the form submission to complete
+            // Hide the button
+            document.getElementById("stopRecordingButton").style.display = "none";
             setTimeout(function() {
                 location.reload();
             }, 1000); // 1000 milliseconds = 1 second
