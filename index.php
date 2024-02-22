@@ -380,6 +380,10 @@
             var video0Exists = <?php echo json_encode($video0Exists); ?>;
             // Check if video1.mp4 exists
             var video1Exists = <?php echo json_encode($video1Exists); ?>;
+            
+            console.log("video0Exists:", video0Exists);
+            console.log("video1Exists:", video1Exists);
+            console.log("stopRecordingPressed:", stopRecordingPressed);
 
             if (video0Exists && !stopRecordingPressed) {
                 // Show the "Stop Recording" button if video0.mp4 exists and the button is not pressed
