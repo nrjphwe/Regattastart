@@ -277,14 +277,17 @@
                 {
                     if ($video0Exists && !$stopRecordingPressed) 
                     {
-                        echo '<div id="stopRecordingButtonDiv">
-                            <form id="stopRecordingForm" action="' . htmlspecialchars($_SERVER["PHP_SELF"]) . '" method="post" onsubmit="return refreshPage()">
-                                <input type="hidden" name="stop_recording" value="true">
-                                <input type="hidden" name="stopRecordingPressed" id="stopRecordingPressed" value="0"> <!-- Hidden input field for stopRecordingPressed -->
-                                <input type="submit" id="stopRecordingButton" value="Stop Recording">
-                            </form>
-                        </div>';
+                        echo '<div id="stopRecordingButtonDiv" style="display: block;">'; // Display the div
+                    } else {
+                        echo '<div id="stopRecordingButtonDiv" style="display: none;">'; // Hide the div
                     }
+                    echo '
+                        <form id="stopRecordingForm" action="' . htmlspecialchars($_SERVER["PHP_SELF"]) . '" method="post" onsubmit="return refreshPage()">
+                            <input type="hidden" name="stop_recording" value="true">
+                            <input type="hidden" name="stopRecordingPressed" id="stopRecordingPressed" value="0"> <!-- Hidden input field for stopRecordingPressed -->
+                            <input type="submit" id="stopRecordingButton" value="Stop Recording">
+                        </form>
+                    </div>';
                 } else {
                     // Log an error if $num_video is not equal to 1
                     error_log("Line 287: $num_video is not 1");
