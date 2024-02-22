@@ -270,7 +270,7 @@
                 $stopRecordingPressed = isset($_SESSION['stopRecordingPressed']) ? $_SESSION['stopRecordingPressed'] : false;
 
                 // Return the value as JSON
-                echo json_encode(['stopRecordingPressed' => $stopRecordingPressed]);
+                //echo json_encode(['stopRecordingPressed' => $stopRecordingPressed]);
 
                 error_log("Line 271: StopRecordingPressed set to: $stopRecordingPressed");
 
