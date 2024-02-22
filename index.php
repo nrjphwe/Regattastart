@@ -276,7 +276,7 @@
                     if ($video0Exists && !$stopRecordingPressed) 
                     {
                         echo '<div id="stopRecordingButtonDiv">
-                        <form id="stopRecordingForm" action="' . htmlspecialchars($_SERVER["PHP_SELF"]) . '" method="post" onsubmit="refreshPage()">
+                            <form id="stopRecordingForm" action="' . htmlspecialchars($_SERVER["PHP_SELF"]) . '" method="post" onsubmit="return refreshPage()">
                                 <input type="hidden" name="stop_recording" value="true">
                                 <input type="hidden" name="stopRecordingPressed" id="stopRecordingPressed" value="0"> <!-- Hidden input field for stopRecordingPressed -->
                                 <input type="submit" id="stopRecordingButton" value="Stop Recording">
