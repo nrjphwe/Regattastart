@@ -271,7 +271,7 @@
 
                 // Return the value as JSON
                 echo json_encode(['stopRecordingPressed' => $stopRecordingPressed]);
-                
+
                 error_log("Line 271: StopRecordingPressed set to: $stopRecordingPressed");
 
                 if ($num_video == 1) // which is valid for regattastart9 not selectable 
@@ -348,7 +348,7 @@
     <!-- JavaScript to automatically refresh the page after the "Stop Recording" button is pressed -->
     <script>
         var stopRecordingPressed = <?php echo json_encode($stopRecordingPressed); ?>; // Get the value from PHP
-        console.log("stopRecordingPressed value:", stopRecordingPressed); // Log the value
+        console.log("Line 351: stopRecordingPressed value:", stopRecordingPressed); // Log the value
         
         function refreshPage() 
         {
