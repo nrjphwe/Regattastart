@@ -102,10 +102,11 @@
         if (isset($video_dur)) {
             echo " Video duration: $video_dur";
             echo " Video delay after start: " . $video_delay;
-            // Determine the number of videos during finish
-            $num_video = isset($num_video) ? $num_video : 1;
             echo " Number of videos during finish: " . $num_video;
         }
+        // Determine the number of videos during finish if not set, 
+        // regattastart9 is executing and num_video is set to 1 as a flag.
+        $num_video = isset($num_video) ? $num_video : 1;
     ?>
     <!-- Header content -->
     <header>
