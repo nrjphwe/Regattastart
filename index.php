@@ -24,6 +24,7 @@
         // Handle stop recording logic here
         include_once "stop_recording.php"; // Include the script to stop recording
         error_log('Line 28: The stop_recording.php was included in index.php');
+        $stopRecordingPressed = True;
          // Trigger a refresh of the page after a certain time interval e.g., 5
         //echo '<meta http-equiv="refresh" content="10" />';
         //header("Location: {$_SERVER['PHP_SELF']}");
@@ -106,6 +107,7 @@
         }
         // Determine the number of videos during finish if not set, 
         // regattastart9 is executing and num_video is set to 1 as a flag.
+        // This function checks if the variable $num_video is set
         $num_video = isset($num_video) ? $num_video : 1;
     ?>
     <!-- Header content -->
@@ -339,22 +341,18 @@
     </div>
     <!-- JavaScript to automatically refresh the page after the "Stop Recording" button is pressed -->
     <script>
-        // Function to set stopRecordingPressed value to 1 when the form is submitted
-        function refreshPage() {
-            document.getElementById("stopRecordingPressed").value = "1"; // Set stopRecordingPressed value to 1
-        }
-
         var stopRecordingPressed = false; // Flag to track if "Stop Recording" button is pressed
         
         function refreshPage() 
         {
             // Set the flag to true
             stopRecordingPressed = true;
+            // Set the value of the hidden input field
+            document.getElementById("stopRecordingPressed").value = "1"; // Set stopRecordingPressed value to 1
             // Refresh the page after a short delay to allow the form submission to complete
-            setTimeout(function() 
-            {
+            setTimeout(function() {
                 location.reload();
-            }, 1000); // 1000 milliseconds = 1 seconds
+            }, 1000); // 1000 milliseconds = 1 second
         }
 
         // JavaScript to automatically refresh the page after a certain interval
