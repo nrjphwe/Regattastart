@@ -25,12 +25,8 @@
         include_once "stop_recording.php"; // Include the script to stop recording
         error_log('Line 26: The stop_recording.php was included in index.php');
         $stopRecordingPressed = True;
-        // Optionally, you can store this value in a session to persist it across requests
-        // $_SESSION['stopRecordingPressed'] = $stopRecordingPressed;
-         // Trigger a refresh of the page after a certain time interval e.g., 5
-        //echo '<meta http-equiv="refresh" content="10" />';
-        //header("Location: {$_SERVER['PHP_SELF']}");
-        //exit;
+        // Store this value in a session to persist it across requests
+        $_SESSION['stopRecordingPressed'] = $stopRecordingPressed;
     }
 ?>
 <!-- Your HTML to display data from the session -->
@@ -347,10 +343,7 @@
     </div>
     <!-- JavaScript to automatically refresh the page after the "Stop Recording" button is pressed -->
     <script>
-        var video0Exists = <?php echo json_encode($video0Exists); ?>;
-        if (video0Exists) {
-            var stopRecordingPressed = <?php echo json_encode($stopRecordingPressed); ?>; // Get the value from PHP
-        }
+        var stopRecordingPressed = <?php echo json_encode($stopRecordingPressed); ?>; // Get the value from PHP
         console.log("stopRecordingPressed value:", stopRecordingPressed); // Log the value
         
         function refreshPage() 
