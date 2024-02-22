@@ -396,7 +396,8 @@
             }
 
             // If video1.mp4 exists and stopRecordingPressed is true, hide the "Stop Recording" button
-            if (video1Exists && stopRecordingPressed) {
+            // if (video1Exists && stopRecordingPressed) {
+            if (video1Exists) {
                 document.getElementById("stopRecordingButtonDiv").style.display = "none";
             }
         }, 60000); // Check every 60 seconds
