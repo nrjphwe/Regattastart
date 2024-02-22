@@ -388,7 +388,7 @@
             if (video1Exists) {
                 location.reload();
             }
-        }, 5000); // Check every 5 seconds
+        }, 60000); // Check every 60 seconds
     </script>
     <!-- JavaScript to step frames in videos -->
     <script> // function to step frames 
