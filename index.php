@@ -12,7 +12,7 @@
 
     // Check if the "Stop Recording" button was pressed
     $stopRecordingPressed = isset($_POST['stopRecordingPressed']) && $_POST['stopRecordingPressed'] == "1";
-
+    error_log('Line 15: StopRecordingPressed set to: $stopRecordingPressed');
     // Retrieve session data
     $formData = isset($_SESSION['form_data']) && is_array($_SESSION['form_data']) ? $_SESSION['form_data'] : [];
 
@@ -272,7 +272,8 @@
             <?php
                 // Check if the "Stop Recording" button was pressed
                 $stopRecordingPressed = isset($_POST['stopRecordingPressed']) && $_POST['stopRecordingPressed'] == "1";
-
+                error_log('Line 275: StopRecordingPressed set to: $stopRecordingPressed');
+                
                 if ($num_video == 1) // which is valid for regattastart9 not selectable 
                 {
                     if ($video0Exists && !$stopRecordingPressed) 
