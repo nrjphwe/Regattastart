@@ -269,10 +269,7 @@
                 // Retrieve the value of the session variable
                 $stopRecordingPressed = isset($_SESSION['stopRecordingPressed']) ? $_SESSION['stopRecordingPressed'] : false;
 
-                // Return the value as JSON
-                //echo json_encode(['stopRecordingPressed' => $stopRecordingPressed]);
-
-                error_log("Line 271: StopRecordingPressed set to: $stopRecordingPressed");
+                //error_log("Line 272: StopRecordingPressed set to: $stopRecordingPressed");
 
                 if ($num_video == 1) // which is valid for regattastart9 not selectable 
                 {
@@ -291,7 +288,7 @@
                     </div>';
                 } else {
                     // Log an error if $num_video is not equal to 1
-                    error_log("Line 287: $num_video is not 1");
+                    error_log("Line 291: $num_video is not 1");
                 }
             ?>
         </div>
@@ -348,8 +345,8 @@
     <!-- JavaScript to automatically refresh the page after the "Stop Recording" button is pressed -->
     <script>
         var stopRecordingPressed = <?php echo json_encode($stopRecordingPressed); ?>; // Get the value from PHP
-        console.log("Line 351: stopRecordingPressed value:", stopRecordingPressed); // Log the value
-        
+        //console.log("Line 348: stopRecordingPressed value:", stopRecordingPressed); // Log the value
+
         function refreshPage() 
         {
             // Set the flag to true
@@ -382,10 +379,10 @@
             var video0Exists = <?php echo json_encode($video0Exists); ?>;
             // Check if video1.mp4 exists
             var video1Exists = <?php echo json_encode($video1Exists); ?>;
-            
-            console.log("video0Exists:", video0Exists);
-            console.log("video1Exists:", video1Exists);
-            console.log("Line 388: stopRecordingPressed:", stopRecordingPressed);
+
+            //console.log("video0Exists:", video0Exists);
+            //console.log("video1Exists:", video1Exists);
+            //console.log("Line 385: stopRecordingPressed:", stopRecordingPressed);
 
             if (video0Exists && !stopRecordingPressed) {
                 // Show the "Stop Recording" button if video0.mp4 exists and the button is not pressed
