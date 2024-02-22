@@ -385,7 +385,7 @@
             }
 
             // If video1.mp4 exists, reload the page to stop the blocking period
-            if (video1Exists) {
+            if (video1Exists && !stopRecordingPressed) {
                 location.reload();
             }
         }, 60000); // Check every 60 seconds
