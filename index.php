@@ -373,31 +373,6 @@
         // Call the autoRefresh function after the page is loaded
         window.onload = autoRefresh;
 
-        // This script runs every 60 seconds to periodically check for the existence of video0.mp4 and video1.mp4
-        setInterval(function() {
-            // Check if video0.mp4 exists
-            var video0Exists = <?php echo json_encode($video0Exists); ?>;
-            // Check if video1.mp4 exists
-            var video1Exists = <?php echo json_encode($video1Exists); ?>;
-
-            //console.log("video0Exists:", video0Exists);
-            //console.log("video1Exists:", video1Exists);
-            //console.log("Line 385: stopRecordingPressed:", stopRecordingPressed);
-
-            if (video0Exists && !stopRecordingPressed) {
-                // Show the "Stop Recording" button if video0.mp4 exists and the button is not pressed
-                document.getElementById("stopRecordingButtonDiv").style.display = "block";
-            } else {
-                // Hide the "Stop Recording" button otherwise
-                document.getElementById("stopRecordingButtonDiv").style.display = "none";
-            }
-
-            // If video1.mp4 exists and stopRecordingPressed is true, hide the "Stop Recording" button
-            // if (video1Exists && stopRecordingPressed) {
-            if (video1Exists) {
-                document.getElementById("stopRecordingButtonDiv").style.display = "none";
-            }
-        }, 60000); // Check every 60 seconds
     </script>
     <!-- JavaScript to step frames in videos -->
     <script> // function to step frames 
