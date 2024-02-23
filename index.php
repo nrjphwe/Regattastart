@@ -376,7 +376,6 @@
             // Set the value of the hidden input field
             document.getElementById("stopRecordingPressed").value = "1"; // Set stopRecordingPressed value to 1
             console.log("stopRecordingPressed value:", stopRecordingPressed); // Log the value
-            // Hide the button
             document.getElementById("stopRecordingButton").style.display = "none";
             // Check if the video file exists
             var videoExists = "<?php echo file_exists('/var/www/html/images/video1.mp4'); ?>";
@@ -386,8 +385,9 @@
                 return;
             } else {
                 console.log("video file do not exists:", videoExists); // Log the value
-                setTimeout(function() {
-                    location.reload();
+            }
+            setTimeout(function() {
+                location.reload();
             }, 1000); // 1000 milliseconds = 1 second
         }
 
