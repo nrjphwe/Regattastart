@@ -1,4 +1,5 @@
 #!/usr/bin/python3 -u
+# after git pull, do: sudo cp regattastart6.py /usr/lib/cgi-bin/
 import os
 import sys
 import cgitb
@@ -16,7 +17,7 @@ from picamera import PiCamera, Color
 # parameter data
 signal_dur = 0.3 # 0.3 sec
 log_path = '/usr/lib/cgi-bin/'
-mp4_path = '/var/www/html/images/'
+video_path = '/var/www/html/images/'
 photo_path = '/var/www/html/images/'
 ON = GPIO.HIGH
 OFF = GPIO.LOW
@@ -77,10 +78,10 @@ def capture_picture(camera, photo_path, file_name):
     camera.capture(os.path.join(photo_path, file_name), use_video_port=True)
     logger.info ("     Capture picture = %s ", file_name)
 
-def start_video_recording(camera, mp4_path, file_name):
+def start_video_recording(camera, video_path, file_name):
     if camera.recording:
         camera.stop_recording()
-    camera.start_recording(os.path.join(mp4_path, file_name))
+    camera.start_recording(os.path.join(video_path, file_name))
     logger.info (" Started recording of %s ", file_name)
 
 def stop_video_recording(camera):
@@ -93,18 +94,18 @@ def annotate_video_duration(camera, start_time_sec):
     elapsed_time = seconds_since_midnight - start_time_sec #elapsed since last star until now)
     camera.annotate_text = f"{dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Seconds since last start: {elapsed_time}"
 
-def convert_video_to_mp4(mp4_path, source_file, destination_file):
-    convert_video_str = "MP4Box -add {} -new {}".format(os.path.join(mp4_path,source_file), os.path.join(mp4_path,destination_file))
+def convert_video_to_mp4(video_path, source_file, destination_file):
+    convert_video_str = "MP4Box -add {} -new {}".format(os.path.join(video_path,source_file), os.path.join(video_path,destination_file))
     subprocess.run(convert_video_str, shell=True)
     logger.info (" Video recording %s converted ", destination_file)
 
-def start_sequence(camera, signal, start_time_sec, num_starts, photo_path):
+def start_sequence(camera, signal, start_time_sec, num_starts, dur_between_starts, photo_path):
     for i in range(num_starts):
-        logger.info(f"  Start_sequence. Start of iteration {i}")
+        logger.info(f"  Line 104: Start_sequence. Start of iteration {i}")
         # Adjust the start_time_sec for the second iteration
         if i == 1:
-            start_time_sec += 5 * 60  # Add 5 minutes for the second iteration
-            logger.info(f"  Start_sequence, Next start_time_sec: {start_time_sec}")
+            start_time_sec += dur_between_starts * 60  # Add 5 or 10 minutes for the second iteration
+            logger.info(f"  Line 108: Start_sequence, Next start_time_sec: {start_time_sec}")
 
         # Define time intervals for each iteration
         time_intervals = [
@@ -136,14 +137,14 @@ def start_sequence(camera, signal, start_time_sec, num_starts, photo_path):
                     logger.info(f"  Start_sequence, seconds_since_midnight: {seconds_since_midnight}, start_time_sec: {start_time_sec}")
         logger.info(f"  Start_sequence, End of iteration: {i}")
 
-def finish_recording(camera, mp4_path, video_delay, num_video, video_dur, start_time_sec):
+def finish_recording(camera, video_path, video_delay, num_video, video_dur, start_time_sec):
     # Wait for finish, when the next video will start (delay)
     time.sleep((video_delay - 2) * 60)  # Convert delay (minus 2 minutes after start) to seconds 
 
     # Result video, chopped into numeral videos with duration at "video_dur"
     stop = num_video + 1
     for i in range(1, stop):
-        start_video_recording(camera, mp4_path, f"video{i}.h264")
+        start_video_recording(camera, video_path, f"video{i}.h264")
         # Video running, duration at "video_dur"
         t2 = dt.datetime.now()
         start_time = dt.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) + dt.timedelta(seconds=start_time_sec)
@@ -154,7 +155,7 @@ def finish_recording(camera, mp4_path, video_delay, num_video, video_dur, start_
             camera.wait_recording(0) # was 0.5
 
         stop_video_recording(camera)
-        convert_video_to_mp4(mp4_path, f"video{i}.h264", f"video{i}.mp4")
+        convert_video_to_mp4(video_path, f"video{i}.h264", f"video{i}.mp4")
     logger.info("This was the last video =====")
 
 def main():
@@ -177,6 +178,7 @@ def main():
         video_dur = int(form_data["video_dur"])
         num_video = int(form_data["num_video"])
         num_starts = int(form_data["num_starts"])
+        dur_between_starts = int(form_data["dur_between_starts"])
 
         camera = setup_camera()
         if camera is None:
@@ -202,18 +204,18 @@ def main():
                 seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
     
                 if seconds_since_midnight > t5min_warning - 2:         
-                    logger.info("Start of outer loop iteration. seconds_since_midnight=%s", seconds_since_midnight)
+                    logger.info(" Line 207: Start of outer loop iteration. seconds_since_midnight=%s", seconds_since_midnight)
 
                     if num_starts == 1 or num_starts == 2:
                         # Start video recording just before 5 minutes before the first start
-                        start_video_recording(camera, mp4_path, "video0.h264")
-                        logger.info("Inner loop, entering the start sequence block.")
-                        start_sequence(camera, signal, start_time_sec, num_starts, photo_path)
+                        start_video_recording(camera, video_path, "video0.h264")
+                        logger.info(" Line 212: Inner loop, entering the start sequence block.")
+                        start_sequence(camera, signal, start_time_sec, num_starts, dur_between_starts,photo_path)
                         if num_starts == 2:
-                            start_time_sec = start_time_sec + (5 * 60)
-                        logger.info(" Wait 2 minutes then stop video recording")
+                            start_time_sec = start_time_sec + (dur_between_starts * 60)
+                        logger.info(" Line 216: Wait 2 minutes then stop video recording")
                         t0 = dt.datetime.now()
-                        logger.info("start_time_sec= %s, t0= %s",start_time_sec, t0)  #test
+                        logger.info(" Line 218: start_time_sec= %s, t0= %s",start_time_sec, t0)  #test
                         while (dt.datetime.now() - t0).seconds < (119):
                             now = dt.datetime.now()
                             seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
@@ -222,18 +224,18 @@ def main():
                             camera.wait_recording(0)
                     
                         stop_video_recording(camera)
-                        convert_video_to_mp4(mp4_path, "video0.h264", "video0.mp4")
+                        convert_video_to_mp4(video_path, "video0.h264", "video0.mp4")
                     # Exit the loop after the condition is met
                     break
                 
         logger.info("Finish recording outside inner loop. start_time_sec=%s", start_time_sec)
-        finish_recording(camera, mp4_path, video_delay, num_video, video_dur, start_time_sec)
+        finish_recording(camera, video_path, video_delay, num_video, video_dur, start_time_sec)
 
     except json.JSONDecodeError as e:
         logger.info ("Failed to parse JSON: %", str(e))
         sys.exit(1)
     finally:
-        logger.info("This is finally section")
+        logger.info(" Line 238: This is finally section")
         if camera is not None:
             camera.close()  # Release the camera resources
         if signal is not None:

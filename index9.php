@@ -2,6 +2,8 @@
     define('APP_VERSION', '24.02.09'); // You can replace '1.0.0' with your desired version number
     session_id("regattastart");
     session_start();
+    // Unset the session variable set in index.php
+    unset($_SESSION['stopRecordingPressed']);
     ini_set('display_errors', 1);
     error_reporting(E_ALL);
 ?>
@@ -18,14 +20,13 @@
         echo "execution started";
         sleep(3);
 
-        //exec('python3 /usr/lib/cgi-bin/regattastart9.py ' . escapeshellarg(json_encode($_POST)));
         // Redirect to index.php
         header("Location: index.php");
         exit;
     }
 
     $day = date("l");
-    $start_time = "18:25"; // You need to initialize $start_time
+    //$start_time = "18:25"; // You need to initialize $start_time
     $video_end = isset($_SESSION["form_data"]["video_end"]) ? $_SESSION["form_data"]["video_end"] : "";
     $num_video = isset($_SESSION["form_data"]["num_video"]) ? $_SESSION["form_data"]["num_video"] : "";
     $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data"]["num_starts"] : "";
@@ -83,6 +84,10 @@
             if (array_key_exists('num_starts', $_SESSION['form_data'])) {
                 $num_starts = $_SESSION['form_data']['num_starts'];
                 echo " Number of starts: $num_starts";
+            }
+            if (array_key_exists('dur_between_starts', $_SESSION['form_data'])) {
+                $dur_between_starts = $_SESSION['form_data']['dur_between_starts'];
+                echo ", Duration between starts: $dur_between_starts";
             }
             if (array_key_exists('video_dur', $_SESSION['form_data'])) {
                 $video_dur = $_SESSION['form_data']['video_dur'];
@@ -145,15 +150,17 @@
                                 $start_time = isset($_SESSION["form_data"]["start_time"]) ? $_SESSION["form_data"]["start_time"] : "";
                                 $steps = 5; // Set to 10, for test set to 5, You can adjust the value of $steps according to your needs
                                 $loops = 24 * (60 / $steps); // Define $loops here or wherever it makes sense in your code
-                                $current = 0; // Initialize $current
+                                $current = strtotime('today'); // Get the current timestamp truncated to the beginning of the day
+                                $nearest_time = ceil((time() - $current) / 300) * 300; // Find the nearest time in 5-minute intervals
+                                $start_time_option = date('H:i', $nearest_time);
                             ?>
                             Start Time: <select name="start_time" id="start_time">
                                 <?php
                                 for ($i = 0; $i < $loops; $i++) {
-                                    $start_time_option = sprintf('%02d:%02d', $i / (60 / $steps), $current % 60);
-                                    $selected = ($start_time == $start_time_option) ? "selected" : ""; // Check if this option should be selected
-                                    echo '<option value="' . $start_time_option . '" ' . $selected . '>' . $start_time_option . '</option>';
-                                    $current += $steps;
+                                    $time_option = date('H:i', $current);
+                                    $selected = ($start_time == $time_option) ? "selected" : ""; // Check if this option should be selected
+                                    echo '<option value="' . $time_option . '" ' . $selected . '>' . $time_option . '</option>';
+                                    $current += $steps * 60; // Increment by $steps in minutes
                                 }
                                 ?>
                             </select>
@@ -197,6 +204,15 @@
                             <option <?php if(isset($num_starts) && $num_starts == "1"){echo "selected=\"selected\"";} ?> value="1">1</option>
                             <option <?php if(isset($num_starts) && $num_starts == "2"){echo "selected=\"selected\"";} ?> value="2">2</option>
                         </select>
+                        <p></p>
+                        <!-- Option that should be hidden when only one start -->
+                        <div id="secondOptionContainer" style="display: none;">
+                            <span id="secondOptionText">In case of 2 starts, duration between the starts:</span>
+                            <select name="dur_between_starts" id="dur_between_starts">
+                                <option <?php if(isset($dur_between_starts) && $dur_between_starts == "5"){echo "selected=\"selected\"";} ?> value="5">5</option>
+                                <option <?php if(isset($dur_between_starts) && $dur_between_starts == "10"){echo "selected=\"selected\"";} ?> value="10">10</option>
+                            </select>
+                        </div>
                     </fieldset>
                 </div>
             </div>
@@ -230,7 +246,7 @@
 <footer>
     <div style="text-align: center;" class="w3-panel w3-grey">
         <?php
-            // output when index6.php was last modified.
+            // output when index9.php was last modified.
             $filename = 'index9.php';
             if (file_exists($filename)) {
                 echo "This web-page: $filename was last modified: " . date ("Y-m-d H:i:s.", filemtime($filename));
@@ -241,5 +257,27 @@
         <br><p> - phwe - <br></p>
     </div>
 </footer>
+<!-- JavaScript to show/hide the second option based on the condition 1 or 2 starts -->
+<script>
+    // JavaScript to show/hide the second option based on the condition 1 or 2 starts
+    document.addEventListener('DOMContentLoaded', function() {
+        var numStarts = <?php echo json_encode($num_starts); ?>;
+        var secondOptionContainer = document.getElementById('secondOptionContainer');
+        toggleSecondOption(numStarts, secondOptionContainer);
+
+        document.querySelector('select[name="num_starts"]').addEventListener('change', function(event) {
+            var selectedValue = event.target.value;
+            toggleSecondOption(selectedValue, secondOptionContainer);
+        });
+    });
+
+    function toggleSecondOption(numStarts, containerElement) {
+        if (numStarts == 2) {
+            containerElement.style.display = 'block';
+        } else {
+            containerElement.style.display = 'none';
+        }
+    }
+</script>
 </body>
 </html>

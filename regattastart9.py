@@ -114,7 +114,6 @@ def annotate_video_duration(camera, start_time_sec):
     camera.annotate_text = f"{dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Seconds since last start: {elapsed_time}"
 
 def convert_video_to_mp4(video_path, source_file, destination_file):
-    #convert_video_str = "MP4Box -add {} -new {}".format(os.path.join(video_path,source_file), os.path.join(video_path,destination_file))
     convert_video_str = "MP4Box -add {} -fps 10 -new {}".format(
         os.path.join(video_path, source_file),
         os.path.join(video_path, destination_file)
@@ -130,13 +129,13 @@ def re_encode_video(video_path, source_file, destination_file):
     subprocess.run(re_encode_video_str, shell=True)
     logger.info ("Line 131: Video %s re-encoded ", destination_file)
 
-def start_sequence(camera, signal, start_time_sec, num_starts, photo_path):
+def start_sequence(camera, signal, start_time_sec, num_starts, dur_between_starts, photo_path,):
     for i in range(num_starts):
-        logger.info(f"  Line 122: Start_sequence. Start of iteration {i}")
+        logger.info(f"  Line 134: Start_sequence. Start of iteration {i}")
         # Adjust the start_time_sec for the second iteration
         if i == 1:
-            start_time_sec += 5 * 60  # Add 5 minutes for the second iteration
-            logger.info(f"  Line 126Start_sequence, Next start_time_sec: {start_time_sec}")
+            start_time_sec += dur_between_starts * 60  # Add 5 or 10 minutes for the second iteration
+            logger.info(f"  Line 138 Start_sequence, Next start_time_sec: {start_time_sec}")
 
         # Define time intervals for each iteration
         time_intervals = [
@@ -164,8 +163,8 @@ def start_sequence(camera, signal, start_time_sec, num_starts, photo_path):
                         action()
                     picture_name = f"{i + 1}a_start_{log_message[:5]}.jpg"
                     capture_picture(camera, photo_path, picture_name)
-                    logger.info(f"     Start_sequence, log_message: {log_message}")
-                    logger.info(f"     Start_sequence, seconds_since_midnight: {seconds_since_midnight}, start_time_sec: {start_time_sec}")
+                    logger.info(f"     Line 166: Start_sequence, log_message: {log_message}")
+                    logger.info(f"     Line 167: Start_sequence, seconds_since_midnight: {seconds_since_midnight}, start_time_sec: {start_time_sec}")
         logger.info(f" Line 156: Start_sequence, End of iteration: {i}")
 
 def open_camera():
@@ -187,7 +186,7 @@ def cv_annotate_video(frame, start_time_sec):
     seconds_since_midnight = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
     elapsed_time = seconds_since_midnight - start_time_sec #elapsed since last start until now)
     label = str(dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) +  " Seconds since last start: " +  str(elapsed_time)
-    org = (30,60)
+    org = (15,60)
     #font = cv2.FONT_HERSHEY_SIMPLEX
     #font = ImageFont.truetype("PAPYRUS.ttf", 80) 
     fontFace=cv2.FONT_HERSHEY_DUPLEX
@@ -208,15 +207,15 @@ listening = True
 
 def listen_for_messages(timeout=0.1):
     global listening  # Use global flag
-    logger.info(" Line 206: Listen for messages from PHP script via a named pipe")
+    logger.info(" Line 210: Listen for messages from PHP script via a named pipe")
     pipe_path = '/var/www/html/tmp/stop_recording_pipe'
-    logger.info(f"Line 209:, pipepath {pipe_path}")
+    logger.info(f"Line 212:, pipepath {pipe_path}")
 
     try:
         os.unlink(pipe_path)  # Remove existing pipe
     except OSError as e:
         if e.errno != errno.ENOENT:  # Ignore if file doesn't exist
-            logger.info(f"Line 215, OS error: {e.errno}")
+            logger.info(f"Line 218, OS error: {e.errno}")
             raise
 
     os.mkfifo(pipe_path)  # Create a new named pipe
@@ -319,7 +318,7 @@ def finish_recording(video_path, num_starts, video_end, start_time, start_time_s
                     cv2.putText(frame,detect_time,org,fontFace,fontScale,color,1,cv2.LINE_AA)
 
                     for i in range(number_of_detected_frames):
-                        logger.info("Line 306: boat detected.")
+                        # logger.info("Line 321: boat detected.")
                         cv_annotate_video(frame, start_time_sec)
                         video_writer.write(frame)
 
@@ -334,7 +333,7 @@ def finish_recording(video_path, num_starts, video_end, start_time, start_time_s
 
         # Check if the maximum recording duration has been reached
         elapsed_time = time.time() - start_time
-        logger.info(f"elapsed time: {elapsed_time}")
+        logger.info(f"Line 336: elapsed time: {elapsed_time}")
         if elapsed_time >= 60 * (video_end + 5 * (num_starts - 1)):
             break
 
@@ -363,6 +362,7 @@ def main():
         video_end = int(form_data["video_end"])
         num_starts = int(form_data["num_starts"])
         start_time_str = str(form_data["start_time"]) # this is the first start
+        dur_between_starts = int(form_data["dur_between_starts"])
 
         # Convert to datetime object
         start_time = datetime.strptime(start_time_str, "%H:%M").time()
@@ -381,7 +381,7 @@ def main():
         signal, lamp1, lamp2 = setup_gpio()
         remove_video_files(photo_path, "video")  # clean up
         remove_picture_files(photo_path, ".jpg") # clean up
-        logger.info("Line 368 Weekday=%s, Start_time=%s, video_end=%s, num_starts=%s",
+        logger.info("Line 384 Weekday=%s, Start_time=%s, video_end=%s, num_starts=%s",
                     week_day, start_time.strftime("%H:%M"), video_end, num_starts)
 
         if wd == week_day:
@@ -397,9 +397,9 @@ def main():
                         # Start video recording just before 5 minutes before the first start
                         start_video_recording(camera, video_path, "video0.h264")
                         logger.info("Inner loop, entering the start sequence block.")
-                        start_sequence(camera, signal, start_time_sec, num_starts, photo_path)
+                        start_sequence(camera, signal, start_time_sec, num_starts, dur_between_starts, photo_path)
                         if num_starts == 2:
-                            start_time_sec = start_time_sec + (5 * 60)
+                            start_time_sec = start_time_sec + (dur_between_starts * 60)
                         logger.info(" Wait 2 minutes then stop video0 recording")
                         t0 = dt.datetime.now()
                         logger.info(" start_time_sec= %s, t0= %s",start_time_sec, t0)  #test
@@ -430,7 +430,7 @@ def main():
         finish_recording(video_path, num_starts, video_end, start_time, start_time_sec)
         time.sleep(2)
         re_encode_video(video_path, "video1.avi", "video1.mp4")
-        logger.info("Line 432, Finished with finish_recording and recording converted to mp4")
+        logger.info("Line 433, Finished with finish_recording and recording converted to mp4")
         if camera is not None:
             camera.close()  # Release the camera resources
         if signal is not None:
