@@ -152,7 +152,7 @@
                     echo "<br> ------------------------------------------------- <p></p> ";
                     echo "<h3> Varningssignal 5 minuter innan 1a start</h3>";
                     echo "<img id='$filename' src='$imagePath' alt='1a_start 5 min picture' width='720' height='480'>";
-                    
+
                     // Check and display the second image
                     $filename = '1a_start_4_min.jpg';
                     $imagePath = 'images/' . $filename; // Relative path
@@ -161,7 +161,7 @@
                         $imagePath .= '?' . filemtime($imagePath);
                         echo "<h3> Signal 4 minuter innan 1a start </h3>";
                         echo "<img id='$filename' src='$imagePath' alt='1a_start 4 min picture' width='720' height='480'>";
-                        
+
                         // Check and display the third image
                         $filename = '1a_start_1_min.jpg';
                         $imagePath = 'images/' . $filename; // Relative path
@@ -170,7 +170,7 @@
                             $imagePath .= '?' . filemtime($imagePath);
                             echo "<h3> Signal 1 minuter innan 1a start </h3>";
                             echo "<img id='$filename' src='$imagePath' alt='1a_start 1 min picture' width='720' height='480'>";
-                            
+
                             // Check and display the start image
                             $filename = '1a_start_Start.jpg';
                             $imagePath = 'images/' . $filename; // Relative path
@@ -198,50 +198,55 @@
             <?php
                 if ($num_starts == 2)
                 {
-                    // Check and display the first image
-                    $filename = '2a_start_5_min.jpg';
+                    $filename = '1a_start_Start.jpg';
                     $imagePath = 'images/' . $filename; // Relative path
-                    if (file_exists($imagePath)) {
-                        $imagePath .= '?' . filemtime($imagePath);
-                        echo "<h3> Bilder tagna vid varje signal innan 2a start  </h3> ";
-                        echo "<br> ------------------------------------------------- <p></p> ";
-                        echo "<h3> Varningssignal 5 minuter innan 2a start</h3>";
-                        echo "<img id='$filename' src='$imagePath' alt='2a_start 5 min picture' width='720' height=480'>";
-                        
-                        // Check and display the second image
-                        $filename = '2a_start_4_min.jpg';
+                    if (file_exists($imagePath)) 
+                    {
+                        // Check and display the first image
+                        $filename = '2a_start_5_min.jpg';
                         $imagePath = 'images/' . $filename; // Relative path
                         if (file_exists($imagePath)) {
                             $imagePath .= '?' . filemtime($imagePath);
-                            echo "<h3> Signal 4 minuter innan 2a start </h3>";
-                            echo "<img id='$filename' src='$imagePath' alt='2a_start 4 min picture' width='720' height='480'>";
-                            
-                            // Check and display the third image
-                            $filename = '2a_start_1_min.jpg';
+                            echo "<h3> Bilder tagna vid varje signal innan 2a start  </h3> ";
+                            echo "<br> ------------------------------------------------- <p></p> ";
+                            echo "<h3> Varningssignal 5 minuter innan 2a start</h3>";
+                            echo "<img id='$filename' src='$imagePath' alt='2a_start 5 min picture' width='720' height=480'>";
+
+                            // Check and display the second image
+                            $filename = '2a_start_4_min.jpg';
                             $imagePath = 'images/' . $filename; // Relative path
                             if (file_exists($imagePath)) {
                                 $imagePath .= '?' . filemtime($imagePath);
-                                echo "<h3> Signal 1 minuter innan 2a start </h3>";
-                                echo "<img id='$filename' src='$imagePath' alt='2a_start 1 min picture' width='720' height='480'>";
-                                
-                                // Check and display the start image
-                                $filename = '2a_start_Start.jpg';
+                                echo "<h3> Signal 4 minuter innan 2a start </h3>";
+                                echo "<img id='$filename' src='$imagePath' alt='2a_start 4 min picture' width='720' height='480'>";
+
+                                // Check and display the third image
+                                $filename = '2a_start_1_min.jpg';
                                 $imagePath = 'images/' . $filename; // Relative path
                                 if (file_exists($imagePath)) {
                                     $imagePath .= '?' . filemtime($imagePath);
-                                    echo "<h3> Foto vid 2a start $second_start_time </h3>";
-                                    echo "<img id='$filename' src='$imagePath' alt='2a start picture' width='720' height='480'>";
+                                    echo "<h3> Signal 1 minuter innan 2a start </h3>";
+                                    echo "<img id='$filename' src='$imagePath' alt='2a_start 1 min picture' width='720' height='480'>";
+
+                                    // Check and display the start image
+                                    $filename = '2a_start_Start.jpg';
+                                    $imagePath = 'images/' . $filename; // Relative path
+                                    if (file_exists($imagePath)) {
+                                        $imagePath .= '?' . filemtime($imagePath);
+                                        echo "<h3> Foto vid 2a start $second_start_time </h3>";
+                                        echo "<img id='$filename' src='$imagePath' alt='2a start picture' width='720' height='480'>";
+                                    } else {
+                                        error_log('Line 248: picture start 2nd start do not exists');
+                                    }
                                 } else {
-                                    error_log('Line 248: picture start 2nd start do not exists');
+                                    error_log('Line 251: picture 1 min 2nd start do not exists');
                                 }
                             } else {
-                                error_log('Line 251: picture 1 min 2nd start do not exists');
+                                error_log('Line 254: picture 4 min 2nd start do not exists');
                             }
                         } else {
-                            error_log('Line 254: picture 4 min 2nd start do not exists');
+                            error_log('Line 257: picture 5 min 2nd start do not exists');
                         }
-                    } else {
-                        error_log('Line 257: picture 5 min 2nd start do not exists');
                     }
                 }
             ?>
