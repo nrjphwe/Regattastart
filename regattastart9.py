@@ -122,7 +122,7 @@ def convert_video_to_mp4(video_path, source_file, destination_file):
     logger.info ("Line 118: Video recording %s converted ", destination_file)
 
 def re_encode_video(video_path, source_file, destination_file):
-    re_encode_video_str = "ffmpeg -i {} -vf fps=10 -vcodec libx264 -f mp4 {}".format(
+    re_encode_video_str = "ffmpeg -loglevel error -i {} -vf fps=10 -vcodec libx264 -f mp4 {}".format(
         os.path.join(video_path, source_file),
         os.path.join(video_path, destination_file)
     )
@@ -381,7 +381,7 @@ def main():
         signal, lamp1, lamp2 = setup_gpio()
         remove_video_files(photo_path, "video")  # clean up
         remove_picture_files(photo_path, ".jpg") # clean up
-        logger.info("Line 384 Weekday=%s, Start_time=%s, video_end=%s, num_starts=%s",
+        logger.info("Line 3 Weekday=%s, Start_time=%s, video_end=%s, num_starts=%s",
                     week_day, start_time.strftime("%H:%M"), video_end, num_starts)
 
         if wd == week_day:
