@@ -384,9 +384,10 @@
                 console.log("video file exists:", videoExists); // Log the value
                 // If the video file exists, don't reload the page
                 return;
-            }
-            setTimeout(function() {
-                location.reload();
+            } else {
+                console.log("video file do not exists:", videoExists); // Log the value
+                setTimeout(function() {
+                    location.reload();
             }, 1000); // 1000 milliseconds = 1 second
         }
 
