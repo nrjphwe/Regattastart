@@ -381,7 +381,7 @@
             // Check if the video file exists
             var videoExists = "<?php echo file_exists('/var/www/html/images/video1.mp4'); ?>";
             if (videoExists) {
-                console.log("video file exists:", stopvideoExists); // Log the value
+                console.log("video file exists:", videoExists); // Log the value
                 // If the video file exists, don't reload the page
                 return;
             }
