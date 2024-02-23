@@ -345,7 +345,7 @@
                 }
             ?>
         </div>
-        
+
     </main>
     <!-- footer -->
     <div style="text-align: center;" class="w3-panel w3-grey">
@@ -378,6 +378,12 @@
             console.log("stopRecordingPressed value:", stopRecordingPressed); // Log the value
             // Hide the button
             document.getElementById("stopRecordingButton").style.display = "none";
+            // Check if the video file exists
+            var videoExists = "<?php echo file_exists('/var/www/html/images/video1.mp4'); ?>";
+            if (videoExists) {
+                // If the video file exists, don't reload the page
+                return;
+            }
             setTimeout(function() {
                 location.reload();
             }, 1000); // 1000 milliseconds = 1 second
