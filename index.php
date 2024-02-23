@@ -369,8 +369,7 @@
         var stopRecordingPressed = <?php echo json_encode($stopRecordingPressed); ?>; // Get the value from PHP
         //console.log("Line 348: stopRecordingPressed value:", stopRecordingPressed); // Log the value
 
-        function refreshPage() 
-        {
+        function refreshPage() {
             // Set the flag to true
             stopRecordingPressed = true;
             // Set the value of the hidden input field
@@ -378,19 +377,19 @@
             console.log("stopRecordingPressed value:", stopRecordingPressed); // Log the value
             document.getElementById("stopRecordingButton").style.display = "none";
             // Check if the video file exists
-            var videoExists = "<?php echo file_exists('/var/www/html/images/video0.mp4'); ?>";
-            if (videoExists) {
-                console.log("video file exists:", videoExists); // Log the value
-                // If the video file exists, don't reload the page
-                return;
-            } else {
-                console.log("video file do not exists:", videoExists); // Log the value
-            }
+            <?php
+                $videoPath = '/var/www/html/images/video1.mp4';
+                if (file_exists($videoPath)) {
+                    echo 'console.log("Video file exists.");';
+                } else {
+                    echo 'console.error("Video file does not exist.");';
+                }
+            ?>
+            // Reload the page after 1 second
             setTimeout(function() {
                 location.reload();
-            }, 1000); // 1000 milliseconds = 1 second
+            }, 1000);
         }
-
         // JavaScript to automatically refresh the page after a certain interval
         function autoRefresh() 
         {
