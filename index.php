@@ -389,7 +389,8 @@
         {
             // Check if the video file exists
             <?php
-                if ($video1Exists == False) 
+                console.log("Line 392: video1exists value:", video1exists); // Log the value
+                if (video1exists == False) 
                 {
                     echo 'console.log("Video1 file do not exists.");';
                     // Refresh the page after 60 seconds
