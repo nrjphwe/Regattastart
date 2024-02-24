@@ -234,7 +234,7 @@ def listen_for_messages(timeout=0.1):
 
     with open(pipe_path, 'r') as fifo:
         while True:
-            //logger.info(f"Line 237, openpipe path: {pipe_path}")
+            # logger.info(f"Line 237, openpipe path: {pipe_path}")
             # Use select to wait for input with a timeout
             rlist, _, _ = select.select([fifo], [], [], timeout)
             if rlist:
