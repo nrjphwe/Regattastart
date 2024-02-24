@@ -188,10 +188,10 @@ def cv_annotate_video(frame, start_time_sec):
     label = str(dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) +  " Seconds since last start: " +  str(elapsed_time)
     org = (15,60) # x = 15 from left, y = 60 from top) 
     #font = cv2.FONT_HERSHEY_SIMPLEX
-    #font = ImageFont.truetype("PAPYRUS.ttf", 80) 
+    #font = ImageFont.truetype("PAPYRUS.ttf", 80)
     fontFace=cv2.FONT_HERSHEY_DUPLEX
     fontScale = 0.7
-    color=(0,0,255) #(B, G, R)
+    color=(0,0,0) #(B, G, R)
     thickness = 1
     lineType = cv2.LINE_AA
     # Get text size
