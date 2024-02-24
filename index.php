@@ -387,15 +387,16 @@
         // JavaScript to automatically refresh the page after a certain interval
         function autoRefresh() 
         {
-            if (video1exists) 
-            {
-               return;
+            if (video1exists) {
+                // If the video file exists, don't reload the page
+                return;
             }
             // If the video file doesn't exist, refresh the page after 60 seconds
             setTimeout(function() {
                 location.reload();
             }, 60000);
         }
+
         // Call the autoRefresh function after the page is loaded
         window.onload = autoRefresh;
 
