@@ -193,12 +193,12 @@ def cv_annotate_video(frame, start_time_sec):
     thickness = 1
     lineType = cv2.LINE_AA
     # Get text size
-    (text_width, text_height), baseline = cv2.getTextSize(label, fontFace, fontScale, thickness)
+    (text_width, text_height), _ = cv2.getTextSize(label, fontFace, fontScale, thickness)
     logger.info(" Line 197:", text_width, " ", text_height)
 
     # Define background rectangle coordinates
     top_left = (org[0], org[1]) 
-    bottom_right = (org[0] + text_width, org[1])
+    bottom_right = (int(org[0] + text_width), int(org[1] + (text_height/2)))
 
     # Draw filled rectangle as background for the text
     cv2.rectangle(frame, top_left, bottom_right, (255, 255, 255), cv2.FILLED)
