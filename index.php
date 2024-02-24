@@ -377,9 +377,7 @@
             console.log("stopRecordingPressed value:", stopRecordingPressed); // Log the value
             document.getElementById("stopRecordingButton").style.display = "none";
             // Reload the page after 1 second
-            setTimeout(function() {
-                location.reload();
-            }, 1000);
+            location.reload();
         }
 
         var video1exists = <?php echo json_encode($video1Exists); ?>; // Get the value from PHP
