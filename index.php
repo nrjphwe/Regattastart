@@ -388,9 +388,9 @@
         function autoRefresh() 
         {
             // Check if the video file exists
+            console.log("Line 391: video1exists value:", video1exists); // Log the value
             <?php
-                console.log("Line 392: video1exists value:", video1exists); // Log the value
-                if (video1exists == False) 
+                if ($video1Exists == False) 
                 {
                     echo 'console.log("Video1 file do not exists.");';
                     // Refresh the page after 60 seconds
