@@ -389,17 +389,18 @@
         {
             // Check if the video file exists
             <?php
-                if (video1exists == False) {
+                if ($video1Exists == False) 
+                {
                     echo 'console.log("Video1 file do not exists.");';
                     // Refresh the page after 60 seconds
                     setTimeout(function() 
                     {
                         location.reload();
                     }, 60000); // 60000 milliseconds = 60 seconds
-            } else {
-                echo 'console.error("Video1 file do exist.");';
-            }
-        ?>
+                } else {
+                    echo 'console.error("Video1 file do exist.");';
+                }
+            ?>
         }
         // Call the autoRefresh function after the page is loaded
         window.onload = autoRefresh;
