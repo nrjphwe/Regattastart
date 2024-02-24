@@ -202,7 +202,7 @@ def cv_annotate_video(frame, start_time_sec):
     bottom_right = (org[0] + text_width, org[1])
 
     # Draw filled rectangle as background for the text
-    cv2.rectangle(frame, top_left, bottom_right, (0, 0, 0), cv2.FILLED)
+    cv2.rectangle(frame, top_left, bottom_right, (255, 0, 0), cv2.FILLED)
 
     # Draw text on top of the background
 
