@@ -388,7 +388,7 @@
         function autoRefresh() 
         {
             if (video1exists) {
-                // If the video file exists, don't reload the page
+                // If the video file exists, do not reload the page
                 return;
             }
             // If the video file doesn't exist, refresh the page after 60 seconds
