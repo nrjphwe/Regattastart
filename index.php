@@ -136,7 +136,7 @@
         <div style="text-align: center;">
             <h4><a href="/index9.php" title="Setup page Regattastart9">  Regattastart9 -- with image detection </a></h4>
         </div> 
-        <!-- Bilder från varje signal innan start  -->
+        <!-- header text -->
         <div style="text-align: center;" class="w3-panel w3-pale-blue">
             <h3> Bilder tagna vid varje signal innan 1a start </h3>
         </div>
@@ -345,7 +345,6 @@
                 }
             ?>
         </div>
-
     </main>
     <!-- footer -->
     <div style="text-align: center;" class="w3-panel w3-grey">
@@ -364,6 +363,7 @@
             echo " Time now: " .date("H:i:s");
         ?> 
     </div>
+
     <!-- JavaScript to automatically refresh the page after the "Stop Recording" button is pressed -->
     <script>
         var stopRecordingPressed = <?php echo json_encode($stopRecordingPressed); ?>; // Get the value from PHP
@@ -376,28 +376,30 @@
             document.getElementById("stopRecordingPressed").value = "1"; // Set stopRecordingPressed value to 1
             console.log("stopRecordingPressed value:", stopRecordingPressed); // Log the value
             document.getElementById("stopRecordingButton").style.display = "none";
-            // Check if the video file exists
-            <?php
-                $videoPath = '/var/www/html/images/video1.mp4';
-                if (file_exists($videoPath)) {
-                    echo 'console.log("Video file exists.");';
-                } else {
-                    echo 'console.error("Video file does not exist.");';
-                }
-            ?>
             // Reload the page after 1 second
             setTimeout(function() {
                 location.reload();
             }, 1000);
         }
+
+        var video1exists = <?php echo json_encode($video1Exists); ?>; // Get the value from PHP
+
         // JavaScript to automatically refresh the page after a certain interval
         function autoRefresh() 
         {
-            // Refresh the page after 60 seconds
-            setTimeout(function() 
-            {
-                location.reload();
-            }, 60000); // 60000 milliseconds = 60 seconds
+            // Check if the video file exists
+            <?php
+                if (video1exists == False) {
+                    echo 'console.log("Video1 file do not exists.");';
+                    // Refresh the page after 60 seconds
+                    setTimeout(function() 
+                    {
+                        location.reload();
+                    }, 60000); // 60000 milliseconds = 60 seconds
+            } else {
+                echo 'console.error("Video1 file do exist.");';
+            }
+        ?>
         }
         // Call the autoRefresh function after the page is loaded
         window.onload = autoRefresh;
