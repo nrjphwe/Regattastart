@@ -387,21 +387,14 @@
         // JavaScript to automatically refresh the page after a certain interval
         function autoRefresh() 
         {
-            // Check if the video file exists
-            console.log("Line 391: video1exists value:", video1exists); // Log the value
-            <?php
-                if ($video1Exists == False) 
-                {
-                    echo 'console.log("Video1 file do not exists.");';
-                    // Refresh the page after 60 seconds
-                    setTimeout(function() 
-                    {
-                        location.reload();
-                    }, 60000); // 60000 milliseconds = 60 seconds
-                } else {
-                    echo 'console.error("Video1 file do exist.");';
-                }
-            ?>
+            if (video1exists) 
+            {
+               return;
+            }
+            // If the video file doesn't exist, refresh the page after 60 seconds
+            setTimeout(function() {
+                location.reload();
+            }, 60000);
         }
         // Call the autoRefresh function after the page is loaded
         window.onload = autoRefresh;
