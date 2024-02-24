@@ -387,7 +387,7 @@
         {
             if (video1exists) {
                 // If the video1 file exists, reload the page 1 time and thereafter not any more.
-                location.reload();
+                //location.reload();
                 return;
             }
             // If the video file doesn't exist, refresh the page after 60 seconds
