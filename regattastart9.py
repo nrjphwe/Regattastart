@@ -194,8 +194,7 @@ def cv_annotate_video(frame, start_time_sec):
     lineType = cv2.LINE_AA
     # Get text size
     (text_width, text_height), _ = cv2.getTextSize(label, fontFace, fontScale, thickness)
-    logger.info(" Line 197:", text_width, " ", text_height)
-
+    logger.info(f" Line 197: {text_width} {text_height}")
     # Define background rectangle coordinates
     top_left = (org[0], org[1] - text_height) 
     bottom_right = (int(org[0] + text_width), int(org[1] + (text_height/2)))
