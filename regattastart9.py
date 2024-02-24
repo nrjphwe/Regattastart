@@ -187,8 +187,6 @@ def cv_annotate_video(frame, start_time_sec):
     elapsed_time = seconds_since_midnight - start_time_sec #elapsed since last start until now)
     label = str(dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) +  " Seconds since last start: " +  str(elapsed_time)
     org = (15,60) # x = 15 from left, y = 60 from top) 
-    #font = cv2.FONT_HERSHEY_SIMPLEX
-    #font = ImageFont.truetype("PAPYRUS.ttf", 80)
     fontFace=cv2.FONT_HERSHEY_DUPLEX
     fontScale = 0.7
     color=(0,0,0) #(B, G, R)
@@ -199,7 +197,7 @@ def cv_annotate_video(frame, start_time_sec):
 
     # Define background rectangle coordinates
     top_left = (org[0], org[1] - text_height) 
-    bottom_right = (org[0] + text_width, org[1] + text_height/2 )
+    bottom_right = (org[0] + text_width, org[1] + text_height )
 
     # Draw filled rectangle as background for the text
     cv2.rectangle(frame, top_left, bottom_right, (255, 255, 255), cv2.FILLED)
