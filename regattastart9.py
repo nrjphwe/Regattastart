@@ -197,7 +197,7 @@ def cv_annotate_video(frame, start_time_sec):
     # Define background rectangle coordinates
     top_left = (org[0], org[1] - text_height) 
     bottom_right = (int(org[0] + text_width), int(org[1] + (text_height/2)))
-    logger.info(f" Line 200: {top_left} {bottom_right}")
+    #logger.info(f" Line 200: {top_left} {bottom_right}")
 
     # Draw filled rectangle as background for the text
     cv2.rectangle(frame, top_left, bottom_right, (255, 255, 255), cv2.FILLED)
