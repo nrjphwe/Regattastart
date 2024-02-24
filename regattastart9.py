@@ -221,20 +221,20 @@ def listen_for_messages(timeout=0.1):
     global listening  # Use global flag
     logger.info(" Line 210: Listen for messages from PHP script via a named pipe")
     pipe_path = '/var/www/html/tmp/stop_recording_pipe'
-    logger.info(f"Line 212:, pipepath {pipe_path}")
+    logger.info(f"Line 224:, pipepath {pipe_path}")
 
     try:
         os.unlink(pipe_path)  # Remove existing pipe
     except OSError as e:
         if e.errno != errno.ENOENT:  # Ignore if file doesn't exist
-            logger.info(f"Line 218, OS error: {e.errno}")
+            logger.info(f"Line 230, OS error: {e.errno}")
             raise
 
     os.mkfifo(pipe_path)  # Create a new named pipe
 
     with open(pipe_path, 'r') as fifo:
         while True:
-            logger.info(f"Line 222, openpipe path: {pipe_path}")
+            //logger.info(f"Line 237, openpipe path: {pipe_path}")
             # Use select to wait for input with a timeout
             rlist, _, _ = select.select([fifo], [], [], timeout)
             if rlist:
@@ -244,9 +244,9 @@ def listen_for_messages(timeout=0.1):
                     break  # Exit the loop when stop_recording message is received
 
             else:
-                logger.info(f"Line 232, not rlist {rlist}")
+                logger.info(f"Line 247, not rlist {rlist}")
                 # Handle timeout (no input received within timeout period)
-                # You can perform any necessary actions here
+
 
 def finish_recording(video_path, num_starts, video_end, start_time, start_time_sec):
     # Open a video capture object (replace 'your_video_file.mp4' with the actual video file or use 0 for webcam)
@@ -430,7 +430,7 @@ def main():
         time.sleep(2)  # Introduce a delay of 2 seconds
 
     except json.JSONDecodeError as e:
-        logger.info ("Line 421, Failed to parse JSON: %", str(e))
+        logger.info ("Line 433, Failed to parse JSON: %", str(e))
         sys.exit(1)
     finally:
         logger.info("Line 424 Finally section, before listen_for_message")
@@ -442,7 +442,7 @@ def main():
         finish_recording(video_path, num_starts, video_end, start_time, start_time_sec)
         time.sleep(2)
         re_encode_video(video_path, "video1.avi", "video1.mp4")
-        logger.info("Line 433, Finished with finish_recording and recording converted to mp4")
+        logger.info("Line 445, Finished with finish_recording and recording converted to mp4")
         if camera is not None:
             camera.close()  # Release the camera resources
         if signal is not None:
