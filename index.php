@@ -82,9 +82,7 @@
         echo "<p style='font-size:12px'>";
         echo " First start at: " . $start_time;
         echo ", Number of starts= $num_starts";
-        if (isset($video_end)) {
-            echo ", Video end duration :  $video_end + 2 minutes after start, ";
-        }
+       
         if ($num_starts == 2) {
             if (isset($dur_between_starts)) {
                 echo ", Duration between starts: $dur_between_starts min";
@@ -106,6 +104,9 @@
             echo " Video duration: $video_dur min,"  ;
             echo " Video delay after start: $video_delay min,";
             echo " Number of videos during finish: " . $num_video;
+        }
+        if (isset($video_end)) {
+            echo ", Video end duration :  $video_end + 2 minutes after start";
         }
         // Determine the number of videos during finish if not set, 
         // regattastart9 is executing and num_video is set to 1 as a flag.
