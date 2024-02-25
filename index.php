@@ -10,9 +10,6 @@
     $video0Exists = file_exists("images/video0.mp4");
     $video1Exists = file_exists("images/video1.mp4");
 
-    // Check if the "Stop Recording" button was pressed
-    //$stopRecordingPressed = isset($_POST['stopRecordingPressed']) && $_POST['stopRecordingPressed'] == "1";
-    //error_log("Line 15: StopRecordingPressed set to: $stopRecordingPressed");
     // Retrieve session data
     $formData = isset($_SESSION['form_data']) && is_array($_SESSION['form_data']) ? $_SESSION['form_data'] : [];
 
