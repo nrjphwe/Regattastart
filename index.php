@@ -277,7 +277,7 @@
                         $video_name = 'images/video0.mp4';
                         if ($video0Exists) {
                             //error_log("Line 282: $video_name is available");
-                            echo "<h4> Video från 5 min före start och 2 min efter sista start</h4>";
+                            echo "<h4> Video från 5 min före start och 2 min efter start</h4>";
                             echo '<video id="video0" width = "720" height="480" controls><source src= ' . $video_name . ' type="video/mp4"></video><p>';
                         } else {
                             error_log("Line 282: $video_name do not exists");
