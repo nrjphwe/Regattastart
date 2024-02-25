@@ -295,7 +295,7 @@
                 // Retrieve the value of the session variable
                 $stopRecordingPressed = isset($_SESSION['stopRecordingPressed']) ? $_SESSION['stopRecordingPressed'] : false;
 
-                //error_log("Line 272: StopRecordingPressed set to: $stopRecordingPressed");
+                //error_log("Line 298: StopRecordingPressed set to: $stopRecordingPressed");
 
                 if ($num_video == 1) // which is valid for regattastart9 not selectable 
                 {
@@ -314,7 +314,7 @@
                     </div>';
                 } else {
                     // Log an error if $num_video is not equal to 1
-                    error_log("Line 291: $num_video is not 1");
+                    error_log("Line 317: $num_video is not 1");
                 }
             ?>
         </div>
@@ -340,11 +340,11 @@
                                     </div>';
                             } else {
                                 // Log an error if the video file doesn't exist
-                                error_log("Line 320: video $x does not exist");
+                                error_log("Line 343: video $x does not exist");
                             }
                         }
                     } else {
-                        error_log("Line 379: video1 do not exists");
+                        error_log("Line 347: Video1 do not exist");
                     }
                 }
             ?>
@@ -358,7 +358,7 @@
             if (file_exists($filename)) {
                 echo "This web-page was last modified: \n" . date ("Y-m-d H:i:s.", filemtime($filename));
             } else {
-                error_log("Line 348: $filename do not exists");
+                error_log("Line 361: $filename do not exists");
             }
         ?>
     </div>
@@ -367,11 +367,10 @@
             echo " Time now: " .date("H:i:s");
         ?> 
     </div>
-
     <!-- JavaScript to automatically refresh the page after the "Stop Recording" button is pressed -->
     <script>
         var stopRecordingPressed = <?php echo json_encode($stopRecordingPressed); ?>; // Get the value from PHP
-        //console.log("Line 348: stopRecordingPressed value:", stopRecordingPressed); // Log the value
+        //console.log("Line 373: stopRecordingPressed value:", stopRecordingPressed); // Log the value
 
         function refreshPage() {
             // Set the flag to true
