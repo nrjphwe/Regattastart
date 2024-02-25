@@ -422,7 +422,7 @@
                 $status = file_get_contents($status_file);
                 if ($status === 'complete') {
                     // Video conversion is complete, take further actions
-                    echo 'Video conversion is complete!';
+                    console.log("Video conversion is complete!"); //
                     break;
                 }
             }
