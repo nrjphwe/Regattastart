@@ -438,7 +438,7 @@ def main():
         time.sleep(2)
         re_encode_video(video_path, "video1.avi", "video1.mp4")
         # After video conversion is complete
-        with open('log_path/status.txt', 'w') as status_file:
+        with open('/var/www/html/status.txt', 'w') as status_file:
             status_file.write('complete')
         logger.info("Line 442, Finished with finish_recording and recording converted to mp4")
         if camera is not None:
