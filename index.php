@@ -79,9 +79,9 @@
 </head>
 <body onload="showPlaceholder()">
     <?php // Print session data on top of page
-        echo "<p style='font-size:11px'>";
-        echo "First start at: " . $start_time;
-        echo ", Number of starts: $num_starts";
+        echo "<p style='font-size:12px'>";
+        echo " First start at: " . $start_time;
+        echo ", Number of starts= $num_starts";
         if (isset($video_end)) {
             echo ", Video end duration :  $video_end + 2 minutes after start, ";
         }
@@ -102,7 +102,7 @@
             }
         }
         if (isset($video_dur)) {
-            echo ", Video duration: $video_dur, min,"  ;
+            echo ", Video duration: $video_dur min,"  ;
             echo " Video delay after start: $video_delay min,";
             echo " Number of videos during finish: " . $num_video;
         }
