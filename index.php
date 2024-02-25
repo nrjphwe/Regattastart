@@ -391,8 +391,7 @@
         var video1exists = <?php echo json_encode($video1Exists); ?>; // Get the value from PHP
 
         // JavaScript to automatically refresh the page after a certain interval
-        function autoRefresh() 
-        {
+        function autoRefresh() {
             if (video1exists) {
                 // If the video1 file exists, reload the page 1 time and thereafter not any more.
                 //location.reload();
@@ -403,7 +402,8 @@
                 // If the video file doesn't exist, refresh the page after 60 seconds
                 setIntervall(function() {
                     location.reload();
-            }, 60000);
+                }, 60000);
+            }
         }
 
         // Call the autoRefresh function after the page is loaded
