@@ -97,12 +97,12 @@
                 $second_start_minute = $second_start_time_minutes % 60;
                 // Format second start time
                 $second_start_time = sprintf('%02d:%02d', $second_start_hour, $second_start_minute);
-                echo ", 2nd Start is at: $second_start_time ";
+                echo ", 2nd Start is at: $second_start_time";
             }
         }
         if (isset($video_dur)) {
-            echo ", Video duration: $video_dur, min"  ;
-            echo ", Video delay after start: . $video_delay min";
+            echo ", Video duration: $video_dur, min,"  ;
+            echo " Video delay after start: $video_delay min,";
             echo " Number of videos during finish: " . $num_video;
         }
         // Determine the number of videos during finish if not set, 
