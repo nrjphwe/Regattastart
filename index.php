@@ -413,22 +413,5 @@
             }
         }
     </script>
-    <script> 
-        $status_file = 'status.txt';
-
-        // Continuously check the status file for the completion flag
-        while (true) {
-            if (file_exists($status_file)) {
-                $status = file_get_contents($status_file);
-                if ($status === 'complete') {
-                    // Video conversion is complete, take further actions
-                    console.log("Video conversion is complete!"); //
-                    break;
-                }
-            }
-            // Wait for a short interval before checking again
-            usleep(500000); // Sleep for 0.5 seconds
-        }
-    </script> 
 </body>
 </html>
