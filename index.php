@@ -81,7 +81,7 @@
     <?php // Print session data on top of page 
         echo "First start time: " . $start_time;
         echo " Number of starts: $num_starts";
-        if (isset($video_end) {
+        if (isset($video_end)) {
             echo ", Video end duration :  $video_end + 2 minutes after start, ";
         }
         if ($num_starts == 2) {
