@@ -380,11 +380,10 @@
             document.getElementById("stopRecordingPressed").value = "1"; // Set stopRecordingPressed value to 1
             console.log("stopRecordingPressed value:", stopRecordingPressed); // Log the value
             document.getElementById("stopRecordingButton").style.display = "none";
-            alert("Wait for the creation of the video, it takes som time. Please wait.");
 
             setTimeout(function() {
-                document.getElementById("stopRecordingButton").disabled = false;
-            }, 10000); // 15 seconds
+                alert("Wait for the creation of the video, it takes som time. Please wait.");
+            }, 15000); // 15 seconds
             // Reload the page after 15 second
             location.reload();
         }
