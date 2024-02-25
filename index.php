@@ -80,7 +80,7 @@
 <body onload="showPlaceholder()">
     <?php // Print session data on top of page 
         echo "First start time: " . $start_time;
-        echo " Number of starts: $num_starts";
+        echo ", Number of starts: $num_starts";
         if (isset($video_end)) {
             echo ", Video end duration :  $video_end + 2 minutes after start, ";
         }
@@ -101,8 +101,8 @@
             }
         }
         if (isset($video_dur)) {
-            echo " Video duration: $video_dur";
-            echo " Video delay after start: " . $video_delay;
+            echo ", Video duration: $video_dur, min"  ;
+            echo ", Video delay after start: . $video_delay min";
             echo " Number of videos during finish: " . $num_video;
         }
         // Determine the number of videos during finish if not set, 
