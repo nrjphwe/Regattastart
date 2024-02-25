@@ -80,8 +80,10 @@
 <body onload="showPlaceholder()">
     <?php // Print session data on top of page 
         echo "First start time: " . $start_time;
-        echo ", Video end duration :  $video_end + 2 minutes after start, ";
         echo " Number of starts: $num_starts";
+        if (isset($video_end) {
+            echo ", Video end duration :  $video_end + 2 minutes after start, ";
+        }
         if ($num_starts == 2) {
             if (isset($dur_between_starts)) {
                 echo ", Duration between starts: $dur_between_starts min";
