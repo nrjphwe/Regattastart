@@ -394,13 +394,12 @@
         function autoRefresh() {
             if (video1exists) {
                 // If the video1 file exists, reload the page 1 time and thereafter not any more.
-                //location.reload();
                 setTimeout(function() {
                     location.reload();
-            }, 10000);
+                }, 10000);
             } else {
                 // If the video file doesn't exist, refresh the page after 60 seconds
-                setIntervall(function() {
+                setInterval(function() {
                     location.reload();
                 }, 60000);
             }
