@@ -383,9 +383,9 @@
 
             setTimeout(function() {
                 alert("Wait for the creation of the video, it takes som time. Please wait.");
+                // Reload the page after 15 second
+                location.reload();
             }, 15000); // 15 seconds
-            // Reload the page after 15 second
-            location.reload();
         }
 
         var video1exists = <?php echo json_encode($video1Exists); ?>; // Get the value from PHP
@@ -396,11 +396,13 @@
             if (video1exists) {
                 // If the video1 file exists, reload the page 1 time and thereafter not any more.
                 //location.reload();
-                return;
-            }
-            // If the video file doesn't exist, refresh the page after 60 seconds
-            setTimeout(function() {
-                location.reload();
+                setTimeout(function() {
+                    location.reload();
+            }, 10000);
+            } else {
+                // If the video file doesn't exist, refresh the page after 60 seconds
+                setIntervall(function() {
+                    location.reload();
             }, 60000);
         }
 
