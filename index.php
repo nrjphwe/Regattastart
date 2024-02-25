@@ -398,7 +398,7 @@
                     location.reload();
                 }, 10000);
             } else {
-                // If the video file doesn't exist, refresh the page after 60 seconds
+                // If the video file doesn't exist, refresh the page every 60 seconds
                 setInterval(function() {
                     location.reload();
                 }, 60000);
