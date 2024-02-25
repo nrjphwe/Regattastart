@@ -311,7 +311,7 @@
                     </div>';
                 } else {
                     // Log an error if $num_video is not equal to 1
-                    error_log("Line 317: $num_video is not 1");
+                    error_log("Line 314: $num_video is not 1");
                 }
             ?>
         </div>
@@ -337,11 +337,11 @@
                                     </div>';
                             } else {
                                 // Log an error if the video file doesn't exist
-                                error_log("Line 343: video $x does not exist");
+                                error_log("Line 340: video $x does not exist");
                             }
                         }
                     } else {
-                        error_log("Line 347: Video1 do not exist");
+                        error_log("Line 344: Video1 do not exist");
                     }
                 }
             ?>
@@ -367,10 +367,8 @@
     <!-- JavaScript to automatically refresh the page after the "Stop Recording" button is pressed -->
     <script>
         var stopRecordingPressed = <?php echo json_encode($stopRecordingPressed); ?>; // Get the value from PHP
-        //console.log("Line 373: stopRecordingPressed value:", stopRecordingPressed); // Log the value
 
         function refreshPage() {
-            // Set the flag to true
             stopRecordingPressed = true;
             // Set the value of the hidden input field
             document.getElementById("stopRecordingPressed").value = "1"; // Set stopRecordingPressed value to 1
@@ -415,5 +413,22 @@
             }
         }
     </script>
+    <script> 
+        $status_file = 'status.txt';
+
+        // Continuously check the status file for the completion flag
+        while (true) {
+            if (file_exists($status_file)) {
+                $status = file_get_contents($status_file);
+                if ($status === 'complete') {
+                    // Video conversion is complete, take further actions
+                    echo 'Video conversion is complete!';
+                    break;
+                }
+            }
+            // Wait for a short interval before checking again
+            usleep(500000); // Sleep for 0.5 seconds
+        }
+    </script> 
 </body>
 </html>
