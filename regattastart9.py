@@ -25,7 +25,7 @@ from picamera import PiCamera, Color
 
 # parameter data
 signal_dur = 0.3 # 0.3 sec
-log_path = '/usr/lib/cgi-bin/'
+log_path = '/var/www/html/'
 video_path = '/var/www/html/images/'
 photo_path = '/var/www/html/images/'
 ON = True
@@ -437,6 +437,9 @@ def main():
         finish_recording(video_path, num_starts, video_end, start_time, start_time_sec)
         time.sleep(2)
         re_encode_video(video_path, "video1.avi", "video1.mp4")
+        # After video conversion is complete
+        with open('log_path/status.txt', 'w') as status_file:
+            status_file.write('complete')
         logger.info("Line 442, Finished with finish_recording and recording converted to mp4")
         if camera is not None:
             camera.close()  # Release the camera resources
