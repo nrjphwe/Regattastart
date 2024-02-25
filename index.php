@@ -381,7 +381,7 @@
             console.log("stopRecordingPressed value:", stopRecordingPressed); // Log the value
             document.getElementById("stopRecordingButton").style.display = "none";
             alert("Wait for the creation of the video, it takes som time. Please wait.");
-            
+
             setTimeout(function() {
                 // Reload the page after 15 second
                 location.reload();
