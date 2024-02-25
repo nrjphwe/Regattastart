@@ -78,7 +78,8 @@
     </style>
 </head>
 <body onload="showPlaceholder()">
-    <?php // Print session data on top of page 
+    <?php // Print session data on top of page
+        echo "<p style='font-size:11px'>";
         echo "First start at: " . $start_time;
         echo ", Number of starts: $num_starts";
         if (isset($video_end)) {
