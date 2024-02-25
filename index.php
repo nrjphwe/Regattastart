@@ -102,6 +102,7 @@
             }
         }
         if (isset($video_dur)) {
+            echo "<br>";
             echo ", Video duration: $video_dur min,"  ;
             echo " Video delay after start: $video_delay min,";
             echo " Number of videos during finish: " . $num_video;
