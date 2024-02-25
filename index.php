@@ -151,7 +151,6 @@
                 if (file_exists($imagePath)) 
                 {
                     $imagePath .= '?' . filemtime($imagePath);
-                    echo "<br> ------------------------------------------------- <p></p> ";
                     echo "<h3> Varningssignal 5 minuter innan 1a start</h3>";
                     echo "<img id='$filename' src='$imagePath' alt='1a_start 5 min picture' width='720' height='480'>";
 
