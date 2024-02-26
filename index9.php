@@ -161,7 +161,7 @@
                                         //$selected = ($start_time == $start_time_option) ? "selected" : ""; // Check if this option should be selected
                                         $selected = ($start_time == $start_time_option || $start_time_option == $nearest_time_str) ? "selected" : ""; // Check if this option should be selected
                                         echo '<option value="' . $start_time_option . '" ' . $selected . '>' . $start_time_option . '</option>';
-                                        $current += $steps * 60;time_option . '</option>'; // Adjust the current time by 5 minutes
+                                        $nearest_time += $steps * 60;time_option . '</option>'; // Adjust the current time by 5 minutes
                                     }
                                 ?>
                             </select>
