@@ -169,6 +169,8 @@
                                     for ($i = 0; $i < $loops; $i++) {
                                         // Convert the current time to a formatted string
                                         $time_option = date('H:i', strtotime("+$i*$steps minutes", $nearest_time));
+                                        echo "Line 172: time_option: ", $time_option, "<p>";
+
                                         // Check if this option should be selected
                                         $selected = ($start_time == $time_option) ? "selected" : "";
                                         // Output the option tag
