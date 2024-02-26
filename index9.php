@@ -158,14 +158,16 @@
                                 $seconds_since_midnight = $current - strtotime('today');
 
                                 $nearest_time = ceil($seconds_since_midnight / 300) * 300; // Find the nearest time in 5-minute intervals
-                                echo "Line 161 nearest_time: ", date("l H m s",$nearest_time), "<p> ";
+                                echo "Line 161: nearest_time: " . date("l H:i:s", strtotime("+$nearest_time seconds")) . "<br>";
+
+                                echo "Line 163 nearest_time: ", date("l H m s",$nearest_time), "<p> ";
 
                                 $start_time_option = date('H:i', $nearest_time);
                                 echo "Line 164: start_time_option: ", $start_time_option, "<p>";
 
-                                ?>
-                                Start Time: <select name="start_time" id="start_time">
-                                <?php
+                            ?>
+                            Start Time: <select name="start_time" id="start_time">
+                            <?php
                                 // Loop through the intervals in a day starting from the nearest time
                                 for ($i = 0; $i < $loops; $i++) {
                                     // Convert the current time to a formatted string
@@ -175,7 +177,7 @@
                                     // Output the option tag
                                     echo '<option value="' . $time_option . '" ' . $selected . '>' . $time_option . '</option>';
                                 }
-                                ?>
+                            ?>
                             </select>
                             <br>
                             <p style="font-size:11px">
