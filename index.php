@@ -375,23 +375,18 @@
             console.log("stopRecordingPressed value:", stopRecordingPressed); // Log the value
             document.getElementById("stopRecordingButton").style.display = "none";
             alert("Wait for the creation of the video, it takes som time. Please wait.");
+            // Refresh the page after a short delay to allow the form submission to complete
+            setTimeout(function() {
+                    location.reload();
+            }, 1000);
         }
-
-        var video1exists = <?php echo json_encode($video1Exists); ?>; // Get the value from PHP
 
         // JavaScript to automatically refresh the page after a certain interval
         function autoRefresh() {
-            if (video1exists) {
-                // If the video1 file exists, reload the page 1 time and thereafter not any more.
-                setTimeout(function() {
-                    location.reload();
-                }, 10000);
-            } else {
-                // If the video file doesn't exist, refresh the page every 60 seconds
-                setInterval(function() {
-                    location.reload();
-                }, 60000);
-            }
+            // If the video file doesn't exist, refresh the page every 60 seconds
+            setInterval(function() {
+                location.reload();
+            }, 60000);
         }
 
         // Call the autoRefresh function after the page is loaded
