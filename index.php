@@ -366,7 +366,7 @@
     </div>
     <!-- JavaScript to automatically refresh the page after the "Stop Recording" button is pressed -->
     <script>
-        var stopRecordingPressed = <?php echo json_encode($stopRecordingPressed); ?>; // Get the value from PHP
+        //var stopRecordingPressed = <?php echo json_encode($stopRecordingPressed); ?>; // Get the value from PHP
 
         function refreshPage() {
             stopRecordingPressed = true;
@@ -375,11 +375,6 @@
             console.log("stopRecordingPressed value:", stopRecordingPressed); // Log the value
             document.getElementById("stopRecordingButton").style.display = "none";
             alert("Wait for the creation of the video, it takes som time. Please wait.");
-
-            setTimeout(function() {
-                // Reload the page after 15 second
-                location.reload();
-            }, 15000); // 15 seconds
         }
 
         var video1exists = <?php echo json_encode($video1Exists); ?>; // Get the value from PHP
