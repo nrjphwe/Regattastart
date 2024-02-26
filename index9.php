@@ -162,9 +162,10 @@
                                 ?>
                                 Start Time: <select name="start_time" id="start_time">
                                 <?php
+                                // Loop through the intervals in a day
                                 for ($i = 0; $i < $loops; $i++) {
                                     // Convert the current time to a formatted string
-                                    $time_option = date('H:i', strtotime("+$i*$steps minutes", $current));
+                                    $time_option = date('H:i', strtotime("+$i*$steps minutes", $nearest_time));
                                     // Check if this option should be selected
                                     $selected = ($start_time == $time_option) ? "selected" : "";
                                     // Output the option tag
