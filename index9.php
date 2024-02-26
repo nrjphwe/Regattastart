@@ -154,7 +154,7 @@
                                 $nearest_time = ceil((time() - strtotime('today')) / 300) * 300; // Find the nearest time in 5-minute intervals
                                 echo "Line 155 nearest_time: ", date("l H m s",$nearest_time), " ";
                                 $start_time_option = date('H:i', $nearest_time);
-                                echo "Line 157: start_time_option: ", date("l H m s", $start_time_option), " ";
+                                echo "Line 157: start_time_option: ", $start_time_option, " ";
 
                                 ?>
                                 Start Time: <select name="start_time" id="start_time">
