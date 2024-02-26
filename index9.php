@@ -150,7 +150,7 @@
                                 $steps = 5; // Set to 10, for test set to 5, You can adjust the value of $steps according to your needs
                                 $loops = 24 * (60 / $steps); // Define $loops here or wherever it makes sense in your code
                                 $current = strtotime('today'); // Get the current timestamp truncated to the beginning of the day
-                                echo "Line 153: current = strtotime ", date("l H m s",$current), ">p>";
+                                echo "Line 153: current = strtotime ", date("l H m s",$current), "<p>";
                                 $nearest_time = ceil((time() - strtotime('today')) / 300) * 300; // Find the nearest time in 5-minute intervals
                                 echo "Line 155 nearest_time: ", date("l H m s",$nearest_time), "<p> ";
                                 $start_time_option = date('H:i', $nearest_time);
