@@ -153,12 +153,13 @@
                                 // Get the current time in seconds since the Unix Epoch
                                 $current = time(); 
                                 echo "Line 155: current = ", date("l H:i:s", $current), "<p>";
-                                
+
                                 // Get the number of seconds elapsed since midnight
                                 $seconds_since_midnight = $current - strtotime('today');
-                                echo "Line 159 seconds_since_midnight: ", $seconds_since_midnight, "<p>";
+                                echo "Line 159 seconds_since_midnight: $seconds_since_midnight <p>";
+
                                 // Calculate the nearest time in 5-minute intervals
-                                $nearest_time = strtotime('today') + round($seconds_since_midnight / (5 * 60)) * (5 * 60); 
+                                $nearest_time = strtotime('today') + round($seconds_since_midnight / (5 * 60)) * (5 * 60);
                                 echo "Line 162 nearest_time: ", date("l H:i:s", $nearest_time), "<p>";
 
                             ?>
@@ -172,7 +173,7 @@
                                     $selected = ($start_time == $time_option) ? "selected" : "";
                                     // Output the option tag
                                     echo '<option value="' . $time_option . '" ' . $selected . '>' . $time_option . '</option>';
-                                }
+                                    }
                                 ?>
                             </select>
                             <br>
