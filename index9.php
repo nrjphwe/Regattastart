@@ -149,15 +149,19 @@
                                 $start_time = isset($_SESSION["form_data"]["start_time"]) ? $_SESSION["form_data"]["start_time"] : "";
                                 $steps = 5; // Set to 10, for test set to 5, You can adjust the value of $steps according to your needs
                                 $loops = 24 * (60 / $steps); // Define $loops here or wherever it makes sense in your code
+
                                 // Get the current time in seconds since the Unix Epoch
                                 $current = time(); 
-                                echo "Line 154: current = ", date("l H:i:s", $current), "<p>";
+                                echo "Line 155: current = ", date("l H:i:s", $current), "<p>";
                                 
-                                $nearest_time = ceil($current / 300) * 300; // Find the nearest time in 5-minute intervals
-                                echo "Line 157 nearest_time: ", date("l H m s",$nearest_time), "<p> ";
+                                // Get the number of seconds elapsed since midnight
+                                $seconds_since_midnight = $current - strtotime('today');
+
+                                $nearest_time = ceil($seconds_since_midnight / 300) * 300; // Find the nearest time in 5-minute intervals
+                                echo "Line 161 nearest_time: ", date("l H m s",$nearest_time), "<p> ";
 
                                 $start_time_option = date('H:i', $nearest_time);
-                                echo "Line 160: start_time_option: ", $start_time_option, "<p>";
+                                echo "Line 164: start_time_option: ", $start_time_option, "<p>";
 
                                 ?>
                                 Start Time: <select name="start_time" id="start_time">
