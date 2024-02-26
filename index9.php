@@ -156,26 +156,23 @@
                                 
                                 // Get the number of seconds elapsed since midnight
                                 $seconds_since_midnight = $current - strtotime('today');
-                                
+                                echo "Line 159 seconds_since_midnight: ", $seconds_since_midnight, "<p>";
                                 // Calculate the nearest time in 5-minute intervals
-                                $nearest_time = ceil($seconds_since_midnight / (5 * 60)) * (5 * 60) + strtotime('today'); 
+                                $nearest_time = strtotime('today') + round($seconds_since_midnight / (5 * 60)) * (5 * 60); 
                                 echo "Line 162 nearest_time: ", date("l H:i:s", $nearest_time), "<p>";
-                                echo "Line 163: nearest_time: " . date("l H:i:s", strtotime("+$nearest_time seconds")) . "<br>";
 
                             ?>
                             Start Time: <select name="start_time" id="start_time">
                                 <?php
-                                    // Loop through the intervals in a day starting from the nearest time
-                                    for ($i = 0; $i < $loops; $i++) {
-                                        // Convert the current time to a formatted string
-                                        $time_option = date('H:i', strtotime("+$i*$steps minutes", $nearest_time));
-                                        echo "Line 172: time_option: ", $time_option, "<p>";
-
-                                        // Check if this option should be selected
-                                        $selected = ($start_time == $time_option) ? "selected" : "";
-                                        // Output the option tag
-                                        echo '<option value="' . $time_option . '" ' . $selected . '>' . $time_option . '</option>';
-                                    }
+                                // Loop through the intervals in a day starting from the nearest time
+                                for ($i = 0; $i < $loops; $i++) {
+                                    // Convert the current time to a formatted string
+                                    $time_option = date('H:i', strtotime("+$i*$steps minutes", $nearest_time));
+                                    // Check if this option should be selected
+                                    $selected = ($start_time == $time_option) ? "selected" : "";
+                                    // Output the option tag
+                                    echo '<option value="' . $time_option . '" ' . $selected . '>' . $time_option . '</option>';
+                                }
                                 ?>
                             </select>
                             <br>
