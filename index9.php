@@ -162,7 +162,7 @@
                                 for ($i = 0; $i < $loops; $i++) {
                                     $time_option = date('H:i', $current);
                                     $selected = ($start_time == $start_time_option) ? "selected" : ""; // Check if this option should be selected
-                                    echo '<option value="' . $time_option . '" ' . $selected . '>' . $time_option . '</option>';
+                                    echo '<option value="' . $start_time_option . '" ' . $selected . '>' . $start_time_option . '</option>';
                                     $current += $steps * 60; // Increment by $steps in minutes
                                 }
                                 ?>
