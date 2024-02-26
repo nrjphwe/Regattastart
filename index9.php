@@ -166,7 +166,7 @@
                                 ?>
                                 Start Time: <select name="start_time" id="start_time">
                                 <?php
-                                // Loop through the intervals in a day
+                                // Loop through the intervals in a day starting from the nearest time
                                 for ($i = 0; $i < $loops; $i++) {
                                     // Convert the current time to a formatted string
                                     $time_option = date('H:i', strtotime("+$i*$steps minutes", $nearest_time));
