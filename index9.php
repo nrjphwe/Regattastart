@@ -149,35 +149,17 @@
                                 $start_time = isset($_SESSION["form_data"]["start_time"]) ? $_SESSION["form_data"]["start_time"] : "";
                                 $steps = 5; // Set to 10, for test set to 5, You can adjust the value of $steps according to your needs
                                 $loops = 24 * (60 / $steps); // Define $loops here or wherever it makes sense in your code
-
-                                // Get the current time in seconds since the Unix Epoch
-                                $current = time(); 
-                                echo "Line 155: current = ", date("l H:i:s", $current), "<p>";
-                                
-                                // Get the number of seconds elapsed since midnight
-                                $seconds_since_midnight = $current - strtotime('today');
-
-                                $nearest_time = ceil($seconds_since_midnight / (5 * 60)) * (5 * 60); // Find the nearest time in 5-minute intervals
-                                echo "Line 161: nearest_time: " . date("l H:i:s", strtotime("+$nearest_time seconds")) . "<br>";
-
-                                echo "Line 163 nearest_time: ", date("l H m s",$nearest_time), "<p> ";
-
-                                $start_time_option = date('H:i', $nearest_time);
-                                echo "Line 164: start_time_option: ", $start_time_option, "<p>";
-
+                                $current = 0; // Initialize $current
                             ?>
                             Start Time: <select name="start_time" id="start_time">
-                            <?php
-                                /// Loop through the intervals in a day starting from the nearest time
+                                <?php
                                 for ($i = 0; $i < $loops; $i++) {
-                                    // Convert the current time to a formatted string
-                                    $time_option = date('H:i', strtotime("+$i*$steps minutes", $nearest_time));
-                                    // Check if this option should be selected
-                                    $selected = ($start_time == $time_option) ? "selected" : "";
-                                    // Output the option tag
-                                    echo '<option value="' . $time_option . '" ' . $selected . '>' . $time_option . '</option>';
+                                    $start_time_option = sprintf('%02d:%02d', $i / (60 / $steps), $current % 60);
+                                    $selected = ($start_time == $start_time_option) ? "selected" : ""; // Check if this option should be selected
+                                    echo '<option value="' . $start_time_option . '" ' . $selected . '>' . $start_time_option . '</option>';
+                                    $current += $steps;
                                 }
-                            ?>
+                                ?>
                             </select>
                             <br>
                             <p style="font-size:11px">
