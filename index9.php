@@ -150,7 +150,7 @@
                                 $steps = 5; // Set to 10, for test set to 5, You can adjust the value of $steps according to your needs
                                 $loops = 24 * (60 / $steps); // Define $loops here or wherever it makes sense in your code
                                 $current_time = time();
-                                $nearest_time = ceil((time() - $current_time) / (5*60)) * (5*60); // Find the nearest time in 5-minute intervals
+                                $nearest_time = ceil(($current_time - strtotime('today')) / (5*60)) * (5*60); // Find the nearest time in 5-minute intervals
                                 // Convert the nearest time to a formatted string
                                 $nearest_time_str = date('H:i', $nearest_time); 
                             ?>
