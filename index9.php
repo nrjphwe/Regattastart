@@ -150,18 +150,18 @@
                                 $steps = 5; // Set to 10, for test set to 5, You can adjust the value of $steps according to your needs
                                 $loops = 24 * (60 / $steps); // Define $loops here or wherever it makes sense in your code
                                 $current = strtotime('today'); // Get the current timestamp truncated to the beginning of the day
-                                echo "Line 153: current", $current;
-                                $nearest_time = ceil((time() - $current) / 300) * 300; // Find the nearest time in 5-minute intervals
-                                echo "Line 155: nearest_time", $nearest_time;
+                                echo "Line 153: current ", $current;
+                                $nearest_time = ceil((time() - strtotime('today')) / 300) * 300; // Find the nearest time in 5-minute intervals
+                                echo "Line 155: nearest_time ", $nearest_time;
                                 $start_time_option = date('H:i', $nearest_time);
-                                echo "Line 157: start_time_option", $start_time_option;
+                                echo "Line 157: start_time_option ", $start_time_option;
 
                                 ?>
                                 Start Time: <select name="start_time" id="start_time">
                                 <?php
                                 for ($i = 0; $i < $loops; $i++) {
                                     $time_option = date('H:i', $current);
-                                    $selected = ($start_time == $time_option) ? "selected" : ""; // Check if this option should be selected
+                                    $selected = ($start_time == $start_time_option) ? "selected" : ""; // Check if this option should be selected
                                     echo '<option value="' . $time_option . '" ' . $selected . '>' . $time_option . '</option>';
                                     $current += $steps * 60; // Increment by $steps in minutes
                                 }
