@@ -157,7 +157,7 @@
                                 // Get the number of seconds elapsed since midnight
                                 $seconds_since_midnight = $current - strtotime('today');
 
-                                $nearest_time = ceil($seconds_since_midnight / 300) * 300; // Find the nearest time in 5-minute intervals
+                                $nearest_time = ceil($seconds_since_midnight / (5 * 60)) * (5 * 60); // Find the nearest time in 5-minute intervals
                                 echo "Line 161: nearest_time: " . date("l H:i:s", strtotime("+$nearest_time seconds")) . "<br>";
 
                                 echo "Line 163 nearest_time: ", date("l H m s",$nearest_time), "<p> ";
