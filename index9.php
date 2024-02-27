@@ -168,6 +168,8 @@
                                 $start_time_option = date('H:i', $nearest_time);
                                 echo "Line 169 start_time_option: ",$start_time_option, "<p>";
 
+                                $time_option = sprintf('%02d:%02d', $i / (60 / $steps), $current % 60);
+                                echo "Line 172 time_option: ",$time_option, "<p>";
                             ?>
                             Start Time: <select name="start_time" id="start_time">
                                 <?php
