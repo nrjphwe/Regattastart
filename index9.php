@@ -157,10 +157,16 @@
                                 // Get the number of seconds elapsed since midnight
                                 $seconds_since_midnight = $current - strtotime('today');
                                 echo "Line 159 seconds_since_midnight: $seconds_since_midnight <p>";
+                                
+                                $old_nearest_time = ceil((time() - $current) / 300) * 300; // Find the nearest time in 5-minute intervals
+                                echo "Line 162 old_nearest_time: ", date("l H:i:s", $old_nearest_time), "<p>";
 
                                 // Calculate the nearest time in 5-minute intervals
                                 $nearest_time = strtotime('today') + round($seconds_since_midnight / (5 * 60)) * (5 * 60);
-                                echo "Line 162 nearest_time: ", date("l H:i:s", $nearest_time), "<p>";
+                                echo "Line 166 nearest_time: ", date("l H:i:s", $nearest_time), "<p>";
+
+                                $start_time_option = date('H:i', $nearest_time);
+                                echo "Line 169 start_time_option: ",$start_time_option, "<p>";
 
                             ?>
                             Start Time: <select name="start_time" id="start_time">
