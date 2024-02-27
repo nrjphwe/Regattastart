@@ -121,7 +121,7 @@
     <!-- Header content -->
     <header>
         <div style="text-align: center;">
-            <div class="w3-panel w3-blue">
+            <div class="w3-panel w3-teal">
                 <h2> Regattastart  </h2>
             </div>
         </div>
