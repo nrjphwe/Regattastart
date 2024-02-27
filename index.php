@@ -141,22 +141,17 @@
         <!-- Button Container -->
         <div class="button-container">
             <!-- Link to index6 -->
-            <div style="text-align: center;">
-                <button class="w3-button w3-border w3-large w3-round-large w3-hover-red w3-blue">
-                    <a href="/index6.php" title="Regattastart6" style="text-decoration: none; color: white;">
-                        Two starts -- Regattastart6
-                    </a>
-                </button>
-            </div>
-
+            <button class="w3-button w3-border w3-large w3-round-large w3-hover-red w3-blue">
+                <a href="/index6.php" title="Regattastart6" style="text-decoration: none; color: white;">
+                    Two starts -- Regattastart6
+                </a>
+            </button>
             <!-- Link to index9 -->
-            <div style="text-align: center; margin-top: 10px;">
-                <button class="w3-button w3-border w3-large w3-round-large w3-hover-red w3-blue">
-                    <a href="/index9.php" title="Setup page Regattastart9" style="text-decoration: none; color: white;">
-                        Regattastart9 -- with image detection
-                    </a>
-                </button>
-            </div>
+            <button class="w3-button w3-border w3-large w3-round-large w3-hover-red w3-blue">
+                <a href="/index9.php" title="Setup page Regattastart9" style="text-decoration: none; color: white;">
+                    Regattastart9 -- with image detection
+                </a>
+            </button>
         </div>
         <!-- header text -->
         <div style="text-align: center;" class="w3-panel w3-pale-blue">
