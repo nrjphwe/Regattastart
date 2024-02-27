@@ -437,38 +437,38 @@
         }
     </script>
     <script>
-    // Function to check status periodically
-    function checkStatus() {
-        $.ajax({
-            url: 'check_status.php', // Path to your PHP script
-            dataType: 'json', // Expect JSON response
-            success: function(response) {
-                // Check if the status is 'complete'
-                if (response.status === 'complete') {
-                    // Update the status div with the response
-                    $('#status').html('Video conversion is complete!');
-                    // Log a message to the console
-                    console.log('Video conversion is complete!');
-                    // Optionally stop further polling
-                    clearInterval(intervalId);
+        // Function to check status periodically
+        function checkStatus() {
+            $.ajax({
+                url: 'check_status.php', // Path to your PHP script
+                dataType: 'json', // Expect JSON response
+                success: function(response) {
+                    // Check if the status is 'complete'
+                    if (response.status === 'complete') {
+                        // Update the status div with the response
+                        $('#status').html('Video conversion is complete!');
+                        // Log a message to the console
+                        console.log('Video conversion is complete!');
+                        // Optionally stop further polling
+                        clearInterval(intervalId);
+                    }
+                    // Check if the recording is ongoing
+                    if (response.recording === true) {
+                        // Hide the stop_recording button
+                        $('#stop_recording').hide();
+                    } else {
+                        // Show the stop_recording button
+                        $('#stop_recording').show();
+                    }
                 }
-                // Check if the recording is ongoing
-                if (response.recording === true) {
-                    // Hide the stop_recording button
-                    $('#stop_recording').hide();
-                } else {
-                    // Show the stop_recording button
-                    $('#stop_recording').show();
-                }
-            }
-        });
-    }
+            });
+        }
 
-    // Call the checkStatus function initially
-    checkStatus();
+        // Call the checkStatus function initially
+        checkStatus();
 
-    // Call the checkStatus function every 5 seconds
-    var intervalId = setInterval(checkStatus, 5000); // Check every 5 seconds
-</script>
+        // Call the checkStatus function every 5 seconds
+        var intervalId = setInterval(checkStatus, 5000); // Check every 5 seconds
+    </script>
 </body>
 </html>
