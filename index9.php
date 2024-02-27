@@ -111,7 +111,7 @@
 </div>
 <header>
     <div style="text-align: center;">
-        <div class="w3-container w3-blue">
+        <div class="w3-container w3-green">
             <h2>Regattastart9 with image detection </h2>
         </div>
     </div>
