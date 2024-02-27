@@ -155,7 +155,6 @@
                                 $seconds_since_midnight = $current - strtotime('today');
                                 // Calculate the nearest time in 5-minute intervals
                                 $nearest_time = strtotime('today') + round($seconds_since_midnight / (5 * 60)) * (5 * 60);
-  
                                 $start_time_option = date('H:i', $nearest_time);
                             ?>
                             Start Time: <select name="start_time" id="start_time">
