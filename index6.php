@@ -105,10 +105,18 @@
                                 $steps = 5; // Set to 10, for test set to 5, You can adjust the value of $steps according to your needs
                                 $loops = 24 * (60 / $steps); // Define $loops here or wherever it makes sense in your code
                                 $current = strtotime('today'); // Get the current timestamp truncated to the beginning of the day
+                                echo "Line 108: current = ", date("l H:i:s", $current), "<p>";
+
                                 $seconds_since_midnight = $current - strtotime('today');
+
                                 $nearest_time = strtotime('today') + round($seconds_since_midnight / (5 * 60)) * (5 * 60);
-                                //$nearest_time = ceil((time() - $current) / 300) * 300; // Find the nearest time in 5-minute intervals
+                                echo "Line 113 nearest_time: ",$nearest_time, "<p>";
+
+                                $old_nearest_time = ceil((time() - $current) / 300) * 300; // Find the nearest time in 5-minute intervals
+                                echo "Line 116 old_nearest_time: ",$old_nearest_time, "<p>";
+
                                 $start_time_option = date('H:i', $nearest_time);
+                                echo "Line 112 start_time_option: ",$start_time_option, "<p>";
                             ?>
                             Start Time: <select name="start_time" id="start_time">
                                 <?php
