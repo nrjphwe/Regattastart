@@ -141,13 +141,13 @@
         <!-- Button Container -->
         <div class="button-container">
             <!-- Link to index6 -->
-            <button class="w3-button w3-border w3-large w3-round-large w3-hover-red w3-blue">
-                <a href="/index6.php" title="Regattastart6" style="text-decoration: none; color: white;">
-                    Two starts -- Regattastart6
+            <button class="w3-button w3-border w3-large w3-round-large w3-hover-grey w3-blue">
+                <a href="/index6.php" title="Setup page Regattastart6" style="text-decoration: none; color: white;">
+                    Regattastart6 with 1 or 2 starts
                 </a>
             </button>
             <!-- Link to index9 -->
-            <button class="w3-button w3-border w3-large w3-round-large w3-hover-red w3-blue">
+            <button class="w3-button w3-border w3-large w3-round-large w3-hover-grey w3-green">
                 <a href="/index9.php" title="Setup page Regattastart9" style="text-decoration: none; color: white;">
                     Regattastart9 -- with image detection
                 </a>
