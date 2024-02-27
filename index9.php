@@ -149,22 +149,14 @@
                                 $start_time = isset($_SESSION["form_data"]["start_time"]) ? $_SESSION["form_data"]["start_time"] : "";
                                 $steps = 5; // Interval in minutes
                                 $loops = 24 * (60 / $steps); // Number of intervals in a day
-                                
                                 // Get the current time in seconds since the Unix Epoch
                                 $current = time(); 
-                                echo "Line 155: current = ", date("l H:i:s", $current), "<p>";
-
                                 // Get the number of seconds elapsed since midnight
                                 $seconds_since_midnight = $current - strtotime('today');
-                                echo "Line 159 seconds_since_midnight: $seconds_since_midnight <p>";
-                                
                                 // Calculate the nearest time in 5-minute intervals
                                 $nearest_time = strtotime('today') + round($seconds_since_midnight / (5 * 60)) * (5 * 60);
-                                echo "Line 163 nearest_time: ", date("l H:i:s", $nearest_time), "<p>";
-
+  
                                 $start_time_option = date('H:i', $nearest_time);
-                                echo "Line 166 start_time_option: ",$start_time_option, "<p>";
-
                             ?>
                             Start Time: <select name="start_time" id="start_time">
                                 <?php
