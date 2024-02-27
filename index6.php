@@ -116,6 +116,7 @@
                                         // Check if this option should be selected
                                         $selected = ($start_time == $start_time_option) ? "selected" : ""; // Check if this option should be selected
                                         echo '<option value="' . $start_time_option . '" ' . $selected . '>' . $start_time_option . '</option>';
+                                        $current += $steps;
                                     }
                                 ?>
                             </select>
