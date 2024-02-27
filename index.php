@@ -132,12 +132,21 @@
     <main>
         <!-- Link to index6 -->
         <div style="text-align: center;">
-            <h4><a href="/index6.php" title="Regattastart6 "> Two starts -- Regattastart6 </a></h4>
+            <button class="w3-button w3-border w3-large w3-round-large w3-hover-red w3-blue">
+                <a href="/index6.php" title="Regattastart6" style="text-decoration: none; color: white;">
+                    Two starts -- Regattastart6
+                </a>
+            </button>
         </div>
+
         <!-- Link to index9 -->
-        <div style="text-align: center;">
-            <h4><a href="/index9.php" title="Setup page Regattastart9">  Regattastart9 -- with image detection </a></h4>
-        </div> 
+        <div style="text-align: center; margin-top: 10px;">
+            <button class="w3-button w3-border w3-large w3-round-large w3-hover-red w3-blue">
+                <a href="/index9.php" title="Setup page Regattastart9" style="text-decoration: none; color: white;">
+                    Regattastart9 -- with image detection
+                </a>
+            </button>
+        </div>
         <!-- header text -->
         <div style="text-align: center;" class="w3-panel w3-pale-blue">
             <h3> Bilder tagna vid varje signal innan 1a start </h3>
