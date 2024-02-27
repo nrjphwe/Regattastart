@@ -112,10 +112,10 @@
                                 <?php
                                     for ($i = 0; $i < $loops; $i++) {
                                         // Convert the current time to a formatted string
-                                        //$start_time_option = sprintf('%02d:%02d', $i / (60 / $steps), $current % 60);
+                                        $time_option = sprintf('%02d:%02d', $i / (60 / $steps), $current % 60);
                                         // Check if this option should be selected
-                                        $selected = ($start_time == $start_time_option) ? "selected" : ""; // Check if this option should be selected
-                                        echo '<option value="' . $start_time_option . '" ' . $selected . '>' . $start_time_option . '</option>';
+                                        $selected = ($time_option == $start_time_option) ? "selected" : ""; // Check if this option should be selected
+                                        echo '<option value="' . $time_option . '" ' . $selected . '>' . $time_option . '</option>';
                                         $current += $steps;
                                     }
                                 ?>
