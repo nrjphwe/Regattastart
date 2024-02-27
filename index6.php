@@ -119,7 +119,7 @@
                                 echo "Line 119 old_nearest_time: ",date("l H:i:s", $old_nearest_time), "<p>";
 
                                 $start_time_option = date('H:i', $nearest_time);
-                                echo "Line 122 start_time_option: ",date("l H:i:s",$start_time_option), "<p>";
+                                echo "Line 122 start_time_option: ",$start_time_option, "<p>";
                             ?>
                             Start Time: <select name="start_time" id="start_time">
                                 <?php
