@@ -179,7 +179,8 @@
                                     $selected = ($start_time == $time_option) ? "selected" : "";
                                     // Output the option tag
                                     echo '<option value="' . $time_option . '" ' . $selected . '>' . $time_option . '</option>';
-                                    }
+                                    $current += $steps;
+                                }
                                 ?>
                             </select>
                             <br>
