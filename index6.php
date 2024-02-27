@@ -124,13 +124,16 @@
                             Start Time: <select name="start_time" id="start_time">
                                 <?php
                                     for ($i = 0; $i < $loops; $i++) {
+                                         // Calculate the time for this option
+                                        $time_option = date('H:i', $nearest_time + ($i * $steps * 60));
+                                        
                                         // Convert the current time to a formatted string
-                                        $time_option = date('H:i', $current);
+                                        //&$time_option = date('H:i', $current);
                                         // Check if this option should be selected
                                         $selected = ($time_option == $start_time_option) ? "selected" : ""; 
                                         // Output the option tag
                                         echo '<option value="' . $time_option . '" ' . $selected . '>' . $time_option . '</option>';
-                                        $current += $i * $steps * 60; // Increment the current time by $steps minutes in each iteration
+                                        //$current += $i * $steps * 60; // Increment the current time by $steps minutes in each iteration
                                     }
                                 ?>
                             </select>
