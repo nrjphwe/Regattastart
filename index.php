@@ -26,6 +26,23 @@
         $_SESSION['stopRecordingPressed'] = $stopRecordingPressed;
     }
 ?>
+<?php //  Regattastart9.py communicates to the PHP program (index.php) that the video1.mp4 is ready
+    // After the video conversion process is complete (video1.mp4 is created), the Python 
+    // script will update a status file to indicate that the conversion is finished.
+    $status_file = '/var/www/html/status.txt';
+
+    // Check if the status file exists
+    if (file_exists($status_file)) {
+        // Read the status from the file
+        $status = file_get_contents($status_file);
+        // Return the status as JSON
+        echo json_encode(['status' => $status]);
+    } else {
+        // Return an error status if the file doesn't exist
+        error_log("Line 42: error status if the file doesn't exist");
+        echo json_encode(['status' => 'error']);
+    }
+?>
 <!-- Your HTML to display data from the session -->
 <!DOCTYPE html>
 <html lang="en">
@@ -418,5 +435,31 @@
             }
         }
     </script>
+    <script>
+    // Function to check status periodically
+    function checkStatus() {
+        $.ajax({
+            url: 'check_status.php', // Path to your PHP script
+            dataType: 'json', // Expect JSON response
+            success: function(response) {
+                // Check if the status is 'complete'
+                if (response.status === 'complete') {
+                    // Update the status div with the response
+                    $('#status').html('Video conversion is complete!');
+                    // Log a message to the console
+                    console.log('Video conversion is complete!');
+                    // Optionally stop further polling
+                    clearInterval(intervalId);
+                }
+            }
+        });
+    }
+
+    // Call the checkStatus function initially
+    checkStatus();
+
+    // Call the checkStatus function every 5 seconds
+    var intervalId = setInterval(checkStatus, 5000); // Check every 5 seconds
+</script>
 </body>
 </html>
