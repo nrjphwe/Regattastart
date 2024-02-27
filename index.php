@@ -451,10 +451,18 @@
                     // Optionally stop further polling
                     clearInterval(intervalId);
                 }
+                // Check if the recording is ongoing
+                if (response.recording === true) {
+                    // Hide the stop_recording button
+                    $('#stop_recording').hide();
+                } else {
+                    // Show the stop_recording button
+                    $('#stop_recording').show();
+                }
             }
         });
     }
-
+    
     // Call the checkStatus function initially
     checkStatus();
 
