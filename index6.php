@@ -125,12 +125,12 @@
                                 <?php
                                     for ($i = 0; $i < $loops; $i++) {
                                         // Convert the current time to a formatted string
-                                        //$time_option = sprintf('%02d:%02d', $i / (60 / $steps), $current % 60);
                                         $time_option = date('H:i', $current);
                                         // Check if this option should be selected
-                                        $selected = ($time_option == $start_time_option) ? "selected" : ""; // Check if this option should be selected
+                                        $selected = ($time_option == $start_time_option) ? "selected" : ""; 
+                                        // Output the option tag
                                         echo '<option value="' . $time_option . '" ' . $selected . '>' . $time_option . '</option>';
-                                        $current += $steps * 60;
+                                        $current += $i * $steps * 60; // Increment the current time by $steps minutes in each iteration
                                     }
                                 ?>
                             </select>
