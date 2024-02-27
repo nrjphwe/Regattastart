@@ -168,8 +168,6 @@
                                 $start_time_option = date('H:i', $nearest_time);
                                 echo "Line 169 start_time_option: ",$start_time_option, "<p>";
 
-                                $time_option = sprintf('%02d:%02d', $i / (60 / $steps), $current % 60);
-                                echo "Line 172 time_option: ",$time_option, "<p>";
                             ?>
                             Start Time: <select name="start_time" id="start_time">
                                 <?php
@@ -178,6 +176,7 @@
                                     /// Convert the current time to a formatted string
                                     //$time_option = date('H:i', $current);
                                     $time_option = sprintf('%02d:%02d', $i / (60 / $steps), $current % 60);
+                                    echo "Line 181 time_option: ",$time_option, "<p>";
                                     //$time_option = sprintf('%02d:%02d', $i / (60 / $steps), $current % 60);
                                     // Check if this option should be selected
                                     $selected = ($time_option == $start_time_option) ? "selected" : ""; // Check if this option should be selected
