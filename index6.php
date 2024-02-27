@@ -107,18 +107,19 @@
 
                                 //$current = strtotime('today'); // Get the current timestamp truncated to the beginning of the day
                                 $current = time(); 
-                                echo "Line 108: current = ", date("l H:i:s", $current), "<p>";
+                                echo "Line 110: current = ", date("l H:i:s", $current), "<p>";
 
                                 $seconds_since_midnight = $current - strtotime('today');
+                                echo "Line 113 seconds_since_midnight: $seconds_since_midnight <p>";
 
                                 $nearest_time = strtotime('today') + round($seconds_since_midnight / (5 * 60)) * (5 * 60);
-                                echo "Line 113 nearest_time: ",$nearest_time, "<p>";
+                                echo "Line 116 nearest_time: ",$nearest_time, "<p>";
 
                                 $old_nearest_time = ceil((time() - $current) / 300) * 300; // Find the nearest time in 5-minute intervals
-                                echo "Line 116 old_nearest_time: ",$old_nearest_time, "<p>";
+                                echo "Line 119 old_nearest_time: ",$old_nearest_time, "<p>";
 
                                 $start_time_option = date('H:i', $nearest_time);
-                                echo "Line 112 start_time_option: ",$start_time_option, "<p>";
+                                echo "Line 122 start_time_option: ",$start_time_option, "<p>";
                             ?>
                             Start Time: <select name="start_time" id="start_time">
                                 <?php
