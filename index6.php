@@ -128,9 +128,9 @@
                                         //$time_option = sprintf('%02d:%02d', $i / (60 / $steps), $current % 60);
                                         $time_option = date('H:i', $current);
                                         // Check if this option should be selected
-                                        $selected = ($start_time_option == $time_option) ? "selected" : ""; // Check if this option should be selected
+                                        $selected = ($time_option == $start_time_option) ? "selected" : ""; // Check if this option should be selected
                                         echo '<option value="' . $time_option . '" ' . $selected . '>' . $time_option . '</option>';
-                                        $current += $steps;
+                                        $current += $steps * 60;
                                     }
                                 ?>
                             </select>
