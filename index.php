@@ -404,7 +404,7 @@
     <script>
         //var stopRecordingPressed = <?php echo json_encode($stopRecordingPressed); ?>; // Get the value from PHP
 
-        /*function refreshPage() {
+        function refreshPage() {
             stopRecordingPressed = true;
             // Set the value of the hidden input field
             document.getElementById("stopRecordingPressed").value = "1"; // Set stopRecordingPressed value to 1
@@ -414,9 +414,9 @@
             // Refresh the page after a short delay to allow the form submission to complete
             setTimeout(function() {
                     location.reload();
-            }, 1000);
-        } */
-
+            }, 10000);
+        } 
+/*
         function refreshPage() 
         {
             // Set the value of the hidden input field to indicate that the recording has been stopped
@@ -427,6 +427,7 @@
             // Prevent the default form submission and page refresh
             return true;
         }
+*/
         /*
         // JavaScript to automatically refresh the page after a certain interval
         function autoRefresh() {
