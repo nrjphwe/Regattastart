@@ -470,9 +470,9 @@
         }
          // Call the checkStatus function initially
         checkStatus();
-        
-        // Call the checkStatus function every 5 seconds
-        var intervalId = setInterval(checkStatus, 5000); // Check every 5 seconds
+
+        // Call the checkStatus function every 30 seconds
+        var intervalId = setInterval(checkStatus, 30000); // Check every 5 seconds
     </script>
 </body>
 </html>
