@@ -40,7 +40,7 @@
 
     // Call the function to check the status
     $videoStatus = checkVideoConversionStatus();
-    echo "Line 43, VideoStatus =:", $videoStatus;
+    error_log("Line 43, VideoStatus: " . $videoStatus);
 
     // Determine if the video conversion is complete
     $videoConversionComplete = ($videoStatus === 'complete');
