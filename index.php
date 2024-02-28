@@ -416,32 +416,16 @@
             }, 1000);
         } */
 
-        function refreshPage() {
-        // Update the UI to indicate that the recording has stopped
-        document.getElementById("stopRecordingButton").style.display = "none";
-        alert("Recording stopped successfully."); // Show a message to the user
-        
-        // Optionally, you can make an AJAX call to update the server-side status
-        // For example, you can send a request to set the status_file to 'complete'
-        // This prevents the button from reappearing after the page is refreshed
-        // Example AJAX call:
-        /*
-        $.ajax({
-            url: 'update_status.php',
-            method: 'POST',
-            data: { status: 'complete' },
-            success: function(response) {
-                console.log('Status updated successfully:', response);
-            },
-            error: function(xhr, status, error) {
-                console.error('Failed to update status:', error);
-            }
-        });
-        */
-
-        // Prevent the default form submission and page refresh
-        return false;
-    }
+        function refreshPage() 
+        {
+            // Set the value of the hidden input field to indicate that the recording has been stopped
+            document.getElementById("stopRecordingPressed").value = "1"; // Set stopRecordingPressed value to 1
+            // Optionally, you can hide the button and show a message to the user
+            document.getElementById("stopRecordingButton").style.display = "none";
+            alert("Recording stopped successfully."); // Show a message to the user
+            // Prevent the default form submission and page refresh
+            return true;
+        }
         /*
         // JavaScript to automatically refresh the page after a certain interval
         function autoRefresh() {
