@@ -324,13 +324,15 @@
             <?php
                 // Retrieve the value of the session variable
                 $stopRecordingPressed = isset($_SESSION['stopRecordingPressed']) ? $_SESSION['stopRecordingPressed'] : false;
+                error_log("Line 327: video0 set to : $video0Exists");
+                error_log("Line 328: StopRecordingPressed set to : $stopRecordingPressed");
 
-                //error_log("Line 298: StopRecordingPressed set to: $stopRecordingPressed");
+                // Determine if the "Stop Recording" button should be visible
+                $showStopRecordingButton = $video0Exists && !$stopRecordingPressed;
 
                 if ($num_video == 1) // which is valid for regattastart9 not selectable 
                 {
-                    if ($video0Exists && !$stopRecordingPressed) 
-                    {
+                    if ($showStopRecordingButton) {
                         echo '<div id="stopRecordingButtonDiv" style="display: block;">'; // Display the div
                     } else {
                         echo '<div id="stopRecordingButtonDiv" style="display: none;">'; // Hide the div
