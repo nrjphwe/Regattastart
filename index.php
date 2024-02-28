@@ -416,18 +416,7 @@
                     location.reload();
             }, 10000);
         } 
-/*
-        function refreshPage() 
-        {
-            // Set the value of the hidden input field to indicate that the recording has been stopped
-            document.getElementById("stopRecordingPressed").value = "1"; // Set stopRecordingPressed value to 1
-            // Optionally, you can hide the button and show a message to the user
-            document.getElementById("stopRecordingButton").style.display = "none";
-            alert("Recording stopped successfully."); // Show a message to the user
-            // Prevent the default form submission and page refresh
-            return true;
-        }
-*/
+
         /*
         // JavaScript to automatically refresh the page after a certain interval
         function autoRefresh() {
@@ -453,7 +442,8 @@
         }
     </script>
     <script>
-        function checkStatus() {
+        function checkStatus() 
+        {
             $.ajax({
                 url: 'index.php', // Path to your PHP script
                 dataType: 'json', // Expect JSON response
@@ -464,7 +454,6 @@
                         $('#status').html('Video conversion is complete!');
                         // Log a message to the console
                         console.log('Video conversion is complete!');
-                        // Optionally stop further polling
                         // Hide the stop_recording button
                         $('#stop_recording_button_div').hide();
                     } else {
@@ -479,6 +468,11 @@
                 }
             });
         }
+         // Call the checkStatus function initially
+        checkStatus();
+        
+        // Call the checkStatus function every 5 seconds
+        var intervalId = setInterval(checkStatus, 5000); // Check every 5 seconds
     </script>
 </body>
 </html>
