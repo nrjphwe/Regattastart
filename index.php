@@ -376,7 +376,7 @@
                                 // Log an error if the video file doesn't exist
                                 error_log("Line 340: video $x does not exist");
                             }*/
-                            echo '<video id="video1" width = "720" height="480" controls><source src= ' . video1.mp4 . ' type="video/mp4"></video><p>';
+                            echo '<video id="video0" width = "720" height="480" controls><source src= ' . $video_name . ' type="video/mp4"></video><p>';
                         }
                     } else {
                         error_log("Line 344: Video1 do not exist");
