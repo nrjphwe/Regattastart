@@ -470,7 +470,7 @@
         // Function to check status periodically
         function checkStatus() {
             $.ajax({
-                url: 'check_status.php', // Path to your PHP script
+                url: 'index.php', // Path to your PHP script
                 dataType: 'json', // Expect JSON response
                 success: function(response) {
                     // Check if the status is 'complete'
