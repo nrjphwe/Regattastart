@@ -363,7 +363,7 @@
                             $video_name = 'images/video' . $x . '.mp4';
                             // error_log("Line 307: Loop to display video = $video_name");
                             if (file_exists($video_name)) 
-                            {
+                            /*{
                                 // Display the video
                                 echo "<h3> Finish video, this is video $x for the finish</h3>";
                                 echo '<video id="video' . $x . '" width="720" height="480" controls>
@@ -375,7 +375,8 @@
                             } else {
                                 // Log an error if the video file doesn't exist
                                 error_log("Line 340: video $x does not exist");
-                            }
+                            }*/
+                            echo '<video id="video1" width = "720" height="480" controls><source src= ' . video1.mp4 . ' type="video/mp4"></video><p>';
                         }
                     } else {
                         error_log("Line 344: Video1 do not exist");
