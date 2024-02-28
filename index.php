@@ -464,7 +464,7 @@
                 error: function(xhr, status, error) {
                     console.error('Error:', error);
                     // If an error occurs, log it and try again after a delay
-                    setTimeout(checkStatus, 5000); // Retry after 5 seconds
+                    setTimeout(checkStatus, 30000); // Retry after 30 seconds
                 }
             });
         }
@@ -472,7 +472,7 @@
         checkStatus();
 
         // Call the checkStatus function every 30 seconds
-        var intervalId = setInterval(checkStatus, 30000); // Check every 5 seconds
+        var intervalId = setInterval(checkStatus, 30000); // Check every 30 seconds
     </script>
 </body>
 </html>
