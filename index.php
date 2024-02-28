@@ -452,6 +452,9 @@
         }
     </script>
     <script>
+        error: function(xhr, status, error) {
+           console.error('Error:', error);
+        }
         // Function to check status periodically
         function checkStatus() 
         {
