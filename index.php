@@ -367,7 +367,7 @@
                                 // Display the video
                                 echo "<h3> Finish video, this is video $x for the finish</h3>";
                                 echo '<video id="video' . $x . '" width="720" height="480" controls>
-                                        <source src= ' . $video_name . ' type="video/mp4"></video><p>
+                                <source src="' . $video_name . '" type="video/mp4"></video><p>
                                     <div>
                                         <button onclick="stepFrame(' . $x . ', -1)">Previous Frame</button>
                                         <button onclick="stepFrame(' . $x . ', 1)">Next Frame</button>
