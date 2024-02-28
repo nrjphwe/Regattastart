@@ -452,37 +452,32 @@
         }
     </script>
     <script>
-        error: function(xhr, status, error) {
-           console.error('Error:', error);
-        }
-        // Function to check status periodically
-        function checkStatus() 
-        {
-            $.ajax(
-                {
-                    url: 'index.php', // Path to your PHP script
-                    dataType: 'json', // Expect JSON response
-                    success: function(response) 
-                    {
-                        // Check if the status is 'complete'
-                        if (response.status === 'complete') 
-                        {
-                            // Update the UI to indicate that the video conversion is complete
-                            $('#status').html('Video conversion is complete!');
-                            // Log a message to the console
-                            console.log('Video conversion is complete!');
-                            // Optionally stop further polling
-                            // Hide the stop_recording button
-                            $('#stop_recording_button_div').hide();
-                        } else {
-                            // If status is not 'complete', keep checking periodically
-                            setTimeout(checkStatus, 5000); // Check every 5 seconds
-                        }
+        function checkStatus() {
+            $.ajax({
+                url: 'index.php', // Path to your PHP script
+                dataType: 'json', // Expect JSON response
+                success: function(response) {
+                    // Check if the status is 'complete'
+                    if (response.status === 'complete') {
+                        // Update the UI to indicate that the video conversion is complete
+                        $('#status').html('Video conversion is complete!');
+                        // Log a message to the console
+                        console.log('Video conversion is complete!');
+                        // Optionally stop further polling
+                        // Hide the stop_recording button
+                        $('#stop_recording_button_div').hide();
+                    } else {
+                        // If status is not 'complete', keep checking periodically
+                        setTimeout(checkStatus, 5000); // Check every 5 seconds
                     }
-                });
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error:', error);
+                    // If an error occurs, log it and try again after a delay
+                    setTimeout(checkStatus, 5000); // Retry after 5 seconds
+                }
+            });
         }
-        // Call the checkStatus function initially
-        checkStatus();
     </script>
 </body>
 </html>
