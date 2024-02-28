@@ -442,7 +442,7 @@
         // Prevent the default form submission and page refresh
         return false;
     }
-
+        /*
         // JavaScript to automatically refresh the page after a certain interval
         function autoRefresh() {
             // If the video file doesn't exist, refresh the page every 60 seconds
@@ -453,6 +453,7 @@
 
         // Call the autoRefresh function after the page is loaded
         window.onload = autoRefresh;
+        */
 
     </script>
     <!-- JavaScript to step frames in videos -->
