@@ -458,10 +458,11 @@
                 {
                 /*
                     $('#stop_recording_button_div').hide();
-                    setTimeout(function() {
-                        location.reload();
-                    }, 10000); // 10000 milliseconds = 10 second
                 */
+                    // Refresh the page after a delay of 3 seconds
+                    setTimeout(function() {
+                        location.reload(true);
+                    }, 3000); // 3000 milliseconds = 3 second
                 }
             } else {
                 console.log(" Line 461: waiting for Stop_recording button to be pressed"); // Log the value
