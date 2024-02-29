@@ -446,12 +446,8 @@
                 console.log(" Line 460: videoConversionComplete value:", videoConversionComplete); // Log the value
                 if (videoConversionComplete)
                 {
-                    /*
-                    // Refresh the page after a delay of 3 seconds
-                    setTimeout("location.reload(true);", 3000); // 3000 milliseconds = 3 second
-                    */
-                   // Refresh the page and bypass the cache
                     location.reload(true);
+                    break;
                 }
             } else {
                 console.log(" Line 471: waiting for Stop_recording button to be pressed"); // Log the value
