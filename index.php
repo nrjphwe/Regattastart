@@ -408,6 +408,7 @@
     <!-- JavaScript to automatically refresh the page after the "Stop Recording" button is pressed -->
     <script>
         var stopRecordingPressed = <?php echo json_encode($stopRecordingPressed); ?>; // Get the value from PHP
+        console.log("Line 411: stopRecordingPressed value:", stopRecordingPressed); // Log the value
 
         function refreshPage() 
         {
@@ -416,7 +417,7 @@
             {
                 // Set the value of the hidden input field
                 document.getElementById("stopRecordingPressed").value = "1"; // Set stopRecordingPressed value to 1
-                console.log("Line 416: stopRecordingPressed value:", stopRecordingPressed); // Log the value
+                console.log("Line 420: stopRecordingPressed value:", stopRecordingPressed); // Log the value
                 document.getElementById("stopRecordingButton").style.display = "none";
                 alert("Wait for the creation of the video, it takes som time. Please wait.");
                 // Refresh the page after a short delay to allow the form submission to complete
