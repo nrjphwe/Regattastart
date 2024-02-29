@@ -442,19 +442,28 @@
         }
     </script>
     <script>
-        // Check if the video conversion complete was set 
-        var videoConversionComplete = <?php echo json_encode($videoConversionComplete); ?>; // Get the value from PHP
-        console.log("stopRecordingPressed value:", videoConversionComplete); // Log the value
-        if (videoConversionComplete)
+        function checkVideoCompletion() 
         {
-            $('#stop_recording_button_div').hide();
-            setTimeout(function() {
-                location.reload();
-            }, 1000); // 1000 milliseconds = 1 second
+            // Check if the video conversion complete was set 
+            var videoConversionComplete = <?php echo json_encode($videoConversionComplete); ?>; // Get the value from PHP
+            console.log(" Line 447: videoConversionComplete value:", videoConversionComplete); // Log the value
+            if (videoConversionComplete)
+            {
+                $('#stop_recording_button_div').hide();
+                setTimeout(function() {
+                    location.reload();
+                }, 1000); // 1000 milliseconds = 1 second
+            }
         }
+        // Call the checkVideoCompletion function initially
+        checkVideoCompletion();
+
+        // Call the checkVideoCompletion function every 30 seconds
+        var intervalId = setInterval(checkStatus, 30000); // Check every 30 seconds
     </script>
 
-    <script>/*
+    <script>
+    /*
         function checkStatus() 
         {
             $.ajax({
@@ -486,7 +495,7 @@
 
         // Call the checkStatus function every 30 seconds
         var intervalId = setInterval(checkStatus, 30000); // Check every 30 seconds
-        */
+    */
     </script> 
 </body>
 </html>
