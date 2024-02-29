@@ -402,19 +402,23 @@
     </div>
     <!-- JavaScript to automatically refresh the page after the "Stop Recording" button is pressed -->
     <script>
-        //var stopRecordingPressed = <?php echo json_encode($stopRecordingPressed); ?>; // Get the value from PHP
+        var stopRecordingPressed = <?php echo json_encode($stopRecordingPressed); ?>; // Get the value from PHP
 
-        function refreshPage() {
-            stopRecordingPressed = true;
-            // Set the value of the hidden input field
-            document.getElementById("stopRecordingPressed").value = "1"; // Set stopRecordingPressed value to 1
-            console.log("stopRecordingPressed value:", stopRecordingPressed); // Log the value
-            document.getElementById("stopRecordingButton").style.display = "none";
-            alert("Wait for the creation of the video, it takes som time. Please wait.");
-            // Refresh the page after a short delay to allow the form submission to complete
-            setTimeout(function() {
-                    location.reload();
-            }, 10000);
+        function refreshPage() 
+        {
+            // Wait until after the Stop_Recording button was pressed
+            if (stopRecordingPressed = true)
+            {
+                // Set the value of the hidden input field
+                document.getElementById("stopRecordingPressed").value = "1"; // Set stopRecordingPressed value to 1
+                console.log("stopRecordingPressed value:", stopRecordingPressed); // Log the value
+                document.getElementById("stopRecordingButton").style.display = "none";
+                alert("Wait for the creation of the video, it takes som time. Please wait.");
+                // Refresh the page after a short delay to allow the form submission to complete
+                setTimeout(function() {
+                        location.reload();
+                }, 10000);
+            }
         } 
 
         /*
@@ -458,7 +462,7 @@
                     }, 10000); // 10000 milliseconds = 10 second
                 }
             } else {
-                console.log(" Line 461: waiting for Stop_recording button to b pressed"); // Log the value
+                console.log(" Line 461: waiting for Stop_recording button to be pressed"); // Log the value
             }
         }
         // Call the checkVideoCompletion function initially
