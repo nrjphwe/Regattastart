@@ -38,6 +38,7 @@
         // Read the content of the status file
         $status = file_get_contents('/var/www/html/status.txt');
         return trim($status); // Remove any whitespace characters
+        error_log("Line 41, status: " . $status);
     }
 
     // Call the function to check the status
