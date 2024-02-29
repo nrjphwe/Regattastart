@@ -328,11 +328,12 @@
             <?php
                 // Retrieve the value of the session variable
                 $stopRecordingPressed = isset($_SESSION['stopRecordingPressed']) ? $_SESSION['stopRecordingPressed'] : false;
-                error_log("Line 327: video0 set to : $video0Exists");
-                error_log("Line 328: StopRecordingPressed set to : $stopRecordingPressed");
+                error_log("Line 331: video0 set to : $video0Exists");
+                error_log("Line 332: stopRecordingPressed set to : $stopRecordingPressed");
 
                 // Determine if the "Stop Recording" button should be visible
                 $showStopRecordingButton = $video0Exists && !$stopRecordingPressed;
+                error_log("Line 336: showStopRecordingButton set to : $showStopRecordingButton");
 
                 if ($num_video == 1) // which is valid for regattastart9 not selectable 
                 {
@@ -409,11 +410,11 @@
         function refreshPage() 
         {
             // Wait until after the Stop_Recording button was pressed
-            if (stopRecordingPressed = true)
+            if (stopRecordingPressed)
             {
                 // Set the value of the hidden input field
                 document.getElementById("stopRecordingPressed").value = "1"; // Set stopRecordingPressed value to 1
-                console.log("stopRecordingPressed value:", stopRecordingPressed); // Log the value
+                console.log("Line 416: stopRecordingPressed value:", stopRecordingPressed); // Log the value
                 document.getElementById("stopRecordingButton").style.display = "none";
                 alert("Wait for the creation of the video, it takes som time. Please wait.");
                 // Refresh the page after a short delay to allow the form submission to complete
@@ -442,7 +443,7 @@
             // Wait until after the Stop_Recording button was pressed
             if (stopRecordingPressed = true)
             {
-                console.log(" Line 457: stopRecordingPressed = true:", stopRecordingPressed = true); // Log the value
+                console.log(" Line 457: stopRecordingPressed :", stopRecordingPressed ); // Log the value
                 // Check if the video conversion complete was set (by regattastart9.py)
                 var videoConversionComplete = <?php echo json_encode($videoConversionComplete); ?>; // Get the value from PHP
                 console.log(" Line 460: videoConversionComplete value:", videoConversionComplete); // Log the value
@@ -451,7 +452,7 @@
                     location.reload(true);
                 }
             } else {
-                console.log(" Line 471: waiting for Stop_recording button to be pressed"); // Log the value
+                console.log(" Line 454: waiting for Stop_recording button to be pressed"); // Log the value
             }
         }
 
