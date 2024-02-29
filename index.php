@@ -451,9 +451,10 @@
             // Wait until after the Stop_Recording button was pressed
             if (stopRecordingPressed = true)
             {
+                console.log(" Line 454: stopRecordingPressed = true:", stopRecordingPressed = true); // Log the value
                 // Check if the video conversion complete was set (by regattastart9.py)
                 var videoConversionComplete = <?php echo json_encode($videoConversionComplete); ?>; // Get the value from PHP
-                console.log(" Line 452: videoConversionComplete value:", videoConversionComplete); // Log the value
+                console.log(" Line 457: videoConversionComplete value:", videoConversionComplete); // Log the value
                 if (videoConversionComplete)
                 {
                 /*
@@ -465,14 +466,14 @@
                     }, 3000); // 3000 milliseconds = 3 second
                 }
             } else {
-                console.log(" Line 461: waiting for Stop_recording button to be pressed"); // Log the value
+                console.log(" Line 469: waiting for Stop_recording button to be pressed"); // Log the value
             }
         }
         // Call the checkVideoCompletion function initially
         //checkVideoCompletion();
 
-        // Call the checkVideoCompletion function every 30 seconds
-        var intervalId = setInterval(checkVideoCompletion, 30000); // Check every 30 seconds
+        // Call the checkVideoCompletion function every 60 seconds
+        var intervalId = setInterval(checkVideoCompletion, 60000); // Check every 60 seconds
     </script>
 
     <script>
