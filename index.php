@@ -12,6 +12,8 @@
     // Check if video0.mp4 or video1.mp4 exists 
     $video0Exists = file_exists("images/video0.mp4");
     $video1Exists = file_exists("images/video1.mp4");
+    # initialize the sttus for Stp_recording button
+    $stopRecordingPressed = false;
 
     // Retrieve session data
     $formData = isset($_SESSION['form_data']) && is_array($_SESSION['form_data']) ? $_SESSION['form_data'] : [];
@@ -351,7 +353,7 @@
                     </div>';
                 } else {
                     // Log an error if $num_video is not equal to 1
-                    error_log("Line 314: $num_video is not 1");
+                    error_log("Line 354: $num_video is not 1");
                 }
             ?>
         </div>
@@ -443,19 +445,18 @@
             // Wait until after the Stop_Recording button was pressed
             if (stopRecordingPressed = true)
             {
-                console.log(" Line 457: stopRecordingPressed :", stopRecordingPressed ); // Log the value
+                console.log(" Line 446: stopRecordingPressed :", stopRecordingPressed ); // Log the value
                 // Check if the video conversion complete was set (by regattastart9.py)
                 var videoConversionComplete = <?php echo json_encode($videoConversionComplete); ?>; // Get the value from PHP
-                console.log(" Line 460: videoConversionComplete value:", videoConversionComplete); // Log the value
+                console.log(" Line 449: videoConversionComplete value:", videoConversionComplete); // Log the value
                 if (videoConversionComplete === 0)
                 {
                     location.reload(true);
                 }
             } else {
-                console.log(" Line 454: waiting for Stop_recording button to be pressed"); // Log the value
+                console.log(" Line 455: waiting for Stop_recording button to be pressed"); // Log the value
             }
         }
-
         // Call the checkVideoCompletion function every 60 seconds
         var intervalId = setInterval(checkVideoCompletion(), 60000); // Check every 60 seconds
     </script>
