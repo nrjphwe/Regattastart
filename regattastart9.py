@@ -31,6 +31,10 @@ photo_path = '/var/www/html/images/'
 ON = True
 OFF = False
 
+# reset the contents of the status variable, used for falgging that video1-conversion is complete. 
+with open('/var/www/html/status.txt', 'w') as status_file:
+    status_file.write("")
+
 # Global variable
 recording_stopped = False
 
