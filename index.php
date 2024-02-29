@@ -40,10 +40,13 @@
 
     // Call the function to check the status
     $videoStatus = checkVideoConversionStatus();
-    error_log("Line 43, VideoStatus: " . $videoStatus);
+    
 
     // Determine if the video conversion is complete
     $videoConversionComplete = ($videoStatus === 'complete');
+    if ($videoConversionComplete) {
+        error_log("Line 43, VideoStatus: " . $videoStatus);
+    }
 ?>
 <!-- Your HTML to display data from the session -->
 <!DOCTYPE html>
@@ -438,16 +441,15 @@
         function checkVideoCompletion() 
         {
             // Wait until after the Stop_Recording button was pressed
-            if (stopRecordingPressed == true)
+            if (stopRecordingPressed = true)
             {
                 console.log(" Line 457: stopRecordingPressed = true:", stopRecordingPressed = true); // Log the value
                 // Check if the video conversion complete was set (by regattastart9.py)
                 var videoConversionComplete = <?php echo json_encode($videoConversionComplete); ?>; // Get the value from PHP
                 console.log(" Line 460: videoConversionComplete value:", videoConversionComplete); // Log the value
-                if (videoConversionComplete)
+                if (videoConversionComplete === 0)
                 {
                     location.reload(true);
-                    break;
                 }
             } else {
                 console.log(" Line 471: waiting for Stop_recording button to be pressed"); // Log the value
