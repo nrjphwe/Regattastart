@@ -438,7 +438,7 @@
                 // Check if the video conversion complete was set (by regattastart9.py)
                 var videoConversionComplete = <?php echo json_encode($videoConversionComplete); ?>; // Get the value from PHP
                 console.log(" Line 440: videoConversionComplete value:", videoConversionComplete); // Log the value
-                if (videoConversionComplete === 0)
+                if (videoConversionComplete === 1)
                 {
                     location.reload(true);
                 }
