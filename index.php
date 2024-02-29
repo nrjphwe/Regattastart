@@ -471,7 +471,7 @@
         //checkVideoCompletion();
 
         // Call the checkVideoCompletion function every 60 seconds
-        var intervalId = setInterval(checkVideoCompletion, 60000); // Check every 60 seconds
+        var intervalId = setInterval(checkVideoCompletion(), 60000); // Check every 60 seconds
     </script>
 </body>
 </html>
