@@ -469,7 +469,7 @@
             }
         }
         // Call the checkVideoCompletion function initially
-        checkVideoCompletion();
+        //checkVideoCompletion();
 
         // Call the checkVideoCompletion function every 30 seconds
         var intervalId = setInterval(checkVideoCompletion, 30000); // Check every 30 seconds
