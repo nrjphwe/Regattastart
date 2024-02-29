@@ -46,7 +46,7 @@
     // Determine if the video conversion is complete
     $videoConversionComplete = ($videoStatus === 'complete');
     if ($videoConversionComplete) {
-        error_log("Line 47, VideoStatus: " . $videoStatus);
+        error_log("Line 49, VideoStatus: " . $videoStatus);
     }
 ?>
 <!-- Your HTML to display data from the session -->
