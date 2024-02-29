@@ -444,15 +444,21 @@
     <script>
         function checkVideoCompletion() 
         {
-            // Check if the video conversion complete was set 
-            var videoConversionComplete = <?php echo json_encode($videoConversionComplete); ?>; // Get the value from PHP
-            console.log(" Line 447: videoConversionComplete value:", videoConversionComplete); // Log the value
-            if (videoConversionComplete)
+            // Wait until after the Stop_Recording button was pressed
+            if (stopRecordingPressed = true)
             {
-                $('#stop_recording_button_div').hide();
-                setTimeout(function() {
-                    location.reload();
-                }, 1000); // 1000 milliseconds = 1 second
+                // Check if the video conversion complete was set (by regattastart9.py)
+                var videoConversionComplete = <?php echo json_encode($videoConversionComplete); ?>; // Get the value from PHP
+                console.log(" Line 452: videoConversionComplete value:", videoConversionComplete); // Log the value
+                if (videoConversionComplete)
+                {
+                    $('#stop_recording_button_div').hide();
+                    setTimeout(function() {
+                        location.reload();
+                    }, 10000); // 10000 milliseconds = 10 second
+                }
+            } else {
+                console.log(" Line 461: waiting for Stop_recording button to b pressed"); // Log the value
             }
         }
         // Call the checkVideoCompletion function initially
