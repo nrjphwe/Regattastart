@@ -449,6 +449,9 @@
                 }
             } else {
                 console.log(" Line 446: waiting for Stop_recording button to be pressed"); // Log the value
+                setTimeout(function() {
+                        location.reload();
+                }, 10000); // 10 sec
             }
         }
         // Call the checkVideoCompletion function every 60 seconds
