@@ -420,20 +420,6 @@
                 }, 10000);
             }
         } 
-
-        /*
-        // JavaScript to automatically refresh the page after a certain interval
-        function autoRefresh() {
-            // If the video file doesn't exist, refresh the page every 60 seconds
-            setInterval(function() {
-                location.reload();
-            }, 60000);
-        }
-
-        // Call the autoRefresh function after the page is loaded
-        window.onload = autoRefresh;
-        */
-
     </script>
     <!-- JavaScript to step frames in videos -->
     <script> // function to step frames 
@@ -469,8 +455,6 @@
                 }
             } else {
                 console.log(" Line 471: waiting for Stop_recording button to be pressed"); // Log the value
-                // Refresh the page and bypass the cache
-                location.reload(true);
             }
         }
 
