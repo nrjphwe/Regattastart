@@ -445,7 +445,7 @@
         // Check if the video conversion complete was set 
         var videoConversionComplete = <?php echo json_encode($videoConversionComplete); ?>; // Get the value from PHP
         console.log("stopRecordingPressed value:", videoConversionComplete); // Log the value
-        if videoConversionComplete 
+        if (videoConversionComplete)
         {
             $('#stop_recording_button_div').hide();
             setTimeout(function() {
