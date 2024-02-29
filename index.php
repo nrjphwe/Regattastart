@@ -435,6 +435,10 @@
             // Wait until after the Stop_Recording button was pressed
             if (stopRecordingPressed)
             {
+                // Refresh the page after a short delay to allow the form submission to complete
+                setTimeout(function() {
+                        location.reload();
+                }, 10000);
                 console.log(" Line 437: stopRecordingPressed :", stopRecordingPressed ); // Log the value
                 // Check if the video conversion complete was set (by regattastart9.py)
                 var videoConversionComplete = <?php echo json_encode($videoConversionComplete); ?>; // Get the value from PHP
