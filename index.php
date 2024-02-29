@@ -426,25 +426,13 @@
                 }, 10000);
             }
         } 
-    </script>
-    <!-- JavaScript to step frames in videos -->
-    <script> // function to step frames 
-        function stepFrame(videoNum, step) {
-            var video = document.getElementById('video' + videoNum);
-            if (video) {
-                video.pause();
-                video.currentTime += step * (1 / video.playbackRate/20); // 
-            }
-        }
-    </script>
-    <script>
         // Determine if the video conversion is complete by checking the variable $videoConversionComplete 
         // = ($videoStatus === 'complete'); If complete refresg page 
         // script to check if the VideoCompletion variable was set.
         function checkVideoCompletion() 
         {
             // Wait until after the Stop_Recording button was pressed
-            if (stopRecordingPressed = true)
+            if (stopRecordingPressed )
             {
                 console.log(" Line 446: stopRecordingPressed :", stopRecordingPressed ); // Log the value
                 // Check if the video conversion complete was set (by regattastart9.py)
@@ -460,6 +448,16 @@
         }
         // Call the checkVideoCompletion function every 60 seconds
         var intervalId = setInterval(checkVideoCompletion(), 60000); // Check every 60 seconds
+    </script>
+    <!-- JavaScript to step frames in videos -->
+    <script> // function to step frames 
+        function stepFrame(videoNum, step) {
+            var video = document.getElementById('video' + videoNum);
+            if (video) {
+                video.pause();
+                video.currentTime += step * (1 / video.playbackRate/20); // 
+            }
+        }
     </script>
 </body>
 </html>
