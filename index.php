@@ -414,27 +414,24 @@
     <script>
         var video0Exist= <?php echo json_encode($video0Exists); ?>; // Get the value from PHP
         var stopRecordingPressed = <?php echo json_encode($stopRecordingPressed); ?>; // Get the value from PHP
-        console.log("Line 416: stopRecordingPressed value:", stopRecordingPressed); // Log the value
+        var video1Exist= <?php echo json_encode($video1Exists); ?>; // Get the value from PHP
 
+        // This function executes after the stop_recording button on Line 346 is pushed
         function refreshPage() 
         {
-            // Wait until after the video0Exist
-            if (video0Exist)
+            // Wait until after the Stop_Recording button was pressed
+            if (stopRecordingPressed)
             {
-                // Wait until after the Stop_Recording button was pressed
-                console.log("Line 425: stopRecordingPressed value:", stopRecordingPressed); // Log the value
-                if (stopRecordingPressed)
-                {
-                    // Set the value of the hidden input field
-                    document.getElementById("stopRecordingPressed").value = "1"; // Set stopRecordingPressed value to 1
-                    console.log("Line 420: stopRecordingPressed value:", stopRecordingPressed); // Log the value
-                    document.getElementById("stopRecordingButton").style.display = "none";
-                    alert("Wait for the creation of the video, it takes som time. Please wait.");
-                    // Refresh the page after a short delay to allow the form submission to complete
-                    setTimeout(function() {
-                            location.reload();
-                    }, 10000);
-                }
+                // Set the value of the hidden input field
+                document.getElementById("stopRecordingPressed").value = "1"; // Set stopRecordingPressed value to 1
+                console.log("Line 427: stopRecordingPressed value:", stopRecordingPressed); // Log the value
+                document.getElementById("stopRecordingButton").style.display = "none";
+
+                alert("Wait for the creation of the video, it takes som time. Please wait.");
+                // Refresh the page after a short delay to allow the form submission to complete
+                setTimeout(function() {
+                    window.location.reload();
+                }, 1000); // 1 sec
             }
         } 
         // Determine if the video conversion is complete by checking the variable $videoConversionComplete 
@@ -442,30 +439,35 @@
         // script to check if the VideoCompletion variable was set.
         function checkVideoCompletion() 
         {
-            // Wait until after the video0Exist
+            // Do not execute after video1Exist
             if (video0Exist)
             {
-                // Wait until after the Stop_Recording button was pressed
-                if (stopRecordingPressed)
+            } else {
+                // Wait until after the video0Exist
+                if (video0Exist)
                 {
-                    // Refresh the page after a short delay to allow the form submission to complete
-                    setTimeout(function() {
-                            location.reload();
-                    }, 10000);
-                    console.log(" Line 455: stopRecordingPressed :", stopRecordingPressed ); // Log the value
-
-                    // Check if the video conversion complete was set (by regattastart9.py)
-                    var videoConversionComplete = <?php echo json_encode($videoConversionComplete); ?>; // Get the value from PHP
-                    console.log(" Line 458: videoConversionComplete value:", videoConversionComplete); // Log the value
-                    if (videoConversionComplete === 1)
+                    // Wait until after the Stop_Recording button was pressed
+                    if (stopRecordingPressed)
                     {
-                        location.reload(true);
+                        // Refresh the page after a short delay to allow the form submission to complete
+                        setTimeout(function() {
+                                location.reload();
+                        }, 10000);
+                        console.log(" Line 455: stopRecordingPressed :", stopRecordingPressed ); // Log the value
+
+                        // Check if the video conversion complete was set (by regattastart9.py)
+                        var videoConversionComplete = <?php echo json_encode($videoConversionComplete); ?>; // Get the value from PHP
+                        console.log(" Line 458: videoConversionComplete value:", videoConversionComplete); // Log the value
+                        if (videoConversionComplete === 1)
+                        {
+                            location.reload(true);
+                        }
+                    } else {
+                        console.log(" Line 464: waiting for Stop_recording button to be pressed"); // Log the value
+                        setTimeout(function() {
+                                location.reload();
+                        }, 10000); // 10 sec
                     }
-                } else {
-                    console.log(" Line 464: waiting for Stop_recording button to be pressed"); // Log the value
-                    setTimeout(function() {
-                            location.reload();
-                    }, 10000); // 10 sec
                 }
             }
         }
