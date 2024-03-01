@@ -471,7 +471,7 @@
                 // Wait until after the video0Exist
                 if (video0Exist)
                 {
-                    var intervalId = setInterval(checkVideoCompletion(), 60000); // Check every 60 seconds
+                    var intervalId = setInterval(checkVideoCompletion, 60000); // Check every 60 seconds
                 }
             }
     
