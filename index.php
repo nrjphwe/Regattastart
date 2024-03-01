@@ -425,21 +425,10 @@
                 document.getElementById("stopRecordingPressed").value = "1"; // Set stopRecordingPressed value to 1
                 console.log("Line 427: stopRecordingPressed value:", stopRecordingPressed); // Log the value
                 document.getElementById("stopRecordingButton").style.display = "none";
-                // Disable refresh for 3 seconds, and the refresh the page after a short delay to allow the form submission to complete 
-                setTimeout(function() {
-                    // Disable refresh by replacing window.location.reload with an empty function
-                    window.location.reload = function(){};
-                    // Display alert indicating that refreshing is disabled
-                    alert("Refreshing is disabled for 3 seconds. Please wait.");
-                    
-                    // After 3 seconds, re-enable refresh
-                    setTimeout(function() {
-                        // Reset window.location.reload to its default behavior
-                        window.location.reload = function(){ location.reload(); };
-                        // Display alert indicating that refreshing is now enabled
-                        alert("Refreshing is now enabled.");
-                    }, 3000); // 3 seconds
-                }, 0);
+                // refresh after 30 seconds
+                setInterval(function() {
+                    location.reload();
+                }, 30000); // 30 sec
             }
         } 
         // Determine if the video1 conversion is completed by checking the variable $videoConversionComplete 
