@@ -477,16 +477,14 @@
         // Call the checkVideoCompletion function every 60 seconds
         // But do not execute after video1Exist
         var video1Exist = <?php echo json_encode($video1Exists); ?>; // Get the value from PHP
-        if (video1Exist)
-            {
-            } else {
-                // Wait until after the video0Exist
-                if (video0Exist)
-                {
-                    var intervalId = setIntervall(checkVideoCompletion, 60000); // Check every 60 seconds
-                }
+        if (video1Exist) {
+            // Video1 exists
+        } else {
+            // Wait until after the video0 exists
+            if (video0Exist) {
+                var intervalId = setInterval(checkVideoCompletion, 60000); // Check every 60 seconds
             }
-
+        }
     </script>
     <!-- JavaScript to step frames in videos -->
     <script> // function to step frames 
