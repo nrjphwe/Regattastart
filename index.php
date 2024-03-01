@@ -414,7 +414,7 @@
     <script>
         
         var stopRecordingPressed = <?php echo json_encode($stopRecordingPressed); ?>; // Get the value from PHP
-        var video1Exist= <?php echo json_encode($video1Exists); ?>; // Get the value from PHP
+        
 
         // This function executes after the stop_recording button on Line 346 is pushed
         function refreshPage() 
@@ -462,8 +462,10 @@
                 }, 10000); // 10 sec
             }
         }
+        
         // Call the checkVideoCompletion function every 60 seconds
         // But do not execute after video1Exist
+        var video1Exist= <?php echo json_encode($video1Exists); ?>; // Get the value from PHP
         if (video1Exist)
             {
             } else {
