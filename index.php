@@ -13,7 +13,9 @@
     $video0Exists = file_exists("images/video0.mp4");
     $video1Exists = file_exists("images/video1.mp4");
     error_log("Line 15, video0Exists =" . $video0Exists);
-    # initialize the sttus for Stp_recording button
+    error_log("Line 16, video1Exists =" . $video1Exists);
+
+    # initialize the status for Stop_recording button
     $stopRecordingPressed = false;
 
     // Retrieve session data
@@ -101,7 +103,6 @@
         .button-container {
             text-align: center;
         }
-
         .button-container button {
             display: inline-block;
             margin: 5px;
@@ -113,7 +114,6 @@
         echo "<p style='font-size:12px'>";
         echo " First start at: " . $start_time;
         echo ", Number of starts= $num_starts";
-       
         if ($num_starts == 2) {
             if (isset($dur_between_starts)) {
                 echo ", Duration between starts: $dur_between_starts min";
@@ -304,11 +304,10 @@
                     {
                         $video_name = 'images/video0.mp4';
                         if ($video0Exists) {
-                            //error_log("Line 282: $video_name is available");
                             echo "<h4> Video från 5 min före start och 2 min efter sista start</h4>";
                             echo '<video id="video0" width = "720" height="480" controls><source src= ' . $video_name . ' type="video/mp4"></video><p>';
                         } else {
-                            error_log("Line 269: $video_name do not exists");
+                            error_log("Line 310: $video_name do not exists");
                         }
                     }
                 } else {
