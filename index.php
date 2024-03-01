@@ -416,21 +416,20 @@
         var stopRecordingPressed = <?php echo json_encode($stopRecordingPressed); ?>; // Get the value from PHP
 
         // This function executes AFTER the stop_recording button on Line 346 is pushed
-        function refreshPage() 
-        {
+        function refreshPage() {
             // Wait until after the Stop_Recording button was pressed
-            if (stopRecordingPressed)
-            {
+            if (stopRecordingPressed) {
                 // Set the value of the hidden input field
                 document.getElementById("stopRecordingPressed").value = "1"; // Set stopRecordingPressed value to 1
                 console.log("Line 427: stopRecordingPressed value:", stopRecordingPressed); // Log the value
                 document.getElementById("stopRecordingButton").style.display = "none";
-                // refresh after 30 seconds
-                setInterval(function() {
+                
+                // Reload the page after 30 seconds, but only do it once
+                setTimeout(function() {
                     location.reload();
                 }, 30000); // 30 sec
             }
-        } 
+        }
         // Determine if the video1 conversion is completed by checking the variable $videoConversionComplete 
         // = ($videoStatus === 'complete'); If complete refresg page 
         // script to check if the VideoCompletion variable was set.
