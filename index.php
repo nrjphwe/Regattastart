@@ -427,11 +427,16 @@
                 document.getElementById("stopRecordingButton").style.display = "none";
                 // Disable refresh for 3 seconds, and the refresh the page after a short delay to allow the form submission to complete 
                 setTimeout(function() {
+                    // Disable refresh by replacing window.location.reload with an empty function
                     window.location.reload = function(){};
+                    // Display alert indicating that refreshing is disabled
                     alert("Refreshing is disabled for 3 seconds. Please wait.");
+                    
+                    // After 3 seconds, re-enable refresh
                     setTimeout(function() {
-                        // Re-enable refresh after 3 seconds
+                        // Reset window.location.reload to its default behavior
                         window.location.reload = function(){ location.reload(); };
+                        // Display alert indicating that refreshing is now enabled
                         alert("Refreshing is now enabled.");
                     }, 3000); // 3 seconds
                 }, 0);
