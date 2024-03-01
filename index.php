@@ -362,7 +362,7 @@
                 }
             ?>
         </div>
-        <!-- Display remaining videos -->
+        <!-- PHP script to Display remaining videos -->
         <div style="text-align: center;" class="w3-panel w3-pale-red">
             <?php
                 if ($video0Exists)
@@ -383,11 +383,11 @@
                                     </div>';
                             } else {
                                 // Log an error if the video file doesn't exist
-                                error_log("Line 340: video $x does not exist");
+                                error_log("Line 386: video $x does not exist");
                             }
                         }
                     } else {
-                        error_log("Line 344: Video1 do not exist");
+                        error_log("Line 390: Video1 do not exist");
                     }
                 }
             ?>
@@ -412,23 +412,29 @@
     </div>
     <!-- JavaScript to automatically refresh the page after the "Stop Recording" button is pressed -->
     <script>
+        var video0Exist= <?php echo json_encode($video0Exists); ?>; // Get the value from PHP
         var stopRecordingPressed = <?php echo json_encode($stopRecordingPressed); ?>; // Get the value from PHP
-        console.log("Line 411: stopRecordingPressed value:", stopRecordingPressed); // Log the value
+        console.log("Line 416: stopRecordingPressed value:", stopRecordingPressed); // Log the value
 
         function refreshPage() 
         {
-            // Wait until after the Stop_Recording button was pressed
-            if (stopRecordingPressed)
+            // Wait until after the video0Exist
+            if (video0Exist)
             {
-                // Set the value of the hidden input field
-                document.getElementById("stopRecordingPressed").value = "1"; // Set stopRecordingPressed value to 1
-                console.log("Line 420: stopRecordingPressed value:", stopRecordingPressed); // Log the value
-                document.getElementById("stopRecordingButton").style.display = "none";
-                alert("Wait for the creation of the video, it takes som time. Please wait.");
-                // Refresh the page after a short delay to allow the form submission to complete
-                setTimeout(function() {
-                        location.reload();
-                }, 10000);
+                // Wait until after the Stop_Recording button was pressed
+                console.log("Line 425: stopRecordingPressed value:", stopRecordingPressed); // Log the value
+                if (stopRecordingPressed)
+                {
+                    // Set the value of the hidden input field
+                    document.getElementById("stopRecordingPressed").value = "1"; // Set stopRecordingPressed value to 1
+                    console.log("Line 420: stopRecordingPressed value:", stopRecordingPressed); // Log the value
+                    document.getElementById("stopRecordingButton").style.display = "none";
+                    alert("Wait for the creation of the video, it takes som time. Please wait.");
+                    // Refresh the page after a short delay to allow the form submission to complete
+                    setTimeout(function() {
+                            location.reload();
+                    }, 10000);
+                }
             }
         } 
         // Determine if the video conversion is complete by checking the variable $videoConversionComplete 
@@ -436,26 +442,30 @@
         // script to check if the VideoCompletion variable was set.
         function checkVideoCompletion() 
         {
-            // Wait until after the Stop_Recording button was pressed
-            if (stopRecordingPressed)
+            // Wait until after the video0Exist
+            if (video0Exist)
             {
-                // Refresh the page after a short delay to allow the form submission to complete
-                setTimeout(function() {
-                        location.reload();
-                }, 10000);
-                console.log(" Line 437: stopRecordingPressed :", stopRecordingPressed ); // Log the value
-                // Check if the video conversion complete was set (by regattastart9.py)
-                var videoConversionComplete = <?php echo json_encode($videoConversionComplete); ?>; // Get the value from PHP
-                console.log(" Line 440: videoConversionComplete value:", videoConversionComplete); // Log the value
-                if (videoConversionComplete === 1)
+                // Wait until after the Stop_Recording button was pressed
+                if (stopRecordingPressed)
                 {
-                    location.reload(true);
+                    // Refresh the page after a short delay to allow the form submission to complete
+                    setTimeout(function() {
+                            location.reload();
+                    }, 10000);
+                    console.log(" Line 437: stopRecordingPressed :", stopRecordingPressed ); // Log the value
+                    // Check if the video conversion complete was set (by regattastart9.py)
+                    var videoConversionComplete = <?php echo json_encode($videoConversionComplete); ?>; // Get the value from PHP
+                    console.log(" Line 440: videoConversionComplete value:", videoConversionComplete); // Log the value
+                    if (videoConversionComplete === 1)
+                    {
+                        location.reload(true);
+                    }
+                } else {
+                    console.log(" Line 446: waiting for Stop_recording button to be pressed"); // Log the value
+                    setTimeout(function() {
+                            location.reload();
+                    }, 10000); // 10 sec
                 }
-            } else {
-                console.log(" Line 446: waiting for Stop_recording button to be pressed"); // Log the value
-                setTimeout(function() {
-                        location.reload();
-                }, 10000); // 10 sec
             }
         }
         // Call the checkVideoCompletion function every 60 seconds
