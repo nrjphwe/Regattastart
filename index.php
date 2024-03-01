@@ -12,6 +12,7 @@
     // Check if video0.mp4 or video1.mp4 exists 
     $video0Exists = file_exists("images/video0.mp4");
     $video1Exists = file_exists("images/video1.mp4");
+    error_log("Line 15, video0Exists =" . $video0Exists);
     # initialize the sttus for Stp_recording button
     $stopRecordingPressed = false;
 
@@ -334,7 +335,7 @@
 
                 if ($num_video == 1) // which is valid for regattastart9 not selectable 
                 {
-                    if ($video0Exists) // Initially the video0 will show up
+                    if ($video0Exists) // stop-recording button should noy be visible unless the video0 exists
                     {
                         if ($stopRecordingPressed) // If button was pressed hide button
                         {
@@ -412,14 +413,12 @@
     </div>
     <!-- JavaScript to automatically refresh the page after the "Stop Recording" button is pressed -->
     <script>
-        
+        var video0Exist= <?php echo json_encode($video0Exists); ?>; // Get the value from PHP
         var stopRecordingPressed = <?php echo json_encode($stopRecordingPressed); ?>; // Get the value from PHP
-        
 
         // This function executes after the stop_recording button on Line 346 is pushed
         function refreshPage() 
         {
-            var video0Exist= <?php echo json_encode($video0Exists); ?>; // Get the value from PHP
             // Wait until after the Stop_Recording button was pressed
             if (stopRecordingPressed)
             {
@@ -447,25 +446,25 @@
             // Wait until after the Stop_Recording button was pressed
             if (stopRecordingPressed)
             {
-                console.log(" Line 450: stopRecordingPressed :", stopRecordingPressed ); // Log the value
+                console.log(" Line 449: stopRecordingPressed :", stopRecordingPressed ); // Log the value
                 // Check if the video conversion complete was set (by regattastart9.py)
                 var videoConversionComplete = <?php echo json_encode($videoConversionComplete); ?>; // Get the value from PHP
-                console.log(" Line 453: videoConversionComplete value:", videoConversionComplete); // Log the value
+                console.log(" Line 452: videoConversionComplete value:", videoConversionComplete); // Log the value
                 if (videoConversionComplete === 1)
                 {
                     location.reload(true);
                 }
             } else {
-                console.log(" Line 461: waiting for Stop_recording button to be pressed"); // Log the value
+                console.log(" Line 458: waiting for Stop_recording button to be pressed"); // Log the value
                 setTimeout(function() {
                         location.reload();
                 }, 10000); // 10 sec
             }
         }
-        
+
         // Call the checkVideoCompletion function every 60 seconds
         // But do not execute after video1Exist
-        var video1Exist= <?php echo json_encode($video1Exists); ?>; // Get the value from PHP
+        var video1Exist = <?php echo json_encode($video1Exists); ?>; // Get the value from PHP
         if (video1Exist)
             {
             } else {
