@@ -331,30 +331,34 @@
             <?php
                 // Retrieve the value of the session variable
                 $stopRecordingPressed = isset($_SESSION['stopRecordingPressed']) ? $_SESSION['stopRecordingPressed'] : false;
-                error_log("Line 331: video0 set to : $video0Exists");
-                error_log("Line 332: stopRecordingPressed set to : $stopRecordingPressed");
-
-                // Determine if the "Stop Recording" button should be visible
-                $showStopRecordingButton = $video0Exists && !$stopRecordingPressed;
-                error_log("Line 336: showStopRecordingButton set to : $showStopRecordingButton");
 
                 if ($num_video == 1) // which is valid for regattastart9 not selectable 
                 {
-                    if ($showStopRecordingButton) {
-                        echo '<div id="stopRecordingButtonDiv" style="display: block;">'; // Display the div
+                    if ($video0Exists) // Initially the video0 will show up
+                    {
+                        if ($stopRecordingPressed) // If button was pressed hide button
+                        {
+                            echo '<div id="stopRecordingButtonDiv" style="display: none;">'; // Hide the div
+                        } else 
+                        {
+                            echo '<div id="stopRecordingButtonDiv" style="display: block;">'; // Display the div
+                            echo '
+                                <form id="stopRecordingForm" action="' . htmlspecialchars($_SERVER["PHP_SELF"]) . '" method="post" onsubmit="return refreshPage()">
+                                    <input type="hidden" name="stop_recording" value="true">
+                                    <input type="hidden" name="stopRecordingPressed" id="stopRecordingPressed" value="0"> <!-- Hidden input field for stopRecordingPressed -->
+                                    <input type="submit" id="stopRecordingButton" value="Stop Recording">
+                                </form>
+                            </div>';
+                        }
+                        //  "Stop Recording" button not yet visible
+                        error_log("Line 353: stopRecordingPressed set to : $stopRecordingPressed");
                     } else {
-                        echo '<div id="stopRecordingButtonDiv" style="display: none;">'; // Hide the div
+                       // Log an information that video0 is not ready
+                       error_log("Line 357 video0 is not yet ready, var video0Exists= $video0Exists ");
                     }
-                    echo '
-                        <form id="stopRecordingForm" action="' . htmlspecialchars($_SERVER["PHP_SELF"]) . '" method="post" onsubmit="return refreshPage()">
-                            <input type="hidden" name="stop_recording" value="true">
-                            <input type="hidden" name="stopRecordingPressed" id="stopRecordingPressed" value="0"> <!-- Hidden input field for stopRecordingPressed -->
-                            <input type="submit" id="stopRecordingButton" value="Stop Recording">
-                        </form>
-                    </div>';
                 } else {
                     // Log an error if $num_video is not equal to 1
-                    error_log("Line 354: $num_video is not 1");
+                    error_log("Line 361 num_video = $num_video which is not 1");
                 }
             ?>
         </div>
