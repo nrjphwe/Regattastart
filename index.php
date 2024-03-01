@@ -416,7 +416,7 @@
         var video0Exist= <?php echo json_encode($video0Exists); ?>; // Get the value from PHP
         var stopRecordingPressed = <?php echo json_encode($stopRecordingPressed); ?>; // Get the value from PHP
 
-        // This function executes after the stop_recording button on Line 346 is pushed
+        // This function executes AFTER the stop_recording button on Line 346 is pushed
         function refreshPage() 
         {
             // Wait until after the Stop_Recording button was pressed
@@ -438,7 +438,7 @@
                 }, 0);
             }
         } 
-        // Determine if the video conversion is complete by checking the variable $videoConversionComplete 
+        // Determine if the video1 conversion is completed by checking the variable $videoConversionComplete 
         // = ($videoStatus === 'complete'); If complete refresg page 
         // script to check if the VideoCompletion variable was set.
         function checkVideoCompletion() 
@@ -474,6 +474,7 @@
                     var intervalId = setInterval(checkVideoCompletion(), 60000); // Check every 60 seconds
                 }
             }
+    
     </script>
     <!-- JavaScript to step frames in videos -->
     <script> // function to step frames 
