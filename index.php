@@ -452,16 +452,17 @@
                     setTimeout(function() {
                             location.reload();
                     }, 10000);
-                    console.log(" Line 437: stopRecordingPressed :", stopRecordingPressed ); // Log the value
+                    console.log(" Line 455: stopRecordingPressed :", stopRecordingPressed ); // Log the value
+
                     // Check if the video conversion complete was set (by regattastart9.py)
                     var videoConversionComplete = <?php echo json_encode($videoConversionComplete); ?>; // Get the value from PHP
-                    console.log(" Line 440: videoConversionComplete value:", videoConversionComplete); // Log the value
+                    console.log(" Line 458: videoConversionComplete value:", videoConversionComplete); // Log the value
                     if (videoConversionComplete === 1)
                     {
                         location.reload(true);
                     }
                 } else {
-                    console.log(" Line 446: waiting for Stop_recording button to be pressed"); // Log the value
+                    console.log(" Line 464: waiting for Stop_recording button to be pressed"); // Log the value
                     setTimeout(function() {
                             location.reload();
                     }, 10000); // 10 sec
