@@ -456,7 +456,7 @@
             } else {
                 console.log(" Line 458: waiting for Stop_recording button to be pressed"); // Log the value
                 setIntervall(function() {
-                        location.reload();
+                    location.reload();
                 }, 30000); // 30 sec
             }
         }
