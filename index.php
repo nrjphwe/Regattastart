@@ -42,6 +42,7 @@
     // script will update a status file to indicate that the conversion is finished.
     function checkVideoConversionStatus() {
         // Read the content of the status file
+        sleep(3);
         $status = file_get_contents('/var/www/html/status.txt');
         error_log("Line 43, check video conversion status: " . $status);
         return trim($status); // Remove any whitespace characters
