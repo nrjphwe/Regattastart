@@ -448,15 +448,15 @@
         function checkVideoCompletion() {
             // Wait until after the Stop_Recording button was pressed
             if (stopRecordingPressed){
-                console.log(" Line 466: stopRecordingPressed :", stopRecordingPressed ); // Log the value
+                console.log(" Line 451: stopRecordingPressed :", stopRecordingPressed ); // Log the value
                 // Check if the video conversion complete was set (by regattastart9.py)
                 var videoConversionComplete = <?php echo json_encode($videoConversionComplete); ?>; // Get the value from PHP
-                console.log(" Line 469: videoConversionComplete value:", videoConversionComplete); // Log the value
+                console.log(" Line 454: videoConversionComplete value:", videoConversionComplete); // Log the value
                 if (videoConversionComplete === 1){
                     location.reload(true);
                 }
             } else {
-                console.log(" Line 474: waiting for Stop_recording button to be pressed"); // Log the value
+                console.log(" Line 459: waiting for Stop_recording button to be pressed"); // Log the value
             }
         }
 
