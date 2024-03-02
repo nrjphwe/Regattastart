@@ -350,9 +350,10 @@
                                     <input type="submit" id="stopRecordingButton" value="Stop Recording">
                                 </form>
                             </div>';
+                            //  "Stop Recording" button not yet visible
+                            error_log("Line 354: stopRecordingPressed set to : $stopRecordingPressed");
                         }
-                        //  "Stop Recording" button not yet visible
-                        error_log("Line 353: stopRecordingPressed set to : $stopRecordingPressed");
+                        
                     } else {
                        // Log an information that video0 is not ready
                        error_log("Line 357 video0 is not yet ready, var video0Exists= $video0Exists ");
