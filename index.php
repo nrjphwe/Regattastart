@@ -366,15 +366,16 @@
         <!-- PHP script to display remaining videos -->
         <div style="text-align: center;" class="w3-panel w3-pale-red">
             <?php
-                if ($video0Exists)
-                {
-                    if ($stopRecordingPressed)} // wait with check until after the stop-recording button was pressed
-                        if ($video1Exists)
-                        {
+                if ($video0Exists){
+                    // wait with check until after the stop-recording button was pressed
+                    if ($stopRecordingPressed === true)
+                    {
+                        if ($video1Exists){
                             for ($x = 1; $x <= $num_video; $x++) {
                                 $video_name = 'images/video' . $x . '.mp4';
                                 // error_log("Line 307: Loop to display video = $video_name");
-                                if (file_exists($video_name)) {
+                                if (file_exists($video_name)) 
+                                {
                                     // Display the video
                                     echo "<h3> Finish video, this is video $x for the finish</h3>";
                                     echo '<video id="video' . $x . '" width="720" height="480" controls>
