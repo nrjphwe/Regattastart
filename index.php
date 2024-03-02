@@ -15,6 +15,9 @@
     error_log("Line 15, video0Exists =" . $video0Exists);
     error_log("Line 16, video1Exists =" . $video1Exists);
 
+    # initialize the conversionstatus variable 
+    $videoConversionComplete = false;
+
     # initialize the status for Stop_recording button
     $stopRecordingPressed = false;
 
@@ -438,6 +441,8 @@
         // But do not execute after video1Exist
         var video0Exist= <?php echo json_encode($video0Exists); ?>; // Get the value from PHP
         var video1Exist = <?php echo json_encode($video1Exists); ?>; // Get the value from PHP
+        var videoConversionComplete = <?php echo json_encode($videoConversionComplete); ?>; // Get the value from PHP
+
 
         function reload_page() {
             setInterval(function() {
@@ -453,7 +458,6 @@
             if (stopRecordingPressed){
                 console.log(" Line 451: stopRecordingPressed :", stopRecordingPressed ); // Log the value
                 // Check if the video conversion complete was set (by regattastart9.py)
-                var videoConversionComplete = <?php echo json_encode($videoConversionComplete); ?>; // Get the value from PHP
                 console.log(" Line 454: videoConversionComplete value:", videoConversionComplete); // Log the value
                 if (videoConversionComplete === 1){
                     location.reload(true);
