@@ -351,7 +351,7 @@
                                 </form>
                             </div>';
                             //  "Stop Recording" button not yet visible
-                            error_log("Line 354: stopRecordingPressed set to : $stopRecordingPressed");
+                            error_log("Line 354: stopRecordingPressed not yet pressed");
                         }
                     } else {
                        // Log an information that video0 is not ready
@@ -458,7 +458,7 @@
         }
 
 // end of java functions
-        // var stopRecordingPressed = <?php echo json_encode($stopRecordingPressed); ?>; // Get the value from PHP
+        var stopRecordingPressed = <?php echo json_encode($stopRecordingPressed); ?>; // Get the value from PHP
         
         // Call the checkVideoCompletion function every 60 seconds
         // But do not execute after video1Exist
