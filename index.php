@@ -15,9 +15,6 @@
     error_log("Line  15: video0Exists =" . $video0Exists);
     error_log("Line  16: video1Exists =" . $video1Exists);
 
-    # initialize the conversionstatus variable 
-    $videoConversionComplete = false;
-
     # initialize the status for Stop_recording button
     $stopRecordingPressed = false;
 
@@ -40,12 +37,15 @@
 <?php //  Regattastart9.py communicates to the PHP program (index.php) that the video1.mp4 is ready
     // After the video conversion process is complete (video1.mp4 is created), the Python 
     // script will update a status file to indicate that the conversion is finished.
-    function checkVideoConversionStatus() {
+    function video1Completed() {
         // Read the content of the status file
-        sleep(3);
-        $status = file_get_contents('/var/www/html/status.txt');
-        error_log("Line 43, check video conversion status: " . $status);
-        return trim($status); // Remove any whitespace characters
+        $status = trim(file_get_contents('/var/www/html/status.txt'));
+        error_log("Line 46, if video1 was completed: " . $status);
+        if ($status === 'complete'){
+            return true; // Remove any whitespace characters
+         } else {
+            return false;
+        }
     }
 
     if ($stopRecordingPressed){
@@ -421,6 +421,7 @@
     </div>
     <!-- JavaScript to automatically refresh the page after the "Stop Recording" button is pressed -->
     <script>
+
         // This function executes AFTER the stop_recording button on Line 349 is pushed
         function refreshPage() {
             // Wait until after the Stop_Recording button was pressed
@@ -430,7 +431,7 @@
                 document.getElementById("stopRecordingPressed").value = "1"; // Set stopRecordingPressed value to 1
                 console.log("Line 427: stopRecordingPressed value:", stopRecordingPressed); // Log the value
                 document.getElementById("stopRecordingButton").style.display = "none";
-                
+                stopRecordingPressed = true;
                 // Reload the page after 30 seconds, but only do it once
                 setTimeout(function() {
                     location.reload();
@@ -438,14 +439,10 @@
             }
         }
 
-        var stopRecordingPressed = <?php echo json_encode($stopRecordingPressed); ?>; // Get the value from PHP
-        // Call the checkVideoCompletion function every 60 seconds
-        // But do not execute after video1Exist
+        //var stopRecordingPressed = <?php echo json_encode($stopRecordingPressed); ?>; // Get the value from PHP
         var video0Exist= <?php echo json_encode($video0Exists); ?>; // Get the value from PHP
         var video1Exist = <?php echo json_encode($video1Exists); ?>; // Get the value from PHP
-        var videoConversionComplete = <?php echo json_encode($videoConversionComplete); ?>; // Get the value from PHP
-
-
+    
         function reload_page() {
             setInterval(function() {
                 location.reload();
@@ -453,19 +450,15 @@
         }
 
         // Determine if the video1 conversion is completed by checking the variable $videoConversionComplete 
-        // = ($videoStatus === 'complete'); If complete refresg page 
-        // script to check if the VideoCompletion variable was set.
+        // = ($videoStatus === 'complete'); If complete refresh page 
+        // script to check if the Video1Completion variable was set.
         function checkVideoCompletion() {
-            // Wait until after the Stop_Recording button was pressed
-            if (stopRecordingPressed){
-                console.log(" Line 451: stopRecordingPressed :", stopRecordingPressed ); // Log the value
-                // Check if the video conversion complete was set (by regattastart9.py)
-                console.log(" Line 454: videoConversionComplete value:", videoConversionComplete); // Log the value
-                if (videoConversionComplete === 1){
-                    location.reload(true);
-                }
-            } else {
-                console.log(" Line 459: waiting for Stop_recording button to be pressed"); // Log the value
+            // Check if the video1 was completed (by regattastart9.py)
+            location.reload(true);
+            var video1Completed = <?php echo json_encode($video1Completed); ?>; // Get the value from PHP
+            console.log(" Line 465: video1Completed", video1Completed); // Log the value
+            if (video1Completed){
+                location.reload(true);
             }
         }
 
