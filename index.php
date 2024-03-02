@@ -46,9 +46,10 @@
         error_log("Line 43, check video conversion status: " . $status);
         return trim($status); // Remove any whitespace characters
     }
+
     if ($stopRecordingPressed){
         // Call the function to check the status
-        $videoStatus = checkVideoConversionStatus;  // () or not?
+        $videoStatus = checkVideoConversionStatus();  // () or not?
         // Determine if the video conversion is complete
         $videoConversionComplete = ($videoStatus === 'complete');
         if ($videoConversionComplete) {
