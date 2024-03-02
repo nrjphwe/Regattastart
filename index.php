@@ -413,9 +413,6 @@
     </div>
     <!-- JavaScript to automatically refresh the page after the "Stop Recording" button is pressed -->
     <script>
-        var video0Exist= <?php echo json_encode($video0Exists); ?>; // Get the value from PHP
-        var stopRecordingPressed = <?php echo json_encode($stopRecordingPressed); ?>; // Get the value from PHP
-
         // This function executes AFTER the stop_recording button on Line 349 is pushed
         function refreshPage() {
             // Wait until after the Stop_Recording button was pressed
@@ -450,24 +447,25 @@
                 }
             } else {
                 console.log(" Line 458: waiting for Stop_recording button to be pressed"); // Log the value
-                setInterval(function() {
-                    location.reload();
-                }, 30000); // 30 sec
             }
         }
 
+        function reload_page() 
+        {
+            setInterval(function() {
+                    location.reload();
+                }, 30000); // 30 sec
+        }
+
+// end of java functions
+        // var stopRecordingPressed = <?php echo json_encode($stopRecordingPressed); ?>; // Get the value from PHP
+        
         // Call the checkVideoCompletion function every 60 seconds
         // But do not execute after video1Exist
+        var video0Exist= <?php echo json_encode($video0Exists); ?>; // Get the value from PHP
         var video1Exist = <?php echo json_encode($video1Exists); ?>; // Get the value from PHP
-        if (video1Exist)
-
-         // Call the checkStatus function initially
-        checkVideoCompletion();
-
-        // Call the checkVideoCompletion function every 60 seconds
-        // But do not execute after video1Exist
-        var video1Exist = <?php echo json_encode($video1Exists); ?>; // Get the value from PHP
-        if (video1Exist) {
+        if (video1Exist) 
+        {
             // Video1 exists
         } else {
             // Wait until after the video0 exists
@@ -475,6 +473,12 @@
                 var intervalId = setInterval(checkVideoCompletion, 60000); // Check every 60 seconds
             }
         }
+
+        // Call reload the page initially
+        reload_page;
+        // Call the checkStatus function initially
+        checkVideoCompletion;
+
     </script>
     <!-- JavaScript to step frames in videos -->
     <script> // function to step frames 
