@@ -312,8 +312,7 @@
                     }
                 } else {
                     // Check if first start image exists
-                    if (file_exists('images/1a_start_Start.jpg'))
-                    if (file_exists('output.txt'))
+                    //if (file_exists('images/1a_start_Start.jpg'))
                     {
                         $video_name = 'images/video0.mp4';
                         if ($video0Exists) {
