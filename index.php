@@ -449,7 +449,6 @@
                 console.log(" Line 458: waiting for Stop_recording button to be pressed"); // Log the value
             }
         }
-
         function reload_page() 
         {
             setInterval(function() {
