@@ -43,14 +43,14 @@
         error_log("Line 43, check video conversion status: " . $status);
         return trim($status); // Remove any whitespace characters
     }
-
-    // Call the function to check the status
-    $videoStatus = checkVideoConversionStatus();
-
-    // Determine if the video conversion is complete
-    $videoConversionComplete = ($videoStatus === 'complete');
-    if ($videoConversionComplete) {
-        error_log("Line 53, VideoStatus: " . $videoStatus);
+    if ($stopRecordingPressed){
+        // Call the function to check the status
+        $videoStatus = checkVideoConversionStatus;  // () or not?
+        // Determine if the video conversion is complete
+        $videoConversionComplete = ($videoStatus === 'complete');
+        if ($videoConversionComplete) {
+            error_log("Line 52, VideoStatus: " . $videoStatus);
+        }
     }
 ?>
 <!-- Your HTML to display data from the session -->
@@ -368,27 +368,29 @@
             <?php
                 if ($video0Exists)
                 {
-                    if ($video1Exists)
-                    {
-                        for ($x = 1; $x <= $num_video; $x++) {
-                            $video_name = 'images/video' . $x . '.mp4';
-                            // error_log("Line 307: Loop to display video = $video_name");
-                            if (file_exists($video_name)) {
-                                // Display the video
-                                echo "<h3> Finish video, this is video $x for the finish</h3>";
-                                echo '<video id="video' . $x . '" width="720" height="480" controls>
-                                <source src="' . $video_name . '" type="video/mp4"></video><p>
-                                    <div>
-                                        <button onclick="stepFrame(' . $x . ', -1)">Previous Frame</button>
-                                        <button onclick="stepFrame(' . $x . ', 1)">Next Frame</button>
-                                    </div>';
-                            } else {
-                                // Log an error if the video file doesn't exist
-                                error_log("Line 386: video $x does not exist");
+                    if ($stopRecordingPressed) // wait with check until after the stop-recording button was pressed
+                        if ($video1Exists)
+                        {
+                            for ($x = 1; $x <= $num_video; $x++) {
+                                $video_name = 'images/video' . $x . '.mp4';
+                                // error_log("Line 307: Loop to display video = $video_name");
+                                if (file_exists($video_name)) {
+                                    // Display the video
+                                    echo "<h3> Finish video, this is video $x for the finish</h3>";
+                                    echo '<video id="video' . $x . '" width="720" height="480" controls>
+                                    <source src="' . $video_name . '" type="video/mp4"></video><p>
+                                        <div>
+                                            <button onclick="stepFrame(' . $x . ', -1)">Previous Frame</button>
+                                            <button onclick="stepFrame(' . $x . ', 1)">Next Frame</button>
+                                        </div>';
+                                } else {
+                                    // Log an error if the video file doesn't exist
+                                    error_log("Line 386: video $x does not exist");
+                                }
                             }
+                        } else {
+                            error_log("Line 391: Video1 do not exist");
                         }
-                    } else {
-                        error_log("Line 390: Video1 do not exist");
                     }
                 }
             ?>
@@ -402,7 +404,7 @@
             if (file_exists($filename)) {
                 echo "This web-page was last modified: \n" . date ("Y-m-d H:i:s.", filemtime($filename));
             } else {
-                error_log("Line 361: $filename do not exists");
+                error_log("Line 405: $filename do not exists");
             }
         ?>
     </div>
