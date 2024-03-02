@@ -327,7 +327,7 @@
                 }
             ?>
         </div>
-        <!-- Show "Stop recording" button after video0 is ready -->
+        <!-- PHP script to show "Stop recording" button after video0 is ready -->
         <div style="text-align: center;" class="w3-panel w3-pale-green">
             <?php
                 // Retrieve the value of the session variable
@@ -335,7 +335,7 @@
 
                 if ($num_video == 1) // which is valid for regattastart9 not selectable 
                 {
-                    if ($video0Exists) // stop-recording button should noy be visible unless the video0 exists
+                    if ($video0Exists) // stop-recording button should not be visible unless the video0 exists
                     {
                         if ($stopRecordingPressed) // If button was pressed hide button
                         {
@@ -353,7 +353,6 @@
                             //  "Stop Recording" button not yet visible
                             error_log("Line 354: stopRecordingPressed set to : $stopRecordingPressed");
                         }
-                        
                     } else {
                        // Log an information that video0 is not ready
                        error_log("Line 357 video0 is not yet ready, var video0Exists= $video0Exists ");
@@ -364,7 +363,7 @@
                 }
             ?>
         </div>
-        <!-- PHP script to Display remaining videos -->
+        <!-- PHP script to display remaining videos -->
         <div style="text-align: center;" class="w3-panel w3-pale-red">
             <?php
                 if ($video0Exists)
@@ -417,9 +416,10 @@
         var video0Exist= <?php echo json_encode($video0Exists); ?>; // Get the value from PHP
         var stopRecordingPressed = <?php echo json_encode($stopRecordingPressed); ?>; // Get the value from PHP
 
-        // This function executes AFTER the stop_recording button on Line 346 is pushed
+        // This function executes AFTER the stop_recording button on Line 349 is pushed
         function refreshPage() {
             // Wait until after the Stop_Recording button was pressed
+            alert("What a while after button was pressed!");
             if (stopRecordingPressed) {
                 // Set the value of the hidden input field
                 document.getElementById("stopRecordingPressed").value = "1"; // Set stopRecordingPressed value to 1
