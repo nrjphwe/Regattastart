@@ -476,7 +476,7 @@
     <script>
         var checkCompletionInterval;
 
-        // Function to check Video1 completion status
+        // Function to check Video1 completion status and reload page if complete
         function checkVideoCompletion() {
             // AJAX call to PHP script to check completion status
             $.ajax({
@@ -489,23 +489,16 @@
                     }
                 },
                 error: function(xhr, status, error) {
-                    console.error('Line 492: Error checking video completion:', error);
+                    console.error('Error checking video completion:', error);
                 }
             });
         }
 
         // Start interval to check completion every 60 seconds
-        function startCompletionCheckInterval() {
-            checkCompletionInterval = setInterval(checkVideoCompletion, 60000); // Check every 60 seconds
-        }
+        checkCompletionInterval = setInterval(checkVideoCompletion, 60000); // Check every 60 seconds
 
-        // Stop interval to check completion
-        function stopCompletionCheckInterval() {
-            clearInterval(checkCompletionInterval);
-        }
-
-        // Call the function to start the interval initially
-        startCompletionCheckInterval();
+        // Stop interval to check completion (if needed)
+        // clearInterval(checkCompletionInterval);
     </script>
     
     <!-- JavaScript to step frames in videos -->
