@@ -12,8 +12,8 @@
     // Check if video0.mp4 or video1.mp4 exists 
     $video0Exists = file_exists("images/video0.mp4");
     $video1Exists = file_exists("images/video1.mp4");
-    error_log("Line 15, video0Exists =" . $video0Exists);
-    error_log("Line 16, video1Exists =" . $video1Exists);
+    error_log("Line  15: video0Exists =" . $video0Exists);
+    error_log("Line  16: video1Exists =" . $video1Exists);
 
     # initialize the conversionstatus variable 
     $videoConversionComplete = false;
@@ -359,7 +359,7 @@
                         }
                     } else {
                        // Log an information that video0 is not ready
-                       error_log("Line 357 video0 is not yet ready, var video0Exists= $video0Exists ");
+                       error_log("Line 357: video0 is not yet ready");
                     }
                 } else {
                     // Log an error if $num_video is not equal to 1
@@ -377,7 +377,7 @@
                         if ($video1Exists){
                             for ($x = 1; $x <= $num_video; $x++) {
                                 $video_name = 'images/video' . $x . '.mp4';
-                                // error_log("Line 307: Loop to display video = $video_name");
+                                // error_log("Line 380: Loop to display video = $video_name");
                                 if (file_exists($video_name)) 
                                 {
                                     // Display the video
