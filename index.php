@@ -40,7 +40,7 @@
     function checkVideoConversionStatus() {
         // Read the content of the status file
         $status = file_get_contents('/var/www/html/status.txt');
-        error_log("Line 41, status: " . $status);
+        error_log("Line 43, status: " . $status);
         return trim($status); // Remove any whitespace characters
     }
 
