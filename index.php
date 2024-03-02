@@ -59,7 +59,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="refresh" content="30">
     <link rel="stylesheet" href="/w3.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <!-- <meta http-equiv="refresh" content="200" -->
@@ -314,6 +313,7 @@
                 } else {
                     // Check if first start image exists
                     if (file_exists('images/1a_start_Start.jpg'))
+                    if (file_exists('output.txt'))
                     {
                         $video_name = 'images/video0.mp4';
                         if ($video0Exists) {
