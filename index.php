@@ -489,7 +489,7 @@
                     }
                 },
                 error: function(xhr, status, error) {
-                    console.error('Error checking video completion:', error);
+                    console.error('Line 492: Error checking video completion:', error);
                 }
             });
         }
