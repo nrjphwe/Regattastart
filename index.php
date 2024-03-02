@@ -368,7 +368,7 @@
             <?php
                 if ($video0Exists)
                 {
-                    if ($stopRecordingPressed) // wait with check until after the stop-recording button was pressed
+                    if ($stopRecordingPressed)} // wait with check until after the stop-recording button was pressed
                         if ($video1Exists)
                         {
                             for ($x = 1; $x <= $num_video; $x++) {
