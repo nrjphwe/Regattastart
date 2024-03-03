@@ -428,10 +428,10 @@
                     //console.log('Line 429: Video completion check response:', trimmed_response);
                     // If Video1 is completed, reload the page
                     if (trimmed_response === 'true') {
-                        console.log('Line 432: Reloading page...');
+                        console.log('Line 431: Reloading page...');
                         location.reload(true); // Reload with hard refresh
                     } else {
-                        console.log('Line 435: Video not completed yet.');
+                        console.log('Line 434: Video not completed yet.');
                         location.reload(); // Reload
                     }
                 },
