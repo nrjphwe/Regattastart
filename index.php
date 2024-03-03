@@ -415,7 +415,7 @@
         // This function executes AFTER the stop_recording button on Line 349 is pushed
         function refreshPage() {
             // Wait until after the Stop_Recording button was pressed
-            alert("What a while after button was pressed!");
+            alert("Wait a while after button was pressed!");
             if (stopRecordingPressed) {
                 // Set the value of the hidden input field
                 document.getElementById("stopRecordingPressed").value = "1"; // Set stopRecordingPressed value to 1
@@ -466,7 +466,8 @@
                 url: 'index.php',
                 type: 'GET',
                 success: function(response) {
-                    console.log('Line 471: Video completion check response:', response);
+                    trimmed_response = trim(response);
+                    console.log('Line 471: Video completion check response:', trimmed_response);
                     // If Video1 is completed, reload the page
                     if (response === 'true') {
                         console.log('Line 474: Reloading page...');
