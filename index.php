@@ -323,6 +323,26 @@
                 }
             ?>
         </div>
+        <!-- JavaScript to automatically refresh the page after the "Stop Recording" button is pressed -->
+        <script>
+            var stopRecordingPressed;
+            // This function executes AFTER the stop_recording button on Line 349 is pushed
+            function refreshPage() {
+                // Wait until after the Stop_Recording button was pressed
+                alert("Wait a while after button was pressed!");
+                if (stopRecordingPressed) {
+                    // Set the value of the hidden input field
+                    document.getElementById("stopRecordingPressed").value = "1"; // Set stopRecordingPressed value to 1
+                    console.log("Line 427: stopRecordingPressed value:", stopRecordingPressed); // Log the value
+                    document.getElementById("stopRecordingButton").style.display = "none";
+                    stopRecordingPressed = true;
+                    // Reload the page after 30 seconds, but only do it once
+                    setTimeout(function() {
+                        location.reload();
+                    }, 30000); // 30 sec
+                }
+            }
+        </script>
         <!-- PHP script to show "Stop recording" button after video0 is ready -->
         <div style="text-align: center;" class="w3-panel w3-pale-green">
             <?php
