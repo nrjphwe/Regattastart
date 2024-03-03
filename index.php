@@ -1,4 +1,3 @@
-<!-- line 1  -->
 <?php
     header("Access-Control-Allow-Origin: *");
     header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
@@ -9,7 +8,6 @@
     session_start();
     ini_set('display_errors', 1); 
     error_reporting(E_ALL);
-
     // Check if video0.mp4 or video1.mp4 exists 
     $video0Exists = file_exists("images/video0.mp4");
     $video1Exists = file_exists("images/video1.mp4");
@@ -35,7 +33,6 @@
         $_SESSION['stopRecordingPressed'] = $stopRecordingPressed;
     }
 ?>
-
 <?php 
     function isVideo1Completed() {
         // Read the content of the status file
@@ -46,9 +43,9 @@
 
     // Check Video1 completion status
     $video1Completed = isVideo1Completed();
-
+    error_log("Line 49: video1Completed =", $Video1Completed);
     // Return the completion status
-    //header('Content-Type: application/json'); // Set the response header to JSON
+    header('Content-Type: application/json'); // Set the response header to JSON
     echo json_encode($video1Completed);
 ?>
 
