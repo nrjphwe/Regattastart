@@ -304,7 +304,7 @@
                             echo "<h4> Video från 5 min före start och 2 min efter sista start</h4>";
                             echo '<video id="video0" width = "720" height="480" controls><source src= ' . $video_name . ' type="video/mp4"></video><p>';
                         } else {
-                            error_log("Line 310: $video_name do not exists");
+                            error_log("Line 307: $video_name do not exists");
                         }
                     }
                 } else {
@@ -313,56 +313,16 @@
                     {
                         $video_name = 'images/video0.mp4';
                         if ($video0Exists) {
-                            //error_log("Line 282: $video_name is available");
+                            //error_log("Line 316: $video_name is available");
                             echo "<h4> Video från 5 min före start och 2 min efter start</h4>";
                             echo '<video id="video0" width = "720" height="480" controls><source src= ' . $video_name . ' type="video/mp4"></video><p>';
                         } else {
-                            error_log("Line 282: $video_name do not exists");
+                            error_log("Line 320: $video_name do not exists");
                         }
                     }
                 }
             ?>
-        </div>
-        <!-- JavaScript to automatically refresh the page after the "Stop Recording" button is pressed -->
-        <script>
-            var stopRecordingPressed;
-            // This function executes AFTER the stop_recording button on Line 349 is pushed
-            function refreshPage() {
-                // Wait until after the Stop_Recording button was pressed
-                alert("Wait a while after button was pressed!");
-                if (stopRecordingPressed) {
-                    // Set the value of the hidden input field
-                    document.getElementById("stopRecordingPressed").value = "1"; // Set stopRecordingPressed value to 1
-                    console.log("Line 427: stopRecordingPressed value:", stopRecordingPressed); // Log the value
-                    document.getElementById("stopRecordingButton").style.display = "none";
-                    stopRecordingPressed = true;
-                    // Reload the page after 30 seconds, but only do it once
-                    setTimeout(function() {
-                        location.reload();
-                    }, 30000); // 30 sec
-                }
-            }
-        </script>
-        <!-- JavaScript to automatically refresh the page after the "Stop Recording" button is pressed -->
-        <script>
-            var stopRecordingPressed;
-            // This function executes AFTER the stop_recording button on Line 349 is pushed
-            function refreshPage() {
-                // Wait until after the Stop_Recording button was pressed
-                alert("Wait a while after button was pressed!");
-                if (stopRecordingPressed) {
-                    // Set the value of the hidden input field
-                    document.getElementById("stopRecordingPressed").value = "1"; // Set stopRecordingPressed value to 1
-                    console.log("Line 427: stopRecordingPressed value:", stopRecordingPressed); // Log the value
-                    document.getElementById("stopRecordingButton").style.display = "none";
-                    stopRecordingPressed = true;
-                    // Reload the page after 30 seconds, but only do it once
-                    setTimeout(function() {
-                        location.reload();
-                    }, 30000); // 30 sec
-                }
-            }
-        </script>
+        </div>      
         <!-- PHP script to show "Stop recording" button after video0 is ready -->
         <div style="text-align: center;" class="w3-panel w3-pale-green">
             <?php
@@ -386,15 +346,15 @@
                                 </form>
                             </div>';
                             //  "Stop Recording" button not yet visible
-                            error_log("Line 354: stopRecordingPressed not yet pressed");
+                            error_log("Line 349: stopRecordingPressed not yet pressed");
                         }
                     } else {
                        // Log an information that video0 is not ready
-                       error_log("Line 357: video0 is not yet ready");
+                       error_log("Line 353: video0 is not yet ready");
                     }
                 } else {
                     // Log an error if $num_video is not equal to 1
-                    error_log("Line 361 num_video = $num_video which is not 1");
+                    error_log("Line 357: num_video = $num_video which is not 1");
                 }
             ?>
         </div>
@@ -421,11 +381,11 @@
                                         </div>';
                                 } else {
                                     // Log an error if the video file doesn't exist
-                                    error_log("Line 386: video $x does not exist");
+                                    error_log("Line 405: video $x does not exist");
                                 }
                             }
                         } else {
-                            error_log("Line 391: Video1 do not exist");
+                            error_log("Line 409: Video1 do not exist");
                         }
                     }
                 }
@@ -440,7 +400,7 @@
             if (file_exists($filename)) {
                 echo "This web-page was last modified: \n" . date ("Y-m-d H:i:s.", filemtime($filename));
             } else {
-                error_log("Line 405: $filename do not exists");
+                error_log("Line 424: $filename do not exists");
             }
         ?>
     </div>
@@ -449,34 +409,13 @@
             echo " Time now: " .date("H:i:s");
         ?> 
     </div>
-    
+    <!--- Java Scripts  -->
     <script>
         //var stopRecordingPressed = <?php echo json_encode($stopRecordingPressed); ?>; // Get the value from PHP
         var video0Exist= <?php echo json_encode($video0Exists); ?>; // Get the value from PHP
+        console.log('Line 416: Video0Exists = ', video0Exist);
         var video1Exist = <?php echo json_encode($video1Exists); ?>; // Get the value from PHP
-    
-        /*
-        // Determine if the video1 conversion is completed by checking the variable $videoConversionComplete 
-        // = ($videoStatus === 'complete'); If complete refresh page 
-        // script to check if the Video1Completion variable was set.
-        function checkVideoCompletion() {
-            // Check if the video1 was completed (by regattastart9.py)
-            location.reload(true);
-            var video1Completed = <?php echo json_encode($video1Completed); ?>; // Get the value from PHP
-            console.log(" Line 465: video1Completed", video1Completed); // Log the value
-            if (video1Completed){
-                location.reload(true);
-            }
-        }
-
-        // Call the checkStatus function initially
-        checkVideoCompletion();
-
-        // Call checkVideoCompletion every 60 seconds if video0 exists
-        if (video0Exist && !video1Exist) {
-            setInterval(checkVideoCompletion, 60000); // Check every 60 seconds
-        }
-        */
+        console.log('Line 418: Video1Exists = ', video1Exist);
     </script>
     <script> // Function to check Video1 completion status and reload page if complete
         var checkCompletionInterval;
@@ -488,17 +427,17 @@
                 type: 'GET',
                 success: function(response) {
                     var trimmed_response = response.trim(); // Trim the response text
-                    console.log('Line 471: Video completion check response:', trimmed_response);
+                    console.log('Line 430: Video completion check response:', trimmed_response);
                     // If Video1 is completed, reload the page
                     if (trimmed_response === 'true') {
-                        console.log('Line 474: Reloading page...');
+                        console.log('Line 433: Reloading page...');
                         location.reload(true); // Reload with hard refresh
                     } else {
-                        console.log('Line 476: Video not completed yet.');
+                        console.log('Line 436: Video not completed yet.');
                     }
                 },
                 error: function(xhr, status, error) {
-                    console.error('Line 480: Error checking video completion:', error);
+                    console.error('Line 440: Error checking video completion:', error);
                 }
             });
         }
@@ -515,6 +454,26 @@
             if (video) {
                 video.pause();
                 video.currentTime += step * (1 / video.playbackRate/20); // 
+            }
+        }
+    </script>
+    <!-- JavaScript to automatically refresh the page after the "Stop Recording" button is pressed -->
+    <script>
+        var stopRecordingPressed;
+        // This function executes AFTER the stop_recording button on Line 349 is pushed
+        function refreshPage() {
+            // Wait until after the Stop_Recording button was pressed
+            alert("Wait a while after button was pressed!");
+            if (stopRecordingPressed) {
+                // Set the value of the hidden input field
+                document.getElementById("stopRecordingPressed").value = "1"; // Set stopRecordingPressed value to 1
+                console.log("Line 471: stopRecordingPressed value:", stopRecordingPressed); // Log the value
+                document.getElementById("stopRecordingButton").style.display = "none";
+                stopRecordingPressed = true;
+                // Reload the page after 30 seconds, but only do it once
+                setTimeout(function() {
+                    location.reload();
+                }, 30000); // 30 sec
             }
         }
     </script>
