@@ -343,12 +343,31 @@
                 }
             }
         </script>
+        <!-- JavaScript to automatically refresh the page after the "Stop Recording" button is pressed -->
+        <script>
+            var stopRecordingPressed;
+            // This function executes AFTER the stop_recording button on Line 349 is pushed
+            function refreshPage() {
+                // Wait until after the Stop_Recording button was pressed
+                alert("Wait a while after button was pressed!");
+                if (stopRecordingPressed) {
+                    // Set the value of the hidden input field
+                    document.getElementById("stopRecordingPressed").value = "1"; // Set stopRecordingPressed value to 1
+                    console.log("Line 427: stopRecordingPressed value:", stopRecordingPressed); // Log the value
+                    document.getElementById("stopRecordingButton").style.display = "none";
+                    stopRecordingPressed = true;
+                    // Reload the page after 30 seconds, but only do it once
+                    setTimeout(function() {
+                        location.reload();
+                    }, 30000); // 30 sec
+                }
+            }
+        </script>
         <!-- PHP script to show "Stop recording" button after video0 is ready -->
         <div style="text-align: center;" class="w3-panel w3-pale-green">
             <?php
                 // Retrieve the value of the session variable
                 $stopRecordingPressed = isset($_SESSION['stopRecordingPressed']) ? $_SESSION['stopRecordingPressed'] : false;
-
                 if ($num_video == 1) // which is valid for regattastart9 not selectable 
                 {
                     if ($video0Exists) // stop-recording button should not be visible unless the video0 exists
@@ -430,26 +449,7 @@
             echo " Time now: " .date("H:i:s");
         ?> 
     </div>
-    <!-- JavaScript to automatically refresh the page after the "Stop Recording" button is pressed -->
-    <script>
-        var stopRecordingPressed;
-        // This function executes AFTER the stop_recording button on Line 349 is pushed
-        function refreshPage() {
-            // Wait until after the Stop_Recording button was pressed
-            alert("Wait a while after button was pressed!");
-            if (stopRecordingPressed) {
-                // Set the value of the hidden input field
-                document.getElementById("stopRecordingPressed").value = "1"; // Set stopRecordingPressed value to 1
-                console.log("Line 427: stopRecordingPressed value:", stopRecordingPressed); // Log the value
-                document.getElementById("stopRecordingButton").style.display = "none";
-                stopRecordingPressed = true;
-                // Reload the page after 30 seconds, but only do it once
-                setTimeout(function() {
-                    location.reload();
-                }, 30000); // 30 sec
-            }
-        }
-    </script>
+    
     <script>
         //var stopRecordingPressed = <?php echo json_encode($stopRecordingPressed); ?>; // Get the value from PHP
         var video0Exist= <?php echo json_encode($video0Exists); ?>; // Get the value from PHP
