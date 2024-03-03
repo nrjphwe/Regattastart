@@ -42,8 +42,7 @@
         // Check if the status indicates Video1 completion
         return ($status === 'complete');
     }
-?>
-<?php
+
     // Check Video1 completion status
     $video1Completed = isVideo1Completed();
 
