@@ -432,7 +432,7 @@
                         location.reload(true); // Reload with hard refresh
                     } else {
                         console.log('Line 435: Video not completed yet.');
-                        location.reload(true); // Reload with hard refresh
+                        location.reload(); // Reload with hard refresh
                     }
                 },
                 error: function(xhr, status, error) {
