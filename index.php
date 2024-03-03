@@ -473,11 +473,11 @@
                         console.log('Line 474: Reloading page...');
                         location.reload(true); // Reload with hard refresh
                     } else {
-                        console.log('Video not completed yet.');
+                        console.log('Line 476: Video not completed yet.');
                     }
                 },
                 error: function(xhr, status, error) {
-                    console.error('Error checking video completion:', error);
+                    console.error('Line 480: Error checking video completion:', error);
                 }
             });
         }
