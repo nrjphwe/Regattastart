@@ -40,7 +40,6 @@
         // Check if the status indicates Video1 completion
         return ($status === 'complete');
     }
-
     // Check Video1 completion status
     $video1Completed = isVideo1Completed();
 
@@ -60,7 +59,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <!-- <meta http-equiv="refresh" content="200" -->
     <title>Regattastart</title>
-    <link rel="icon" type="image/x-icon" href="/images/sailing-icon.ico">
+    <!--link rel="icon" type="image/x-icon" href="/images/sailing-icon.ico"-->
     <!-- JavaScript to dynamically add a placeholder text or an image to the page when -->
     <!-- there are no pictures available yet. -->
     <script> // JavaScript function showPlaceholder 
