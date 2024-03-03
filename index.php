@@ -1,19 +1,3 @@
-<?php 
-    function isVideo1Completed() {
-        // Read the content of the status file
-        $status = trim(file_get_contents('/var/www/html/status.txt'));
-        // Check if the status indicates Video1 completion
-        return ($status === 'complete');
-    }
-    // Check Video1 completion status
-    $video1Completed = isVideo1Completed();
-
-    // Set content type to JSON
-    header('Content-Type: application/json');
-
-    // Return the completion status as JSON
-    echo json_encode($video1Completed);
-?>
 <?php
     header("Access-Control-Allow-Origin: *");
     header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
@@ -48,6 +32,22 @@
         // Store this value in a session to persist it across requests
         $_SESSION['stopRecordingPressed'] = $stopRecordingPressed;
     }
+?>
+<?php 
+    function isVideo1Completed() {
+        // Read the content of the status file
+        $status = trim(file_get_contents('/var/www/html/status.txt'));
+        // Check if the status indicates Video1 completion
+        return ($status === 'complete');
+    }
+    // Check Video1 completion status
+    $video1Completed = isVideo1Completed();
+
+    // Set content type to JSON
+    header("Content-Type: application/json");
+
+    // Return the completion status as JSON
+    echo json_encode($video1Completed);
 ?>
 <!-- Your HTML to display data from the session -->
 <!DOCTYPE html>
