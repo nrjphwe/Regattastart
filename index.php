@@ -466,10 +466,10 @@
                 url: 'index.php',
                 type: 'GET',
                 success: function(response) {
-                    trimmed_response = trim(response);
+                    var trimmed_response = response.trim(); // Trim the response text
                     console.log('Line 471: Video completion check response:', trimmed_response);
                     // If Video1 is completed, reload the page
-                    if (response === 'true') {
+                    if (trimmed_response === 'true') {
                         console.log('Line 474: Reloading page...');
                         location.reload(true); // Reload with hard refresh
                     } else {
