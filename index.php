@@ -43,9 +43,6 @@
     // Check Video1 completion status
     $video1Completed = isVideo1Completed();
 
-    // Set content type to JSON
-    header("Content-Type: application/json");
-
     // Return the completion status as JSON
     echo json_encode($video1Completed);
 ?>
@@ -405,95 +402,17 @@
             }
         ?>
     </div>
-    <div style="text-align: center;" class="w3-panel w3-grey">
-        <?php 
-            echo " Time now: " .date("H:i:s");
-        ?> 
+    <div style="text-align: center;">
+        <a href="/index6.php">Setup page Regattastart6</a>
     </div>
-    <!-- JavaScript to automatically refresh the page after the "Stop Recording" button is pressed -->
+    <div style="text-align: center;">
+        <a href="/index9.php">Setup page Regattastart9</a>
+    </div>
     <script>
-        // This function executes AFTER the stop_recording button on Line 349 is pushed
-        function refreshPage() {
-            // Wait until after the Stop_Recording button was pressed
-            alert("What a while after button was pressed!");
-            if (stopRecordingPressed) {
-                // Set the value of the hidden input field
-                document.getElementById("stopRecordingPressed").value = "1"; // Set stopRecordingPressed value to 1
-                console.log("Line 427: stopRecordingPressed value:", stopRecordingPressed); // Log the value
-                document.getElementById("stopRecordingButton").style.display = "none";
-                stopRecordingPressed = true;
-                // Reload the page after 30 seconds, but only do it once
-                setTimeout(function() {
-                    location.reload();
-                }, 30000); // 30 sec
-            }
-        }
-    </script>
-    <script>
-        //var stopRecordingPressed = <?php echo json_encode($stopRecordingPressed); ?>; // Get the value from PHP
-        var video0Exist= <?php echo json_encode($video0Exists); ?>; // Get the value from PHP
-        var video1Exist = <?php echo json_encode($video1Exists); ?>; // Get the value from PHP
-    
-        /*
-        // Determine if the video1 conversion is completed by checking the variable $videoConversionComplete 
-        // = ($videoStatus === 'complete'); If complete refresh page 
-        // script to check if the Video1Completion variable was set.
-        function checkVideoCompletion() {
-            // Check if the video1 was completed (by regattastart9.py)
-            location.reload(true);
-            var video1Completed = <?php echo json_encode($video1Completed); ?>; // Get the value from PHP
-            console.log(" Line 465: video1Completed", video1Completed); // Log the value
-            if (video1Completed){
-                location.reload(true);
-            }
-        }
-
-        // Call the checkStatus function initially
-        checkVideoCompletion();
-
-        // Call checkVideoCompletion every 60 seconds if video0 exists
-        if (video0Exist && !video1Exist) {
-            setInterval(checkVideoCompletion, 60000); // Check every 60 seconds
-        }
-        */
-    </script>
-    <script> // Function to check Video1 completion status and reload page if complete
-        var checkCompletionInterval;
-
-        function checkVideoCompletion() {
-            // AJAX call to PHP script to check completion status
-            $.ajax({
-                url: 'index.php',
-                type: 'GET',
-                success: function(response) {
-                    console.log('Line 471: Video completion check response:', response);
-                    // If Video1 is completed, reload the page
-                    if (response === 'true') {
-                        console.log('Line 474: Reloading page...');
-                        location.reload(true); // Reload with hard refresh
-                    } else {
-                        console.log('Line 476: Video not completed yet.');
-                    }
-                },
-                error: function(xhr, status, error) {
-                    console.error('Line 480: Error checking video completion:', error);
-                }
-            });
-        }
-        // Start interval to check completion every 60 seconds
-        checkCompletionInterval = setInterval(checkVideoCompletion, 60000); // Check every 60 seconds
-
-        // Stop interval to check completion (if needed)
-        // clearInterval(checkCompletionInterval);
-    </script>
-    <!-- JavaScript to step frames in videos -->
-    <script> // function to step frames 
-        function stepFrame(videoNum, step) {
-            var video = document.getElementById('video' + videoNum);
-            if (video) {
-                video.pause();
-                video.currentTime += step * (1 / video.playbackRate/20); // 
-            }
+        // Function to step through video frames
+        function stepFrame(videoNumber, step) {
+            const video = document.getElementById('video' + videoNumber);
+            video.currentTime += step;
         }
     </script>
 </body>
