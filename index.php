@@ -426,13 +426,13 @@
                 type: 'GET',
                 success: function(response) {
                     var trimmed_response = response.trim(); // Trim the response text
-                    console.log('Line 430: Video completion check response:', trimmed_response);
+                    //console.log('Line 429: Video completion check response:', trimmed_response);
                     // If Video1 is completed, reload the page
                     if (trimmed_response === 'true') {
-                        console.log('Line 433: Reloading page...');
+                        console.log('Line 432: Reloading page...');
                         location.reload(true); // Reload with hard refresh
                     } else {
-                        console.log('Line 436: Video not completed yet.');
+                        console.log('Line 435: Video not completed yet.');
                     }
                 },
                 error: function(xhr, status, error) {
