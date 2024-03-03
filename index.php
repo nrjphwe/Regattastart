@@ -48,6 +48,7 @@
     $video1Completed = isVideo1Completed();
 
     // Return the completion status
+    header('Content-Type: application/json'); // Set the response header to JSON
     echo json_encode($video1Completed);
 ?>
 
