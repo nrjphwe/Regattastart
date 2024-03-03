@@ -11,8 +11,8 @@
     // Check if video0.mp4 or video1.mp4 exists 
     $video0Exists = file_exists("images/video0.mp4");
     $video1Exists = file_exists("images/video1.mp4");
-    error_log("Line  15: video0Exists =" . $video0Exists);
-    error_log("Line  16: video1Exists =" . $video1Exists);
+    error_log("Line  14: video0Exists =" . $video0Exists);
+    error_log("Line  15: video1Exists =" . $video1Exists);
 
     # initialize the status for Stop_recording button
     $stopRecordingPressed = false;
@@ -27,7 +27,7 @@
     {
         // Handle stop recording logic here
         include_once "stop_recording.php"; // Include the script to stop recording
-        error_log('Line 26: The stop_recording.php was included in index.php');
+        error_log('Line 30: The stop_recording.php was included in index.php');
         $stopRecordingPressed = true;
         // Store this value in a session to persist it across requests
         $_SESSION['stopRecordingPressed'] = $stopRecordingPressed;
