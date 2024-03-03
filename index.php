@@ -432,7 +432,7 @@
                         location.reload(true); // Reload with hard refresh
                     } else {
                         console.log('Line 434: Video not completed yet.');
-                        location.reload(); // Reload
+                        //location.reload(); // Reload
                     }
                 },
                 error: function(xhr, status, error) {
@@ -440,9 +440,11 @@
                 }
             });
         }
-        // Start interval to check completion every 60 seconds
-        checkCompletionInterval = setInterval(checkVideoCompletion, 60000); // Check every 60 seconds
-
+        if (video1Exist) {
+        } else {
+            // Start interval to check completion every 60 seconds
+            checkCompletionInterval = setInterval(checkVideoCompletion, 60000); // Check every 60 seconds
+        }
         // Stop interval to check completion (if needed)
         // clearInterval(checkCompletionInterval);
     </script>
