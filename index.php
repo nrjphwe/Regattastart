@@ -36,20 +36,6 @@
 ?>
 
 <?php 
-/*  //  Regattastart9.py communicates to the PHP program (index.php) that the video1.mp4 is ready
-    // After the video conversion process is complete (video1.mp4 is created), the Python 
-    // script will update a status file to indicate that the conversion is finished.
-    function video1Completed() {
-        // Read the content of the status file
-        $status = trim(file_get_contents('/var/www/html/status.txt'));
-        error_log("Line 46, if video1 was completed: " . $status);
-        if ($status === 'complete'){
-            return true; // Remove any whitespace characters
-         } else {
-            return false;
-        }
-    }
-    */
     function isVideo1Completed() {
         // Read the content of the status file
         $status = trim(file_get_contents('/var/www/html/status.txt'));
@@ -473,19 +459,22 @@
         }
         */
     </script>
-    <script>
+    <script> // Function to check Video1 completion status and reload page if complete
         var checkCompletionInterval;
 
-        // Function to check Video1 completion status and reload page if complete
         function checkVideoCompletion() {
             // AJAX call to PHP script to check completion status
             $.ajax({
                 url: 'index.php',
                 type: 'GET',
                 success: function(response) {
+                    console.log('Line 471: Video completion check response:', response);
                     // If Video1 is completed, reload the page
                     if (response === 'true') {
+                        console.log('Line 474: Reloading page...');
                         location.reload(true); // Reload with hard refresh
+                    } else {
+                        console.log('Video not completed yet.');
                     }
                 },
                 error: function(xhr, status, error) {
@@ -493,14 +482,12 @@
                 }
             });
         }
-
         // Start interval to check completion every 60 seconds
         checkCompletionInterval = setInterval(checkVideoCompletion, 60000); // Check every 60 seconds
 
         // Stop interval to check completion (if needed)
         // clearInterval(checkCompletionInterval);
     </script>
-    
     <!-- JavaScript to step frames in videos -->
     <script> // function to step frames 
         function stepFrame(videoNum, step) {
