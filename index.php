@@ -49,7 +49,6 @@
     // Return the completion status as JSON
     echo json_encode($video1Completed);
 ?>
-<!-- Your HTML to display data from the session -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
