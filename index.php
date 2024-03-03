@@ -46,8 +46,8 @@
 
     // Check Video1 completion status
     $video1Completed = isVideo1Completed();
-    error_log("Line 49: video1Completed =", $Video1Completed);
-    
+    error_log("Line 49: video1Completed =", $video1Completed);
+
     // Return the completion status
     echo json_encode($video1Completed);
 ?>
