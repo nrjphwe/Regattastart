@@ -334,8 +334,7 @@
                         if ($stopRecordingPressed) // If button was pressed hide button
                         {
                             echo '<div id="stopRecordingButtonDiv" style="display: none;">'; // Hide the div
-                        } else 
-                        {
+                        } else {
                             echo '<div id="stopRecordingButtonDiv" style="display: block;">'; // Display the div
                             echo '
                                 <form id="stopRecordingForm" action="' . htmlspecialchars($_SERVER["PHP_SELF"]) . '" method="post" onsubmit="return refreshPage()">
@@ -433,6 +432,7 @@
                         location.reload(true); // Reload with hard refresh
                     } else {
                         console.log('Line 435: Video not completed yet.');
+                        location.reload(true); // Reload with hard refresh
                     }
                 },
                 error: function(xhr, status, error) {
