@@ -421,7 +421,7 @@
         function checkVideoCompletion() {
             // AJAX call to PHP script to check completion status
             $.ajax({
-                url: 'index.php',
+                url: window.location.href,
                 type: 'GET',
                 success: function(response) {
                     var trimmed_response = response.trim(); // Trim the response text
