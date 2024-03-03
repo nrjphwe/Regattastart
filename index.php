@@ -34,6 +34,9 @@
     }
 ?>
 <?php 
+    // Set content type to JSON
+    header('Content-Type: application/json');
+
     function isVideo1Completed() {
         // Read the content of the status file
         $status = trim(file_get_contents('/var/www/html/status.txt'));
@@ -44,8 +47,8 @@
     // Check Video1 completion status
     $video1Completed = isVideo1Completed();
     error_log("Line 49: video1Completed =", $Video1Completed);
+    
     // Return the completion status
-    header('Content-Type: application/json'); // Set the response header to JSON
     echo json_encode($video1Completed);
 ?>
 
