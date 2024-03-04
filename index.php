@@ -43,9 +43,6 @@
     // Check Video1 completion status
     $video1Completed = isVideo1Completed();
 
-    // Set content type to JSON
-    //header("Content-Type: application/json");
-
     // Return the completion status as JSON
     echo json_encode($video1Completed);
 ?>
@@ -218,16 +215,16 @@
                                 echo "<h3> Foto vid 1a start $start_time </h3>";
                                 echo "<img id='$filename' src='$imagePath' alt='1a start picture' width='720' height='480'>";
                             } else {
-                                error_log('Line 182: picture for the start do not exists');
+                                error_log('Line 218: picture for the start do not exists');
                             }
                         } else {
-                            error_log('Line 185: picture 1 min do not exists');
+                            error_log('Line 221: picture 1 min do not exists');
                         }
                     } else {
-                        error_log('Line 188: picture 4 min do not exists');
+                        error_log('Line 224: picture 4 min do not exists');
                     }
                 } else {
-                    //error_log('Line 191: picture 5 min do not exists');
+                    //error_log('Line 227: picture 5 min do not exists');
                 }
             ?>
         </div> 
@@ -274,16 +271,16 @@
                                         echo "<h3> Foto vid 2a start $second_start_time </h3>";
                                         echo "<img id='$filename' src='$imagePath' alt='2a start picture' width='720' height='480'>";
                                     } else {
-                                        error_log('Line 248: picture start 2nd start do not exists');
+                                        error_log('Line 274: picture start 2nd start do not exists');
                                     }
                                 } else {
-                                    error_log('Line 251: picture 1 min 2nd start do not exists');
+                                    error_log('Line 277: picture 1 min 2nd start do not exists');
                                 }
                             } else {
-                                error_log('Line 254: picture 4 min 2nd start do not exists');
+                                error_log('Line 280: picture 4 min 2nd start do not exists');
                             }
                         } else {
-                            error_log('Line 257: picture 5 min 2nd start do not exists');
+                            error_log('Line 283: picture 5 min 2nd start do not exists');
                         }
                     }
                 }
@@ -299,24 +296,24 @@
                     if (file_exists('images/2a_start_Start.jpg'))
                     {
                         $video_name = 'images/video0.mp4';
-                        if ($video0Exists) {
+                        if (file_exists($video_name)) {
                             echo "<h4> Video från 5 min före start och 2 min efter sista start</h4>";
                             echo '<video id="video0" width = "720" height="480" controls><source src= ' . $video_name . ' type="video/mp4"></video><p>';
                         } else {
-                            error_log("Line 307: $video_name do not exists");
+                            error_log("Line 303: $video_name do not exists");
                         }
                     }
                 } else {
                     // Check if first start image exists
-                    //if (file_exists('images/1a_start_Start.jpg'))
+                    if (file_exists('images/1a_start_Start.jpg'))
                     {
                         $video_name = 'images/video0.mp4';
-                        if ($video0Exists) {
+                        if (file_exists($video_name)) {
                             //error_log("Line 316: $video_name is available");
                             echo "<h4> Video från 5 min före start och 2 min efter start</h4>";
                             echo '<video id="video0" width = "720" height="480" controls><source src= ' . $video_name . ' type="video/mp4"></video><p>';
                         } else {
-                            error_log("Line 320: $video_name do not exists");
+                            error_log("Line 316: $video_name do not exists");
                         }
                     }
                 }
@@ -325,7 +322,7 @@
         <!-- PHP script to show "Stop recording" button after video0 is ready -->
         <div style="text-align: center;" class="w3-panel w3-pale-green">
             <?php
-                if ($num_video == 1) // which is valid for regattastart9 not selectable 
+                if ($num_video == 1) // which is valid for regattastart9 and not selectable 
                 {
                     // Retrieve the value of the session variable
                     $stopRecordingPressed = isset($_SESSION['stopRecordingPressed']) ? $_SESSION['stopRecordingPressed'] : false;
@@ -344,25 +341,27 @@
                                 </form>
                             </div>';
                             //  "Stop Recording" button not yet visible
-                            error_log("Line 349: stopRecordingPressed not yet pressed");
+                            error_log("Line 344: stopRecording button not yet pressed");
                         }
                     } else {
                        // Log an information that video0 is not ready
-                       error_log("Line 353: video0 is not yet ready");
+                       error_log("Line 348: video0 is not available");
                     }
                 } else {
                     // Log an error if $num_video is not equal to 1
-                    error_log("Line 357: num_video = $num_video which is not 1");
+                    error_log("Line 352: num_video = $num_video which is not 1");
                 }
             ?>
         </div>
         <!-- PHP script to display remaining videos -->
         <div style="text-align: center;" class="w3-panel w3-pale-red">
             <?php
-                if ($video0Exists){
+                if ($video0Exists)
+                {
                     // wait with check until after the stop-recording button was pressed
                     if ($video1Exists){
-                        for ($x = 1; $x <= $num_video; $x++) {
+                        for ($x = 1; $x <= $num_video; $x++) 
+                        {
                             $video_name = 'images/video' . $x . '.mp4';
                             // error_log("Line 380: Loop to display video = $video_name");
                             if (file_exists($video_name)) 
@@ -377,11 +376,11 @@
                                     </div>';
                             } else {
                                 // Log an error if the video file doesn't exist
-                                error_log("Line 405: video $x does not exist");
+                                error_log("Line 379: video $x does not exist");
                             }
                         }
                     } else {
-                        error_log("Line 409: Video1 do not exist");
+                        error_log("Line 383: Video1 do not exist");
                     }
                 }
             ?>
@@ -408,9 +407,9 @@
     <script>
         //var stopRecordingPressed = <?php echo json_encode($stopRecordingPressed); ?>; // Get the value from PHP
         var video0Exist= <?php echo json_encode($video0Exists); ?>; // Get the value from PHP
-        console.log('Line 416: Video0Exists = ', video0Exist);
+        console.log('Line 410: Video0Exists = ', video0Exist);
         var video1Exist = <?php echo json_encode($video1Exists); ?>; // Get the value from PHP
-        console.log('Line 418: Video1Exists = ', video1Exist);
+        console.log('Line 412: Video1Exists = ', video1Exist);
     </script>
     <script> // Function to check Video1 completion status and reload page if complete
         var checkCompletionInterval;
@@ -437,7 +436,8 @@
                 }
             });
         }
-        if (video1Exist) {
+        if (video1Exist) 
+        {
         } else {
             // Start interval to check completion every 60 seconds
             checkCompletionInterval = setInterval(checkVideoCompletion, 60000); // Check every 60 seconds
