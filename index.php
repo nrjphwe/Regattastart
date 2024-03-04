@@ -325,10 +325,10 @@
         <!-- PHP script to show "Stop recording" button after video0 is ready -->
         <div style="text-align: center;" class="w3-panel w3-pale-green">
             <?php
-                // Retrieve the value of the session variable
-                $stopRecordingPressed = isset($_SESSION['stopRecordingPressed']) ? $_SESSION['stopRecordingPressed'] : false;
                 if ($num_video == 1) // which is valid for regattastart9 not selectable 
                 {
+                    // Retrieve the value of the session variable
+                    $stopRecordingPressed = isset($_SESSION['stopRecordingPressed']) ? $_SESSION['stopRecordingPressed'] : false;
                     if ($video0Exists) // stop-recording button should not be visible unless the video0 exists
                     {
                         if ($stopRecordingPressed) // If button was pressed hide button
@@ -361,30 +361,27 @@
             <?php
                 if ($video0Exists){
                     // wait with check until after the stop-recording button was pressed
-                    if ($stopRecordingPressed === true)
-                    {
-                        if ($video1Exists){
-                            for ($x = 1; $x <= $num_video; $x++) {
-                                $video_name = 'images/video' . $x . '.mp4';
-                                // error_log("Line 380: Loop to display video = $video_name");
-                                if (file_exists($video_name)) 
-                                {
-                                    // Display the video
-                                    echo "<h3> Finish video, this is video $x for the finish</h3>";
-                                    echo '<video id="video' . $x . '" width="720" height="480" controls>
-                                    <source src="' . $video_name . '" type="video/mp4"></video><p>
-                                        <div>
-                                            <button onclick="stepFrame(' . $x . ', -1)">Previous Frame</button>
-                                            <button onclick="stepFrame(' . $x . ', 1)">Next Frame</button>
-                                        </div>';
-                                } else {
-                                    // Log an error if the video file doesn't exist
-                                    error_log("Line 405: video $x does not exist");
-                                }
+                    if ($video1Exists){
+                        for ($x = 1; $x <= $num_video; $x++) {
+                            $video_name = 'images/video' . $x . '.mp4';
+                            // error_log("Line 380: Loop to display video = $video_name");
+                            if (file_exists($video_name)) 
+                            {
+                                // Display the video
+                                echo "<h3> Finish video, this is video $x for the finish</h3>";
+                                echo '<video id="video' . $x . '" width="720" height="480" controls>
+                                <source src="' . $video_name . '" type="video/mp4"></video><p>
+                                    <div>
+                                        <button onclick="stepFrame(' . $x . ', -1)">Previous Frame</button>
+                                        <button onclick="stepFrame(' . $x . ', 1)">Next Frame</button>
+                                    </div>';
+                            } else {
+                                // Log an error if the video file doesn't exist
+                                error_log("Line 405: video $x does not exist");
                             }
-                        } else {
-                            error_log("Line 409: Video1 do not exist");
                         }
+                    } else {
+                        error_log("Line 409: Video1 do not exist");
                     }
                 }
             ?>
