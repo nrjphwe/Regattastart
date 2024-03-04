@@ -409,9 +409,6 @@
         var video0Exists= <?php echo json_encode($video0Exists); ?>; // Get the value from PHP
         console.log('Line 410: Video0Exists = ', video0Exists);
 
-        // Flag to track if the page has already been reloaded
-        var pageReloaded = false;
-
         if (video0Exists){
             // Automatic refresh after 5 seconds
             setTimeout(function() {
@@ -482,7 +479,7 @@
                 // Reload the page after 30 seconds, but only do it once
                 setTimeout(function() {
                     location.reload();
-                }, 30000); // 30 sec
+                }, 60000); // 60 sec
             }
         }
     </script>
