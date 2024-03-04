@@ -406,8 +406,8 @@
     <!--- Java Scripts  -->
     <script>
         //var stopRecordingPressed = <?php echo json_encode($stopRecordingPressed); ?>; // Get the value from PHP
-        var video0Exist= <?php echo json_encode($video0Exists); ?>; // Get the value from PHP
-        console.log('Line 410: Video0Exists = ', video0Exist);
+        var video0Exists= <?php echo json_encode($video0Exists); ?>; // Get the value from PHP
+        console.log('Line 410: Video0Exists = ', video0Exists);
         if (video0Exists){
             // Automatic refresh after 5 seconds
             setTimeout(function() {
