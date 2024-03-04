@@ -408,6 +408,13 @@
         //var stopRecordingPressed = <?php echo json_encode($stopRecordingPressed); ?>; // Get the value from PHP
         var video0Exist= <?php echo json_encode($video0Exists); ?>; // Get the value from PHP
         console.log('Line 410: Video0Exists = ', video0Exist);
+        if (video0Exists){
+            // Automatic refresh after 5 seconds
+            setTimeout(function() {
+                location.reload();
+            }, 5000); // 5 seconds
+        }
+
         var video1Exist = <?php echo json_encode($video1Exists); ?>; // Get the value from PHP
         console.log('Line 412: Video1Exists = ', video1Exist);
     </script>
@@ -442,8 +449,6 @@
             // Start interval to check completion every 60 seconds
             checkCompletionInterval = setInterval(checkVideoCompletion, 60000); // Check every 60 seconds
         }
-        // Stop interval to check completion (if needed)
-        // clearInterval(checkCompletionInterval);
     </script>
     <!-- JavaScript to step frames in videos -->
     <script> // function to step frames 
