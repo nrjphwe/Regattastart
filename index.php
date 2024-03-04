@@ -413,7 +413,7 @@
             // Automatic refresh after 5 seconds
             setTimeout(function() {
                 location.reload();
-            }, 5000); // 5 seconds
+            }, 60000); // 60 seconds
             video0Exists = 0;
         }
     </script>
