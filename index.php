@@ -408,11 +408,20 @@
         //var stopRecordingPressed = <?php echo json_encode($stopRecordingPressed); ?>; // Get the value from PHP
         var video0Exists= <?php echo json_encode($video0Exists); ?>; // Get the value from PHP
         console.log('Line 410: Video0Exists = ', video0Exists);
+
+        // Flag to track if the page has already been reloaded
+        var pageReloaded = false;
+
         if (video0Exists){
-            // Automatic refresh after 5 seconds
-            setTimeout(function() {
-                location.reload();
-            }, 5000); // 5 seconds
+            if (!pageReloaded) {
+                // Automatic refresh after 5 seconds
+                setTimeout(function() {
+                    location.reload();
+                }, 5000); // 5 seconds
+
+                // Set the flag to indicate that the page has been reloaded
+                pageReloaded = true;
+            }
         }
     </script>
     <script>
