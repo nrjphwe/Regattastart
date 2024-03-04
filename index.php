@@ -414,7 +414,8 @@
                 location.reload();
             }, 5000); // 5 seconds
         }
-        
+    </script>
+    <script>
         var video1Exist = <?php echo json_encode($video1Exists); ?>; // Get the value from PHP
         console.log('Line 412: Video1Exists = ', video1Exist);
     </script>
