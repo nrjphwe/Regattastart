@@ -413,15 +413,11 @@
         var pageReloaded = false;
 
         if (video0Exists){
-            if (!pageReloaded) {
-                // Automatic refresh after 5 seconds
-                setTimeout(function() {
-                    location.reload();
-                }, 5000); // 5 seconds
-
-                // Set the flag to indicate that the page has been reloaded
-                pageReloaded = true;
-            }
+            // Automatic refresh after 5 seconds
+            setTimeout(function() {
+                location.reload();
+            }, 5000); // 5 seconds
+            video0Exists = 0;
         }
     </script>
     <script>
