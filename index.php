@@ -411,10 +411,10 @@
 
         if (video0Exists){
             // Automatic refresh after 5 seconds
+            video0Exists = 0;
             setTimeout(function() {
                 location.reload();
             }, 60000); // 60 seconds
-            video0Exists = 0;
         }
     </script>
     <script>
