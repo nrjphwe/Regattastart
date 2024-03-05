@@ -475,7 +475,7 @@
         function refreshThePage() {
                 setTimeout(function() {
                     location.reload();
-                }, 2000); // 2 sec
+                }, 1000); // 1 sec
             }
     </script>
 </body>
