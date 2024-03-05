@@ -418,7 +418,30 @@
         }
     </script>
     <script>
-        var video1Exist = <?php echo json_encode($video1Exists); ?>; // Get the value from PHP
+        // Check if the page has been reloaded before
+            var pageReloaded = sessionStorage.getItem('pageReloaded');
+
+        // Check if the page has already been reloaded
+        if (!pageReloaded) {
+            // Set the flag in sessionStorage to indicate that the page has been reloaded
+            sessionStorage.setItem('pageReloaded', true);
+
+            var video0Exists = <?php echo json_encode($video0Exists); ?>; // Get the value from PHP
+            console.log('Line 420: Video0Exists = ', video0Exists);
+
+            // Function to reload the page after 5 seconds
+            function reloadPage() {
+                // Reload the page after 5 seconds
+                setTimeout(function() {
+                    location.reload();
+                }, 5000); // 5 seconds
+            }
+
+            // Check if video0 exists and trigger the reload
+            if (video0Exists) {
+                reloadPage();
+            }
+        }
         console.log('Line 412: Video1Exists = ', video1Exist);
     </script>
     <script> // Function to check Video1 completion status and reload page if complete
