@@ -407,6 +407,7 @@
     <script>
         // Check if the page has been reloaded before
         var pageReloaded = sessionStorage.getItem('pageReloaded');
+        console.error('pageReloaded variable = ', pageReload);
 
         // Check if the page has already been reloaded
         if (!pageReloaded) {
