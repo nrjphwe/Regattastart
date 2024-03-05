@@ -406,7 +406,7 @@
     <!--- Java Scripts  -->
     <script>
         // Check if the page has been reloaded before
-            var pageReloaded = sessionStorage.getItem('pageReloaded');
+        var pageReloaded = sessionStorage.getItem('pageReloaded');
 
         // Check if the page has already been reloaded
         if (!pageReloaded) {
@@ -414,7 +414,7 @@
             sessionStorage.setItem('pageReloaded', true);
 
             var video0Exists = <?php echo json_encode($video0Exists); ?>; // Get the value from PHP
-            console.log('Line 430: Video0Exists = ', video0Exists);
+            console.log('Line 417: Video0Exists = ', video0Exists);
 
             // Function to reload the page after 5 seconds
             function reloadPage() {
@@ -444,15 +444,15 @@
                     //console.log('Line 457: Video completion check response:', trimmed_response);
                     // If Video1 is completed, reload the page
                     if (trimmed_response === 'true') {
-                        console.log('Line 460: Reloading page...');
+                        console.log('Line 447: Reloading page...');
                         location.reload(true); // Reload with hard refresh
                     } else {
-                        console.log('Line 463: Video not completed yet.');
+                        console.log('Line 450: Video not completed yet.');
                         //location.reload(); // Reload
                     }
                 },
                 error: function(xhr, status, error) {
-                    console.error('Line 468: Error checking video completion:', error);
+                    console.error('Line 455: Error checking video completion:', error);
                 }
             });
         }
