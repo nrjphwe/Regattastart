@@ -442,7 +442,6 @@
                 reloadPage();
             }
         }
-        console.log('Line 412: Video1Exists = ', video1Exist);
     </script>
     <script> // Function to check Video1 completion status and reload page if complete
         var checkCompletionInterval;
