@@ -445,7 +445,7 @@
     </script>
     <script> // Function to check Video1 completion status and reload page if complete
         var checkCompletionInterval;
-        var video0Exists = <?php echo json_encode($video0Exists); ?>; // Get the value from PHP
+        var video1Exists = <?php echo json_encode($video1Exists); ?>; // Get the value from PHP
 
         function checkVideoCompletion() {
             // AJAX call to PHP script to check completion status
@@ -469,7 +469,7 @@
                 }
             });
         }
-        if (video1Exist) 
+        if (video1Exists) 
         {
         } else {
             // Start interval to check completion every 60 seconds
