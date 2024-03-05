@@ -176,7 +176,7 @@
         <div style="text-align: center;" class="w3-panel w3-pale-blue">
             <h3> Bilder tagna vid varje signal innan 1a start </h3>
         </div>
-        <div> 
+        <div style="text-align: center;" class="w3-panel w3-pale-grey">
             <button type="button" onclick="return refreshThePage()">Refresh page</button>
         </div> 
         <!-- Display pictures for the 1st start  -->
