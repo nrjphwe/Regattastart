@@ -408,33 +408,6 @@
         ?> 
     </div>
     <!--- Java Scripts  -->
-    <script>
-        // Check if the page has been reloaded before
-        var pageReloaded = sessionStorage.getItem('pageReloaded');
-        console.error('Line 410: pageReloaded variable = ', pageReloaded);
-
-        // Check if the page has already been reloaded
-        if (!pageReloaded) {
-            // Set the flag in sessionStorage to indicate that the page has been reloaded
-            sessionStorage.setItem('pageReloaded', true);
-
-            var video0Exists = <?php echo json_encode($video0Exists); ?>; // Get the value from PHP
-            console.log('Line 417: Video0Exists = ', video0Exists);
-
-            // Function to reload the page after 5 seconds
-            function reloadPage() {
-                // Reload the page after 5 seconds
-                setTimeout(function() {
-                    location.reload();
-                }, 5000); // 5 seconds
-            }
-
-            // Check if video0 exists and trigger the reload
-            if (video0Exists) {
-                reloadPage();
-            }
-        }
-    </script>
     <script> // Function to check Video1 completion status and reload page if complete
         var checkCompletionInterval;
         var video1Exists = <?php echo json_encode($video1Exists); ?>; // Get the value from PHP
