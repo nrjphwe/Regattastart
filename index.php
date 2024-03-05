@@ -177,7 +177,7 @@
             <h3> Bilder tagna vid varje signal innan 1a start </h3>
         </div>
         <div> 
-            <button type="button" onclick="alert('Hello world!')">Click Me!</button>
+            <button type="button" onclick="return refreshThePage()">Refresh page</button>
         </div> 
         <!-- Display pictures for the 1st start  -->
         <div style="text-align: center;">
@@ -339,7 +339,8 @@
                             echo '
                                 <form id="stopRecordingForm" action="' . htmlspecialchars($_SERVER["PHP_SELF"]) . '" method="post" onsubmit="return refreshPage()">
                                     <input type="hidden" name="stop_recording" value="true">
-                                    <input type="hidden" name="stopRecordingPressed" id="stopRecordingPressed" value="0"> <!-- Hidden input field for stopRecordingPressed -->
+                                    <input type="hidden" name="stopRecordingPressed" id="stopRecordingPressed" value="0"> 
+                                    <!-- Hidden input field for stopRecordingPressed -->
                                     <input type="submit" id="stopRecordingButton" value="Stop Recording">
                                 </form>
                             </div>';
@@ -496,6 +497,13 @@
                 }, 60000); // 60 sec
             }
         }
+    </script>
+    <script>
+        function refreshThePage() {
+                setTimeout(function() {
+                    location.reload();
+                }, 2000); // 2 sec
+            }
     </script>
 </body>
 </html>
