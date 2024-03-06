@@ -466,9 +466,9 @@
                 console.log("Line 471: stopRecordingPressed value:", stopRecordingPressed); // Log the value
                 document.getElementById("stopRecordingButton").style.display = "none";
                 stopRecordingPressed = true;
-                // Reload the page after 30 seconds, but only do it once
+                // Reload the page after 60 seconds
                 setTimeout(function() {
-                    location.reload();
+                    location.reload(true);
                 }, 60000); // 60 sec
             }
         }
