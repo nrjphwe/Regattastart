@@ -100,7 +100,8 @@
     </style>
 </head>
 <body onload="showPlaceholder()">
-    <?php // Print session data on top of page
+    <?php
+    // Print session data on top of page
         echo "<p style='font-size:12px'>";
         echo " First start at: " . $start_time;
         echo ", Number of starts= $num_starts";
@@ -142,7 +143,7 @@
             </div>
         </div>
         <div style="text-align: center;">
-            <?php 
+            <?php
                 echo "     Version: " . APP_VERSION . "<br><p></p>"; 
             ?>
         </div>
@@ -318,7 +319,7 @@
                     }
                 }
             ?>
-        </div>      
+        </div>
         <!-- PHP script to show "Stop recording" button after video0 is ready -->
         <div style="text-align: center;" class="w3-panel w3-pale-green">
             <?php
@@ -400,7 +401,7 @@
         ?>
     </div>
     <div style="text-align: center;" class="w3-panel w3-grey">
-        <?php 
+        <?php
             echo " Time now: " .date("H:i:s");
         ?> 
     </div>
