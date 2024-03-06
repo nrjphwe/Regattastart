@@ -309,7 +309,7 @@
                     {
                         $video_name = 'images/video0.mp4';
                         if (file_exists($video_name)) {
-                            //error_log("Line 316: $video_name is available");
+                            //error_log("Line 312:", $video_name "is available");
                             echo "<h4> Video från 5 min före start och 2 min efter start</h4>";
                             echo '<video id="video0" width = "720" height="480" controls><source src= ' . $video_name . ' type="video/mp4"></video><p>';
                         } else {
@@ -342,7 +342,7 @@
                                 </form>
                             </div>';
                             //  "Stop Recording" button not yet visible
-                            error_log("Line 344: stopRecording button not yet pressed");
+                            error_log("Line 345: stopRecording button not yet pressed");
                         }
                     } else {
                        // Log an information that video0 is not ready
@@ -350,7 +350,7 @@
                     }
                 } else {
                     // Log an error if $num_video is not equal to 1
-                    error_log("Line 352: num_video = $num_video which is not 1");
+                    error_log("Line 353: num_video = $num_video which is not 1");
                 }
             ?>
         </div>
@@ -364,7 +364,7 @@
                         for ($x = 1; $x <= $num_video; $x++) 
                         {
                             $video_name = 'images/video' . $x . '.mp4';
-                            // error_log("Line 380: Loop to display video = $video_name");
+                            // error_log("Line 367: Loop to display video = $video_name");
                             if (file_exists($video_name)) 
                             {
                                 // Display the video
@@ -377,11 +377,11 @@
                                     </div>';
                             } else {
                                 // Log an error if the video file doesn't exist
-                                error_log("Line 379: video $x does not exist");
+                                error_log("Line 380: video $x does not exist");
                             }
                         }
                     } else {
-                        error_log("Line 383: Video1 do not exist");
+                        error_log("Line 384: Video1 do not exist");
                     }
                 }
             ?>
@@ -409,7 +409,7 @@
         var checkCompletionInterval;
         var video1Exists = <?php echo json_encode($video1Exists); ?>; // Get the value from PHP
         var video1Completed = <?php echo json_encode($video1Completed); ?>; // Get the value from PHP
-        console.log('Line 415: xxxxx Video completion check response:', video1Completed);
+        console.log('Line 412: xxxxx Video completion check response:', video1Completed);
 
         function checkVideoCompletion() {
             // AJAX call to PHP script to check completion status
@@ -417,12 +417,12 @@
                 url: window.location.href,
                 type: 'GET',
                 success: function(response) {
-                    console.log('Line 423: function response=',response);
+                    console.log('Line 420: function response=',response);
                     var trimmed_response = response.trim(); // Trim the response text
-                    console.log('Line 425: Video completion check response:', trimmed_response);
+                    console.log('Line 422: Video completion check response:', trimmed_response);
                     // If Video1 is completed, reload the page
                     if (trimmed_response === 'true') {
-                        console.log('Line 447: Reloading page...');
+                        console.log('Line 425: Reloading page...');
                         location.reload(true); // Reload with hard refresh
                     } else {
                         console.log('Line 450: Video not completed yet.');
@@ -430,7 +430,7 @@
                     }
                 },
                 error: function(xhr, status, error) {
-                    console.error('Line 436: Error checking video completion:', error);
+                    console.error('Line 433: Error checking video completion:', error);
                 } 
             });
         }
