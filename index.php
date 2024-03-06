@@ -411,6 +411,8 @@
     <script> // Function to check Video1 completion status and reload page if complete
         var checkCompletionInterval;
         var video1Exists = <?php echo json_encode($video1Exists); ?>; // Get the value from PHP
+        var video1Completed = <?php echo json_encode($video1Completed); ?>; // Get the value from PHP
+        console.log('Line 415: xxxxx Video completion check response:', video1Completed);
 
         function checkVideoCompletion() {
             // AJAX call to PHP script to check completion status
@@ -451,8 +453,7 @@
             }
         }
     </script>
-    <!-- JavaScript to automatically refresh the page after the "Stop Recording" button is pressed -->
-    <script>
+c    <script>
         var stopRecordingPressed;
         // This function executes AFTER the stop_recording button on Line 349 is pushed
         function refreshPage() {
@@ -471,6 +472,7 @@
             }
         }
     </script>
+    <!-- JavaScript to refresh the page after the "Refresh" button was pressed -->
     <script>
         function refreshThePage() {
                 setTimeout(function() {
