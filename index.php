@@ -419,8 +419,7 @@
             $.ajax({
                 url: window.location.href,
                 type: 'GET',
-                success: function(response) 
-                {
+                success: function(response) {
                     console.log('Line 423: function response=',response);
                     var trimmed_response = response.trim(); // Trim the response text
                     console.log('Line 425: Video completion check response:', trimmed_response);
@@ -432,7 +431,7 @@
                         console.log('Line 450: Video not completed yet.');
                         //location.reload(); // Reload
                     }
-                }
+                },
                 error: function(xhr, status, error) {
                     console.error('Line 436: Error checking video completion:', error);
                 } 
