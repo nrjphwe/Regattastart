@@ -411,7 +411,7 @@
         var checkCompletionInterval;
         var video1Exists = <?php echo json_encode($video1Exists); ?>; // Get the value from PHP
         var video1Completed = <?php echo json_encode($video1Completed); ?>; // Get the value from PHP
-        console.log('Line 412: xxxxx Video completion check response:', video1Completed);
+        console.log('Line 412: xxxxx Video1 completion check response:', video1Completed);
 
         function checkVideoCompletion() {
             // AJAX call to PHP script to check completion status
