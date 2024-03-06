@@ -32,17 +32,6 @@
         // Store this value in a session to persist it across requests
         $_SESSION['stopRecordingPressed'] = $stopRecordingPressed;
     }
-
-    function isVideo1Completed() {
-        // Read the content of the status file
-        $status = trim(file_get_contents('/var/www/html/status.txt'));
-        error_log("Line 39: isVideo1Completed status= " . $status);
-        // Check if the status indicates Video1 completion
-        return ($status === 'complete');
-    }
-
-    // Check Video1 completion status
-    $video1Completed = isVideo1Completed();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -416,18 +405,18 @@
         function checkVideoCompletion() {
             // AJAX call to PHP script to check completion status
             $.ajax({
-                url: window.location.href,
+                url: 'check_video_completion.php',
                 type: 'GET',
                 success: function(response) {
                     console.log('Line 420: function response=',response);
                     var trimmed_response = response.trim(); // Trim the response text
-                    console.log('Line 422: Video completion check response:', trimmed_response);
+                    console.log('Line 422: Video1 completion check response:', trimmed_response);
                     // If Video1 is completed, reload the page
                     if (trimmed_response === 'true') {
                         console.log('Line 425: Reloading page...');
                         location.reload(true); // Reload with hard refresh
                     } else {
-                        console.log('Line 450: Video not completed yet.');
+                        console.log('Line 430: Video1 not completed yet.');
                         //location.reload(); // Reload
                     }
                 },
