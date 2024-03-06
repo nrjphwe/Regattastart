@@ -420,8 +420,9 @@
                 url: window.location.href,
                 type: 'GET',
                 success: function(response) {
+                    console.log('Line 423: function response=',response);
                     var trimmed_response = response.trim(); // Trim the response text
-                    //console.log('Line 457: Video completion check response:', trimmed_response);
+                    console.log('Line 425: Video completion check response:', trimmed_response);
                     // If Video1 is completed, reload the page
                     if (trimmed_response === 'true') {
                         console.log('Line 447: Reloading page...');
