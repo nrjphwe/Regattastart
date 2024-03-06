@@ -1,4 +1,4 @@
-<scriot>
+<script>
 function isVideo1Completed() {
     // Read the content of the status file
     $status = trim(file_get_contents('/var/www/html/status.txt'));
