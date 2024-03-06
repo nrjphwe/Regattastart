@@ -433,7 +433,9 @@
                     }
                 },
                 error: function(xhr, status, error) {
-                    console.error('Line 455: Error checking video completion:', error);
+                    console.error('Line 436: Error checking video completion:', error);
+                } else {
+                    console.log('Line 438: no success function response=',response);
                 }
             });
         }
