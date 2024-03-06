@@ -453,12 +453,13 @@
             }
         }
     </script>
-c    <script>
+    <!-- java script that executes AFTER the stop_recording button on Line 340 was pushed -->
+    <script>
         var stopRecordingPressed;
-        // This function executes AFTER the stop_recording button on Line 349 is pushed
+
         function refreshPage() {
             // Wait until after the Stop_Recording button was pressed
-            alert("Wait a while after button was pressed!");
+            // alert("Wait a while after button was pressed!");
             if (stopRecordingPressed) {
                 // Set the value of the hidden input field
                 document.getElementById("stopRecordingPressed").value = "1"; // Set stopRecordingPressed value to 1
