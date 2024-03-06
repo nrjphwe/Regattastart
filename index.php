@@ -397,7 +397,6 @@
     </div>
     <!--- Java Scripts  -->
     <script> // Function to check Video1 completion status and reload page if complete
-        ß
         function checkVideoCompletion() {
             // AJAX call to PHP script to check completion status
             $.ajax({
