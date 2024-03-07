@@ -399,23 +399,24 @@
     <script> // Function to check Video1 completion status and reload page if complete
         //var checkCompletionInterval;
         var video1Exists = <?php echo json_encode($video1Exists); ?>; // Get the value from PHP
-   
+        console.log('index.php, Line 402: function response=',response);
 
+   
         function checkVideoCompletion() {
             // AJAX call to PHP script to check completion status
             $.ajax({
                 url: 'check_video_completion.php',
                 type: 'GET',
                 success: function(response) {
-                    console.log('Line 420: function response=',response);
+                    console.log('Line 411: function response=',response);
                     var trimmed_response = response.trim(); // Trim the response text
-                    console.log('Line 422: Video1 completion check response:', trimmed_response);
+                    console.log('Line 413: Video1 completion check response:', trimmed_response);
                     // If Video1 is completed, reload the page
                     if (trimmed_response === 'true') {
-                        console.log('Line 425: Reloading page...');
+                        console.log('Line 416: Reloading page...');
                         location.reload(true); // Reload with hard refresh
                     } else {
-                        console.log('Line 430: Video1 not completed yet.');
+                        console.log('Line 419: Video1 not completed yet.');
                         //location.reload(); // Reload
                     }
                 },
