@@ -399,7 +399,7 @@
     <script> // Function to check Video1 completion status and reload page if complete
         //var checkCompletionInterval;
         var video1Exists = <?php echo json_encode($video1Exists); ?>; // Get the value from PHP
-        console.log('index.php, Line 402: function response=',response);
+        console.log('index.php, Line 402: function response=',$video1Exists);
 
    
         function checkVideoCompletion() {
