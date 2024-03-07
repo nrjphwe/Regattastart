@@ -6,6 +6,6 @@ function isVideo1Completed() {
     // Check if the status indicates Video1 completion
     return ($status === 'complete');
 }
-// Check Video1 completion status u
+// Check Video1 completion status
 $video1Completed = isVideo1Completed();
 </script>
