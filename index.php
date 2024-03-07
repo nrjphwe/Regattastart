@@ -401,7 +401,6 @@
         var video1Exists = <?php echo json_encode($video1Exists); ?>; // Get the value from PHP 
         console.log('index.php, Line 402: function response=', video1Exists);
 
-   
         function checkVideoCompletion() {
             // AJAX call to PHP script to check completion status
             $.get('check_video_completion.php', function(response, status) {
@@ -410,12 +409,12 @@
                     var trimmed_response = response.trim(); // Trim the response text
                     console.log('Line 411: Video1 completion check response:', trimmed_response);
                     // If Video1 is completed, reload the page
-                    if (trimmed_response === 'true') {
-                        console.log('Line 414: Reloading page...');
+                    if (trimmed_response === 'complete') {
+                        console.log('Line 417: Reloading page...');
                         location.reload(true); // Reload with hard refresh
                     } else {
                         console.log('Line 417: Video1 not completed yet.');
-                        //location.reload(); // Reload
+                        // Handle the case when Video1 is not completed yet
                     }
             
             });
