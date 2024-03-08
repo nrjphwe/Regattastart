@@ -414,11 +414,12 @@
                     console.log('Line 414: Video1 not completed yet.');
                     // Handle the case when Video1 is not completed yet
                 }
+            }).fail(function(xhr, status, error) {
+                 console.error('Line 418: AJAX failed:', error);
             });
         }
-        if (video1Exists) 
+        if (!video1Exists) 
         {
-        } else {
             // Start interval to check completion every 60 seconds
             checkCompletionInterval = setInterval(checkVideoCompletion, 60000); // Check every 60 seconds
         }
