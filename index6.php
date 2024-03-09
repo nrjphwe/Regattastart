@@ -10,30 +10,28 @@
     error_reporting(E_ALL);
 ?>
 <?php
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Process and store the form data
-    $_SESSION["form_data"] = $_POST;
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        // Process and store the form data
+        $_SESSION["form_data"] = $_POST;
 
-    // Execute the Python script
-    $command = 'python3 /usr/lib/cgi-bin/regattastart6.py ' . escapeshellarg(json_encode($_POST)) . ' > /var/www/html/output.txt 2>&1 &';
-    shell_exec($command);
-    
-    echo date('h:i:s') . "<br>";
-    echo "execution started";
-    sleep(3);
+        // Execute the Python script
+        $command = 'python3 /usr/lib/cgi-bin/regattastart6.py ' . escapeshellarg(json_encode($_POST)) . ' > /var/www/html/output.txt 2>&1 &';
+        shell_exec($command);
+        echo date('h:i:s') . "<br>";
+        echo "execution started";
+        sleep(3);
 
-    // Redirect to index.php
-    header("Location: index.php");
-    exit;
-}
-
-$day = date("l");
-$start_time = "18:25"; // You need to initialize $start_time
-$video_delay = isset($_SESSION["form_data"]["video_delay"]) ? $_SESSION["form_data"]["video_delay"] : "";
-$video_dur = isset($_SESSION["form_data"]["video_dur"]) ? $_SESSION["form_data"]["video_dur"] : "";
-$num_video = isset($_SESSION["form_data"]["num_video"]) ? $_SESSION["form_data"]["num_video"] : "";
-$num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data"]["num_starts"] : "";
-$dur_between_starts = isset($_SESSION["form_data"]["dur_between_starts"]) ? $_SESSION["form_data"]["dur_between_starts"] : "";
+        // Redirect to index.php
+        header("Location: index.php");
+        exit;
+    }
+    $day = date("l");
+    $start_time = "18:25"; // You need to initialize $start_time
+    $video_delay = isset($_SESSION["form_data"]["video_delay"]) ? $_SESSION["form_data"]["video_delay"] : "";
+    $video_dur = isset($_SESSION["form_data"]["video_dur"]) ? $_SESSION["form_data"]["video_dur"] : "";
+    $num_video = isset($_SESSION["form_data"]["num_video"]) ? $_SESSION["form_data"]["num_video"] : "";
+    $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data"]["num_starts"] : "";
+    $dur_between_starts = isset($_SESSION["form_data"]["dur_between_starts"]) ? $_SESSION["form_data"]["dur_between_starts"] : "";
 ?>
 <!DOCTYPE html>
 <html>
@@ -106,18 +104,24 @@ $dur_between_starts = isset($_SESSION["form_data"]["dur_between_starts"]) ? $_SE
                                 $start_time = isset($_SESSION["form_data"]["start_time"]) ? $_SESSION["form_data"]["start_time"] : "";
                                 $steps = 5; // Set to 10, for test set to 5, You can adjust the value of $steps according to your needs
                                 $loops = 24 * (60 / $steps); // Define $loops here or wherever it makes sense in your code
-                                $current = strtotime('today'); // Get the current timestamp truncated to the beginning of the day
-                                $nearest_time = ceil((time() - $current) / 300) * 300; // Find the nearest time in 5-minute intervals
+                                // Get the current time in seconds since the Unix Epoch
+                                $current = time(); 
+                                // Get the number of seconds elapsed since midnight
+                                $seconds_since_midnight = $current - strtotime('today');
+                                // Calculate the nearest time in 5-minute intervals
+                                $nearest_time = strtotime('today') + round($seconds_since_midnight / (5 * 60)) * (5 * 60);
                                 $start_time_option = date('H:i', $nearest_time);
                             ?>
                             Start Time: <select name="start_time" id="start_time">
                                 <?php
-                                for ($i = 0; $i < $loops; $i++) {
-                                    $start_time_option = sprintf('%02d:%02d', $i / (60 / $steps), $current % 60);
-                                    $selected = ($start_time == $start_time_option) ? "selected" : ""; // Check if this option should be selected
-                                    echo '<option value="' . $start_time_option . '" ' . $selected . '>' . $start_time_option . '</option>';
-                                    $current += $steps;
-                                }
+                                    for ($i = 0; $i < $loops; $i++) {
+                                         // Calculate the time for this option
+                                        $time_option = date('H:i', $nearest_time + ($i * $steps * 60));
+                                        // Check if this option should be selected
+                                        $selected = ($time_option == $start_time_option) ? "selected" : ""; 
+                                        // Output the option tag
+                                        echo '<option value="' . $time_option . '" ' . $selected . '>' . $time_option . '</option>';
+                                    }
                                 ?>
                             </select>
                             <br>

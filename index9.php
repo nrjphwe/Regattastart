@@ -11,7 +11,6 @@
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Process and store the form data
         $_SESSION["form_data"] = $_POST;
-
         // Execute the Python script
         $command = 'python3 /usr/lib/cgi-bin/regattastart9.py ' . escapeshellarg(json_encode($_POST)) . ' > /var/www/html/output.txt 2>&1 &';
         shell_exec($command);
@@ -112,7 +111,7 @@
 </div>
 <header>
     <div style="text-align: center;">
-        <div class="w3-container w3-blue">
+        <div class="w3-container w3-green">
             <h2>Regattastart9 with image detection </h2>
         </div>
     </div>
@@ -146,22 +145,29 @@
                             </select>
                             <p></p>
                             <div data-tap-disabled="true">
-                            <?php
+                            <?php 
                                 $start_time = isset($_SESSION["form_data"]["start_time"]) ? $_SESSION["form_data"]["start_time"] : "";
-                                $steps = 5; // Set to 10, for test set to 5, You can adjust the value of $steps according to your needs
-                                $loops = 24 * (60 / $steps); // Define $loops here or wherever it makes sense in your code
-                                $current = strtotime('today'); // Get the current timestamp truncated to the beginning of the day
-                                $nearest_time = ceil((time() - $current) / 300) * 300; // Find the nearest time in 5-minute intervals
+                                $steps = 5; // Interval in minutes
+                                $loops = 24 * (60 / $steps); // Number of intervals in a day
+                                // Get the current time in seconds since the Unix Epoch
+                                $current = time(); 
+                                // Get the number of seconds elapsed since midnight
+                                $seconds_since_midnight = $current - strtotime('today');
+                                // Calculate the nearest time in 5-minute intervals
+                                $nearest_time = strtotime('today') + round($seconds_since_midnight / (5 * 60)) * (5 * 60);
                                 $start_time_option = date('H:i', $nearest_time);
                             ?>
                             Start Time: <select name="start_time" id="start_time">
                                 <?php
-                                for ($i = 0; $i < $loops; $i++) {
-                                    $time_option = date('H:i', $current);
-                                    $selected = ($start_time == $time_option) ? "selected" : ""; // Check if this option should be selected
-                                    echo '<option value="' . $time_option . '" ' . $selected . '>' . $time_option . '</option>';
-                                    $current += $steps * 60; // Increment by $steps in minutes
-                                }
+                                    // Loop through the intervals in a day starting from the nearest time
+                                    for ($i = 0; $i < $loops; $i++) {
+                                        // Calculate the time for this option
+                                        $time_option = date('H:i', $nearest_time + ($i * $steps * 60));
+                                        // Check if this option should be selected
+                                        $selected = ($time_option == $start_time_option) ? "selected" : ""; 
+                                        // Output the option tag
+                                        echo '<option value="' . $time_option . '" ' . $selected . '>' . $time_option . '</option>';
+                                    }
                                 ?>
                             </select>
                             <br>
