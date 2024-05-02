@@ -75,33 +75,33 @@ def trigger_relay(port):
         time.sleep(signal_dur)
         GPIO.output(signal, OFF)
         time.sleep(1 - signal_dur)
-        logger.info ("     Trigger signal %s sec, then wait for 1 - %s sec", signal_dur, signal_dur)
+        logger.info ("78    Trigger signal %s sec, then wait for 1 - %s sec", signal_dur, signal_dur)
     elif port == 'Lamp1_on':
         GPIO.output(lamp1, ON)
-        logger.info ('Lamp1_on')
+        logger.info ('81 Lamp1_on')
     elif port == 'Lamp2_on':
         GPIO.output(lamp2, ON)
-        logger.info ('Lamp2_on')
+        logger.info ('84 Lamp2_on')
     elif port == 'Lamp1_off':
         GPIO.output(lamp1, OFF)
-        logger.info ('Lamp1_off')
+        logger.info ('87 Lamp1_off')
     elif port == 'Lamp2_off':
         GPIO.output(lamp2, OFF)
-        logger.info ('Lamp2_off')
+        logger.info ('90 Lamp2_off')
 
 def capture_picture(camera, photo_path, file_name):
     camera.capture(os.path.join(photo_path, file_name), use_video_port=True)
-    logger.info ("     Capture picture = %s ", file_name)
+    logger.info ("94     Capture picture = %s ", file_name)
 
 def start_video_recording(camera, video_path, file_name):
     if camera.recording:
         camera.stop_recording()
     camera.start_recording(os.path.join(video_path, file_name))
-    logger.info (" Started recording of %s ", file_name)
+    logger.info (" 100 Started recording of %s ", file_name)
 
 def stop_video_recording(camera):
     camera.stop_recording()
-    logger.info (" video recording stopped")
+    logger.info (" 104 video recording stopped")
 
 def annotate_video_duration(camera, start_time_sec):
     time_now = dt.datetime.now()
@@ -112,15 +112,15 @@ def annotate_video_duration(camera, start_time_sec):
 def convert_video_to_mp4(video_path, source_file, destination_file):
     convert_video_str = "MP4Box -add {} -new {}".format(os.path.join(video_path,source_file), os.path.join(video_path,destination_file))
     subprocess.run(convert_video_str, shell=True)
-    logger.info (" Video recording %s converted ", destination_file)
+    logger.info (" 115 Video recording %s converted ", destination_file)
 
 def start_sequence(camera, signal, start_time_sec, num_starts, dur_between_starts, photo_path):
     for i in range(num_starts):
-        logger.info(f"  Line 104: Start_sequence. Start of iteration {i}")
+        logger.info(f"  Line 119: Start_sequence. Start of iteration {i}")
         # Adjust the start_time_sec for the second iteration
         if i == 1:
             start_time_sec += dur_between_starts * 60  # Add 5 or 10 minutes for the second iteration
-            logger.info(f"  Line 108: Start_sequence, Next start_time_sec: {start_time_sec}")
+            logger.info(f"  Line 123: Start_sequence, Next start_time_sec: {start_time_sec}")
 
         # Define time intervals for each iteration
         time_intervals = [
@@ -154,7 +154,7 @@ def start_sequence(camera, signal, start_time_sec, num_starts, dur_between_start
                     capture_picture(camera, photo_path, picture_name)
                     logger.info(f"  Start_sequence, log_message: {log_message}")
                     logger.info(f"  Start_sequence, seconds_since_midnight: {seconds_since_midnight}, start_time_sec: {start_time_sec}")
-        logger.info(f"  Start_sequence, End of iteration: {i}")
+        logger.info(f" 157  Start_sequence, End of iteration: {i}")
 
 def finish_recording(camera, video_path, video_delay, num_video, video_dur, start_time_sec):
     # Wait for finish, when the next video will start (delay)
@@ -175,7 +175,7 @@ def finish_recording(camera, video_path, video_delay, num_video, video_dur, star
 
         stop_video_recording(camera)
         convert_video_to_mp4(video_path, f"video{i}.h264", f"video{i}.mp4")
-    logger.info("This was the last video =====")
+    logger.info(" Line 178 This was the last video =====")
 
 def main():
     logger = setup_logging()  # Initialize the logger
@@ -201,12 +201,12 @@ def main():
 
         camera = setup_camera()
         if camera is None:
-            logger.error("Camera initialization failed. Exiting.")
+            logger.error("Line 204 Camera initialization failed. Exiting.")
             sys.exit(1)
         signal, lamp1, lamp2 = setup_gpio()
         remove_video_files(photo_path, "video")  # clean up 
         remove_picture_files(photo_path, ".jpg") # clean up
-        logger.info(" Weekday=%s, Start_time=%s, video_delay=%s, num_video=%s, video_dur=%s, num_starts=%s",
+        logger.info(" Line 209 Weekday=%s, Start_time=%s, video_delay=%s, num_video=%s, video_dur=%s, num_starts=%s",
                     week_day, start_time, video_delay, num_video, video_dur, num_starts)
         
         start_hour, start_minute = start_time.split(':')
@@ -223,18 +223,18 @@ def main():
                 seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
     
                 if seconds_since_midnight > t5min_warning - 2:         
-                    logger.info(" Line 207: Start of outer loop iteration. seconds_since_midnight=%s", seconds_since_midnight)
+                    logger.info(" Line 226: Start of outer loop iteration. seconds_since_midnight=%s", seconds_since_midnight)
 
                     if num_starts == 1 or num_starts == 2:
                         # Start video recording just before 5 minutes before the first start
                         start_video_recording(camera, video_path, "video0.h264")
-                        logger.info(" Line 212: Inner loop, entering the start sequence block.")
+                        logger.info(" Line 231: Inner loop, entering the start sequence block.")
                         start_sequence(camera, signal, start_time_sec, num_starts, dur_between_starts,photo_path)
                         if num_starts == 2:
                             start_time_sec = start_time_sec + (dur_between_starts * 60)
-                        logger.info(" Line 216: Wait 2 minutes then stop video recording")
+                        logger.info(" Line 235: Wait 2 minutes then stop video recording")
                         t0 = dt.datetime.now()
-                        logger.info(" Line 218: start_time_sec= %s, t0= %s",start_time_sec, t0)  #test
+                        logger.info(" Line 237: start_time_sec= %s, t0= %s",start_time_sec, t0)  #test
                         while (dt.datetime.now() - t0).seconds < (119):
                             now = dt.datetime.now()
                             seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
@@ -247,18 +247,20 @@ def main():
                     # Exit the loop after the condition is met
                     break
                 
-        logger.info("Finish recording outside inner loop. start_time_sec=%s", start_time_sec)
+        logger.info("Line 250 Finish recording outside inner loop. start_time_sec=%s", start_time_sec)
         finish_recording(camera, video_path, video_delay, num_video, video_dur, start_time_sec)
 
     except json.JSONDecodeError as e:
         logger.info ("Failed to parse JSON: %", str(e))
         sys.exit(1)
     finally:
-        logger.info(" Line 238: This is finally section")
+        logger.info(" Line 257: This is finally section")
         if camera is not None:
             camera.close()  # Release the camera resources
         if signal is not None:
             GPIO.output(signal, OFF)  # Turn off the signal output
+            GPIO.output(lamp1, OFF)  # Turn off the signal output
+            GPIO.output(lamp2, OFF)  # Turn off the signal output
         GPIO.cleanup()
         
 if __name__ == "__main__":
