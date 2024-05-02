@@ -19,8 +19,9 @@ signal_dur = 0.3 # 0.3 sec
 log_path = '/usr/lib/cgi-bin/'
 video_path = '/var/www/html/images/'
 photo_path = '/var/www/html/images/'
-ON = GPIO.HIGH
-OFF = GPIO.LOW
+## below changed 2024-05-02
+ON = GPIO.LOW
+OFF = GPIO.HIGH
 
 def setup_logging():
     global logger  # Make logger variable global
