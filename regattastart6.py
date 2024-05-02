@@ -19,9 +19,13 @@ signal_dur = 0.3 # 0.3 sec
 log_path = '/usr/lib/cgi-bin/'
 video_path = '/var/www/html/images/'
 photo_path = '/var/www/html/images/'
+# GPIO
 ## below changed 2024-05-02
 ON = GPIO.LOW
 OFF = GPIO.HIGH
+signal = 26
+lamp1 = 20
+lamp2 = 21
 
 def setup_logging():
     global logger  # Make logger variable global
@@ -46,9 +50,6 @@ def setup_camera():
 def setup_gpio():
     GPIO.setmode(GPIO.BCM)
     GPIO.setwarnings(True)
-    signal = 26
-    lamp1 = 20
-    lamp2 = 21
     GPIO.setup(signal, GPIO.OUT, initial=GPIO.HIGH)
     GPIO.setup(lamp1, GPIO.OUT, initial=GPIO.HIGH)
     GPIO.setup(lamp2, GPIO.OUT, initial=GPIO.HIGH)
