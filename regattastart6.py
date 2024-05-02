@@ -75,13 +75,13 @@ def trigger_relay(port):
         GPIO.output(signal, OFF)
         time.sleep(1 - signal_dur)
         logger.info ("     Trigger signal %s sec, then wait for 1 - %s sec", signal_dur, signal_dur)
-    elif port == Lamp1_on:
+    elif port == 'Lamp1_on':
         GPIO.output(lamp1, ON)
-    elif port == Lamp2_on:
+    elif port == 'Lamp2_on':
         GPIO.output(lamp2, ON)
-    elif port == Lamp1_off:
+    elif port == 'Lamp1_off':
         GPIO.output(lamp1, OFF)
-    elif port == Lamp2_off:
+    elif port == 'Lamp2_off':
         GPIO.output(lamp2, OFF)
 
 def capture_picture(camera, photo_path, file_name):
@@ -120,13 +120,13 @@ def start_sequence(camera, signal, start_time_sec, num_starts, dur_between_start
         # Define time intervals for each iteration
         time_intervals = [
             (start_time_sec - 5 * 60, lambda: trigger_relay(signal), "5_min Warning signal"),
-            (start_time_sec - 5 * 60, lambda: trigger_relay(Lamp1_on), "5_min Lamp-1 On -- Up with Flag O"),
+            (start_time_sec - 5 * 60, lambda: trigger_relay('Lamp1_on'), "5_min Lamp-1 On -- Up with Flag O"),
             (start_time_sec - 4 * 60, lambda: trigger_relay(signal), "4_min Warning signal"),
-            (start_time_sec - 4 * 60, lambda: trigger_relay(Lamp2_on), "4_min Lamp-2 On"),
+            (start_time_sec - 4 * 60, lambda: trigger_relay('Lamp2_on'), "4_min Lamp-2 On"),
             (start_time_sec - 1 * 60, lambda: trigger_relay(signal), "1_min  Warning signal"),
-            (start_time_sec - 1 * 60, lambda: trigger_relay(Lamp2_off), "1_min Lamp-2 off -- Flag P down"),
+            (start_time_sec - 1 * 60, lambda: trigger_relay('Lamp2_off'), "1_min Lamp-2 off -- Flag P down"),
             (start_time_sec - 1, lambda: trigger_relay(signal), "Start signal"),
-            (start_time_sec - 1, lambda: trigger_relay(Lamp1_off), "Lamp1-off at start"),
+            (start_time_sec - 1, lambda: trigger_relay('Lamp1_off'), "Lamp1-off at start"),
         ]
 
         while True:
