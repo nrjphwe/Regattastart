@@ -75,13 +75,13 @@ def trigger_relay(port):
         GPIO.output(signal, OFF)
         time.sleep(1 - signal_dur)
         logger.info ("     Trigger signal %s sec, then wait for 1 - %s sec", signal_dur, signal_dur)
-    elif port == Lamp1_on
+    elif port == Lamp1_on:
         GPIO.output(Lamp1, ON)
-    elif port == Lamp2_on
+    elif port == Lamp2_on:
         GPIO.output(Lamp2, ON)
-    elif port == Lamp1_off
+    elif port == Lamp1_off:
         GPIO.output(Lamp1, OFF)
-    elif port == Lamp2_off
+    elif port == Lamp2_off:
         GPIO.output(Lamp2, OFF)
 
 def capture_picture(camera, photo_path, file_name):
