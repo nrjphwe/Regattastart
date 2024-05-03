@@ -134,6 +134,8 @@ def start_sequence(camera, signal, start_time_sec, num_starts, dur_between_start
             (start_time_sec - 2, lambda: trigger_relay('Lamp1_off'), "Lamp1-off at start"),
         ]
 
+        last_triggered_events = {}
+
         while True:
             time_now = dt.datetime.now()
             seconds_since_midnight = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
@@ -145,15 +147,20 @@ def start_sequence(camera, signal, start_time_sec, num_starts, dur_between_start
                 camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                 time_now = dt.datetime.now()
                 seconds_now = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
-                # Iterate through time intervals
+
+                # Check if the event should be triggered based on the current time
                 if seconds_now == seconds:
-                    logger.info(f"  Start_sequence, Triggering event at seconds_now: {seconds_now}")
-                    if action:
-                        action()
-                    picture_name = f"{i + 1}a_start_{log_message[:5]}.jpg"
-                    capture_picture(camera, photo_path, picture_name)
-                    logger.info(f"  Start_sequence, log_message: {log_message}")
-                    logger.info(f"  Start_sequence, seconds_since_midnight: {seconds_since_midnight}, start_time_sec: {start_time_sec}")
+                    # Check if the event has already been triggered for this time interval
+                    if (seconds, log_message) not in last_triggered_events:
+                        logger.info(f"  Start_sequence, Triggering event at seconds_now: {seconds_now}")
+                        if action:
+                            action()
+                        picture_name = f"{i + 1}a_start_{log_message[:5]}.jpg"
+                        capture_picture(camera, photo_path, picture_name)
+                        logger.info(f"  Start_sequence, log_message: {log_message}")
+                        logger.info(f"  Start_sequence, seconds_since_midnight: {seconds_since_midnight}, start_time_sec: {start_time_sec}")
+                        # Record that the event has been triggered for this time interval
+                        last_triggered_events[(seconds, log_message)] = True
         logger.info(f" 157  Start_sequence, End of iteration: {i}")
 
 def finish_recording(camera, video_path, video_delay, num_video, video_dur, start_time_sec):
