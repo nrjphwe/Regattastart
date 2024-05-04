@@ -310,12 +310,12 @@ def finish_recording(video_path, num_starts, video_end, start_time, start_time_s
         # read frame
         ret, frame = cap.read()
         if frame is None:
-            logger.info("Line 286: Frame is None. Ending loop.")
+            logger.info("Line 313: Frame is None. Ending loop.")
             break
 
         # if frame is read correctly ret is True
         if not ret:
-            logger.info("Line 291: End of video stream. Or can't receive frame (stream end?). Exiting ...")
+            logger.info("Line 318: End of video stream. Or can't receive frame (stream end?). Exiting ...")
             break
 
         frame = cv2.flip(frame, flipCode = -1) # camera is upside down"
@@ -370,17 +370,17 @@ def finish_recording(video_path, num_starts, video_end, start_time, start_time_s
 
         # Check if the maximum recording duration has been reached
         elapsed_time = time.time() - start_time
-        logger.info(f"Line 336: elapsed time: {elapsed_time}")
+        logger.info(f"Line 373: elapsed time: {elapsed_time}")
         if elapsed_time >= 60 * (video_end + 5 * (num_starts - 1)):
             break
 
-        logger.info(f"Line 325, Recording stopped: {recording_stopped}")
+        logger.info(f"Line 377, Recording stopped: {recording_stopped}")
         if recording_stopped == True:
             break
 
     cap.release()  # Don't forget to release the camera resources when done
     video_writer.release()  # Release the video writer
-    logger.info("Line 356, Exited finish_recording module.")
+    logger.info("Line 383, Exited finish_recording module.")
 
 def main():
     logger = setup_logging()  # Initialize the logger
@@ -418,7 +418,7 @@ def main():
         signal, lamp1, lamp2 = setup_gpio()
         remove_video_files(photo_path, "video")  # clean up
         remove_picture_files(photo_path, ".jpg") # clean up
-        logger.info("Line 394: Weekday=%s, Start_time=%s, video_end=%s, num_starts=%s",
+        logger.info("Line 421: Weekday=%s, Start_time=%s, video_end=%s, num_starts=%s",
                     week_day, start_time.strftime("%H:%M"), video_end, num_starts)
 
         if wd == week_day:
@@ -428,17 +428,17 @@ def main():
                 now = dt.datetime.now()
                 seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
                 if seconds_since_midnight > t5min_warning - 2:
-                    logger.info("Line 404 Start of outer loop iteration. seconds_since_midnight=%s", seconds_since_midnight)
+                    logger.info("Line 431 Start of outer loop iteration. seconds_since_midnight=%s", seconds_since_midnight)
                     if num_starts == 1 or num_starts == 2:
                         # Start video recording just before 5 minutes before the first start
                         start_video_recording(camera, video_path, "video0.h264")
-                        logger.info("Line 409: Inner loop, entering the start sequence block.")
+                        logger.info("Line 435: Inner loop, entering the start sequence block.")
                         start_sequence(camera, signal, start_time_sec, num_starts, dur_between_starts, photo_path)
                         if num_starts == 2:
                             start_time_sec = start_time_sec + (dur_between_starts * 60)
-                        logger.info("Line 413: Wait 2 minutes then stop video0 recording")
+                        logger.info("Line 439: Wait 2 minutes then stop video0 recording")
                         t0 = dt.datetime.now()
-                        logger.info("Line 415: start_time_sec= %s, t0= %s",start_time_sec, t0)  #test
+                        logger.info("Line 441: start_time_sec= %s, t0= %s",start_time_sec, t0)  #test
                         while (dt.datetime.now() - t0).seconds < (119):
                             now = dt.datetime.now()
                             seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
@@ -454,14 +454,14 @@ def main():
         time.sleep(2)  # Introduce a delay of 2 seconds
 
     except json.JSONDecodeError as e:
-        logger.info ("Line 430, Failed to parse JSON: %", str(e))
+        logger.info ("Line 457, Failed to parse JSON: %", str(e))
         sys.exit(1)
     finally:
-        logger.info("Line 433 Finally section, before listen_for_message")
+        logger.info("Line 460 Finally section, before listen_for_message")
           # Start a thread for listening for messages
         listen_thread = threading.Thread(target=listen_for_messages)
         listen_thread.start()
-        logger.info("Line 437, Finally section, before 'Finish recording'. start_time=%s video_end%s", start_time, video_end)
+        logger.info("Line 464, Finally section, before 'Finish recording'. start_time=%s video_end%s", start_time, video_end)
         time.sleep(2)
         finish_recording(video_path, num_starts, video_end, start_time, start_time_sec)
         time.sleep(2)
@@ -469,7 +469,7 @@ def main():
         # After video conversion is complete
         with open('/var/www/html/status.txt', 'w') as status_file:
             status_file.write('complete')
-        logger.info("Line 442, Finished with finish_recording and recording converted to mp4")
+        logger.info("Line 472, Finished with finish_recording and recording converted to mp4")
         if camera is not None:
             camera.close()  # Release the camera resources
         if signal is not None:
