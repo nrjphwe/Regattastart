@@ -415,11 +415,9 @@ def main():
         if camera is None:
             logger.error("Camera initialization failed. Exiting.")
             sys.exit(1)
-        signal, lamp1, lamp2 = setup_gpio()
         remove_video_files(photo_path, "video")  # clean up
         remove_picture_files(photo_path, ".jpg") # clean up
-        logger.info("Line 421: Weekday=%s, Start_time=%s, video_end=%s, num_starts=%s",
-                    week_day, start_time.strftime("%H:%M"), video_end, num_starts)
+        logger.info("Line 421: Weekday=%s, Start_time=%s, video_end=%s, num_starts=%s", week_day, start_time.strftime("%H:%M"), video_end, num_starts)
 
         if wd == week_day:
             # A loop that waits until close to the 5-minute mark, a loop that continuously checks the
