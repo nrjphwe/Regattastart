@@ -105,13 +105,6 @@ def trigger_relay(port):
         lamp2.off()
         logger.info ('  Line 106 Lamp2_off')
 
-def trigger_warning_signal(signal):
-    signal.on()
-    time.sleep(signal_dur)
-    signal.off()
-    time.sleep(1 - signal_dur)
-    logger.info ("     Trigger signal %s sec, then wait for 1 - %s sec", signal_dur, signal_dur)
-
 def capture_picture(camera, photo_path, file_name):
     camera.capture(os.path.join(photo_path, file_name), use_video_port=True)
     logger.info ("     Capture picture = %s ", file_name)
@@ -186,16 +179,16 @@ def start_sequence(camera, signal, start_time_sec, num_starts, dur_between_start
                 if seconds_now == seconds:
                     # Check if the event has already been triggered for this time interval
                     if (seconds, log_message) not in last_triggered_events:
-                        logger.info(f"  Line 189: Start_sequence, Triggering event at seconds_now: {seconds_now}")
+                        logger.info(f"  Line 182: Start_sequence, Triggering event at seconds_now: {seconds_now}")
                         if action:
                             action()
                         picture_name = f"{i + 1}a_start_{log_message[:5]}.jpg"
                         capture_picture(camera, photo_path, picture_name)
-                        logger.info(f"    Line 194: Start_sequence, log_message: {log_message}")
-                        logger.info(f"    Line 195: Start_sequence, seconds_since_midnight: {seconds_since_midnight}, start_time_sec: {start_time_sec}")
+                        logger.info(f"   Line 187: Start_sequence, log_message: {log_message}")
+                        logger.info(f"   Line 188: Start_sequence, seconds_since_midnight: {seconds_since_midnight}, start_time_sec: {start_time_sec}")
                         # Record that the event has been triggered for this time interval
                         last_triggered_events[(seconds, log_message)] = True
-        logger.info(f"   Line 198:  Start_sequence, End of iteration: {i}")
+        logger.info(f"  Line 191:  Start_sequence, End of iteration: {i}")
 
 def open_camera():
     """
@@ -371,17 +364,17 @@ def finish_recording(video_path, num_starts, video_end, start_time, start_time_s
 
         # Check if the maximum recording duration has been reached
         elapsed_time = time.time() - start_time
-        logger.info(f"Line 373: elapsed time: {elapsed_time}")
+        logger.info(f"  Line 367: elapsed time: {elapsed_time}")
         if elapsed_time >= 60 * (video_end + 5 * (num_starts - 1)):
             break
 
-        logger.info(f"Line 377, Recording stopped: {recording_stopped}")
+        logger.info(f"  Line 371, Recording stopped: {recording_stopped}")
         if recording_stopped == True:
             break
 
     cap.release()  # Don't forget to release the camera resources when done
     video_writer.release()  # Release the video writer
-    logger.info("Line 383, Exited finish_recording module.")
+    logger.info("  Line 377, Exited finish_recording module.")
 
 def main():
     logger = setup_logging()  # Initialize the logger
@@ -418,7 +411,7 @@ def main():
             sys.exit(1)
         remove_video_files(photo_path, "video")  # clean up
         remove_picture_files(photo_path, ".jpg") # clean up
-        logger.info("Line 421: Weekday=%s, Start_time=%s, video_end=%s, num_starts=%s", week_day, start_time.strftime("%H:%M"), video_end, num_starts)
+        logger.info("  Line 414: Weekday=%s, Start_time=%s, video_end=%s, num_starts=%s", week_day, start_time.strftime("%H:%M"), video_end, num_starts)
 
         if wd == week_day:
             # A loop that waits until close to the 5-minute mark, a loop that continuously checks the
@@ -427,17 +420,17 @@ def main():
                 now = dt.datetime.now()
                 seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
                 if seconds_since_midnight > t5min_warning - 2:
-                    logger.info("Line 431 Start of outer loop iteration. seconds_since_midnight=%s", seconds_since_midnight)
+                    logger.info("  Line 423 Start of outer loop iteration. seconds_since_midnight=%s", seconds_since_midnight)
                     if num_starts == 1 or num_starts == 2:
                         # Start video recording just before 5 minutes before the first start
                         start_video_recording(camera, video_path, "video0.h264")
-                        logger.info("Line 435: Inner loop, entering the start sequence block.")
+                        logger.info("  Line 427: Inner loop, entering the start sequence block.")
                         start_sequence(camera, signal, start_time_sec, num_starts, dur_between_starts, photo_path)
                         if num_starts == 2:
                             start_time_sec = start_time_sec + (dur_between_starts * 60)
-                        logger.info("Line 439: Wait 2 minutes then stop video0 recording")
+                        logger.info("  Line 431: Wait 2 minutes then stop video0 recording")
                         t0 = dt.datetime.now()
-                        logger.info("Line 441: start_time_sec= %s, t0= %s",start_time_sec, t0)  #test
+                        logger.info("  Line 433: start_time_sec= %s, t0= %s",start_time_sec, t0)  #test
                         while (dt.datetime.now() - t0).seconds < (119):
                             now = dt.datetime.now()
                             seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
@@ -453,14 +446,14 @@ def main():
         time.sleep(2)  # Introduce a delay of 2 seconds
 
     except json.JSONDecodeError as e:
-        logger.info ("Line 457, Failed to parse JSON: %", str(e))
+        logger.info ("  Line 449, Failed to parse JSON: %", str(e))
         sys.exit(1)
     finally:
-        logger.info("Line 460 Finally section, before listen_for_message")
+        logger.info("  Line 452 Finally section, before listen_for_message")
           # Start a thread for listening for messages
         listen_thread = threading.Thread(target=listen_for_messages)
         listen_thread.start()
-        logger.info("Line 464, Finally section, before 'Finish recording'. start_time=%s video_end%s", start_time, video_end)
+        logger.info("  Line 456, Finally section, before 'Finish recording'. start_time=%s video_end%s", start_time, video_end)
         time.sleep(2)
         finish_recording(video_path, num_starts, video_end, start_time, start_time_sec)
         time.sleep(2)
