@@ -31,12 +31,24 @@ photo_path = '/var/www/html/images/'
 ON = True
 OFF = False
 
-# reset the contents of the status variable, used for falgging that video1-conversion is complete. 
+# reset the contents of the status variable, used for flagging that video1-conversion is complete. 
 with open('/var/www/html/status.txt', 'w') as status_file:
     status_file.write("")
 
 # Global variable
 recording_stopped = False
+
+# setup gpio()
+# Set the pin factory to use BCM numbering mode
+Device._default_pin_factory()
+GPIO.setwarnings(True)
+GPIO.setmode(GPIO.BCM)
+signal_pin = 26
+lamp1_pin = 20
+lamp2_pin = 21
+signal = OutputDevice(signal_pin)
+lamp1 = OutputDevice(lamp1_pin)
+lamp2 = OutputDevice(lamp2_pin)
 
 def setup_logging():
     global logger  # Make logger variable global
@@ -59,23 +71,6 @@ def setup_camera():
         logger.error(f"Failed to initialize camera: {e}")
         return None
 
-def setup_gpio():
-    try:
-        # Set the pin factory to use BCM numbering mode
-        Device._default_pin_factory()
-        GPIO.setwarnings(True)
-        GPIO.setmode(GPIO.BCM)
-        signal_pin = 26
-        lamp1_pin = 20
-        lamp2_pin = 21
-        signal = OutputDevice(signal_pin)
-        lamp1 = OutputDevice(lamp1_pin)
-        lamp2 = OutputDevice(lamp2_pin)
-        return signal, lamp1, lamp2
-    except Exception as e:
-        logger.error(f"Failed to initialize GPIO: {e}")
-        return None
-
 def remove_picture_files(directory, pattern):
     files = os.listdir(directory)
     for file in files:
@@ -89,6 +84,26 @@ def remove_video_files(directory, pattern):
         if file.startswith(pattern):
             file_path = os.path.join(directory, file)
             os.remove(file_path)
+
+def trigger_relay(port):
+    if port == 'Signal':
+        signal.on()
+        time.sleep(signal_dur)
+        signal.off()
+        time.sleep(1 - signal_dur)
+        logger.info ("  Line 94:    Trigger signal %s sec, then wait for 1 - %s sec", signal_dur, signal_dur)
+    elif port == 'Lamp1_on':
+        lamp1.on()
+        logger.info ('  Line 97 Lamp1_on')
+    elif port == 'Lamp2_on':
+        lamp2.on()
+        logger.info ('  Line 100 Lamp2_on')
+    elif port == 'Lamp1_off':
+        lamp1.off()
+        logger.info ('  Line 103 Lamp1_off')
+    elif port == 'Lamp2_off':
+        lamp2.off()
+        logger.info ('  Line 106 Lamp2_off')
 
 def trigger_warning_signal(signal):
     signal.on()
@@ -123,7 +138,7 @@ def convert_video_to_mp4(video_path, source_file, destination_file):
         os.path.join(video_path, destination_file)
     )
     subprocess.run(convert_video_str, shell=True)
-    logger.info ("Line 118: Video recording %s converted ", destination_file)
+    logger.info ("Line 141: Video recording %s converted ", destination_file)
 
 def re_encode_video(video_path, source_file, destination_file):
     re_encode_video_str = "ffmpeg -loglevel error -i {} -vf fps=10 -vcodec libx264 -f mp4 {}".format(
@@ -131,23 +146,29 @@ def re_encode_video(video_path, source_file, destination_file):
         os.path.join(video_path, destination_file)
     )
     subprocess.run(re_encode_video_str, shell=True)
-    logger.info ("Line 131: Video %s re-encoded ", destination_file)
+    logger.info ("Line 149: Video %s re-encoded ", destination_file)
 
 def start_sequence(camera, signal, start_time_sec, num_starts, dur_between_starts, photo_path,):
     for i in range(num_starts):
-        logger.info(f"  Line 134: Start_sequence. Start of iteration {i}")
+        logger.info(f"  Line 153: Start_sequence. Start of iteration {i}")
         # Adjust the start_time_sec for the second iteration
         if i == 1:
             start_time_sec += dur_between_starts * 60  # Add 5 or 10 minutes for the second iteration
-            logger.info(f"  Line 138 Start_sequence, Next start_time_sec: {start_time_sec}")
+            logger.info(f"  Line 157: Start_sequence, Next start_time_sec: {start_time_sec}")
 
         # Define time intervals for each iteration
         time_intervals = [
-            (start_time_sec - 5 * 60, lambda: trigger_warning_signal(signal), "5_min Lamp-1 On -- Up with Flag O"),
-            (start_time_sec - 4 * 60, lambda: trigger_warning_signal(signal), "4_min Lamp-2 On  --- Up with Flag P"),
-            (start_time_sec - 1 * 60, lambda: trigger_warning_signal(signal), "1_min  Lamp-2 Off -- Flag P down"),
-            (start_time_sec - 1, lambda: trigger_warning_signal(signal), "Start signal"),
+            (start_time_sec - 5 * 60, lambda: trigger_relay('Signal'), "5_min Warning signal"),
+            (start_time_sec - 5 * 60 + 1, lambda: trigger_relay('Lamp1_on'), "5_min Lamp-1 On -- Up with Flag O"),
+            (start_time_sec - 4 * 60, lambda: trigger_relay('Signal'), "4_min Warning signal"),
+            (start_time_sec - 4 * 60 + 1, lambda: trigger_relay('Lamp2_on'), "4_min Lamp-2 On"),
+            (start_time_sec - 1 * 60, lambda: trigger_relay('Signal'), "1_min  Warning signal"),
+            (start_time_sec - 1 * 60 + 1, lambda: trigger_relay('Lamp2_off'), "1_min Lamp-2 off -- Flag P down"),
+            (start_time_sec - 1, lambda: trigger_relay('Signal'), "Start signal"),
+            (start_time_sec - 2, lambda: trigger_relay('Lamp1_off'), "Lamp1-off at start"),
         ]
+
+        last_triggered_events = {}
 
         while True:
             time_now = dt.datetime.now()
@@ -160,16 +181,20 @@ def start_sequence(camera, signal, start_time_sec, num_starts, dur_between_start
                 camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                 time_now = dt.datetime.now()
                 seconds_now = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
+
+                # Check if the event should be triggered based on the current time
                 # Iterate through time intervals
                 if seconds_now == seconds:
-                    logger.info(f"  Start_sequence, Triggering event at seconds_now: {seconds_now}")
+                    logger.info(f"  Line 186: Start_sequence, Triggering event at seconds_now: {seconds_now}")
                     if action:
                         action()
                     picture_name = f"{i + 1}a_start_{log_message[:5]}.jpg"
                     capture_picture(camera, photo_path, picture_name)
-                    logger.info(f"     Line 166: Start_sequence, log_message: {log_message}")
-                    logger.info(f"     Line 167: Start_sequence, seconds_since_midnight: {seconds_since_midnight}, start_time_sec: {start_time_sec}")
-        logger.info(f" Line 168: Start_sequence, End of iteration: {i}")
+                    logger.info(f"     Line 193: Start_sequence, log_message: {log_message}")
+                    logger.info(f"     Line 194: Start_sequence, seconds_since_midnight: {seconds_since_midnight}, start_time_sec: {start_time_sec}")
+                    # Record that the event has been triggered for this time interval
+                    last_triggered_events[(seconds, log_message)] = True
+        logger.info(f" Line 197: Start_sequence, End of iteration: {i}")
 
 def open_camera():
     """
