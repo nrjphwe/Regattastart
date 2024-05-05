@@ -46,9 +46,9 @@ GPIO.setmode(GPIO.BCM)
 signal_pin = 26
 lamp1_pin = 20
 lamp2_pin = 21
-signal = OutputDevice(signal_pin, initial_value=False)
-lamp1 = OutputDevice(lamp1_pin, initial_value=False)
-lamp2 = OutputDevice(lamp2_pin, initial_value=False)
+signal = OutputDevice(signal_pin, initial_value=True)
+lamp1 = OutputDevice(lamp1_pin, initial_value=True)
+lamp2 = OutputDevice(lamp2_pin, initial_value=True)
 
 def setup_logging():
     global logger  # Make logger variable global
