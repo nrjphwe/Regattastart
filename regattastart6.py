@@ -31,7 +31,7 @@ def setup_logging():
     global logger  # Make logger variable global
     logging.config.fileConfig('/usr/lib/cgi-bin/logging.conf')
     logger = logging.getLogger('Start')
-    logger.info("Start logging")
+    logger.info("Start logging regattastart6")
     return logger
 
 def setup_camera():
@@ -157,8 +157,8 @@ def start_sequence(camera, signal, start_time_sec, num_starts, dur_between_start
                             action()
                         picture_name = f"{i + 1}a_start_{log_message[:5]}.jpg"
                         capture_picture(camera, photo_path, picture_name)
-                        logger.info(f"    Line 160: Start_sequence, log_message: {log_message}")
-                        logger.info(f"    Line 161: Start_sequence, seconds_since_midnight: {seconds_since_midnight}, start_time_sec: {start_time_sec}")
+                        logger.info(f"   Line 160: Start_sequence, log_message: {log_message}")
+                        logger.info(f"   Line 161: Start_sequence, seconds_since_midnight: {seconds_since_midnight}, start_time_sec: {start_time_sec}")
                         # Record that the event has been triggered for this time interval
                         last_triggered_events[(seconds, log_message)] = True
         logger.info(f"   Line 164:  Start_sequence, End of iteration: {i}")
