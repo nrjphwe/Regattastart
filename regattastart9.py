@@ -46,9 +46,9 @@ GPIO.setmode(GPIO.BCM)
 signal_pin = 26
 lamp1_pin = 20
 lamp2_pin = 21
-signal = OutputDevice(signal_pin ,initial_value=False)
-lamp1 = OutputDevice(lamp1_pin, initial_value=False)
-lamp2 = OutputDevice(lamp2_pin, initial_value=False)
+signal = OutputDevice(signal_pin, initial_value=True)
+lamp1 = OutputDevice(lamp1_pin, initial_value=True)
+lamp2 = OutputDevice(lamp2_pin, initial_value=True)
 
 def setup_logging():
     global logger  # Make logger variable global
@@ -94,16 +94,16 @@ def trigger_relay(port):
         logger.info ("  Line 94:    Trigger signal %s sec, then wait for 1 - %s sec", signal_dur, signal_dur)
     elif port == 'Lamp1_on':
         lamp1.on()
-        logger.info ('  Line 97 Lamp1_on')
+        logger.info ('  Line  97: Lamp1_on')
     elif port == 'Lamp2_on':
         lamp2.on()
-        logger.info ('  Line 100 Lamp2_on')
+        logger.info ('  Line 100: Lamp2_on')
     elif port == 'Lamp1_off':
         lamp1.off()
-        logger.info ('  Line 103 Lamp1_off')
+        logger.info ('  Line 103: Lamp1_off')
     elif port == 'Lamp2_off':
         lamp2.off()
-        logger.info ('  Line 106 Lamp2_off')
+        logger.info ('  Line 106: Lamp2_off')
 
 def capture_picture(camera, photo_path, file_name):
     camera.capture(os.path.join(photo_path, file_name), use_video_port=True)
