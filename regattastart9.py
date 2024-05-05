@@ -28,8 +28,8 @@ signal_dur = 0.3 # 0.3 sec
 log_path = '/var/www/html/'
 video_path = '/var/www/html/images/'
 photo_path = '/var/www/html/images/'
-#on = False  # Define ON as False
-#off = True   # Define OFF as True
+on = True
+off = False
 
 # reset the contents of the status variable, used for flagging that video1-conversion is complete. 
 with open('/var/www/html/status.txt', 'w') as status_file:
@@ -46,9 +46,9 @@ GPIO.setmode(GPIO.BCM)
 signal_pin = 26
 lamp1_pin = 20
 lamp2_pin = 21
-signal = OutputDevice(signal_pin, initial_value=True)
-lamp1 = OutputDevice(lamp1_pin, initial_value=True)
-lamp2 = OutputDevice(lamp2_pin, initial_value=True)
+signal = OutputDevice(signal_pin, initial_value = False)
+lamp1 = OutputDevice(lamp1_pin, initial_value = False)
+lamp2 = OutputDevice(lamp2_pin, initial_value = False)
 
 def setup_logging():
     global logger  # Make logger variable global
@@ -56,6 +56,26 @@ def setup_logging():
     logger = logging.getLogger('Start')
     logger.info("Start logging regattastart9")
     return logger
+
+def trigger_relay(port):
+    if port == 'Signal':
+        signal.on()
+        time.sleep(signal_dur)
+        signal.off()
+        time.sleep(1 - signal_dur)
+        logger.info ("  Line 94:    Trigger signal %s sec, then wait for 1 - %s sec", signal_dur, signal_dur)
+    elif port == 'Lamp1_on':
+        lamp1.on()
+        logger.info ('  Line  97: Lamp1_on')
+    elif port == 'Lamp2_on':
+        lamp2.on()
+        logger.info ('  Line 100: Lamp2_on')
+    elif port == 'Lamp1_off':
+        lamp1.off()
+        logger.info ('  Line 103: Lamp1_off')
+    elif port == 'Lamp2_off':
+        lamp2.off()
+        logger.info ('  Line 106: Lamp2_off')
 
 def setup_camera():
     try:
@@ -84,26 +104,6 @@ def remove_video_files(directory, pattern):
         if file.startswith(pattern):
             file_path = os.path.join(directory, file)
             os.remove(file_path)
-
-def trigger_relay(port):
-    if port == 'Signal':
-        signal.on()
-        time.sleep(signal_dur)
-        signal.off()
-        time.sleep(1 - signal_dur)
-        logger.info ("  Line 94:    Trigger signal %s sec, then wait for 1 - %s sec", signal_dur, signal_dur)
-    elif port == 'Lamp1_on':
-        lamp1.on()
-        logger.info ('  Line  97: Lamp1_on')
-    elif port == 'Lamp2_on':
-        lamp2.on()
-        logger.info ('  Line 100: Lamp2_on')
-    elif port == 'Lamp1_off':
-        lamp1.off()
-        logger.info ('  Line 103: Lamp1_off')
-    elif port == 'Lamp2_off':
-        lamp2.off()
-        logger.info ('  Line 106: Lamp2_off')
 
 def capture_picture(camera, photo_path, file_name):
     camera.capture(os.path.join(photo_path, file_name), use_video_port=True)
