@@ -40,21 +40,21 @@ recording_stopped = False
 
 # setup gpio()
 # Set the pin factory to use BCM numbering mode
-Device._default_pin_factory()
+#Device._default_pin_factory()
 GPIO.setwarnings(True)
 GPIO.setmode(GPIO.BCM)
 signal_pin = 26
 lamp1_pin = 20
 lamp2_pin = 21
-signal = OutputDevice(signal_pin)
-lamp1 = OutputDevice(lamp1_pin)
-lamp2 = OutputDevice(lamp2_pin)
+signal = OutputDevice(signal_pin ,initial_value=False)
+lamp1 = OutputDevice(lamp1_pin, initial_value=False)
+lamp2 = OutputDevice(lamp2_pin, initial_value=False)
 
 def setup_logging():
     global logger  # Make logger variable global
     logging.config.fileConfig('/usr/lib/cgi-bin/logging.conf')
     logger = logging.getLogger('Start')
-    logger.info("Start logging")
+    logger.info("Start logging regattastart9")
     return logger
 
 def setup_camera():
