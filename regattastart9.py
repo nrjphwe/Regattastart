@@ -423,12 +423,12 @@ def main():
                 now = dt.datetime.now()
                 seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
                 if seconds_since_midnight > t5min_warning - 2:
-                    logger.info("  Line 423 Start of outer loop iteration. seconds_since_midnight=%s", seconds_since_midnight)
+                    logger.info("  Line 426 Start of outer loop iteration. seconds_since_midnight=%s", seconds_since_midnight)
                     if num_starts == 1 or num_starts == 2:
                         # Start video recording just before 5 minutes before the first start
                         start_video_recording(camera, video_path, "video0.h264")
-                        logger.info("  Line 427: Inner loop, entering the start sequence block.")
-                        start_sequence(camera, signal, start_time_sec, num_starts, dur_between_starts, photo_path)
+                        logger.info("  Line 430: Inner loop, entering the start sequence block.")
+                        start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo_path)
                         if num_starts == 2:
                             start_time_sec = start_time_sec + (dur_between_starts * 60)
                         logger.info("  Line 431: Wait 2 minutes then stop video0 recording")
