@@ -48,7 +48,7 @@ lamp1_pin = 20
 lamp2_pin = 21
 signal = OutputDevice(signal_pin, initial_value=False)
 lamp1 = OutputDevice(lamp1_pin, initial_value=False)
-lamp2 = OutputDevice(lamp2_pin, initial_value=Flase)
+lamp2 = OutputDevice(lamp2_pin, initial_value=False)
 
 def setup_logging():
     global logger  # Make logger variable global
