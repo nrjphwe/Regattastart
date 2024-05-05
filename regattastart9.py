@@ -107,7 +107,7 @@ def trigger_relay(port):
 
 def capture_picture(camera, photo_path, file_name):
     camera.capture(os.path.join(photo_path, file_name), use_video_port=True)
-    logger.info ("     Capture picture = %s ", file_name)
+    logger.info ("  Line 110: Capture picture = %s ", file_name)
 
 def start_video_recording(camera, video_path, file_name):
     if camera.recording:
@@ -186,11 +186,11 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
                             action()
                         picture_name = f"{i + 1}a_start_{log_message[:5]}.jpg"
                         capture_picture(camera, photo_path, picture_name)
-                        logger.info(f"   Line 188: Start_sequence, log_message: {log_message}")
-                        logger.info(f"   Line 189: Start_sequence, seconds_since_midnight: {seconds_since_midnight}, start_time_sec: {start_time_sec}")
+                        logger.info(f"  Line 188: Start_sequence, log_message: {log_message}")
+                        logger.info(f"  Line 189: Start_sequence, seconds_since_midnight: {seconds_since_midnight}, start_time_sec: {start_time_sec}")
                         # Record that the event has been triggered for this time interval
-                        last_triggered_events[(seconds, log_message)] = True
-                        #last_triggered_events[(log_message)] = True
+                        #last_triggered_events[(seconds, log_message)] = True
+                        last_triggered_events[(log_message)] = True
         logger.info(f"  Line 191:  Start_sequence, End of iteration: {i}")
 
 def open_camera():
