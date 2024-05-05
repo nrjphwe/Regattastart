@@ -28,8 +28,8 @@ signal_dur = 0.3 # 0.3 sec
 log_path = '/var/www/html/'
 video_path = '/var/www/html/images/'
 photo_path = '/var/www/html/images/'
-ON = True
-OFF = False
+ON = False
+OFF = True
 
 # reset the contents of the status variable, used for flagging that video1-conversion is complete. 
 with open('/var/www/html/status.txt', 'w') as status_file:
