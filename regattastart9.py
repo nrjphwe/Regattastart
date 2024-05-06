@@ -69,19 +69,19 @@ def trigger_relay(port):
         time.sleep(signal_dur)
         GPIO.output(signal, OFF)
         time.sleep(1 - signal_dur)
-        logger.info ("  Line 78:    Trigger signal %s sec, then wait for 1 - %s sec", signal_dur, signal_dur)
+        logger.info ("  Line 72:    Trigger signal %s sec, then wait for 1 - %s sec", signal_dur, signal_dur)
     elif port == 'Lamp1_on':
         GPIO.output(lamp1, ON)
-        logger.info ('  Line 81 Lamp1_on')
+        logger.info ('  Line 75 Lamp1_on')
     elif port == 'Lamp2_on':
         GPIO.output(lamp2, ON)
-        logger.info ('  Line 84 Lamp2_on')
+        logger.info ('  Line 78 Lamp2_on')
     elif port == 'Lamp1_off':
         GPIO.output(lamp1, OFF)
-        logger.info ('  Line 87 Lamp1_off')
+        logger.info ('  Line 81 Lamp1_off')
     elif port == 'Lamp2_off':
         GPIO.output(lamp2, OFF)
-        logger.info ('  Line 90 Lamp2_off')
+        logger.info ('  Line 84 Lamp2_off')
 
 def setup_camera():
     try:
@@ -184,10 +184,10 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
                 # Check if the event should be triggered based on the current time
                 if seconds_now == seconds:
                     # Check if the event has already been triggered for this time interval
-                    if (log_message) not in last_triggered_events:
-                    #if (seconds, log_message) not in last_triggered_events:
-                        logger.info(f"  Line 182: Start_sequence, seconds: {seconds}, log_message= {log_message}")
-                        logger.info(f"  Line 183: Start_sequence, Triggering event at seconds_now: {seconds_now}")
+                    #if (log_message) not in last_triggered_events:
+                    if (seconds, log_message) not in last_triggered_events:
+                        logger.info(f"  Line 189: Start_sequence, seconds: {seconds}, log_message= {log_message}")
+                        logger.info(f"  Line 190: Start_sequence, Triggering event at seconds_now: {seconds_now}")
                         if action:
                             action()
                         picture_name = f"{i + 1}a_start_{log_message[:5]}.jpg"
@@ -195,9 +195,9 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
                         logger.info(f"  Line 188: Start_sequence, log_message: {log_message}")
                         logger.info(f"  Line 189: Start_sequence, seconds_since_midnight: {seconds_since_midnight}, start_time_sec: {start_time_sec}")
                         # Record that the event has been triggered for this time interval
-                        #last_triggered_events[(seconds, log_message)] = True
-                        last_triggered_events[(log_message)] = True
-        logger.info(f"  Line 191:  Start_sequence, End of iteration: {i}")
+                        last_triggered_events[(seconds, log_message)] = True
+                        #last_triggered_events[(log_message)] = True
+        logger.info(f"  Line 200:  Start_sequence, End of iteration: {i}")
 
 def open_camera():
     """
