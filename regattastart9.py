@@ -46,22 +46,16 @@ def setup_logging():
     return logger
 
 # setup gpio()
-# Set the pin factory to use BCM numbering mode
-#Device._default_pin_factory()
-GPIO.setwarnings(True)
-GPIO.setmode(GPIO.BCM)
-## below chnaged 2024-05-06
-#signal_pin = 26
-#lamp1_pin = 20
-#lamp2_pin = 21
-#signal = OutputDevice(signal_pin, initial_value = False)
-#lamp1 = OutputDevice(lamp1_pin, initial_value = False)
-#lamp2 = OutputDevice(lamp2_pin, initial_value = False)
 ON = GPIO.LOW
 OFF = GPIO.HIGH
 signal = 26
 lamp1 = 20
 lamp2 = 21
+GPIO.setmode(GPIO.BCM)
+GPIO.setwarnings(True)
+GPIO.setup(signal, GPIO.OUT, initial=GPIO.HIGH)
+GPIO.setup(lamp1, GPIO.OUT, initial=GPIO.HIGH)
+GPIO.setup(lamp2, GPIO.OUT, initial=GPIO.HIGH)
 
 def trigger_relay(port):
     if port == 'Signal':
