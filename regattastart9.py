@@ -20,7 +20,7 @@ import numpy as np
 
 import subprocess
 import RPi.GPIO as GPIO
-from gpiozero import OutputDevice, Device
+#from gpiozero import OutputDevice, Device
 from picamera import PiCamera, Color
 
 # parameter data
@@ -38,18 +38,6 @@ with open('/var/www/html/status.txt', 'w') as status_file:
 # Global variable
 recording_stopped = False
 
-# setup gpio()
-# Set the pin factory to use BCM numbering mode
-#Device._default_pin_factory()
-GPIO.setwarnings(True)
-GPIO.setmode(GPIO.BCM)
-signal_pin = 26
-lamp1_pin = 20
-lamp2_pin = 21
-signal = OutputDevice(signal_pin, initial_value = False)
-lamp1 = OutputDevice(lamp1_pin, initial_value = False)
-lamp2 = OutputDevice(lamp2_pin, initial_value = False)
-
 def setup_logging():
     global logger  # Make logger variable global
     logging.config.fileConfig('/usr/lib/cgi-bin/logging.conf')
@@ -57,25 +45,43 @@ def setup_logging():
     logger.info("Start logging regattastart9")
     return logger
 
+# setup gpio()
+# Set the pin factory to use BCM numbering mode
+#Device._default_pin_factory()
+GPIO.setwarnings(True)
+GPIO.setmode(GPIO.BCM)
+## below chnaged 2024-05-06
+#signal_pin = 26
+#lamp1_pin = 20
+#lamp2_pin = 21
+#signal = OutputDevice(signal_pin, initial_value = False)
+#lamp1 = OutputDevice(lamp1_pin, initial_value = False)
+#lamp2 = OutputDevice(lamp2_pin, initial_value = False)
+ON = GPIO.LOW
+OFF = GPIO.HIGH
+signal = 26
+lamp1 = 20
+lamp2 = 21
+
 def trigger_relay(port):
     if port == 'Signal':
-        signal.on()
+        GPIO.output(signal, ON)
         time.sleep(signal_dur)
-        signal.off()
+        GPIO.output(signal, OFF)
         time.sleep(1 - signal_dur)
-        logger.info ("  Line 94:    Trigger signal %s sec, then wait for 1 - %s sec", signal_dur, signal_dur)
+        logger.info ("  Line 78:    Trigger signal %s sec, then wait for 1 - %s sec", signal_dur, signal_dur)
     elif port == 'Lamp1_on':
-        lamp1.on()
-        logger.info ('  Line  97: Lamp1_on')
+        GPIO.output(lamp1, ON)
+        logger.info ('  Line 81 Lamp1_on')
     elif port == 'Lamp2_on':
-        lamp2.on()
-        logger.info ('  Line 100: Lamp2_on')
+        GPIO.output(lamp2, ON)
+        logger.info ('  Line 84 Lamp2_on')
     elif port == 'Lamp1_off':
-        lamp1.off()
-        logger.info ('  Line 103: Lamp1_off')
+        GPIO.output(lamp1, OFF)
+        logger.info ('  Line 87 Lamp1_off')
     elif port == 'Lamp2_off':
-        lamp2.off()
-        logger.info ('  Line 106: Lamp2_off')
+        GPIO.output(lamp2, OFF)
+        logger.info ('  Line 90 Lamp2_off')
 
 def setup_camera():
     try:
