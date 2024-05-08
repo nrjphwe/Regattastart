@@ -63,19 +63,19 @@ def trigger_relay(port):
         time.sleep(signal_dur)
         GPIO.output(signal, OFF)
         time.sleep(1 - signal_dur)
-        logger.info ("  Line 72:    Trigger signal %s sec, then wait for 1 - %s sec", signal_dur, signal_dur)
+        logger.info ("  Line 66:    Trigger signal %s sec, then wait for 1 - %s sec", signal_dur, signal_dur)
     elif port == 'Lamp1_on':
         GPIO.output(lamp1, ON)
-        logger.info ('  Line 75 Lamp1_on')
+        logger.info ('  Line 69 Lamp1_on')
     elif port == 'Lamp2_on':
         GPIO.output(lamp2, ON)
-        logger.info ('  Line 78 Lamp2_on')
+        logger.info ('  Line 72 Lamp2_on')
     elif port == 'Lamp1_off':
         GPIO.output(lamp1, OFF)
-        logger.info ('  Line 81 Lamp1_off')
+        logger.info ('  Line 75 Lamp1_off')
     elif port == 'Lamp2_off':
         GPIO.output(lamp2, OFF)
-        logger.info ('  Line 84 Lamp2_off')
+        logger.info ('  Line 78 Lamp2_off')
 
 def setup_camera():
     try:
