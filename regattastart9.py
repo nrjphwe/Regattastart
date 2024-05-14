@@ -151,8 +151,8 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
 
         # Define time intervals for each relay trigger
         time_intervals = [
-            (start_time_sec - 5 * 60 - 2, lambda: trigger_relay('Lamp1_on'), "5_min Lamp-1 On -- Up with Flag O"),
-            (start_time_sec - 5 * 60, lambda: trigger_relay('Signal'), "5_min Warning signal"),
+            (start_time_sec - 5 * 60, lambda: trigger_relay('Lamp1_on'), "5_min Lamp-1 On -- Up with Flag O"),
+            (start_time_sec - 5 * 60 + 1, lambda: trigger_relay('Signal'), "5_min Warning signal"),
             (start_time_sec - 4 * 60 - 2, lambda: trigger_relay('Lamp2_on'), "4_min Lamp-2 On"),
             (start_time_sec - 4 * 60, lambda: trigger_relay('Signal'), "4_min Warning signal"),
             (start_time_sec - 1 * 60 - 2, lambda: trigger_relay('Lamp2_off'), "1_min Lamp-2 off -- Flag P down"),
