@@ -141,7 +141,7 @@ def re_encode_video(video_path, source_file, destination_file):
     subprocess.run(re_encode_video_str, shell=True)
     logger.info ("Line 142: Video %s re-encoded ", destination_file)
 
-def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo_path):
+def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo_path,):
     for i in range(num_starts):
         logger.info(f" Line 146: Start_sequence. Start of iteration {i}")
         # Adjust the start_time_sec for the second iteration
@@ -151,14 +151,14 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
 
         # Define time intervals for each relay trigger
         time_intervals = [
-            (start_time_sec - 5 * 60, trigger_relay, ('Lamp1_on',), "5_min Lamp-1 On -- Up with Flag O"),
-            (start_time_sec - 5 * 60 + 1, trigger_relay, ('Signal',), "5_min Warning signal"),
-            (start_time_sec - 4 * 60 - 2, trigger_relay, ('Lamp2_on',), "4_min Lamp-2 On"),
-            (start_time_sec - 4 * 60, trigger_relay, ('Signal',), "4_min Warning signal"),
-            (start_time_sec - 1 * 60 - 2, trigger_relay, ('Lamp2_off',), "1_min Lamp-2 off -- Flag P down"),
-            (start_time_sec - 1 * 60, trigger_relay, ('Signal',), "1_min  Warning signal"),
-            (start_time_sec - 0 * 60 - 2, trigger_relay, ('Lamp1_off',), "Lamp1-off at start"),
-            (start_time_sec - 0 * 60, trigger_relay, ('Signal',), "Start signal"),
+            (start_time_sec - 5 * 60, trigger_relay('Lamp1_on'), "5_min Lamp-1 On -- Up with Flag O"),
+            (start_time_sec - 5 * 60 + 1, trigger_relay('Signal'), "5_min Warning signal"),
+            (start_time_sec - 4 * 60 - 2, trigger_relay('Lamp2_on'), "4_min Lamp-2 On"),
+            (start_time_sec - 4 * 60, trigger_relay('Signal'), "4_min Warning signal"),
+            (start_time_sec - 1 * 60 - 2, trigger_relay('Lamp2_off'), "1_min Lamp-2 off -- Flag P down"),
+            (start_time_sec - 1 * 60, trigger_relay('Signal'), "1_min  Warning signal"),
+            (start_time_sec - 0 * 60 -2, trigger_relay('Lamp1_off'), "Lamp1-off at start"),
+            (start_time_sec - 0 * 60, trigger_relay('Signal'), "Start signal"),
         ]
 
         last_triggered_events = {}
@@ -183,7 +183,6 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
                         logger.info(f"  Line 189: Start_sequence, seconds={seconds}  log_message: {log_message}")
                         # Record that the event has been triggered for this time interval
                         last_triggered_events[log_message] = True
-                        time.sleep(1)  # Wait for 1 second before triggering the next event
                         break  # Move to the next iteration of the while loop
 
         logger.info(f"  Line 194:  Start_sequence, End of iteration: {i}")
