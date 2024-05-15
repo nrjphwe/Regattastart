@@ -113,7 +113,7 @@ def start_video_recording(camera, video_path, file_name):
     if camera.recording:
         camera.stop_recording()
     camera.start_recording(os.path.join(video_path, file_name))
-    logger.info ("  Line 116: Started viceo recording of %s ", file_name)
+    logger.info ("  Line 116: Started video recording of %s ", file_name)
 
 def stop_video_recording(camera):
     camera.stop_recording()
@@ -143,7 +143,7 @@ def re_encode_video(video_path, source_file, destination_file):
 
 def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo_path,):
     for i in range(num_starts):
-        logger.info(f"  Line 146: Start_sequence. Start of iteration {i}")
+        logger.info(f" Line 146: Start_sequence. Start of iteration {i}")
         # Adjust the start_time_sec for the second iteration
         if i == 1:
             start_time_sec += dur_between_starts * 60  # Add 5 or 10 minutes for the second iteration
@@ -179,17 +179,19 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
                 if seconds_now == seconds:
                     # Check if the event has already been triggered for this time interval
                     #if (log_message) not in last_triggered_events:
-                    if (seconds, log_message) not in last_triggered_events:
+                    #if (seconds, log_message) not in last_triggered_events:
+                    if (log_message) not in last_triggered_events:
                         logger.info(f"  Line 183: Start_sequence, seconds: {seconds}, log_message= {log_message}")
                         logger.info(f"  Line 184: Start_sequence, Triggering event at seconds_now: {seconds_now}")
                         if action:
                             action()
                         picture_name = f"{i + 1}a_start_{log_message[:5]}.jpg"
                         capture_picture(camera, photo_path, picture_name)
-                        logger.info(f"  Line 189: Start_sequence, log_message: {log_message}")
-                        logger.info(f"  Line 190: Start_sequence, seconds_since_midnight: {seconds_since_midnight}, start_time_sec: {start_time_sec}")
+                        logger.info(f"  Line 189: Start_sequence, seconds={seconds}  log_message: {log_message}")
+                        #logger.info(f"  Line 190: Start_sequence, seconds_since_midnight: {seconds_since_midnight}, start_time_sec: {start_time_sec}")
                         # Record that the event has been triggered for this time interval
-                        last_triggered_events[(seconds, log_message)] = True
+                        last_triggered_events[(log_message)] = True
+                        #last_triggered_events[(seconds, log_message)] = True
                         #last_triggered_events[(log_message)] = True
         logger.info(f"  Line 194:  Start_sequence, End of iteration: {i}")
 
@@ -423,11 +425,11 @@ def main():
                 now = dt.datetime.now()
                 seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
                 if seconds_since_midnight > t5min_warning - 2:
-                    logger.info("  Line 426 Start of outer loop iteration. seconds_since_midnight=%s", seconds_since_midnight)
+                    logger.info("Line 426 Start of outer loop iteration. seconds_since_midnight=%s", seconds_since_midnight)
                     if num_starts == 1 or num_starts == 2:
                         # Start video recording just before 5 minutes before the first start
                         start_video_recording(camera, video_path, "video0.h264")
-                        logger.info("  Line 430: Inner loop, entering the start sequence block.")
+                        logger.info(" Line 430: Inner loop, entering the start sequence block.")
                         start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo_path)
                         if num_starts == 2:
                             start_time_sec = start_time_sec + (dur_between_starts * 60)
