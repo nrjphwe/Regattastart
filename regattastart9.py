@@ -445,7 +445,6 @@ def main():
                         convert_video_to_mp4(video_path, "video0.h264", "video0.mp4")
                     # Exit the loop after the if condition is met
                     break
-                break
 
         # After finishing the initial recording with PiCamera
         camera.close()
