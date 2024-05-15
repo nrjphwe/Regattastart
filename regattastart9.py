@@ -204,7 +204,7 @@ def open_camera():
     cap = cv2.VideoCapture(0)
     cap.set(cv2.CAP_PROP_FPS, 5)
     if not cap.isOpened():
-        logger.info("Line 179 Cannot open camera")
+        logger.info("Line 205 Cannot open camera")
         cap.release()  # Don't forget to release the camera resources when done
         exit()
     return cap
@@ -412,7 +412,7 @@ def main():
 
         camera = setup_camera()
         if camera is None:
-            logger.error("Camera initialization failed. Exiting.")
+            logger.error("  Line 413: Camera initialization failed. Exiting.")
             sys.exit(1)
         remove_video_files(photo_path, "video")  # clean up
         remove_picture_files(photo_path, ".jpg") # clean up
@@ -445,6 +445,7 @@ def main():
                         convert_video_to_mp4(video_path, "video0.h264", "video0.mp4")
                     # Exit the loop after the if condition is met
                     break
+                break
 
         # After finishing the initial recording with PiCamera
         camera.close()
