@@ -163,28 +163,36 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
 
         last_triggered_events = {}
 
-        # Loop until all events for the current iteration have been triggered
-        while len(last_triggered_events) < len(time_intervals):
+        while True:
             time_now = dt.datetime.now()
-            seconds_now = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
+            seconds_since_midnight = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
 
-            for seconds, action, args, log_message in time_intervals:
+            if seconds_since_midnight >= start_time_sec:
+                break  # Exit the loop if the condition is met
+
+            for seconds, action, log_message in time_intervals:
                 camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                time_now = dt.datetime.now()
+                seconds_now = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
 
                 # Check if the event should be triggered based on the current time
                 if seconds_now == seconds:
                     # Check if the event has already been triggered for this time interval
-                    if log_message not in last_triggered_events:
+                    #if (log_message) not in last_triggered_events:
+                    #if (seconds, log_message) not in last_triggered_events:
+                    if (log_message) not in last_triggered_events:
                         logger.info(f"  Line 183: Start_sequence, seconds: {seconds}, log_message= {log_message}")
                         logger.info(f"  Line 184: Start_sequence, Triggering event at seconds_now: {seconds_now}")
-                        action(*args)
-                        picture_name = f"{i + 1}a_start_{log_message[:5]}.jpg"
-                        capture_picture(camera, photo_path, picture_name)
-                        logger.info(f"  Line 189: Start_sequence, seconds={seconds}  log_message: {log_message}")
+                        if action:
+                            action()
+                            picture_name = f"{i + 1}a_start_{log_message[:5]}.jpg"
+                            capture_picture(camera, photo_path, picture_name)
+                            logger.info(f"  Line 189: Start_sequence, seconds={seconds}  log_message: {log_message}")
+                        #logger.info(f"  Line 190: Start_sequence, seconds_since_midnight: {seconds_since_midnight}, start_time_sec: {start_time_sec}")
                         # Record that the event has been triggered for this time interval
-                        last_triggered_events[log_message] = True
-                        break  # Move to the next iteration of the while loop
-
+                        last_triggered_events[(log_message)] = True
+                        #last_triggered_events[(seconds, log_message)] = True
+                        #last_triggered_events[(log_message)] = True
         logger.info(f"  Line 194:  Start_sequence, End of iteration: {i}")
 
 def open_camera():
