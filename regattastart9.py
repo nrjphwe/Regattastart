@@ -157,7 +157,7 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
             (start_time_sec - 4 * 60, lambda: trigger_relay('Signal'), "4_min Warning signal"),
             (start_time_sec - 1 * 60 - 2, lambda: trigger_relay('Lamp2_off'), "1_min Lamp-2 off -- Flag P down"),
             (start_time_sec - 1 * 60, lambda: trigger_relay('Signal'), "1_min  Warning signal"),
-            (start_time_sec - 0 * 60 -2, lambda: trigger_relay('Lamp1_off'), "Lamp1-off at start"),
+            (start_time_sec - 0 * 60 - 2, lambda: trigger_relay('Lamp1_off'), "Lamp1-off at start"),
             (start_time_sec - 0 * 60, lambda: trigger_relay('Signal'), "Start signal"),
         ]
 
