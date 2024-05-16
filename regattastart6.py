@@ -160,6 +160,7 @@ def start_sequence(camera, signal, start_time_sec, num_starts, dur_between_start
                         logger.info(f"   Line 160: Start_sequence, log_message: {log_message}")
                         logger.info(f"   Line 161: Start_sequence, seconds_since_midnight: {seconds_since_midnight}, start_time_sec: {start_time_sec}")
                         # Record that the event has been triggered for this time interval
+                        logger.info(f"last_triggered_events = {last_triggered_events}")
                         last_triggered_events[(seconds, log_message)] = True
         logger.info(f"   Line 164:  Start_sequence, End of iteration: {i}")
 
