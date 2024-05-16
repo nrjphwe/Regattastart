@@ -466,16 +466,14 @@ def main():
         # After video conversion is complete
         with open('/var/www/html/status.txt', 'w') as status_file:
             status_file.write('complete')
-        logger.info("Line 467, Finished with finish_recording and recording converted to mp4")
+        logger.info("Line 469, Finished with finish_recording and recording converted to mp4")
         if camera is not None:
             camera.close()  # Release the camera resources
         if signal is not None:
-            signal.off() # Turn off the signal output
-            signal.close() # Turn off the signal output
-            lamp1.off() # Turn off the lamp1
-            lamp1.close() # Turn off the lamp1
-            lamp2.off() # Turn off the lamp2
-            lamp2.close() # Turn off the lamp2
+            GPIO.output(signal, OFF)  # Turn off the signal output
+            GPIO.output(lamp1, OFF)  # Turn off the signal output
+            GPIO.output(lamp2, OFF)  # Turn off the signal output
+        GPIO.cleanup()
 
 if __name__ == "__main__":
     #logging.basicConfig(level=logging.WARNING)  # Set log level to WARNING
