@@ -255,14 +255,14 @@ def main():
                     # Exit the loop after the condition is met
                     break
                 
-        logger.info("Line 257 Finish recording outside inner loop. start_time_sec=%s", start_time_sec)
+        logger.info("Line 258 Finish recording outside inner loop. start_time_sec=%s", start_time_sec)
         finish_recording(camera, video_path, video_delay, num_video, video_dur, start_time_sec)
 
     except json.JSONDecodeError as e:
         logger.info ("Failed to parse JSON: %", str(e))
         sys.exit(1)
     finally:
-        logger.info(" Line 264: This is finally section")
+        logger.info(" Line 265: This is finally section")
         if camera is not None:
             camera.close()  # Release the camera resources
         if signal is not None:
