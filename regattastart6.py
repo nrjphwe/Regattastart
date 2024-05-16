@@ -122,16 +122,16 @@ def start_sequence(camera, signal, start_time_sec, num_starts, dur_between_start
             start_time_sec += dur_between_starts * 60  # Add 5 or 10 minutes for the second iteration
             logger.info(f"  Line 123: Start_sequence, Next start_time_sec: {start_time_sec}")
 
-        # Define time intervals for each iteration
+        # Define time intervals for each relay trigger
         time_intervals = [
-            (start_time_sec - 5 * 60, lambda: trigger_relay('Signal'), "5_min Warning signal"),
-            (start_time_sec - 5 * 60 + 1, lambda: trigger_relay('Lamp1_on'), "5_min Lamp-1 On -- Up with Flag O"),
+            (start_time_sec - 5 * 60, lambda: trigger_relay('Lamp1_on'), "5_min Lamp-1 On -- Up with Flag O"),
+            (start_time_sec - 5 * 60 + 1, lambda: trigger_relay('Signal'), "5_min Warning signal"),
+            (start_time_sec - 4 * 60 - 2, lambda: trigger_relay('Lamp2_on'), "4_min Lamp-2 On"),
             (start_time_sec - 4 * 60, lambda: trigger_relay('Signal'), "4_min Warning signal"),
-            (start_time_sec - 4 * 60 + 1, lambda: trigger_relay('Lamp2_on'), "4_min Lamp-2 On"),
+            (start_time_sec - 1 * 60 - 2, lambda: trigger_relay('Lamp2_off'), "1_min Lamp-2 off -- Flag P down"),
             (start_time_sec - 1 * 60, lambda: trigger_relay('Signal'), "1_min  Warning signal"),
-            (start_time_sec - 1 * 60 + 1, lambda: trigger_relay('Lamp2_off'), "1_min Lamp-2 off -- Flag P down"),
-            (start_time_sec - 1, lambda: trigger_relay('Signal'), "Start signal"),
-            (start_time_sec - 2, lambda: trigger_relay('Lamp1_off'), "Lamp1-off at start"),
+            (start_time_sec - 0 * 60 - 2, lambda: trigger_relay('Lamp1_off'), "Lamp1-off at start"),
+            (start_time_sec - 0 * 60, lambda: trigger_relay('Signal'), "Start signal"),
         ]
 
         last_triggered_events = {}
