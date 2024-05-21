@@ -241,7 +241,7 @@ def stop_recording():
     listening = False  # Set flag to False to terminate the loop in listen_for_messages
 
 def listen_for_messages(timeout=0.1):
-    global listening  # Use global flag
+    global listening, stopped_recording  # Use global flag
     logger.info(" Line 246: Listen for messages from PHP script via a named pipe")
     pipe_path = '/var/www/html/tmp/stop_recording_pipe'
     logger.info(f"Line 248:, pipepath {pipe_path}")
@@ -256,7 +256,7 @@ def listen_for_messages(timeout=0.1):
     os.mkfifo(pipe_path)  # Create a new named pipe
 
     with open(pipe_path, 'r') as fifo:
-        while True:
+        while not stopped_recording:  # Check if recording is still ongoing
             # logger.info(f"Line 237, openpipe path: {pipe_path}")
             # Use select to wait for input with a timeout
             rlist, _, _ = select.select([fifo], [], [], timeout)
@@ -265,6 +265,7 @@ def listen_for_messages(timeout=0.1):
                 if message == 'stop_recording':
                     stop_recording()
                     break  # Exit the loop when stop_recording message is received
+            # Check if the video_end timer has expired
 
             else:
                 logger.info(f"Line 247, not rlist {rlist}")
@@ -367,6 +368,7 @@ def finish_recording(video_path, num_starts, video_end, start_time, start_time_s
         elapsed_time = time.time() - start_time
         logger.info(f"  Line 370: elapsed time: {elapsed_time}")
         if elapsed_time >= 60 * (video_end + 5 * (num_starts - 1)):
+            stop_recording()
             break
 
         logger.info(f"  Line 374, Recording stopped: {recording_stopped}")
