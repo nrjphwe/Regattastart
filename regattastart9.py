@@ -455,10 +455,17 @@ def main():
         sys.exit(1)
     finally:
         logger.info("  Line 455 Finally section, before listen_for_message")
+        # Join the listen_thread to wait for it to finish
+        if listen_thread is not None:
+            listen_thread.join()
+            logger.info("  Line 461, Finally section, listen_thread joined")
+        
         # Start a thread for listening for messages
         listen_thread = threading.Thread(target=listen_for_messages)
         listen_thread.start()
-        logger.info("  Line 459, Finally section, before 'Finish recording'. start_time=%s video_end%s", start_time, video_end)
+        logger.info("  Line 466, Finally section, before 'Finish recording'. start_time=%s video_end%s", start_time, video_end)
+        
+        # Remaining tasks in the finally block
         time.sleep(2)
         finish_recording(video_path, num_starts, video_end, start_time, start_time_sec)
         time.sleep(2)
@@ -466,16 +473,17 @@ def main():
         # After video conversion is complete
         with open('/var/www/html/status.txt', 'w') as status_file:
             status_file.write('complete')
-        logger.info("  Line 469, Finished with finish_recording and recording converted to mp4")
+        logger.info("  Line 476, Finished with finish_recording and recording converted to mp4")
         if camera is not None:
             camera.close()  # Release the camera resources
-            logger.info("  Line 472: camera close")
+            logger.info("  Line 479: camera close")
         if signal is not None:
             GPIO.output(signal, OFF)  # Turn off the signal output
             GPIO.output(lamp1, OFF)  # Turn off the signal output
             GPIO.output(lamp2, OFF)  # Turn off the signal output
             logger.info("  Line 477: signal is not None")
         GPIO.cleanup()
+        listen_thread.start()
 
 if __name__ == "__main__":
     #logging.basicConfig(level=logging.WARNING)  # Set log level to WARNING
