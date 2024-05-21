@@ -483,7 +483,6 @@ def main():
             GPIO.output(lamp2, OFF)  # Turn off the signal output
             logger.info("  Line 477: signal is not None")
         GPIO.cleanup()
-        listen_thread.start()
 
 if __name__ == "__main__":
     #logging.basicConfig(level=logging.WARNING)  # Set log level to WARNING
