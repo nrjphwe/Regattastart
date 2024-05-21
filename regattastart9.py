@@ -365,17 +365,23 @@ def finish_recording(video_path, num_starts, video_end, start_time, start_time_s
 
         # Check if the maximum recording duration has been reached
         elapsed_time = time.time() - start_time
-        logger.info(f"  Line 370: elapsed time: {elapsed_time}")
+        logger.info(f"  Line 368: elapsed time: {elapsed_time}")
         if elapsed_time >= 60 * (video_end + 5 * (num_starts - 1)):
             break
 
-        logger.info(f"  Line 374, Recording stopped: {recording_stopped}")
+        logger.info(f"  Line 372, Recording stopped: {recording_stopped}")
         if recording_stopped == True:
             break
 
     cap.release()  # Don't forget to release the camera resources when done
     video_writer.release()  # Release the video writer
-    logger.info("  Line 380, Exited finish_recording module.")
+    logger.info("  Line 378, Exited finish_recording module.")
+
+def stop_listen_thread():
+    global listening
+    listening = False
+    # Log a message indicating that the listen_thread has been stopped
+    logger.info("  Line 384, stop_listening thread")
 
 def main():
     logger = setup_logging()  # Initialize the logger
@@ -454,16 +460,16 @@ def main():
         sys.exit(1)
     finally:
         logger.info("  Line 455 Finally section, before listen_for_message")
-        # Join the listen_thread to wait for it to finish
-        if listen_thread is not None:
-            listen_thread.join()
-            logger.info("  Line 461, Finally section, listen_thread joined")
 
-        # Start a thread for listening for messages if no thread is active
-        if listen_thread is None or not listen_thread.is_alive():
-            listen_thread = threading.Thread(target=listen_for_messages)
-            listen_thread.start()
-            logger.info("  Line 466, Finally section, before 'Finish recording'. start_time=%s video_end%s", start_time, video_end)
+        # Start a thread for listening for messages with a timeout
+        listen_thread = threading.Thread(target=listen_for_messages)
+        listen_thread.start()
+        logger.info("  Line 461, Finally section, before 'Finish recording'. start_time=%s video_end%s", start_time, video_end)
+
+        # Start a timer to interrupt the listen_thread after video_end duration
+        video_end_duration = video_end  # Use video_end duration as timeout
+        timeout_timer = threading.Timer(video_end_duration, stop_listen_thread)
+        timeout_timer.start()
 
         # Remaining tasks in the finally block
         time.sleep(2)
@@ -473,7 +479,7 @@ def main():
         # After video conversion is complete
         with open('/var/www/html/status.txt', 'w') as status_file:
             status_file.write('complete')
-        logger.info("  Line 476, Finished with finish_recording and recording converted to mp4")
+        logger.info("  Line 482, Finished with finish_recording and recording converted to mp4")
         if camera is not None:
             camera.close()  # Release the camera resources
             logger.info("  Line 479: camera close")
