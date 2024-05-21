@@ -63,19 +63,19 @@ def trigger_relay(port):
         time.sleep(signal_dur)
         GPIO.output(signal, OFF)
         time.sleep(1 - signal_dur)
-        logger.info ("  Line 66:    Trigger signal %s sec, then wait for 1 - %s sec", signal_dur, signal_dur)
+        logger.info ("  Line 66:   Trigger signal %s sec, then wait for 1 - %s sec", signal_dur, signal_dur)
     elif port == 'Lamp1_on':
         GPIO.output(lamp1, ON)
         logger.info ('  Line 69 Lamp1_on')
     elif port == 'Lamp2_on':
         GPIO.output(lamp2, ON)
-        logger.info ('  Line 72 Lamp2_on')
+        logger.info ('  Line  72: Lamp2_on')
     elif port == 'Lamp1_off':
         GPIO.output(lamp1, OFF)
-        logger.info ('  Line 75 Lamp1_off')
+        logger.info ('  Line  75: Lamp1_off')
     elif port == 'Lamp2_off':
         GPIO.output(lamp2, OFF)
-        logger.info ('  Line 78 Lamp2_off')
+        logger.info ('  Line  78: Lamp2_off')
 
 def setup_camera():
     try:
@@ -143,7 +143,7 @@ def re_encode_video(video_path, source_file, destination_file):
 
 def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo_path,):
     for i in range(num_starts):
-        logger.info(f" Line 146: Start_sequence. Start of iteration {i}")
+        logger.info(f"  Line 146: Start_sequence. Start of iteration {i}")
         # Adjust the start_time_sec for the second iteration
         if i == 1:
             start_time_sec += dur_between_starts * 60  # Add 5 or 10 minutes for the second iteration
@@ -424,11 +424,11 @@ def main():
                 now = dt.datetime.now()
                 seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
                 if seconds_since_midnight > t5min_warning - 2:
-                    logger.info("Line 426 Start of outer loop iteration. seconds_since_midnight=%s", seconds_since_midnight)
+                    logger.info("  Line 427 Start of outer loop iteration. seconds_since_midnight=%s", seconds_since_midnight)
                     if num_starts == 1 or num_starts == 2:
                         # Start video recording just before 5 minutes before the first start
                         start_video_recording(camera, video_path, "video0.h264")
-                        logger.info(" Line 430: Inner loop, entering the start sequence block.")
+                        logger.info("  Line 430: Inner loop, entering the start sequence block.")
                         start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo_path)
                         if num_starts == 2:
                             start_time_sec = start_time_sec + (dur_between_starts * 60)
