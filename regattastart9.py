@@ -477,11 +477,7 @@ def main():
         if camera is not None:
             camera.close()  # Release the camera resources
             logger.info("  Line 479: camera close")
-        if signal is not None:
-            GPIO.output(signal, OFF)  # Turn off the signal output
-            GPIO.output(lamp1, OFF)  # Turn off the signal output
-            GPIO.output(lamp2, OFF)  # Turn off the signal output
-            logger.info("  Line 477: signal is not None")
+
         GPIO.cleanup()
 
 if __name__ == "__main__":
