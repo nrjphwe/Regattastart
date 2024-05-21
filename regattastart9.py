@@ -275,6 +275,7 @@ def finish_recording(video_path, num_starts, video_end, start_time, start_time_s
     # Open a video capture object (replace 'your_video_file.mp4' with the actual video file or use 0 for webcam)
     #cap = cv2.VideoCapture(os.path.join(video_path, "finish21-6.mp4"))
     cap = open_camera()
+    global recording_stopped
 
     # Load the pre-trained object detection model -- YOLO (You Only Look Once)
     net = cv2.dnn.readNet('/home/pi/darknet/yolov3-tiny.weights', '/home/pi/darknet/cfg/yolov3-tiny.cfg')
@@ -302,7 +303,7 @@ def finish_recording(video_path, num_starts, video_end, start_time, start_time_s
     # Assume no boat is detected initially
     boat_in_current_frame = False
 
-    while True:
+    while not recording_stopped:
         # read frame
         ret, frame = cap.read()
         if frame is None:
@@ -382,7 +383,7 @@ def stop_listen_thread():
     global listening
     listening = False
     # Log a message indicating that the listen_thread has been stopped
-    logger.info("  Line 384, stop_listening thread")
+    logger.info("  Line 384, stop_listening thread  listening = False")
 
 def main():
     logger = setup_logging()  # Initialize the logger
@@ -466,12 +467,6 @@ def main():
         listen_thread = threading.Thread(target=listen_for_messages)
         listen_thread.start()
         logger.info("  Line 467, Finally section, before 'Finish recording'. start_time=%s video_end%s", start_time, video_end)
-
-        # Start a timer to interrupt the listen_thread after video_end duration
-        video_end_duration = video_end * 60 # Use video_end duration as timeout, convert minutes to seconds
-        logger.info("  Line 471, timer video_end_duration=%s, video_end_duration")
-        timeout_timer = threading.Timer(video_end_duration, stop_listen_thread)
-        timeout_timer.start()
 
         # Remaining tasks in the finally block
         time.sleep(2)
