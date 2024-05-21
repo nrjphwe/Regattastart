@@ -459,10 +459,11 @@ def main():
             listen_thread.join()
             logger.info("  Line 461, Finally section, listen_thread joined")
 
-        # Start a thread for listening for messages
-        listen_thread = threading.Thread(target=listen_for_messages)
-        listen_thread.start()
-        logger.info("  Line 466, Finally section, before 'Finish recording'. start_time=%s video_end%s", start_time, video_end)
+        # Start a thread for listening for messages if no thread is active
+        if listen_thread is None or not listen_thread.is_alive():
+            listen_thread = threading.Thread(target=listen_for_messages)
+            listen_thread.start()
+            logger.info("  Line 466, Finally section, before 'Finish recording'. start_time=%s video_end%s", start_time, video_end)
 
         # Remaining tasks in the finally block
         time.sleep(2)
