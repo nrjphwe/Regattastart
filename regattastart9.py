@@ -240,9 +240,6 @@ def stop_recording():
     recording_stopped = True
     listening = False  # Set flag to False to terminate the loop in listen_for_messages
 
-# Flag to control the loop in listen_for_messages
-listening = True
-
 def listen_for_messages(timeout=0.1):
     global listening  # Use global flag
     logger.info(" Line 246: Listen for messages from PHP script via a named pipe")
@@ -272,7 +269,6 @@ def listen_for_messages(timeout=0.1):
             else:
                 logger.info(f"Line 247, not rlist {rlist}")
                 # Handle timeout (no input received within timeout period)
-
 
 def finish_recording(video_path, num_starts, video_end, start_time, start_time_sec):
     # Open a video capture object (replace 'your_video_file.mp4' with the actual video file or use 0 for webcam)
@@ -384,7 +380,10 @@ def finish_recording(video_path, num_starts, video_end, start_time, start_time_s
 def main():
     logger = setup_logging()  # Initialize the logger
     camera = None # Initialize the camera variable
-    signal = None # Initialize the signal relay/variable
+    # Flag to control the loop in listen_for_messages
+    listening = True
+    # Initialize listen_thread variable
+    listen_thread = None
 
     # Check if a command-line argument (JSON data) is provided
     if len(sys.argv) < 2:
@@ -459,12 +458,12 @@ def main():
         if listen_thread is not None:
             listen_thread.join()
             logger.info("  Line 461, Finally section, listen_thread joined")
-        
+
         # Start a thread for listening for messages
         listen_thread = threading.Thread(target=listen_for_messages)
         listen_thread.start()
         logger.info("  Line 466, Finally section, before 'Finish recording'. start_time=%s video_end%s", start_time, video_end)
-        
+
         # Remaining tasks in the finally block
         time.sleep(2)
         finish_recording(video_path, num_starts, video_end, start_time, start_time_sec)
