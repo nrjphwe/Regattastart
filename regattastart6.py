@@ -2,7 +2,7 @@
 # after git pull, do: sudo cp regattastart6.py /usr/lib/cgi-bin/
 import os
 import sys
-import cgitb
+import cgitb; cgitb.enable()
 import time
 from datetime import datetime
 import datetime as dt
@@ -15,7 +15,7 @@ import RPi.GPIO as GPIO
 from picamera import PiCamera, Color
 
 # parameter data
-signal_dur = 0.3 # 0.3 sec
+signal_dur = 0.9 # 0.3 sec
 log_path = '/usr/lib/cgi-bin/'
 video_path = '/var/www/html/images/'
 photo_path = '/var/www/html/images/'
@@ -216,20 +216,20 @@ def main():
         remove_picture_files(photo_path, ".jpg") # clean up
         logger.info(" Line 216 Weekday=%s, Start_time=%s, video_delay=%s, num_video=%s, video_dur=%s, num_starts=%s",
                     week_day, start_time, video_delay, num_video, video_dur, num_starts)
-        
+
         start_hour, start_minute = start_time.split(':')
         start_time_sec = 60 * (int(start_minute) + 60 * int(start_hour))
 
         t5min_warning = start_time_sec - 5 * 60 # time when the start-machine should begin to execute.
         wd = dt.datetime.today().strftime("%A")
-        
+
         if wd == week_day:
             # A loop that waits until close to the 5-minute mark, a loop that continuously checks the 
             # condition without blocking the execution completely
             while True:
                 now = dt.datetime.now()
                 seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
-    
+
                 if seconds_since_midnight > t5min_warning - 2:         
                     logger.info(" Line 233: Start of outer loop iteration. seconds_since_midnight=%s", seconds_since_midnight)
 
@@ -249,12 +249,12 @@ def main():
                             #logger.info("Inside inner loop. seconds_since_midnight=%s", seconds_since_midnight)
                             annotate_video_duration(camera, start_time_sec)
                             camera.wait_recording(0)
-                    
+
                         stop_video_recording(camera)
                         convert_video_to_mp4(video_path, "video0.h264", "video0.mp4")
                     # Exit the loop after the condition is met
                     break
-                
+
         logger.info("Line 258 Finish recording outside inner loop. start_time_sec=%s", start_time_sec)
         finish_recording(camera, video_path, video_delay, num_video, video_dur, start_time_sec)
 
@@ -270,7 +270,7 @@ def main():
             GPIO.output(lamp1, OFF)  # Turn off the signal output
             GPIO.output(lamp2, OFF)  # Turn off the signal output
         GPIO.cleanup()
-        
+
 if __name__ == "__main__":
     #logging.basicConfig(level=logging.WARNING)  # Set log level to WARNING
     main()
