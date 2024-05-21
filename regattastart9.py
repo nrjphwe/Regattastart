@@ -242,15 +242,15 @@ def stop_recording():
 
 def listen_for_messages(timeout=0.1):
     global listening  # Use global flag
-    logger.info(" Line 246: Listen for messages from PHP script via a named pipe")
+    logger.info(" Line 245: Listen for messages from PHP script via a named pipe")
     pipe_path = '/var/www/html/tmp/stop_recording_pipe'
-    logger.info(f"Line 248:, pipepath {pipe_path}")
+    logger.info(f"Line 247:, pipepath {pipe_path}")
 
     try:
         os.unlink(pipe_path)  # Remove existing pipe
     except OSError as e:
         if e.errno != errno.ENOENT:  # Ignore if file doesn't exist
-            logger.info(f"Line 254, OS error: {e.errno}")
+            logger.info(f"Line 253, OS error: {e.errno}")
             raise
 
     os.mkfifo(pipe_path)  # Create a new named pipe
@@ -267,8 +267,9 @@ def listen_for_messages(timeout=0.1):
                     break  # Exit the loop when stop_recording message is received
 
             else:
-                logger.info(f"Line 247, not rlist {rlist}")
+                logger.info(f"Line 270, not rlist {rlist}")
                 # Handle timeout (no input received within timeout period)
+                break
 
 def finish_recording(video_path, num_starts, video_end, start_time, start_time_sec):
     # Open a video capture object (replace 'your_video_file.mp4' with the actual video file or use 0 for webcam)
@@ -456,18 +457,19 @@ def main():
         time.sleep(2)  # Introduce a delay of 2 seconds
 
     except json.JSONDecodeError as e:
-        logger.info ("  Line 452, Failed to parse JSON: %", str(e))
+        logger.info ("  Line 459, Failed to parse JSON: %", str(e))
         sys.exit(1)
     finally:
-        logger.info("  Line 455 Finally section, before listen_for_message")
+        logger.info("  Line 462 Finally section, before listen_for_message")
 
         # Start a thread for listening for messages with a timeout
         listen_thread = threading.Thread(target=listen_for_messages)
         listen_thread.start()
-        logger.info("  Line 461, Finally section, before 'Finish recording'. start_time=%s video_end%s", start_time, video_end)
+        logger.info("  Line 467, Finally section, before 'Finish recording'. start_time=%s video_end%s", start_time, video_end)
 
         # Start a timer to interrupt the listen_thread after video_end duration
-        video_end_duration = video_end  # Use video_end duration as timeout
+        video_end_duration = video_end * 60 # Use video_end duration as timeout, convert minutes to seconds
+        logger.info("  Line 471, timer video_end_duration=%s, video_end_duration")
         timeout_timer = threading.Timer(video_end_duration, stop_listen_thread)
         timeout_timer.start()
 
@@ -482,7 +484,7 @@ def main():
         logger.info("  Line 482, Finished with finish_recording and recording converted to mp4")
         if camera is not None:
             camera.close()  # Release the camera resources
-            logger.info("  Line 479: camera close")
+            logger.info("  Line 485: camera close")
 
         GPIO.cleanup()
 
