@@ -256,7 +256,7 @@ def listen_for_messages(timeout=0.1):
     os.mkfifo(pipe_path)  # Create a new named pipe
 
     with open(pipe_path, 'r') as fifo:
-        while True:
+        while listening == True:
             # logger.info(f"Line 237, openpipe path: {pipe_path}")
             # Use select to wait for input with a timeout
             rlist, _, _ = select.select([fifo], [], [], timeout)
@@ -269,7 +269,6 @@ def listen_for_messages(timeout=0.1):
             else:
                 logger.info(f"Line 270, not rlist {rlist}")
                 # Handle timeout (no input received within timeout period)
-                break
 
 def finish_recording(video_path, num_starts, video_end, start_time, start_time_sec):
     # Open a video capture object (replace 'your_video_file.mp4' with the actual video file or use 0 for webcam)
