@@ -306,12 +306,12 @@ def finish_recording(video_path, num_starts, video_end, start_time, start_time_s
         # read frame
         ret, frame = cap.read()
         if frame is None:
-            logger.info("Line 310: Frame is None. Ending loop.")
+            logger.info("Line 309: Frame is None. Ending loop.")
             break
 
         # if frame is read correctly ret is True
         if not ret:
-            logger.info("Line 315: End of video stream. Or can't receive frame (stream end?). Exiting ...")
+            logger.info("Line 314: End of video stream. Or can't receive frame (stream end?). Exiting ...")
             break
 
         frame = cv2.flip(frame, flipCode = -1) # camera is upside down"
@@ -366,23 +366,24 @@ def finish_recording(video_path, num_starts, video_end, start_time, start_time_s
 
         # Check if the maximum recording duration has been reached
         elapsed_time = time.time() - start_time
-        logger.info(f"  Line 368: elapsed time: {elapsed_time}")
+        logger.info(f"  Line 369: elapsed time: {elapsed_time}")
         if elapsed_time >= 60 * (video_end + 5 * (num_starts - 1)):
+            listening = False
             break
 
-        logger.info(f"  Line 372, Recording stopped: {recording_stopped}")
+        logger.info(f"  Line 374, Recording stopped: {recording_stopped}")
         if recording_stopped == True:
             break
 
     cap.release()  # Don't forget to release the camera resources when done
     video_writer.release()  # Release the video writer
-    logger.info("  Line 378, Exited finish_recording module.")
+    logger.info("  Line 3809, Exited finish_recording module.")
 
 def stop_listen_thread():
     global listening
     listening = False
     # Log a message indicating that the listen_thread has been stopped
-    logger.info("  Line 384, stop_listening thread  listening = False")
+    logger.info("  Line 386, stop_listening thread  listening = False")
 
 def main():
     logger = setup_logging()  # Initialize the logger
@@ -418,11 +419,11 @@ def main():
 
         camera = setup_camera()
         if camera is None:
-            logger.error("  Line 413: Camera initialization failed. Exiting.")
+            logger.error("  Line 422: Camera initialization failed. Exiting.")
             sys.exit(1)
         remove_video_files(photo_path, "video")  # clean up
         remove_picture_files(photo_path, ".jpg") # clean up
-        logger.info("  Line 417: Weekday=%s, Start_time=%s, video_end=%s, num_starts=%s", week_day, start_time.strftime("%H:%M"), video_end, num_starts)
+        logger.info("  Line 426: Weekday=%s, Start_time=%s, video_end=%s, num_starts=%s", week_day, start_time.strftime("%H:%M"), video_end, num_starts)
 
         if wd == week_day:
             # A loop that waits until close to the 5-minute mark, a loop that continuously checks the
@@ -431,7 +432,7 @@ def main():
                 now = dt.datetime.now()
                 seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
                 if seconds_since_midnight > t5min_warning - 2:
-                    logger.info("  Line 427 Start of outer loop iteration. seconds_since_midnight=%s", seconds_since_midnight)
+                    logger.info("  Line 435 Start of outer loop iteration. seconds_since_midnight=%s", seconds_since_midnight)
                     if num_starts == 1 or num_starts == 2:
                         # Start video recording just before 5 minutes before the first start
                         start_video_recording(camera, video_path, "video0.h264")
@@ -439,9 +440,9 @@ def main():
                         start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo_path)
                         if num_starts == 2:
                             start_time_sec = start_time_sec + (dur_between_starts * 60)
-                        logger.info("  Line 434: Wait 2 minutes then stop video0 recording")
+                        logger.info("  Line 443: Wait 2 minutes then stop video0 recording")
                         t0 = dt.datetime.now()
-                        logger.info("  Line 436: start_time_sec= %s, t0= %s",start_time_sec, t0)  #test
+                        logger.info("  Line 445: start_time_sec= %s, t0= %s",start_time_sec, t0)  #test
                         while (dt.datetime.now() - t0).seconds < (119):
                             now = dt.datetime.now()
                             seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
@@ -457,15 +458,15 @@ def main():
         time.sleep(2)  # Introduce a delay of 2 seconds
 
     except json.JSONDecodeError as e:
-        logger.info ("  Line 459, Failed to parse JSON: %", str(e))
+        logger.info ("  Line 461, Failed to parse JSON: %", str(e))
         sys.exit(1)
     finally:
-        logger.info("  Line 462 Finally section, before listen_for_message")
-
+        logger.info("  Line 464 Finally section, before listen_for_message")
+        
         # Start a thread for listening for messages with a timeout
         listen_thread = threading.Thread(target=listen_for_messages)
         listen_thread.start()
-        logger.info("  Line 467, Finally section, before 'Finish recording'. start_time=%s video_end%s", start_time, video_end)
+        logger.info("  Line 469, Finally section, before 'Finish recording'. start_time=%s video_end%s", start_time, video_end)
 
         # Remaining tasks in the finally block
         time.sleep(2)
@@ -475,10 +476,10 @@ def main():
         # After video conversion is complete
         with open('/var/www/html/status.txt', 'w') as status_file:
             status_file.write('complete')
-        logger.info("  Line 482, Finished with finish_recording and recording converted to mp4")
+        logger.info("  Line 479, Finished with finish_recording and recording converted to mp4")
         if camera is not None:
             camera.close()  # Release the camera resources
-            logger.info("  Line 485: camera close")
+            logger.info("  Line 482: camera close")
 
         GPIO.cleanup()
 
