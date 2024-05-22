@@ -266,8 +266,8 @@ def listen_for_messages(timeout=0.1):
                     stop_recording()
                     break  # Exit the loop when stop_recording message is received
 
-            else:
-                logger.info(f"Line 270, not rlist {rlist}")
+            #else:
+            #    logger.info(f"Line 270, not rlist {rlist}")
                 # Handle timeout (no input received within timeout period)
         # If the loop exits due to listening being False
         recording_stopped = True
