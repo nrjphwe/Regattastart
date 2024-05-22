@@ -131,7 +131,7 @@ def convert_video_to_mp4(video_path, source_file, destination_file):
         os.path.join(video_path, destination_file)
     )
     subprocess.run(convert_video_str, shell=True)
-    logger.info ("Line 134: Video recording %s converted ", destination_file)
+    logger.info ("  Line 134: Video recording %s converted ", destination_file)
 
 def re_encode_video(video_path, source_file, destination_file):
     re_encode_video_str = "ffmpeg -loglevel error -i {} -vf fps=10 -vcodec libx264 -f mp4 {}".format(
@@ -242,15 +242,15 @@ def stop_recording():
 
 def listen_for_messages(timeout=0.1):
     global listening  # Use global flag
-    logger.info(" Line 245: Listen for messages from PHP script via a named pipe")
+    logger.info("  Line 245: listen_for_messages from PHP script via a named pipe")
     pipe_path = '/var/www/html/tmp/stop_recording_pipe'
-    logger.info(f"Line 247:, pipepath {pipe_path}")
+    logger.info(f"  Line 247:, pipepath {pipe_path}")
 
     try:
         os.unlink(pipe_path)  # Remove existing pipe
     except OSError as e:
         if e.errno != errno.ENOENT:  # Ignore if file doesn't exist
-            logger.info(f"Line 253, OS error: {e.errno}")
+            logger.info(f"  Line 253, OS error: {e.errno}")
             raise
 
     os.mkfifo(pipe_path)  # Create a new named pipe
@@ -304,7 +304,7 @@ def finish_recording(video_path, num_starts, video_end, start_time, start_time_s
     # Assume no boat is detected initially
     boat_in_current_frame = False
 
-    while not recording_stopped:
+    while recording_stopped == False:
         # read frame
         ret, frame = cap.read()
         if frame is None:
@@ -368,24 +368,24 @@ def finish_recording(video_path, num_starts, video_end, start_time, start_time_s
 
         # Check if the maximum recording duration has been reached
         elapsed_time = time.time() - start_time
-        logger.info(f"  Line 369: elapsed time: {elapsed_time}")
         if elapsed_time >= 60 * (video_end + 5 * (num_starts - 1)):
+            logger.info(f"  Line 372: elapsed time: {elapsed_time}")
             listening = False
             break
 
-        logger.info(f"  Line 374, Recording stopped: {recording_stopped}")
         if recording_stopped == True:
+            logger.info(f"  Line 377, Recording stopped: {recording_stopped}")
             break
 
     cap.release()  # Don't forget to release the camera resources when done
     video_writer.release()  # Release the video writer
-    logger.info("  Line 3809, Exited finish_recording module.")
+    logger.info("  Line 382: Exited finish_recording module.")
 
 def stop_listen_thread():
     global listening
     listening = False
     # Log a message indicating that the listen_thread has been stopped
-    logger.info("  Line 386, stop_listening thread  listening = False")
+    logger.info("  Line 388: stop_listening thread  listening = False")
 
 def main():
     logger = setup_logging()  # Initialize the logger
@@ -460,15 +460,14 @@ def main():
         time.sleep(2)  # Introduce a delay of 2 seconds
 
     except json.JSONDecodeError as e:
-        logger.info ("  Line 461, Failed to parse JSON: %", str(e))
+        logger.info ("  Line 463, Failed to parse JSON: %", str(e))
         sys.exit(1)
     finally:
-        logger.info("  Line 464 Finally section, before listen_for_message")
-        
+        logger.info("  Line 466 Finally section, before listen_for_message")
         # Start a thread for listening for messages with a timeout
         listen_thread = threading.Thread(target=listen_for_messages)
         listen_thread.start()
-        logger.info("  Line 469, Finally section, before 'Finish recording'. start_time=%s video_end%s", start_time, video_end)
+        logger.info("  Line 470, Finally section, before 'Finish recording'. start_time=%s video_end=%s", start_time, video_end)
 
         # Remaining tasks in the finally block
         time.sleep(2)
