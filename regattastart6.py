@@ -182,8 +182,7 @@ def finish_recording(camera, video_path, video_delay, num_video, video_dur, star
             camera.wait_recording(0) # was 0.5
 
         stop_video_recording(camera)
-        convert_video_to_mp4(video_path, f"video{i}.h264", f"video{i}.mp4")
-    logger.info(" Line 185 This was the last video =====")
+    logger.info(" Line 185 This was the last recorded video =====")
 
 def main():
     logger = setup_logging()  # Initialize the logger
@@ -257,6 +256,12 @@ def main():
 
         logger.info("Line 258 Finish recording outside inner loop. start_time_sec=%s", start_time_sec)
         finish_recording(camera, video_path, video_delay, num_video, video_dur, start_time_sec)
+
+        # convert all the videos to mp4
+        stop = num_video + 1
+        for i in range(1, stop):
+            convert_video_to_mp4(video_path, f"video{i}.h264", f"video{i}.mp4")
+        logger.info(" Line 264 This was the last converted video =====")
 
     except json.JSONDecodeError as e:
         logger.info ("Failed to parse JSON: %", str(e))
