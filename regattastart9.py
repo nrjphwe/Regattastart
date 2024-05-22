@@ -269,6 +269,8 @@ def listen_for_messages(timeout=0.1):
             else:
                 logger.info(f"Line 270, not rlist {rlist}")
                 # Handle timeout (no input received within timeout period)
+        else:
+            recording_stopped == True
 
 def finish_recording(video_path, num_starts, video_end, start_time, start_time_sec):
     # Open a video capture object (replace 'your_video_file.mp4' with the actual video file or use 0 for webcam)
