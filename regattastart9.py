@@ -483,6 +483,7 @@ def main():
             logger.info("  Line 482: camera close")
 
         GPIO.cleanup()
+        logger.info("  Line 486: after GPIO.cleanup, end of program")
 
 if __name__ == "__main__":
     #logging.basicConfig(level=logging.WARNING)  # Set log level to WARNING
