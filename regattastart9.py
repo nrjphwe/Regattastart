@@ -483,6 +483,9 @@ def main():
             logger.info("  Line 482: camera close")
 
         GPIO.cleanup()
+         # After all tasks are done, stop the listening thread
+        stop_listen_thread()
+        listen_thread.join()  # Wait for the listening thread to finish
         logger.info("  Line 486: after GPIO.cleanup, end of program")
 
 if __name__ == "__main__":
