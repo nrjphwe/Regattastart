@@ -141,7 +141,7 @@ def re_encode_video(video_path, source_file, destination_file):
         os.path.join(video_path, destination_file)
     )
     subprocess.run(re_encode_video_str, shell=True)
-    logger.info ("Line 142: Video %s re-encoded ", destination_file)
+    logger.info ("  Line 142: Video %s re-encoded ", destination_file)
 
 def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo_path,):
     for i in range(num_starts):
@@ -267,7 +267,7 @@ def listen_for_messages(timeout=0.1):
                     stop_recording()
                     break  # Exit the loop when stop_recording message is received
         recording_stopped = True
-    logger.info(f"Line 274: Listening thread terminated")
+    logger.info(f"  Line 270: Listening thread terminated")
 
 def finish_recording(video_path, num_starts, video_end, start_time, start_time_sec):
     # Open a video capture object (replace 'your_video_file.mp4' with the actual video file or use 0 for webcam)
@@ -387,12 +387,11 @@ def stop_listen_thread():
     logger.info("  Line 388: stop_listening thread  listening set to False")
 
 def main():
+    global listening  # Declare listening as global
     logger = setup_logging()  # Initialize the logger
     camera = None # Initialize the camera variable
-    # Flag to control the loop in listen_for_messages
-    listening = True
-    # Initialize listen_thread variable
-    listen_thread = None
+    listening = True  # Initialize the global listening flag
+    listen_thread = None  # Initialize listen_thread variable
 
     # Check if a command-line argument (JSON data) is provided
     if len(sys.argv) < 2:
@@ -483,8 +482,7 @@ def main():
             logger.info("  Line 483: camera close")
 
         GPIO.cleanup()
-        
-        logger.info("  Line 489: after GPIO.cleanup, end of program")
+        logger.info("  Line 489: After GPIO.cleanup, end of program")
 
 if __name__ == "__main__":
     #logging.basicConfig(level=logging.WARNING)  # Set log level to WARNING
