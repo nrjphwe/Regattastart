@@ -20,7 +20,6 @@ log_path = '/usr/lib/cgi-bin/'
 video_path = '/var/www/html/images/'
 photo_path = '/var/www/html/images/'
 # GPIO
-## below changed 2024-05-02
 ON = GPIO.LOW
 OFF = GPIO.HIGH
 signal = 26
@@ -31,7 +30,7 @@ def setup_logging():
     global logger  # Make logger variable global
     logging.config.fileConfig('/usr/lib/cgi-bin/logging.conf')
     logger = logging.getLogger('Start')
-    logger.info("Start logging regattastart6")
+    logger.info("  Line  34: Start logging regattastart6")
     return logger
 
 def setup_camera():
@@ -44,7 +43,7 @@ def setup_camera():
         camera.rotation = (180) # Depends on how camera is mounted
         return camera  # Add this line to return the camera object
     except Exception as e:
-        logger.error(f"Failed to initialize camera: {e}")
+        logger.error(f"  Line  47: Failed to initialize camera: {e}")
         return None
 
 def setup_gpio():
@@ -75,23 +74,23 @@ def trigger_relay(port):
         time.sleep(signal_dur)
         GPIO.output(signal, OFF)
         time.sleep(1 - signal_dur)
-        logger.info ("  Line 78:    Trigger signal %s sec, then wait for 1 - %s sec", signal_dur, signal_dur)
+        logger.info ("  Line  78:    Trigger signal %s sec, then wait for 1 - %s sec", signal_dur, signal_dur)
     elif port == 'Lamp1_on':
         GPIO.output(lamp1, ON)
-        logger.info ('  Line 81 Lamp1_on')
+        logger.info ('  Line  81: Lamp1_on')
     elif port == 'Lamp2_on':
         GPIO.output(lamp2, ON)
-        logger.info ('  Line 84 Lamp2_on')
+        logger.info ('  Line  84: Lamp2_on')
     elif port == 'Lamp1_off':
         GPIO.output(lamp1, OFF)
-        logger.info ('  Line 87 Lamp1_off')
+        logger.info ('  Line  87: Lamp1_off')
     elif port == 'Lamp2_off':
         GPIO.output(lamp2, OFF)
-        logger.info ('  Line 90 Lamp2_off')
+        logger.info ('  Line  90: Lamp2_off')
 
 def capture_picture(camera, photo_path, file_name):
     camera.capture(os.path.join(photo_path, file_name), use_video_port=True)
-    logger.info ("  Line 94:     Capture picture = %s ", file_name)
+    logger.info ("  Line 94:  Capture picture = %s ", file_name)
 
 def start_video_recording(camera, video_path, file_name):
     if camera.recording:
@@ -101,7 +100,7 @@ def start_video_recording(camera, video_path, file_name):
 
 def stop_video_recording(camera):
     camera.stop_recording()
-    logger.info (" 104 video recording stopped")
+    logger.info ("  104: Video recording stopped")
 
 def annotate_video_duration(camera, start_time_sec):
     time_now = dt.datetime.now()
@@ -157,12 +156,12 @@ def start_sequence(camera, signal, start_time_sec, num_starts, dur_between_start
                             action()
                         picture_name = f"{i + 1}a_start_{log_message[:5]}.jpg"
                         capture_picture(camera, photo_path, picture_name)
-                        logger.info(f"   Line 160: Start_sequence, log_message: {log_message}")
-                        logger.info(f"   Line 161: Start_sequence, seconds_since_midnight: {seconds_since_midnight}, start_time_sec: {start_time_sec}")
+                        logger.info(f"  Line 160: Start_sequence, log_message: {log_message}")
+                        logger.info(f"  Line 161: Start_sequence, seconds_since_midnight: {seconds_since_midnight}, start_time_sec: {start_time_sec}")
                         # Record that the event has been triggered for this time interval
-                        logger.info(f"   Line 163: last_triggered_events = {last_triggered_events}")
+                        logger.info(f"  Line 163: last_triggered_events = {last_triggered_events}")
                     last_triggered_events[(seconds, log_message)] = True
-        logger.info(f"   Line 164:  Start_sequence, End of iteration: {i}")
+        logger.info(f"  Line 164:  Start_sequence, End of iteration: {i}")
 
 def finish_recording(camera, video_path, video_delay, num_video, video_dur, start_time_sec):
     # Wait for finish, when the next video will start (delay)
@@ -182,7 +181,7 @@ def finish_recording(camera, video_path, video_delay, num_video, video_dur, star
             camera.wait_recording(0) # was 0.5
 
         stop_video_recording(camera)
-    logger.info(" Line 185 This was the last recorded video =====")
+    logger.info("  Line 185: This was the last recorded video =====")
 
 def main():
     logger = setup_logging()  # Initialize the logger
@@ -192,7 +191,7 @@ def main():
 
     # Check if a command-line argument (JSON data) is provided
     if len(sys.argv) < 2:
-        print("  Line : 1956 No JSON data provided as a command-line argument.")
+        print("  Line 195: No JSON data provided as a command-line argument.")
         sys.exit(1)
 
     try:
@@ -239,7 +238,7 @@ def main():
                         start_sequence(camera, signal, start_time_sec, num_starts, dur_between_starts,photo_path)
                         if num_starts == 2:
                             start_time_sec = start_time_sec + (dur_between_starts * 60)
-                        logger.info(" Line 235: Wait 2 minutes then stop video recording")
+                        logger.info(" Line 242: Wait 2 minutes then stop video recording")
                         t0 = dt.datetime.now()
                         logger.info(" Line 244: start_time_sec= %s, t0= %s",start_time_sec, t0)  #test
                         while (dt.datetime.now() - t0).seconds < (119):
@@ -254,7 +253,7 @@ def main():
                     # Exit the loop after the condition is met
                     break
 
-        logger.info("Line 258 Finish recording outside inner loop. start_time_sec=%s", start_time_sec)
+        logger.info("Line 257 Finish recording outside inner loop. start_time_sec=%s", start_time_sec)
         finish_recording(camera, video_path, video_delay, num_video, video_dur, start_time_sec)
 
         # convert all the videos to mp4
@@ -267,7 +266,7 @@ def main():
         logger.info ("Failed to parse JSON: %", str(e))
         sys.exit(1)
     finally:
-        logger.info(" Line 265: This is finally section")
+        logger.info(" Line 270: This is finally section")
         if camera is not None:
             camera.close()  # Release the camera resources
         if signal is not None:
