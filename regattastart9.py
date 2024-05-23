@@ -24,7 +24,7 @@ import RPi.GPIO as GPIO
 from picamera import PiCamera, Color
 
 # parameter data
-signal_dur = 0.3 # 0.3 sec
+signal_dur = 0.1 # 0.9 sec
 log_path = '/var/www/html/'
 video_path = '/var/www/html/images/'
 photo_path = '/var/www/html/images/'
@@ -244,7 +244,7 @@ def listen_for_messages(timeout=0.1):
     global listening  # Use global flag
     logger.info("  Line 245: listen_for_messages from PHP script via a named pipe")
     pipe_path = '/var/www/html/tmp/stop_recording_pipe'
-    logger.info(f"  Line 247:, pipepath {pipe_path}")
+    logger.info(f"  Line 247: pipepath = {pipe_path}")
 
     try:
         os.unlink(pipe_path)  # Remove existing pipe
@@ -257,7 +257,6 @@ def listen_for_messages(timeout=0.1):
 
     with open(pipe_path, 'r') as fifo:
         while listening == True:
-            # logger.info(f"Line 237, openpipe path: {pipe_path}")
             # Use select to wait for input with a timeout
             rlist, _, _ = select.select([fifo], [], [], timeout)
             if rlist:
@@ -371,6 +370,7 @@ def finish_recording(video_path, num_starts, video_end, start_time, start_time_s
         if elapsed_time >= 60 * (video_end + 5 * (num_starts - 1)):
             logger.info(f"  Line 372: elapsed time: {elapsed_time}")
             listening = False
+            recording_stopped = True
             break
 
         if recording_stopped == True:
@@ -467,7 +467,7 @@ def main():
         # Start a thread for listening for messages with a timeout
         listen_thread = threading.Thread(target=listen_for_messages)
         listen_thread.start()
-        logger.info("  Line 470, Finally section, before 'Finish recording'. start_time=%s video_end=%s", start_time, video_end)
+        logger.info("  Line 470: Finally section, before 'Finish recording'. start_time=%s video_end=%s", start_time, video_end)
 
         # Remaining tasks in the finally block
         time.sleep(2)
