@@ -63,7 +63,7 @@ def trigger_relay(port):
         time.sleep(signal_dur)
         GPIO.output(signal, OFF)
         time.sleep(1 - signal_dur)
-        logger.info ("  Line 66:   Trigger signal %s sec, then wait for 1 - %s sec", signal_dur, signal_dur)
+        logger.info ("  Line 66:  Trigger signal %s sec, then wait for 1 - %s sec", signal_dur, signal_dur)
     elif port == 'Lamp1_on':
         GPIO.output(lamp1, ON)
         logger.info ('  Line 69 Lamp1_on')
@@ -181,19 +181,19 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
                     #if (log_message) not in last_triggered_events:
                     #if (seconds, log_message) not in last_triggered_events:
                     if (log_message) not in last_triggered_events:
-                        logger.info(f"  Line 183: Start_sequence, seconds: {seconds}, log_message= {log_message}")
-                        logger.info(f"  Line 184: Start_sequence, Triggering event at seconds_now: {seconds_now}")
+                        logger.info(f"  Line 184: Start_sequence, seconds: {seconds}, log_message= {log_message}")
+                        logger.info(f"  Line 185: Start_sequence, Triggering event at seconds_now: {seconds_now}")
                         if action:
                             action()
                             picture_name = f"{i + 1}a_start_{log_message[:5]}.jpg"
                             capture_picture(camera, photo_path, picture_name)
-                            logger.info(f"  Line 189: Start_sequence, seconds={seconds}  log_message: {log_message}")
+                            logger.info(f"  Line 190: Start_sequence, seconds={seconds}  log_message: {log_message}")
                         #logger.info(f"  Line 190: Start_sequence, seconds_since_midnight: {seconds_since_midnight}, start_time_sec: {start_time_sec}")
                         # Record that the event has been triggered for this time interval
                         last_triggered_events[(log_message)] = True
                         #last_triggered_events[(seconds, log_message)] = True
                         #last_triggered_events[(log_message)] = True
-        logger.info(f"  Line 194:  Start_sequence, End of iteration: {i}")
+        logger.info(f"  Line 196: Start_sequence, End of iteration: {i}")
 
 def open_camera():
     """
@@ -308,12 +308,12 @@ def finish_recording(video_path, num_starts, video_end, start_time, start_time_s
         # read frame
         ret, frame = cap.read()
         if frame is None:
-            logger.info("Line 309: Frame is None. Ending loop.")
+            logger.info("Line 311: Frame is None. Ending loop.")
             break
 
         # if frame is read correctly ret is True
         if not ret:
-            logger.info("Line 314: End of video stream. Or can't receive frame (stream end?). Exiting ...")
+            logger.info("Line 316: End of video stream. Or can't receive frame (stream end?). Exiting ...")
             break
 
         frame = cv2.flip(frame, flipCode = -1) # camera is upside down"
@@ -385,7 +385,7 @@ def stop_listen_thread():
     global listening
     listening = False
     # Log a message indicating that the listen_thread has been stopped
-    logger.info("  Line 388: stop_listening thread  listening = False")
+    logger.info("  Line 388: stop_listening thread  listening set to False")
 
 def main():
     logger = setup_logging()  # Initialize the logger
@@ -421,11 +421,11 @@ def main():
 
         camera = setup_camera()
         if camera is None:
-            logger.error("  Line 422: Camera initialization failed. Exiting.")
+            logger.error("  Line 424: Camera initialization failed. Exiting.")
             sys.exit(1)
         remove_video_files(photo_path, "video")  # clean up
         remove_picture_files(photo_path, ".jpg") # clean up
-        logger.info("  Line 426: Weekday=%s, Start_time=%s, video_end=%s, num_starts=%s", week_day, start_time.strftime("%H:%M"), video_end, num_starts)
+        logger.info("  Line 428: Weekday=%s, Start_time=%s, video_end=%s, num_starts=%s", week_day, start_time.strftime("%H:%M"), video_end, num_starts)
 
         if wd == week_day:
             # A loop that waits until close to the 5-minute mark, a loop that continuously checks the
@@ -434,17 +434,17 @@ def main():
                 now = dt.datetime.now()
                 seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
                 if seconds_since_midnight > t5min_warning - 2:
-                    logger.info("  Line 435 Start of outer loop iteration. seconds_since_midnight=%s", seconds_since_midnight)
+                    logger.info("  Line 437 Start of outer loop iteration. seconds_since_midnight=%s", seconds_since_midnight)
                     if num_starts == 1 or num_starts == 2:
                         # Start video recording just before 5 minutes before the first start
                         start_video_recording(camera, video_path, "video0.h264")
-                        logger.info("  Line 430: Inner loop, entering the start sequence block.")
+                        logger.info("  Line 441: Inner loop, entering the start sequence block.")
                         start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo_path)
                         if num_starts == 2:
                             start_time_sec = start_time_sec + (dur_between_starts * 60)
-                        logger.info("  Line 443: Wait 2 minutes then stop video0 recording")
+                        logger.info("  Line 445: Wait 2 minutes then stop video0 recording")
                         t0 = dt.datetime.now()
-                        logger.info("  Line 445: start_time_sec= %s, t0= %s",start_time_sec, t0)  #test
+                        logger.info("  Line 447: start_time_sec= %s, t0= %s",start_time_sec, t0)  #test
                         while (dt.datetime.now() - t0).seconds < (119):
                             now = dt.datetime.now()
                             seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
@@ -477,16 +477,16 @@ def main():
         # After video conversion is complete
         with open('/var/www/html/status.txt', 'w') as status_file:
             status_file.write('complete')
-        logger.info("  Line 479, Finished with finish_recording and recording converted to mp4")
+        logger.info("  Line 480, Finished with finish_recording and recording converted to mp4")
         if camera is not None:
             camera.close()  # Release the camera resources
-            logger.info("  Line 482: camera close")
+            logger.info("  Line 483: camera close")
 
         GPIO.cleanup()
          # After all tasks are done, stop the listening thread
         stop_listen_thread()
         listen_thread.join()  # Wait for the listening thread to finish
-        logger.info("  Line 486: after GPIO.cleanup, end of program")
+        logger.info("  Line 489: after GPIO.cleanup, end of program")
 
 if __name__ == "__main__":
     #logging.basicConfig(level=logging.WARNING)  # Set log level to WARNING
