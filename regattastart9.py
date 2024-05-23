@@ -30,6 +30,8 @@ video_path = '/var/www/html/images/'
 photo_path = '/var/www/html/images/'
 on = False
 off = True
+# Define the listening variable
+listening = True
 
 # reset the contents of the status variable, used for flagging that video1-conversion is complete. 
 with open('/var/www/html/status.txt', 'w') as status_file:
