@@ -484,8 +484,8 @@ def main():
 
         GPIO.cleanup()
          # After all tasks are done, stop the listening thread
-        stop_listen_thread()
-        listen_thread.join()  # Wait for the listening thread to finish
+        #stop_listen_thread()
+        #listen_thread.join()  # Wait for the listening thread to finish
         logger.info("  Line 489: after GPIO.cleanup, end of program")
 
 if __name__ == "__main__":
