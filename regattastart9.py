@@ -246,7 +246,7 @@ def listen_for_messages(timeout=0.1):
     pipe_path = '/var/www/html/tmp/stop_recording_pipe'
     logger.info(f"  Line 247: pipepath = {pipe_path}")
 
-    while listening:
+    while listening == True:
         try:
             os.unlink(pipe_path)  # Remove existing pipe
         except OSError as e:
@@ -257,20 +257,14 @@ def listen_for_messages(timeout=0.1):
         os.mkfifo(pipe_path)  # Create a new named pipe
 
         with open(pipe_path, 'r') as fifo:
-            while listening == True:
-                # Use select to wait for input with a timeout
-                rlist, _, _ = select.select([fifo], [], [], timeout)
-                if rlist:
-                    message = fifo.readline().strip()
-                    if message == 'stop_recording':
-                        stop_recording()
-                        break  # Exit the loop when stop_recording message is received
-
-                #else:
-                #    logger.info(f"Line 270, not rlist {rlist}")
-                    # Handle timeout (no input received within timeout period)
-            # If the loop exits due to listening being False
-            recording_stopped = True
+            # Use select to wait for input with a timeout
+            rlist, _, _ = select.select([fifo], [], [], timeout)
+            if rlist:
+                message = fifo.readline().strip()
+                if message == 'stop_recording':
+                    stop_recording()
+                    break  # Exit the loop when stop_recording message is received
+        recording_stopped = True
     logger.info(f"Line 274: Listening thread terminated")
 
 def finish_recording(video_path, num_starts, video_end, start_time, start_time_sec):
