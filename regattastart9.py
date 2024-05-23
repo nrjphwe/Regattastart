@@ -463,7 +463,7 @@ def main():
         logger.info ("  Line 463, Failed to parse JSON: %", str(e))
         sys.exit(1)
     finally:
-        logger.info("  Line 466 Finally section, before listen_for_message")
+        logger.info("  Line 466: Finally section, before listen_for_message")
         # Start a thread for listening for messages with a timeout
         listen_thread = threading.Thread(target=listen_for_messages)
         listen_thread.start()
