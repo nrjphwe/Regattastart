@@ -246,30 +246,32 @@ def listen_for_messages(timeout=0.1):
     pipe_path = '/var/www/html/tmp/stop_recording_pipe'
     logger.info(f"  Line 247: pipepath = {pipe_path}")
 
-    try:
-        os.unlink(pipe_path)  # Remove existing pipe
-    except OSError as e:
-        if e.errno != errno.ENOENT:  # Ignore if file doesn't exist
-            logger.info(f"  Line 253, OS error: {e.errno}")
-            raise
+    while listening:
+        try:
+            os.unlink(pipe_path)  # Remove existing pipe
+        except OSError as e:
+            if e.errno != errno.ENOENT:  # Ignore if file doesn't exist
+                logger.info(f"  Line 253, OS error: {e.errno}")
+                raise
 
-    os.mkfifo(pipe_path)  # Create a new named pipe
+        os.mkfifo(pipe_path)  # Create a new named pipe
 
-    with open(pipe_path, 'r') as fifo:
-        while listening == True:
-            # Use select to wait for input with a timeout
-            rlist, _, _ = select.select([fifo], [], [], timeout)
-            if rlist:
-                message = fifo.readline().strip()
-                if message == 'stop_recording':
-                    stop_recording()
-                    break  # Exit the loop when stop_recording message is received
+        with open(pipe_path, 'r') as fifo:
+            while listening == True:
+                # Use select to wait for input with a timeout
+                rlist, _, _ = select.select([fifo], [], [], timeout)
+                if rlist:
+                    message = fifo.readline().strip()
+                    if message == 'stop_recording':
+                        stop_recording()
+                        break  # Exit the loop when stop_recording message is received
 
-            #else:
-            #    logger.info(f"Line 270, not rlist {rlist}")
-                # Handle timeout (no input received within timeout period)
-        # If the loop exits due to listening being False
-        recording_stopped = True
+                #else:
+                #    logger.info(f"Line 270, not rlist {rlist}")
+                    # Handle timeout (no input received within timeout period)
+            # If the loop exits due to listening being False
+            recording_stopped = True
+    logger.info(f"Line 274: Listening thread terminated")
 
 def finish_recording(video_path, num_starts, video_end, start_time, start_time_sec):
     # Open a video capture object (replace 'your_video_file.mp4' with the actual video file or use 0 for webcam)
@@ -375,6 +377,7 @@ def finish_recording(video_path, num_starts, video_end, start_time, start_time_s
 
         if recording_stopped == True:
             logger.info(f"  Line 377, Recording stopped: {recording_stopped}")
+            listening = False
             break
 
     cap.release()  # Don't forget to release the camera resources when done
@@ -472,6 +475,7 @@ def main():
         # Remaining tasks in the finally block
         time.sleep(2)
         finish_recording(video_path, num_starts, video_end, start_time, start_time_sec)
+        listen_thread.join()  # Wait for the listening thread to finish
         time.sleep(2)
         re_encode_video(video_path, "video1.avi", "video1.mp4")
         # After video conversion is complete
@@ -483,9 +487,7 @@ def main():
             logger.info("  Line 483: camera close")
 
         GPIO.cleanup()
-         # After all tasks are done, stop the listening thread
-        #stop_listen_thread()
-        #listen_thread.join()  # Wait for the listening thread to finish
+        
         logger.info("  Line 489: after GPIO.cleanup, end of program")
 
 if __name__ == "__main__":
