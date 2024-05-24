@@ -17,10 +17,8 @@ import tempfile # to check the php temp file
 # image recognition
 import cv2
 import numpy as np
-
 import subprocess
 import RPi.GPIO as GPIO
-#from gpiozero import OutputDevice, Device
 from picamera import PiCamera, Color
 
 # parameter data
@@ -30,15 +28,13 @@ video_path = '/var/www/html/images/'
 photo_path = '/var/www/html/images/'
 on = False
 off = True
-# Define the listening variable
-listening = True
+listening = True  # Define the listening variable
 
 # reset the contents of the status variable, used for flagging that video1-conversion is complete. 
 with open('/var/www/html/status.txt', 'w') as status_file:
     status_file.write("")
 
-# Global variable
-recording_stopped = False
+recording_stopped = False # Global variable
 
 def setup_logging():
     global logger  # Make logger variable global
@@ -379,7 +375,7 @@ def finish_recording(video_path, num_starts, video_end, start_time, start_time_s
 
     cap.release()  # Don't forget to release the camera resources when done
     video_writer.release()  # Release the video writer
-    logger.info("  Line 380: cap.releae and vide_writer release, exited the finish_recording module.")
+    logger.info("  Line 380: cap.release and video_writer release, exited the finish_recording module.")
 
 def stop_listen_thread():
     global listening
@@ -466,13 +462,17 @@ def main():
         # Start a thread for listening for messages with a timeout
         listen_thread = threading.Thread(target=listen_for_messages)
         listen_thread.start()
-        logger.info("  Line 470: Finally section, before 'Finish recording'. start_time=%s video_end=%s", start_time, video_end)
-
-        # Remaining tasks in the finally block
+        logger.info("  Line 465: Finally section, before 'Finish recording'. start_time=%s video_end=%s", start_time, video_end)
         time.sleep(2)
         finish_recording(video_path, num_starts, video_end, start_time, start_time_sec)
-        listen_thread.join()  # Wait for the listening thread to finish
-        logger.info("  Line 475: after listyen.thread.join()")
+        
+        # Use join with a timeout
+        listen_thread.join(timeout=10)
+        if listen_thread.is_alive():
+            logger.warning("  Line 472: listen_thread is still alive after timeout")
+        else:
+            logger.info("  Line 474: listen_thread finished")
+            
         time.sleep(2)
         re_encode_video(video_path, "video1.avi", "video1.mp4")
         # After video conversion is complete
