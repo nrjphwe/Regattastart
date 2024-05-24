@@ -265,9 +265,11 @@ def listen_for_messages(timeout=0.1):
                 message = fifo.readline().strip()
                 if message == 'stop_recording':
                     stop_recording()
+                    logger.info(f"  Line 268: Message == stop_recording")
                     break  # Exit the loop when stop_recording message is received
         recording_stopped = True
-    logger.info(f"  Line 270: Listening thread terminated")
+        logger.info(f"  Line 270: end of with open(pipe_path, r)")
+    logger.info(f"  Line 271: Listening thread terminated")
 
 def finish_recording(video_path, num_starts, video_end, start_time, start_time_sec):
     # Open a video capture object (replace 'your_video_file.mp4' with the actual video file or use 0 for webcam)
@@ -354,7 +356,6 @@ def finish_recording(video_path, num_starts, video_end, start_time, start_time_s
                         cv_annotate_video(frame, start_time_sec)
                         video_writer.write(frame)
 
-        # boat_detected == False:
         if boat_in_current_frame == True: # boat was in frame previously
             if iteration  > 0:   # Keep recording for a few frames after no boat is detected
                 cv_annotate_video(frame, start_time_sec)
@@ -366,25 +367,25 @@ def finish_recording(video_path, num_starts, video_end, start_time, start_time_s
         # Check if the maximum recording duration has been reached
         elapsed_time = time.time() - start_time
         if elapsed_time >= 60 * (video_end + 5 * (num_starts - 1)):
-            logger.info(f"  Line 372: elapsed time: {elapsed_time}")
+            logger.info(f"  Line 368: elapsed time: {elapsed_time}")
             listening = False
             recording_stopped = True
             break
 
         if recording_stopped == True:
-            logger.info(f"  Line 377, Recording stopped: {recording_stopped}")
+            logger.info(f"  Line 374, Recording stopped: {recording_stopped}")
             listening = False
             break
 
     cap.release()  # Don't forget to release the camera resources when done
     video_writer.release()  # Release the video writer
-    logger.info("  Line 382: Exited finish_recording module.")
+    logger.info("  Line 380: cap.releae and vide_writer release, exited the finish_recording module.")
 
 def stop_listen_thread():
     global listening
     listening = False
     # Log a message indicating that the listen_thread has been stopped
-    logger.info("  Line 388: stop_listening thread  listening set to False")
+    logger.info("  Line 386: stop_listening thread  listening set to False")
 
 def main():
     global listening  # Declare listening as global
@@ -471,6 +472,7 @@ def main():
         time.sleep(2)
         finish_recording(video_path, num_starts, video_end, start_time, start_time_sec)
         listen_thread.join()  # Wait for the listening thread to finish
+        logger.info("  Line 475: after listyen.thread.join()")
         time.sleep(2)
         re_encode_video(video_path, "video1.avi", "video1.mp4")
         # After video conversion is complete
