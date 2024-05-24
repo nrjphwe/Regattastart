@@ -384,6 +384,7 @@ def stop_listen_thread():
     logger.info("  Line 386: stop_listening thread  listening set to False")
 
 def main():
+    stop_event = threading.Event()
     global listening  # Declare listening as global
     logger = setup_logging()  # Initialize the logger
     camera = None # Initialize the camera variable
@@ -462,19 +463,22 @@ def main():
         # Start a thread for listening for messages with a timeout
         listen_thread = threading.Thread(target=listen_for_messages)
         listen_thread.start()
+
         logger.info("  Line 465: Finally section, before 'Finish recording'. start_time=%s video_end=%s", start_time, video_end)
         time.sleep(2)
         finish_recording(video_path, num_starts, video_end, start_time, start_time_sec)
         
-        # Use join with a timeout
+        # Signal the listening thread to stop
+        stop_event.set()
         listen_thread.join(timeout=10)
         if listen_thread.is_alive():
-            logger.warning("  Line 472: listen_thread is still alive after timeout")
+            logger.warning("Line 475: listen_thread is still alive after timeout")
         else:
-            logger.info("  Line 474: listen_thread finished")
-            
+            logger.info("Line 475: listen_thread finished")
+
         time.sleep(2)
         re_encode_video(video_path, "video1.avi", "video1.mp4")
+        
         # After video conversion is complete
         with open('/var/www/html/status.txt', 'w') as status_file:
             status_file.write('complete')
