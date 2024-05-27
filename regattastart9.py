@@ -22,7 +22,7 @@ import RPi.GPIO as GPIO
 from picamera import PiCamera, Color
 
 # parameter data
-signal_dur = 0.1 # 0.9 sec
+signal_dur = 0.9 # 0.9 sec
 log_path = '/var/www/html/'
 video_path = '/var/www/html/images/'
 photo_path = '/var/www/html/images/'
