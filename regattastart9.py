@@ -80,7 +80,7 @@ def setup_camera():
         camera = PiCamera()
         #camera.resolution = (1296, 730)
         camera.resolution = (720, 480)
-        camera.framerate = 5
+        camera.framerate = 10
         camera.annotate_background = Color('black')
         camera.annotate_foreground = Color('white')
         camera.rotation = (180) # Depends on how camera is mounted
@@ -124,7 +124,7 @@ def annotate_video_duration(camera, start_time_sec):
     camera.annotate_text = f"{dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Seconds since last start: {elapsed_time}"
 
 def convert_video_to_mp4(video_path, source_file, destination_file):
-    convert_video_str = "MP4Box -add {} -fps 10 -new {}".format(
+    convert_video_str = "MP4Box -add {} -fps 20 -new {}".format(
         os.path.join(video_path, source_file),
         os.path.join(video_path, destination_file)
     )
@@ -132,7 +132,7 @@ def convert_video_to_mp4(video_path, source_file, destination_file):
     logger.info ("  Line 134: Video recording %s converted ", destination_file)
 
 def re_encode_video(video_path, source_file, destination_file):
-    re_encode_video_str = "ffmpeg -loglevel error -i {} -vf fps=10 -vcodec libx264 -f mp4 {}".format(
+    re_encode_video_str = "ffmpeg -loglevel error -i {} -vf fps=20 -vcodec libx264 -f mp4 {}".format(
         os.path.join(video_path, source_file),
         os.path.join(video_path, destination_file)
     )
@@ -292,7 +292,7 @@ def finish_recording(video_path, num_starts, video_end, start_time, start_time_s
     fourcc = cv2.VideoWriter_fourcc(*'XVID')  # H.264 codec with MP4 container
     video_writer = cv2.VideoWriter(video_path + 'video1' + '.avi', fourcc, fpsw, frame_size)
 
-    number_of_non_detected_frames = 30
+    number_of_non_detected_frames = 60 # was 30 in May
     number_of_detected_frames = 3 # Set the number of frames to record after detecting a boat
     start_time = time.time()  # Record the start time of the recording
     iteration = number_of_non_detected_frames
@@ -338,14 +338,14 @@ def finish_recording(video_path, num_starts, video_end, start_time, start_time_s
                     pt2 = (int(x + w), int(y + h))
                     cv2.rectangle(frame, pt1, pt2, (0, 255, 0), 2, cv2.LINE_AA)
                     # time in rectangle
-                    fontFace=cv2.FONT_HERSHEY_PLAIN
-                    detect_time= time.strftime("%H:%M:%S")
-                    posx = int(x) + 5
-                    posy = int(y + h - 5) 
-                    org = (posx,posy)
-                    fontScale = 0.7
-                    color=(0,0,255) #(B, G, R)
-                    cv2.putText(frame,detect_time,org,fontFace,fontScale,color,1,cv2.LINE_AA)
+                    #fontFace=cv2.FONT_HERSHEY_PLAIN
+                    #detect_time= time.strftime("%H:%M:%S")
+                    #posx = int(x) + 5
+                    #posy = int(y + h - 5) 
+                    #org = (posx,posy)
+                    #fontScale = 0.7
+                    #color=(0,0,255) #(B, G, R)
+                    #cv2.putText(frame,detect_time,org,fontFace,fontScale,color,1,cv2.LINE_AA)
 
                     for i in range(number_of_detected_frames):
                         # logger.info("Line 331: boat detected.")
