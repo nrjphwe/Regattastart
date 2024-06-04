@@ -75,19 +75,6 @@ def trigger_relay(port):
         GPIO.output(lamp2, OFF)
         logger.info ('  Line  78: Lamp2_off')
 
-def setup_camera():
-    """
-    Opens the camera and sets the desired properties for video_recordings
-    """
-    cam = cv2.VideoCapture(0)  # Use 0 for the default camera
-    #cam.set(cv2.CAP_PROP_FRAME_WIDTH, 720)
-    #cam.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
-    if not cam.isOpened():
-        logger.info("  Line 86: Cannot open camera")
-        cam.release()  # Release the camera resources
-        exit()
-    return cam
-
 def remove_picture_files(directory, pattern):
     files = os.listdir(directory)
     for file in files:
@@ -102,32 +89,43 @@ def remove_video_files(directory, pattern):
             file_path = os.path.join(directory, file)
             os.remove(file_path)
 
+def setup_camera():
+    """
+    Opens the camera and sets the desired properties for video_recordings
+    """
+    cam = cv2.VideoCapture(0)  # Use 0 for the default camera
+    cam.set(cv2.CAP_PROP_FRAME_WIDTH, 720)
+    cam.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+    if not cam.isOpened():
+        logger.info("  Line 86: Cannot open camera")
+        cam.release()  # Release the camera resources
+        exit()
+    return cam
+
 def capture_picture(cam, photo_path, file_name):
-    setup_camera()
     ret, frame = cam.read()
     if not ret:
         logger.error("  Line 109: Failed to capture image")
         return
     cv2.imwrite(os.path.join(photo_path, file_name), frame)
-    logger.info("  Line 112: Capture picture = %s", file_name)
+    logger.info("  Line 111: Capture picture = %s", file_name)
 
 def video_recording(cam, video_path, file_name, duration=None):
-    setup_camera()
     fpsw = 20  # number of frames written per second
     width = int(cam.get(cv2.CAP_PROP_FRAME_WIDTH))
     height = int(cam.get(cv2.CAP_PROP_FRAME_HEIGHT))
     frame_size = (width, height)
-    logger.info(f"  Line 121: Camera frame size: {frame_size}")
+    logger.info(f"  Line 118: Camera frame size: {frame_size}")
     fourcc = cv2.VideoWriter_fourcc(*'XVID')  # H.264 codec with MP4 container
     video_writer = cv2.VideoWriter(os.path.join(video_path, file_name + '.avi'), fourcc, fpsw, frame_size)
     
-    logger.info("  Line 125: Started video recording of %s", file_name)
+    logger.info("  Line 122: Started video recording of %s", file_name)
     start_time = time.time()
 
     while True:
         ret, frame = cam.read()
         if not ret:
-            logger.error("  Line 130: Failed to capture frame")
+            logger.error("  Line 128: Failed to capture frame")
             break
 
         video_writer.write(frame)
@@ -135,10 +133,9 @@ def video_recording(cam, video_path, file_name, duration=None):
         if duration and (time.time() - start_time) > duration:
             break
 
-    cam.release()
     video_writer.release()
     cv2.destroyAllWindows()
-    logger.info ("  Line 141: Stopped video recording of %s ", file_name)
+    logger.info ("  Line 138: Stopped video recording of %s ", file_name)
 
 def annotate_video_duration(camera, start_time_sec):
     time_now = dt.datetime.now()
@@ -393,10 +390,10 @@ def stop_listen_thread():
     logger.info("  Line 386: stop_listening thread  listening set to False")
 
 def main():
+    cam = setup_camera()
     stop_event = threading.Event()
     global listening  # Declare listening as global
     logger = setup_logging()  # Initialize the logger
-    camera = None # Initialize the camera variable
     listening = True  # Initialize the global listening flag
     listen_thread = None  # Initialize listen_thread variable
 
@@ -424,10 +421,6 @@ def main():
         t5min_warning = start_time_sec - 5 * 60 # time when the start-machine should begin to execute.
         wd = dt.datetime.today().strftime("%A")
 
-        camera = setup_camera()
-        if camera is None:
-            logger.error("  Line 424: Camera initialization failed. Exiting.")
-            sys.exit(1)
         remove_video_files(photo_path, "video")  # clean up
         remove_picture_files(photo_path, ".jpg") # clean up
         logger.info("  Line 428: Weekday=%s, Start_time=%s, video_end=%s, num_starts=%s", week_day, start_time.strftime("%H:%M"), video_end, num_starts)
@@ -445,7 +438,7 @@ def main():
                         # Start video recording just before 5 minutes before the first start
                         video_recording(video_path, "video0.avi", video_duration)
                         logger.info("  Line 441: Inner loop, entering the start sequence block.")
-                        start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo_path)
+                        start_sequence(cam, start_time_sec, num_starts, dur_between_starts, photo_path)
                         convert_video_to_mp4(video_path, "video0.avi", "video0.mp4")
                     # Exit the loop after the if condition is met
                     break
@@ -479,10 +472,9 @@ def main():
         # After video conversion is complete
         with open('/var/www/html/status.txt', 'w') as status_file:
             status_file.write('complete')
-        logger.info("  Line 480, Finished with finish_recording and recording converted to mp4")
-        if camera is not None:
-            camera.close()  # Release the camera resources
-            logger.info("  Line 483: camera close")
+        logger.info("  Line 475, Finished with finish_recording and recording converted to mp4")
+
+        cam.release() # Release camera resources
 
         GPIO.cleanup()
         logger.info("  Line 489: After GPIO.cleanup, end of program")
