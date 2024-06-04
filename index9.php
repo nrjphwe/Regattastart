@@ -1,5 +1,5 @@
 <?php
-    define('APP_VERSION', '24.02.23'); // You can replace '1.0.0' with your desired version number
+    define('APP_VERSION', '24.06.04'); // You can replace '1.0.0' with your desired version number
     session_id("regattastart");
     session_start();
     // Unset the session variable set in index.php
