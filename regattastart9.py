@@ -110,17 +110,18 @@ def capture_picture(camera, photo_path, file_name):
 def start_video_recording(video_path, file_name, duration=None):
     cam = cv2.VideoCapture(0)
     if not cam.isOpened():
-        logger.error("Cannot open webcam")
+        logger.error("  Line 133: Cannot open webcam")
         return
 
     fpsw = 20  # number of frames written per second
     width = int(cam.get(cv2.CAP_PROP_FRAME_WIDTH))
     height = int(cam.get(cv2.CAP_PROP_FRAME_HEIGHT))
     frame_size = (width, height)
+    logger.info(f"  Line 120: Camera frame size: {frame_size}")
     fourcc = cv2.VideoWriter_fourcc(*'XVID')  # H.264 codec with MP4 container
     video_writer = cv2.VideoWriter(os.path.join(video_path, file_name + '.avi'), fourcc, fpsw, frame_size)
     
-    logger.info("  Line 122: Started video recording of %s", file_name)
+    logger.info("  Line 124: Started video recording of %s", file_name)
     start_time = time.time()
 
     while True:
@@ -130,10 +131,10 @@ def start_video_recording(video_path, file_name, duration=None):
             break
 
         video_writer.write(frame)
-    
+
         if duration and (time.time() - start_time) > duration:
             break
-    
+
     cam.release()
     video_writer.release()
     cv2.destroyAllWindows()
