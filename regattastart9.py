@@ -107,15 +107,47 @@ def capture_picture(camera, photo_path, file_name):
     camera.capture(os.path.join(photo_path, file_name), use_video_port=True)
     logger.info ("  Line 110: Capture picture = %s ", file_name)
 
-def start_video_recording(camera, video_path, file_name):
-    if camera.recording:
-        camera.stop_recording()
-    camera.start_recording(os.path.join(video_path, file_name))
-    logger.info ("  Line 116: Started video recording of %s ", file_name)
+def start_video_recording(video_path, file_name, duration=None):
+    cam = cv2.VideoCapture(0)
+    if not cam.isOpened():
+        logger.error("Cannot open webcam")
+        return
 
-def stop_video_recording(camera):
-    camera.stop_recording()
-    logger.info ("  Line 120: video recording stopped")
+    fpsw = 20  # number of frames written per second
+    width = int(cam.get(cv2.CAP_PROP_FRAME_WIDTH))
+    height = int(cam.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    frame_size = (width, height)
+    fourcc = cv2.VideoWriter_fourcc(*'XVID')  # H.264 codec with MP4 container
+    video_writer = cv2.VideoWriter(os.path.join(video_path, file_name + '.avi'), fourcc, fpsw, frame_size)
+    
+    logger.info("  Line 122: Started video recording of %s", file_name)
+    start_time = time.time()
+
+    while True:
+        ret, frame = cam.read()
+        if not ret:
+            logger.error("Failed to capture frame")
+            break
+
+        video_writer.write(frame)
+    
+        if duration and (time.time() - start_time) > duration:
+            break
+    
+    cam.release()
+    video_writer.release()
+    cv2.destroyAllWindows()
+    logger.info ("  Line 140: Stopped video recording of %s ", file_name)
+
+#def start_video_recording(camera, video_path, file_name):
+#    if camera.recording:
+#        camera.stop_recording()
+#    camera.start_recording(os.path.join(video_path, file_name))
+#    logger.info ("  Line 116: Started video recording of %s ", file_name)
+
+#def stop_video_recording(camera):
+#    camera.stop_recording()
+#    logger.info ("  Line 120: video recording stopped")
 
 def annotate_video_duration(camera, start_time_sec):
     time_now = dt.datetime.now()
@@ -139,7 +171,7 @@ def re_encode_video(video_path, source_file, destination_file):
     subprocess.run(re_encode_video_str, shell=True)
     logger.info ("  Line 142: Video %s re-encoded ", destination_file)
 
-def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo_path,):
+def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo_path):
     for i in range(num_starts):
         logger.info(f"  Line 146: Start_sequence. Start of iteration {i}")
         # Adjust the start_time_sec for the second iteration
@@ -432,27 +464,15 @@ def main():
                 if seconds_since_midnight > t5min_warning - 2:
                     logger.info("  Line 437 Start of outer loop iteration. seconds_since_midnight=%s", seconds_since_midnight)
                     if num_starts == 1 or num_starts == 2:
+                        video_duration = 5 * 60 * num_starts + 119
                         # Start video recording just before 5 minutes before the first start
-                        start_video_recording(camera, video_path, "video0.h264")
+                        start_video_recording(video_path, "video0.avi", video_duration)
                         logger.info("  Line 441: Inner loop, entering the start sequence block.")
                         start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo_path)
-                        if num_starts == 2:
-                            start_time_sec = start_time_sec + (dur_between_starts * 60)
-                        logger.info("  Line 445: Wait 2 minutes then stop video0 recording")
-                        t0 = dt.datetime.now()
-                        logger.info("  Line 447: start_time_sec= %s, t0= %s",start_time_sec, t0)  #test
-                        while (dt.datetime.now() - t0).seconds < (119):
-                            now = dt.datetime.now()
-                            seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
-                            annotate_video_duration(camera, start_time_sec)
-                            camera.wait_recording(0)
-                        stop_video_recording(camera)
-                        convert_video_to_mp4(video_path, "video0.h264", "video0.mp4")
+                        convert_video_to_mp4(video_path, "video0.avi", "video0.mp4")
                     # Exit the loop after the if condition is met
                     break
 
-        # After finishing the initial recording with PiCamera
-        camera.close()
         time.sleep(2)  # Introduce a delay of 2 seconds
 
     except json.JSONDecodeError as e:
