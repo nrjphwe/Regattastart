@@ -443,7 +443,7 @@ def main():
                     if num_starts == 1 or num_starts == 2:
                         video_duration = 5 * 60 * num_starts + 119
                         # Start video recording just before 5 minutes before the first start
-                        start_video_recording(video_path, "video0.avi", video_duration)
+                        video_recording(video_path, "video0.avi", video_duration)
                         logger.info("  Line 441: Inner loop, entering the start sequence block.")
                         start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo_path)
                         convert_video_to_mp4(video_path, "video0.avi", "video0.mp4")
@@ -453,10 +453,10 @@ def main():
         time.sleep(2)  # Introduce a delay of 2 seconds
 
     except json.JSONDecodeError as e:
-        logger.info ("  Line 463, Failed to parse JSON: %", str(e))
+        logger.info ("  Line 456, Failed to parse JSON: %", str(e))
         sys.exit(1)
     finally:
-        logger.info("  Line 466: Finally section, before listen_for_message")
+        logger.info("  Line 459: Finally section, before listen_for_message")
         # Start a thread for listening for messages with a timeout
         listen_thread = threading.Thread(target=listen_for_messages)
         listen_thread.start()
