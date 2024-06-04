@@ -19,7 +19,6 @@ import cv2
 import numpy as np
 import subprocess
 import RPi.GPIO as GPIO
-from picamera import PiCamera, Color
 
 # parameter data
 signal_dur = 0.9 # 0.9 sec
@@ -56,6 +55,7 @@ GPIO.setup(lamp1, GPIO.OUT, initial=GPIO.HIGH)
 GPIO.setup(lamp2, GPIO.OUT, initial=GPIO.HIGH)
 
 def trigger_relay(port):
+
     if port == 'Signal':
         GPIO.output(signal, ON)
         time.sleep(signal_dur)
@@ -75,19 +75,18 @@ def trigger_relay(port):
         GPIO.output(lamp2, OFF)
         logger.info ('  Line  78: Lamp2_off')
 
-def setup_camera():
-    try:
-        camera = PiCamera()
-        #camera.resolution = (1296, 730)
-        camera.resolution = (720, 480)
-        camera.framerate = 10
-        camera.annotate_background = Color('black')
-        camera.annotate_foreground = Color('white')
-        camera.rotation = (180) # Depends on how camera is mounted
-        return camera  # Add this line to return the camera object
-    except Exception as e:
-        logger.error(f"Failed to initialize camera: {e}")
-        return None
+def setup_video_camera():
+    """
+    Opens the camera and sets the desired properties for vide_recordings
+    """
+    cam = cv2.VideoCapture(0)  # Use 0 for the default camera
+    cam.set(cv2.CAP_PROP_FRAME_WIDTH, 720)
+    cam.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+    if not cam.isOpened():
+        logger.info("  Line 86: Cannot open camera")
+        cam.release()  # Release the camera resources
+        exit()
+    return cam
 
 def remove_picture_files(directory, pattern):
     files = os.listdir(directory)
@@ -103,31 +102,31 @@ def remove_video_files(directory, pattern):
             file_path = os.path.join(directory, file)
             os.remove(file_path)
 
-def capture_picture(camera, photo_path, file_name):
-    camera.capture(os.path.join(photo_path, file_name), use_video_port=True)
-    logger.info ("  Line 110: Capture picture = %s ", file_name)
-
-def start_video_recording(video_path, file_name, duration=None):
-    cam = cv2.VideoCapture(0)
-    if not cam.isOpened():
-        logger.error("  Line 133: Cannot open webcam")
+def capture_picture(cam, photo_path, file_name):
+    ret, frame = cam.read()
+    if not ret:
+        logger.error("  Line 109: Failed to capture image")
         return
+    cv2.imwrite(os.path.join(photo_path, file_name), frame)
+    logger.info("  Line 112: Capture picture = %s", file_name)
 
+def start_video_recording(cam, video_path, file_name, duration=None):
+    setup_video_camera()
     fpsw = 20  # number of frames written per second
     width = int(cam.get(cv2.CAP_PROP_FRAME_WIDTH))
     height = int(cam.get(cv2.CAP_PROP_FRAME_HEIGHT))
     frame_size = (width, height)
-    logger.info(f"  Line 120: Camera frame size: {frame_size}")
+    logger.info(f"  Line 121: Camera frame size: {frame_size}")
     fourcc = cv2.VideoWriter_fourcc(*'XVID')  # H.264 codec with MP4 container
     video_writer = cv2.VideoWriter(os.path.join(video_path, file_name + '.avi'), fourcc, fpsw, frame_size)
     
-    logger.info("  Line 124: Started video recording of %s", file_name)
+    logger.info("  Line 125: Started video recording of %s", file_name)
     start_time = time.time()
 
     while True:
         ret, frame = cam.read()
         if not ret:
-            logger.error("Failed to capture frame")
+            logger.error("  Line 130: Failed to capture frame")
             break
 
         video_writer.write(frame)
@@ -138,17 +137,7 @@ def start_video_recording(video_path, file_name, duration=None):
     cam.release()
     video_writer.release()
     cv2.destroyAllWindows()
-    logger.info ("  Line 140: Stopped video recording of %s ", file_name)
-
-#def start_video_recording(camera, video_path, file_name):
-#    if camera.recording:
-#        camera.stop_recording()
-#    camera.start_recording(os.path.join(video_path, file_name))
-#    logger.info ("  Line 116: Started video recording of %s ", file_name)
-
-#def stop_video_recording(camera):
-#    camera.stop_recording()
-#    logger.info ("  Line 120: video recording stopped")
+    logger.info ("  Line 141: Stopped video recording of %s ", file_name)
 
 def annotate_video_duration(camera, start_time_sec):
     time_now = dt.datetime.now()
@@ -226,20 +215,6 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
                         #last_triggered_events[(log_message)] = True
         logger.info(f"  Line 196: Start_sequence, End of iteration: {i}")
 
-def open_camera():
-    """
-    Opens the camera and returns the VideoCapture object.
-    """
-    #cap = cv2.VideoCapture("/home/pi/Regattastart/finish21-6.mp4")
-    #cap = cv2.VideoCapture("/home/pi/Regattastart/finish.mp4")
-    cap = cv2.VideoCapture(0)
-    cap.set(cv2.CAP_PROP_FPS, 5)
-    if not cap.isOpened():
-        logger.info("Line 205 Cannot open camera")
-        cap.release()  # Don't forget to release the camera resources when done
-        exit()
-    return cap
-
 def cv_annotate_video(frame, start_time_sec):
     time_now = dt.datetime.now()
     seconds_since_midnight = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
@@ -303,7 +278,7 @@ def listen_for_messages(timeout=0.1):
 def finish_recording(video_path, num_starts, video_end, start_time, start_time_sec):
     # Open a video capture object (replace 'your_video_file.mp4' with the actual video file or use 0 for webcam)
     #cap = cv2.VideoCapture(os.path.join(video_path, "finish21-6.mp4"))
-    cap = open_camera()
+    cap = setup_video_camera()
     global recording_stopped
 
     # Load the pre-trained object detection model -- YOLO (You Only Look Once)
@@ -448,7 +423,7 @@ def main():
         t5min_warning = start_time_sec - 5 * 60 # time when the start-machine should begin to execute.
         wd = dt.datetime.today().strftime("%A")
 
-        camera = setup_camera()
+        camera = setup_video_camera()
         if camera is None:
             logger.error("  Line 424: Camera initialization failed. Exiting.")
             sys.exit(1)
