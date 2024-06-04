@@ -75,13 +75,13 @@ def trigger_relay(port):
         GPIO.output(lamp2, OFF)
         logger.info ('  Line  78: Lamp2_off')
 
-def setup_video_camera():
+def setup_camera():
     """
-    Opens the camera and sets the desired properties for vide_recordings
+    Opens the camera and sets the desired properties for video_recordings
     """
-    cam = cv2.VideoCapture(0,cv2.CAP_DSHOW)  # Use 0 for the default camera
-    cam.set(cv2.CAP_PROP_FRAME_WIDTH, 720)
-    cam.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+    cam = cv2.VideoCapture(0)  # Use 0 for the default camera
+    #cam.set(cv2.CAP_PROP_FRAME_WIDTH, 720)
+    #cam.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
     if not cam.isOpened():
         logger.info("  Line 86: Cannot open camera")
         cam.release()  # Release the camera resources
@@ -103,7 +103,7 @@ def remove_video_files(directory, pattern):
             os.remove(file_path)
 
 def capture_picture(cam, photo_path, file_name):
-    setup_video_camera()
+    setup_camera()
     ret, frame = cam.read()
     if not ret:
         logger.error("  Line 109: Failed to capture image")
@@ -111,8 +111,8 @@ def capture_picture(cam, photo_path, file_name):
     cv2.imwrite(os.path.join(photo_path, file_name), frame)
     logger.info("  Line 112: Capture picture = %s", file_name)
 
-def start_video_recording(cam, video_path, file_name, duration=None):
-    setup_video_camera()
+def video_recording(cam, video_path, file_name, duration=None):
+    setup_camera()
     fpsw = 20  # number of frames written per second
     width = int(cam.get(cv2.CAP_PROP_FRAME_WIDTH))
     height = int(cam.get(cv2.CAP_PROP_FRAME_HEIGHT))
@@ -279,7 +279,7 @@ def listen_for_messages(timeout=0.1):
 def finish_recording(video_path, num_starts, video_end, start_time, start_time_sec):
     # Open a video capture object (replace 'your_video_file.mp4' with the actual video file or use 0 for webcam)
     #cap = cv2.VideoCapture(os.path.join(video_path, "finish21-6.mp4"))
-    cap = setup_video_camera()
+    cap = setup_camera() # for capturing video
     global recording_stopped
 
     # Load the pre-trained object detection model -- YOLO (You Only Look Once)
