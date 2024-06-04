@@ -79,7 +79,7 @@ def setup_video_camera():
     """
     Opens the camera and sets the desired properties for vide_recordings
     """
-    cam = cv2.VideoCapture(0)  # Use 0 for the default camera
+    cam = cv2.VideoCapture(1)  # Use 0 for the default camera
     cam.set(cv2.CAP_PROP_FRAME_WIDTH, 720)
     cam.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
     if not cam.isOpened():
