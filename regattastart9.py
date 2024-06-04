@@ -94,8 +94,8 @@ def setup_camera():
     Opens the camera and sets the desired properties for video_recordings
     """
     cam = cv2.VideoCapture(0)  # Use 0 for the default camera
-    cam.set(cv2.CAP_PROP_FRAME_WIDTH, 720)
-    cam.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+    #cam.set(cv2.CAP_PROP_FRAME_WIDTH, 720)
+    #cam.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
     if not cam.isOpened():
         logger.info("  Line 86: Cannot open camera")
         cam.release()  # Release the camera resources
@@ -103,12 +103,13 @@ def setup_camera():
     return cam
 
 def capture_picture(cam, photo_path, file_name):
-    ret, frame = cam.read()
-    if not ret:
-        logger.error("  Line 109: Failed to capture image")
-        return
-    cv2.imwrite(os.path.join(photo_path, file_name), frame)
-    logger.info("  Line 111: Capture picture = %s", file_name)
+    img = cv2.imread('img.jpg')
+    #ret, frame = cam.read()
+    #if not ret:
+    #    logger.error("  Line 109: Failed to capture image")
+    #    return
+    cv2.imwrite(os.path.join(photo_path, file_name), img)
+    logger.info("  Line 112: Capture picture = %s", file_name)
 
 def video_recording(cam, video_path, file_name, duration=None):
     fpsw = 20  # number of frames written per second
