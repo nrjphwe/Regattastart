@@ -79,7 +79,7 @@ def setup_video_camera():
     """
     Opens the camera and sets the desired properties for vide_recordings
     """
-    cam = cv2.VideoCapture(0)  # Use 0 for the default camera
+    cam = cv2.VideoCapture(0,cv2.CAP_DSHOW)  # Use 0 for the default camera
     cam.set(cv2.CAP_PROP_FRAME_WIDTH, 720)
     cam.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
     if not cam.isOpened():
@@ -103,6 +103,7 @@ def remove_video_files(directory, pattern):
             os.remove(file_path)
 
 def capture_picture(cam, photo_path, file_name):
+    setup_video_camera()
     ret, frame = cam.read()
     if not ret:
         logger.error("  Line 109: Failed to capture image")
