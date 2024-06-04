@@ -103,12 +103,11 @@ def setup_camera():
     return cam
 
 def capture_picture(cam, photo_path, file_name):
-    img = cv2.imread('img.jpg')
-    #ret, frame = cam.read()
-    #if not ret:
-    #    logger.error("  Line 109: Failed to capture image")
-    #    return
-    cv2.imwrite(os.path.join(photo_path, file_name), img)
+    ret, frame = cam.read()
+    if not ret:
+        logger.error("  Line 109: Failed to capture image")
+        return
+    cv2.imwrite(os.path.join(photo_path, file_name), frame)
     logger.info("  Line 112: Capture picture = %s", file_name)
 
 def video_recording(cam, video_path, file_name, duration=None):
