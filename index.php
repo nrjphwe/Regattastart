@@ -3,7 +3,7 @@
     header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
     header("Access-Control-Allow-Headers: *");
     // after "git pull", "sudo cp /home/pi/Regattastart/index.php /var/www/html/"
-    define('APP_VERSION', '24.02.23'); // You can replace '1.0.0' with your desired version number
+    define('APP_VERSION', '24.06.04'); // You can replace '1.0.0' with your desired version number
     session_id("regattastart");
     session_start();
     ini_set('display_errors', 1); 
