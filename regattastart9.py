@@ -424,7 +424,7 @@ def main():
         t5min_warning = start_time_sec - 5 * 60 # time when the start-machine should begin to execute.
         wd = dt.datetime.today().strftime("%A")
 
-        camera = setup_video_camera()
+        camera = setup_camera()
         if camera is None:
             logger.error("  Line 424: Camera initialization failed. Exiting.")
             sys.exit(1)
