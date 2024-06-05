@@ -103,14 +103,14 @@ def setup_camera():
 
 def capture_picture(cam, photo_path, file_name):
     fpsw = 20  # number of frames written per second
-    ret, frame = cam.read()
-    ret, frame = cam.read()
-    ret, frame = cam.read()
-    if not ret:
-        logger.error("  Line 109: Failed to capture image")
-        return
+    for _ in range(8):
+        ret, frame = cam.read()
+        if not ret:
+            logger.error("Line 109: Failed to capture image")
+            return
+
     cv2.imwrite(os.path.join(photo_path, file_name), frame)
-    logger.info("  Line 110: Capture picture = %s", file_name)
+    logger.info("  Line 113: Capture picture = %s", file_name)
 
 def start_video_recording(cam, video_path, file_name):
     fpsw = 20  # number of frames written per second
