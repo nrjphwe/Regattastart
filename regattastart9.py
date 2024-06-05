@@ -96,7 +96,7 @@ def setup_camera():
     cam.set(cv2.CAP_PROP_FRAME_WIDTH, 720)
     cam.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
     if not cam.isOpened():
-        logger.info("  Line 86: Cannot open camera")
+        logger.info("  Line 99: Cannot open camera")
         cam.release()  # Release the camera resources
         exit()
     return cam
@@ -125,7 +125,7 @@ def annotate_and_write_frames(cam, video_writer):
     while True:
         ret, frame = cam.read()
         if not ret:
-            logger.error("Failed to capture frame")
+            logger.info("  Line 128: Failed to capture frame")
             break
         
         # Annotate the frame with the current date and time
@@ -413,10 +413,10 @@ def stop_listen_thread():
     logger.info("  Line 386: stop_listening thread  listening set to False")
 
 def main():
-    cam = setup_camera()
     stop_event = threading.Event()
     global listening  # Declare listening as global
     logger = setup_logging()  # Initialize the logger
+    cam = setup_camera()
     listening = True  # Initialize the global listening flag
     listen_thread = None  # Initialize listen_thread variable
 
