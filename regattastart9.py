@@ -435,8 +435,8 @@ def main():
                     if num_starts == 1 or num_starts == 2:
                         video_duration = 5 * 60 * num_starts + 119
                         logger.info("  Line 437 Start of video recording, duration %s", video_duration)
-                        video_recording(video_path, "video0.avi", video_duration)
-                        
+                        video_recording(cam, video_path, "video0.avi", video_duration)
+
                         logger.info("  Line 441: Inner loop, entering the start sequence block.")
                         start_sequence(cam, start_time_sec, num_starts, dur_between_starts, photo_path)
                         convert_video_to_mp4(video_path, "video0.avi", "video0.mp4")
