@@ -28,19 +28,7 @@ photo_path = '/var/www/html/images/'
 on = False
 off = True
 listening = True  # Define the listening variable
-
-# reset the contents of the status variable, used for flagging that video1-conversion is complete. 
-with open('/var/www/html/status.txt', 'w') as status_file:
-    status_file.write("")
-
 recording_stopped = False # Global variable
-
-def setup_logging():
-    global logger  # Make logger variable global
-    logging.config.fileConfig('/usr/lib/cgi-bin/logging.conf')
-    logger = logging.getLogger('Start')
-    logger.info("  Line 45: Start logging regattastart9")
-    return logger
 
 # setup gpio()
 ON = GPIO.LOW
@@ -53,6 +41,17 @@ GPIO.setwarnings(True)
 GPIO.setup(signal, GPIO.OUT, initial=GPIO.HIGH)
 GPIO.setup(lamp1, GPIO.OUT, initial=GPIO.HIGH)
 GPIO.setup(lamp2, GPIO.OUT, initial=GPIO.HIGH)
+
+# reset the contents of the status variable, used for flagging that video1-conversion is complete. 
+with open('/var/www/html/status.txt', 'w') as status_file:
+    status_file.write("")
+
+def setup_logging():
+    global logger  # Make logger variable global
+    logging.config.fileConfig('/usr/lib/cgi-bin/logging.conf')
+    logger = logging.getLogger('Start')
+    logger.info("  Line 45: Start logging regattastart9")
+    return logger
 
 def trigger_relay(port):
 
@@ -94,8 +93,8 @@ def setup_camera():
     Opens the camera and sets the desired properties for video_recordings
     """
     cam = cv2.VideoCapture(0)  # Use 0 for the default camera
-    #cam.set(cv2.CAP_PROP_FRAME_WIDTH, 720)
-    #cam.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+    cam.set(cv2.CAP_PROP_FRAME_WIDTH, 720)
+    cam.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
     if not cam.isOpened():
         logger.info("  Line 86: Cannot open camera")
         cam.release()  # Release the camera resources
@@ -115,11 +114,11 @@ def video_recording(cam, video_path, file_name, duration=None):
     width = int(cam.get(cv2.CAP_PROP_FRAME_WIDTH))
     height = int(cam.get(cv2.CAP_PROP_FRAME_HEIGHT))
     frame_size = (width, height)
-    logger.info(f"  Line 118: Camera frame size: {frame_size}")
+    logger.info(f"  Line 117: Camera frame size: {frame_size}")
     fourcc = cv2.VideoWriter_fourcc(*'XVID')  # H.264 codec with MP4 container
     video_writer = cv2.VideoWriter(os.path.join(video_path, file_name + '.avi'), fourcc, fpsw, frame_size)
     
-    logger.info("  Line 122: Started video recording of %s", file_name)
+    logger.info("  Line 121: Started video recording of %s", file_name)
     start_time = time.time()
 
     while True:
@@ -211,7 +210,7 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
                         last_triggered_events[(log_message)] = True
                         #last_triggered_events[(seconds, log_message)] = True
                         #last_triggered_events[(log_message)] = True
-        logger.info(f"  Line 196: Start_sequence, End of iteration: {i}")
+        logger.info(f"  Line 213: Start_sequence, End of iteration: {i}")
 
 def cv_annotate_video(frame, start_time_sec):
     time_now = dt.datetime.now()
