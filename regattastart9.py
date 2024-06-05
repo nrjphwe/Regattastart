@@ -103,11 +103,13 @@ def setup_camera():
 
 def capture_picture(cam, photo_path, file_name):
     ret, frame = cam.read()
+    ret, frame = cam.read()
+    ret, frame = cam.read()
     if not ret:
         logger.error("  Line 109: Failed to capture image")
         return
     cv2.imwrite(os.path.join(photo_path, file_name), frame)
-    logger.info("  Line 112: Capture picture = %s", file_name)
+    logger.info("  Line 110: Capture picture = %s", file_name)
 
 def start_video_recording(cam, video_path, file_name):
     fpsw = 20  # number of frames written per second
@@ -122,6 +124,13 @@ def start_video_recording(cam, video_path, file_name):
     return video_writer
 
 def annotate_and_write_frames(cam, video_writer):
+    org = (15,60) # x = 15 from left, y = 60 from top) 
+    fontFace=cv2.FONT_HERSHEY_DUPLEX
+    fontScale = 0.7
+    color=(0,0,0) #(B, G, R)
+    thickness = 1
+    lineType = cv2.LINE_AA
+
     while True:
         ret, frame = cam.read()
         if not ret:
@@ -130,10 +139,19 @@ def annotate_and_write_frames(cam, video_writer):
         
         # Annotate the frame with the current date and time
         current_time = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        cv2.putText(frame, current_time, (10, frame.shape[0] - 10), 
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
         
-        # Write the annotated frame to the video file
+        # Write a annotated frame to the video file
+        (text_width, text_height), _ = cv2.getTextSize(current_time, fontFace, fontScale, thickness) # Get text size
+        # Define background rectangle coordinates
+        top_left = (org[0], org[1] - text_height) 
+        bottom_right = (int(org[0] + text_width), int(org[1] + (text_height/2)))
+
+        # Draw filled rectangle as background for the text
+        cv2.rectangle(frame, top_left, bottom_right, (255, 255, 255), cv2.FILLED)
+
+        # Draw text on top of the background
+        cv2.putText(frame,current_time,org,fontFace,fontScale,color,thickness,lineType)
+
         video_writer.write(frame)
         return
    
