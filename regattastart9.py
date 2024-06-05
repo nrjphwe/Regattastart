@@ -135,14 +135,6 @@ def annotate_and_write_frames(cam, video_writer):
         
         # Write the annotated frame to the video file
         video_writer.write(frame)
-        
-        # To stop the recording, implement a break condition here (e.g., a specific duration or an external signal)
-        # For now, we'll just break after some condition or timeout for demonstration purposes
-        # if some_condition:
-        #     break
-
-        # For demonstration, we add a sleep to mimic the video capture duration
-        # time.sleep(0.05)
    
 def stop_video_recording(video_writer):
     video_writer.release()
@@ -199,7 +191,7 @@ def re_encode_video(video_path, source_file, destination_file):
 
 def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo_path):
     for i in range(num_starts):
-        logger.info(f"  Line 146: Start_sequence. Start of iteration {i}")
+        logger.info(f"  Line 194: Start_sequence. Start of iteration {i}")
         # Adjust the start_time_sec for the second iteration
         if i == 1:
             start_time_sec += dur_between_starts * 60  # Add 5 or 10 minutes for the second iteration
@@ -227,15 +219,13 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
                 break  # Exit the loop if the condition is met
 
             for seconds, action, log_message in time_intervals:
-                camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                #camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                 time_now = dt.datetime.now()
                 seconds_now = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
 
                 # Check if the event should be triggered based on the current time
                 if seconds_now == seconds:
                     # Check if the event has already been triggered for this time interval
-                    #if (log_message) not in last_triggered_events:
-                    #if (seconds, log_message) not in last_triggered_events:
                     if (log_message) not in last_triggered_events:
                         logger.info(f"  Line 184: Start_sequence, seconds: {seconds}, log_message= {log_message}")
                         logger.info(f"  Line 185: Start_sequence, Triggering event at seconds_now: {seconds_now}")
@@ -244,11 +234,8 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
                             picture_name = f"{i + 1}a_start_{log_message[:5]}.jpg"
                             capture_picture(camera, photo_path, picture_name)
                             logger.info(f"  Line 190: Start_sequence, seconds={seconds}  log_message: {log_message}")
-                        #logger.info(f"  Line 190: Start_sequence, seconds_since_midnight: {seconds_since_midnight}, start_time_sec: {start_time_sec}")
                         # Record that the event has been triggered for this time interval
                         last_triggered_events[(log_message)] = True
-                        #last_triggered_events[(seconds, log_message)] = True
-                        #last_triggered_events[(log_message)] = True
         logger.info(f"  Line 213: Start_sequence, End of iteration: {i}")
 
 def cv_annotate_video(frame, start_time_sec):
