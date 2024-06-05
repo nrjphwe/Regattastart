@@ -109,6 +109,22 @@ def capture_picture(cam, photo_path, file_name):
     cv2.imwrite(os.path.join(photo_path, file_name), frame)
     logger.info("  Line 112: Capture picture = %s", file_name)
 
+def start_video_recording(cam, video_path, file_name):
+    fpsw = 20  # number of frames written per second
+    width = int(cam.get(cv2.CAP_PROP_FRAME_WIDTH))
+    height = int(cam.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    frame_size = (width, height)
+    logger.info(f"  Line 117: Camera frame size: {frame_size}")
+    fourcc = cv2.VideoWriter_fourcc(*'XVID')  # H.264 codec with MP4 container
+    video_writer = cv2.VideoWriter(os.path.join(video_path, file_name), fourcc, fpsw, frame_size)
+    
+    logger.info("  Line 121: Started video recording of %s", file_name)
+    return video_writer
+   
+def stop_video_recording(video_writer):
+    video_writer.release()
+    logger.info ("  Line 126: Stopped video recording")
+
 def video_recording(cam, video_path, file_name, duration=None):
     fpsw = 20  # number of frames written per second
     width = int(cam.get(cv2.CAP_PROP_FRAME_WIDTH))
@@ -228,7 +244,6 @@ def cv_annotate_video(frame, start_time_sec):
     # Define background rectangle coordinates
     top_left = (org[0], org[1] - text_height) 
     bottom_right = (int(org[0] + text_width), int(org[1] + (text_height/2)))
-    #logger.info(f" Line 200: {top_left} {bottom_right}")
 
     # Draw filled rectangle as background for the text
     cv2.rectangle(frame, top_left, bottom_right, (255, 255, 255), cv2.FILLED)
@@ -434,11 +449,20 @@ def main():
                     logger.info("  Line 434 Start of outer loop iteration. seconds_since_midnight=%s", seconds_since_midnight)
                     if num_starts == 1 or num_starts == 2:
                         video_duration = 5 * 60 * num_starts + 119
-                        logger.info("  Line 437 Start of video recording, duration %s", video_duration)
-                        video_recording(cam, video_path, "video0.avi", video_duration)
-
-                        logger.info("  Line 441: Inner loop, entering the start sequence block.")
+                        logger.info("  Line 453 Start of video recording, duration %s", video_duration)
+                        video_writer = start_video_recording(cam, video_path, "video0.avi", video_duration)
+                        logger.info("  Line 455: Inner loop, entering the start sequence block.")
                         start_sequence(cam, start_time_sec, num_starts, dur_between_starts, photo_path)
+                        if num_starts == 2:
+                            start_time_sec = start_time_sec + (dur_between_starts * 60)
+                        logger.info("  Line 449: Wait 2 minutes then stop video0 recording")
+                        t0 = dt.datetime.now()
+                        logger.info("  Line 461: start_time_sec= %s, t0= %s",start_time_sec, t0)  #test
+                        while (dt.datetime.now() - t0).seconds < (119):
+                            now = dt.datetime.now()
+                            seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
+                            #cv_annotate_video(cam, start_time_sec)
+                        stop_video_recording(video_writer)
                         convert_video_to_mp4(video_path, "video0.avi", "video0.mp4")
                     # Exit the loop after the if condition is met
                     break
