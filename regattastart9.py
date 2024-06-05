@@ -135,6 +135,7 @@ def annotate_and_write_frames(cam, video_writer):
         
         # Write the annotated frame to the video file
         video_writer.write(frame)
+        return
    
 def stop_video_recording(video_writer):
     video_writer.release()
@@ -446,7 +447,7 @@ def main():
 
         remove_video_files(photo_path, "video")  # clean up
         remove_picture_files(photo_path, ".jpg") # clean up
-        logger.info("  Line 463: Weekday=%s, Start_time=%s, video_end=%s, num_starts=%s", week_day, start_time.strftime("%H:%M"), video_end, num_starts)
+        logger.info("  Line 4449: Weekday=%s, Start_time=%s, video_end=%s, num_starts=%s", week_day, start_time.strftime("%H:%M"), video_end, num_starts)
 
         if wd == week_day:
             # A loop that waits until close to the 5-minute mark, a loop that continuously checks the
@@ -455,23 +456,25 @@ def main():
                 now = dt.datetime.now()
                 seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
                 if seconds_since_midnight > t5min_warning - 2:
-                    logger.info("  Line 434 Start of outer loop iteration. seconds_since_midnight=%s", seconds_since_midnight)
+                    logger.info("  Line 458 Start of outer loop iteration. seconds_since_midnight=%s", seconds_since_midnight)
                     if num_starts == 1 or num_starts == 2:
-                        logger.info("  Line 475 Start of video recording")
+                        logger.info("  Line 460 Start of video recording")
                         video_writer = start_video_recording(cam, video_path, "video0.avi")
-                        logger.info("  Line 477: Inner loop, entering the start sequence block.")
+                        logger.info("  Line 462: Inner loop, entering the start sequence block.")
                         start_sequence(cam, start_time_sec, num_starts, dur_between_starts, photo_path)
                         if num_starts == 2:
                             start_time_sec = start_time_sec + (dur_between_starts * 60)
-                        logger.info("  Line 481: Wait 2 minutes then stop video0 recording")
+                        logger.info("  Line 466: Wait 2 minutes then stop video0 recording")
                         t0 = dt.datetime.now()
-                        logger.info("  Line 483: start_time_sec= %s, t0= %s",start_time_sec, t0)  #test
+                        logger.info("  Line 468: start_time_sec= %s, t0= %s",start_time_sec, t0)  #test
                         while (dt.datetime.now() - t0).seconds < (119):
                             now = dt.datetime.now()
                             seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
                             annotate_and_write_frames(cam,video_writer)
+                        logger.info("  Line 473: after annotate text")
                         stop_video_recording(video_writer)
                         convert_video_to_mp4(video_path, "video0.avi", "video0.mp4")
+                        logger.info("  Line 476: recording stopped and converted to mp4")
                     # Exit the loop after the if condition is met
                     break
 
