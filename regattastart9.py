@@ -297,10 +297,9 @@ def listen_for_messages(timeout=0.1):
         logger.info(f"  Line 270: end of with open(pipe_path, r)")
     logger.info(f"  Line 271: Listening thread terminated")
 
-def finish_recording(video_path, num_starts, video_end, start_time, start_time_sec):
+def finish_recording(cam, video_path, num_starts, video_end, start_time, start_time_sec):
     # Open a video capture object (replace 'your_video_file.mp4' with the actual video file or use 0 for webcam)
-    #cap = cv2.VideoCapture(os.path.join(video_path, "finish21-6.mp4"))
-    cap = setup_camera() # for capturing video
+    #cam = cv2.VideoCapture(os.path.join(video_path, "finish21-6.mp4"))
     global recording_stopped
 
     # Load the pre-trained object detection model -- YOLO (You Only Look Once)
@@ -312,11 +311,11 @@ def finish_recording(video_path, num_starts, video_end, start_time, start_time_s
     layer_names = net.getUnconnectedOutLayersNames()
 
     # Initialize variables
-    #fps = cap.get(cv2.CAP_PROP_FPS)
+    #fps = cam.get(cv2.CAP_PROP_FPS)
     fpsw = 50  # number of frames written per second
     today = time.strftime("%Y%m%d")
-    width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-    height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    width = int(cam.get(cv2.CAP_PROP_FRAME_WIDTH))
+    height = int(cam.get(cv2.CAP_PROP_FRAME_HEIGHT))
     frame_size = (width, height)
     # setup cv2 writer 
     fourcc = cv2.VideoWriter_fourcc(*'XVID')  # H.264 codec with MP4 container
@@ -331,7 +330,7 @@ def finish_recording(video_path, num_starts, video_end, start_time, start_time_s
 
     while recording_stopped == False:
         # read frame
-        ret, frame = cap.read()
+        ret, frame = cam.read()
         if frame is None:
             logger.info("Line 311: Frame is None. Ending loop.")
             break
@@ -403,9 +402,9 @@ def finish_recording(video_path, num_starts, video_end, start_time, start_time_s
             listening = False
             break
 
-    cap.release()  # Don't forget to release the camera resources when done
+    cam.release()  # Don't forget to release the camera resources when done
     video_writer.release()  # Release the video writer
-    logger.info("  Line 380: cap.release and video_writer release, exited the finish_recording module.")
+    logger.info("  Line 380: cam.release and video_writer release, exited the finish_recording module.")
 
 def stop_listen_thread():
     global listening
@@ -470,7 +469,7 @@ def main():
                         while (dt.datetime.now() - t0).seconds < (119):
                             now = dt.datetime.now()
                             seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
-                            #cv_annotate_video(cam, start_time_sec)
+                            annotate_and_write_frames(cam,video_writer)
                         stop_video_recording(video_writer)
                         convert_video_to_mp4(video_path, "video0.avi", "video0.mp4")
                     # Exit the loop after the if condition is met
@@ -479,17 +478,17 @@ def main():
         time.sleep(2)  # Introduce a delay of 2 seconds
 
     except json.JSONDecodeError as e:
-        logger.info ("  Line 456, Failed to parse JSON: %", str(e))
+        logger.info ("  Line 482, Failed to parse JSON: %", str(e))
         sys.exit(1)
     finally:
-        logger.info("  Line 459: Finally section, before listen_for_message")
+        logger.info("  Line 485: Finally section, before listen_for_message")
         # Start a thread for listening for messages with a timeout
         listen_thread = threading.Thread(target=listen_for_messages)
         listen_thread.start()
 
         logger.info("  Line 465: Finally section, before 'Finish recording'. start_time=%s video_end=%s", start_time, video_end)
         time.sleep(2)
-        finish_recording(video_path, num_starts, video_end, start_time, start_time_sec)
+        finish_recording(cam,video_path, num_starts, video_end, start_time, start_time_sec)
         
         # Signal the listening thread to stop
         stop_event.set()
