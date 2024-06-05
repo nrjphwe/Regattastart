@@ -120,6 +120,29 @@ def start_video_recording(cam, video_path, file_name):
     
     logger.info("  Line 121: Started video recording of %s", file_name)
     return video_writer
+
+def annotate_and_write_frames(cam, video_writer):
+    while True:
+        ret, frame = cam.read()
+        if not ret:
+            logger.error("Failed to capture frame")
+            break
+        
+        # Annotate the frame with the current date and time
+        current_time = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        cv2.putText(frame, current_time, (10, frame.shape[0] - 10), 
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
+        
+        # Write the annotated frame to the video file
+        video_writer.write(frame)
+        
+        # To stop the recording, implement a break condition here (e.g., a specific duration or an external signal)
+        # For now, we'll just break after some condition or timeout for demonstration purposes
+        # if some_condition:
+        #     break
+
+        # For demonstration, we add a sleep to mimic the video capture duration
+        # time.sleep(0.05)
    
 def stop_video_recording(video_writer):
     video_writer.release()
@@ -437,7 +460,7 @@ def main():
 
         remove_video_files(photo_path, "video")  # clean up
         remove_picture_files(photo_path, ".jpg") # clean up
-        logger.info("  Line 428: Weekday=%s, Start_time=%s, video_end=%s, num_starts=%s", week_day, start_time.strftime("%H:%M"), video_end, num_starts)
+        logger.info("  Line 463: Weekday=%s, Start_time=%s, video_end=%s, num_starts=%s", week_day, start_time.strftime("%H:%M"), video_end, num_starts)
 
         if wd == week_day:
             # A loop that waits until close to the 5-minute mark, a loop that continuously checks the
@@ -448,16 +471,15 @@ def main():
                 if seconds_since_midnight > t5min_warning - 2:
                     logger.info("  Line 434 Start of outer loop iteration. seconds_since_midnight=%s", seconds_since_midnight)
                     if num_starts == 1 or num_starts == 2:
-                        video_duration = 5 * 60 * num_starts + 119
-                        logger.info("  Line 453 Start of video recording, duration %s", video_duration)
-                        video_writer = start_video_recording(cam, video_path, "video0.avi", video_duration)
-                        logger.info("  Line 455: Inner loop, entering the start sequence block.")
+                        logger.info("  Line 475 Start of video recording")
+                        video_writer = start_video_recording(cam, video_path, "video0.avi")
+                        logger.info("  Line 477: Inner loop, entering the start sequence block.")
                         start_sequence(cam, start_time_sec, num_starts, dur_between_starts, photo_path)
                         if num_starts == 2:
                             start_time_sec = start_time_sec + (dur_between_starts * 60)
-                        logger.info("  Line 449: Wait 2 minutes then stop video0 recording")
+                        logger.info("  Line 481: Wait 2 minutes then stop video0 recording")
                         t0 = dt.datetime.now()
-                        logger.info("  Line 461: start_time_sec= %s, t0= %s",start_time_sec, t0)  #test
+                        logger.info("  Line 483: start_time_sec= %s, t0= %s",start_time_sec, t0)  #test
                         while (dt.datetime.now() - t0).seconds < (119):
                             now = dt.datetime.now()
                             seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
