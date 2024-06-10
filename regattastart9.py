@@ -94,7 +94,7 @@ def setup_camera():
     """
     cam = cv2.VideoCapture("/home/pi/Regattastart/video3.mp4")
     #cam = cv2.VideoCapture(0)  # Use 0 for the default camera
-    #cam.set(cv2.CAP_PROP_FPS, 5)
+    cam.set(cv2.CAP_PROP_FPS, 5)
     cam.set(cv2.CAP_PROP_FRAME_WIDTH, 720)
     cam.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
     if not cam.isOpened():
@@ -253,7 +253,7 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
                         logger.info(f"  Line 185: Start_sequence, Triggering event at seconds_now: {seconds_now}")
                         if action:
                             action()
-                            picture_name = f"{i + 1}a_start_{log_message[:5]}.png"
+                            picture_name = f"{i + 1}a_start_{log_message[:5]}.jpg"
                             capture_picture(camera, photo_path, picture_name)
                             logger.info(f"  Line 190: Start_sequence, seconds={seconds}  log_message: {log_message}")
                         # Record that the event has been triggered for this time interval
