@@ -122,7 +122,7 @@ def start_video_recording(cam, video_path, file_name):
     logger.info(f"  Line 117: Camera frame size: {frame_size}")
     fourcc = cv2.VideoWriter_fourcc(*'XVID')  # H.264 codec with MP4 container
     video_writer = cv2.VideoWriter(os.path.join(video_path, file_name), fourcc, fpsw, frame_size)
-    
+
     logger.info("  Line 121: Started video recording of %s", file_name)
     return video_writer
 
@@ -139,11 +139,10 @@ def annotate_and_write_frames(cam, video_writer):
         if not ret:
             logger.info("  Line 128: Failed to capture frame")
             break
-        
+
         # Annotate the frame with the current date and time
         current_time = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        
-        # Write a annotated frame to the video file
+
         (text_width, text_height), _ = cv2.getTextSize(current_time, fontFace, fontScale, thickness) # Get text size
         # Define background rectangle coordinates
         top_left = (org[0], org[1] - text_height) 
@@ -157,7 +156,7 @@ def annotate_and_write_frames(cam, video_writer):
 
         video_writer.write(frame)
         return
-   
+
 def stop_video_recording(video_writer):
     video_writer.release()
     logger.info ("  Line 126: Stopped video recording")
