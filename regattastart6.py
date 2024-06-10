@@ -228,7 +228,7 @@ def main():
                 now = dt.datetime.now()
                 seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
 
-                if seconds_since_midnight > t5min_warning - 2:         
+                if seconds_since_midnight > t5min_warning - 2:
                     logger.info(" Line 233: Start of outer loop iteration. seconds_since_midnight=%s", seconds_since_midnight)
 
                     if num_starts == 1 or num_starts == 2:
