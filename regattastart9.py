@@ -252,7 +252,7 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
                         logger.info(f"  Line 185: Start_sequence, Triggering event at seconds_now: {seconds_now}")
                         if action:
                             action()
-                            picture_name = f"{i + 1}a_start_{log_message[:5]}.jpg"
+                            picture_name = f"{i + 1}a_start_{log_message[:5]}.png"
                             capture_picture(camera, photo_path, picture_name)
                             logger.info(f"  Line 190: Start_sequence, seconds={seconds}  log_message: {log_message}")
                         # Record that the event has been triggered for this time interval
