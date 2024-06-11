@@ -17,7 +17,7 @@
 
         echo date('h:i:s') . "<br>";
         echo "execution started";
-        sleep(3);
+        sleep(0.5);
 
         // Redirect to index.php
         header("Location: index.php");
