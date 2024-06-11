@@ -11,8 +11,8 @@
     // Check if video0.mp4 or video1.mp4 exists 
     $video0Exists = file_exists("images/video0.mp4");
     $video1Exists = file_exists("images/video1.mp4");
-    error_log("Line  14: video0Exists =" . $video0Exists);
-    error_log("Line  15: video1Exists =" . $video1Exists);
+    error_log("Line  14: video0Exists = " . $video0Exists);
+    error_log("Line  15: video1Exists = " . $video1Exists);
 
     # initialize the status for Stop_recording button
     $stopRecordingPressed = false;
