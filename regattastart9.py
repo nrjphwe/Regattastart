@@ -92,8 +92,8 @@ def setup_camera():
     """
     Opens the camera and sets the desired properties for video_recordings
     """
-    cam = cv2.VideoCapture("/home/pi/Regattastart/video3.mp4")
-    #cam = cv2.VideoCapture(0)  # Use 0 for the default camera
+    #cam = cv2.VideoCapture("/home/pi/Regattastart/video3.mp4")
+    cam = cv2.VideoCapture(0)  # Use 0 for the default camera
     cam.set(cv2.CAP_PROP_FPS, 5)
     cam.set(cv2.CAP_PROP_FRAME_WIDTH, 720)
     cam.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
