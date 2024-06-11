@@ -131,6 +131,9 @@ def capture_picture(cam, photo_path, file_name):
         logger.error("  Line 120: Failed to capture image")
         return
 
+    # Rotate the frame by 180 degrees
+    frame = cv2.rotate(frame, cv2.ROTATE_180)
+
     cv2.imwrite(os.path.join(photo_path, file_name), frame)
     logger.info("  Line 124: Capture picture = %s", file_name)
 
@@ -159,6 +162,9 @@ def annotate_and_write_frames(cam, video_writer):
         if not ret:
             logger.info("  Line 128: Failed to capture frame")
             break
+
+        # Rotate the frame by 180 degrees
+        frame = cv2.rotate(frame, cv2.ROTATE_180)
 
         # Annotate the frame with the current date and time
         current_time = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
@@ -198,7 +204,9 @@ def video_recording(cam, video_path, file_name, duration=None):
         if not ret:
             logger.error("  Line 128: Failed to capture frame")
             break
-
+        
+        # Rotate the frame by 180 degrees
+        frame = cv2.rotate(frame, cv2.ROTATE_180)
         video_writer.write(frame)
 
         if duration and (time.time() - start_time) > duration:
