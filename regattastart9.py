@@ -98,21 +98,30 @@ def setup_camera():
     cam.set(cv2.CAP_PROP_FRAME_WIDTH, 720)
     cam.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
     if not cam.isOpened():
-        logger.info("  Line 99: Cannot open camera")
+        logger.info("  Line 101: Cannot open camera")
         cam.release()  # Release the camera resources
         exit()
     return cam
 
 def capture_picture(cam, photo_path, file_name):
-    fpsw = 20  # number of frames written per second
+    # Flush the camera buffer
     for _ in range(8):
         ret, frame = cam.read()
         if not ret:
-            logger.error("Line 109: Failed to capture image")
+            logger.error("Line 111: Failed to capture image")
             return
 
+    # Adding a small delay to stabilize the camera
+    cv2.waitKey(100)  # 100 milliseconds delay
+
+    # Capture the frame to be saved
+    ret, frame = cam.read()
+    if not ret:
+        logger.error("  Line 120: Failed to capture image")
+        return
+
     cv2.imwrite(os.path.join(photo_path, file_name), frame)
-    logger.info("  Line 113: Capture picture = %s", file_name)
+    logger.info("  Line 124: Capture picture = %s", file_name)
 
 def start_video_recording(cam, video_path, file_name):
     fpsw = 20  # number of frames written per second
