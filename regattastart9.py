@@ -94,13 +94,24 @@ def setup_camera():
     """
     #cam = cv2.VideoCapture("/home/pi/Regattastart/video3.mp4")
     cam = cv2.VideoCapture(0)  # Use 0 for the default camera
-    #cam.set(cv2.CAP_PROP_FPS, 5)
-    cam.set(cv2.CAP_PROP_FRAME_WIDTH, 720)
-    cam.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+    cam.set(cv2.CAP_PROP_FPS, 5)
+
+    # Select a supported resolution from the listed ones
+    resolution = (1024, 768)  # Choose a resolution from the supported list
+    cam.set(cv2.CAP_PROP_FRAME_WIDTH, resolution[0])
+    cam.set(cv2.CAP_PROP_FRAME_HEIGHT, resolution[1])
+
+    # Verify the resolution was set correctly
+    actual_width = cam.get(cv2.CAP_PROP_FRAME_WIDTH)
+    actual_height = cam.get(cv2.CAP_PROP_FRAME_HEIGHT)
+    if (actual_width, actual_height) != resolution:
+        logger.info(f"  Line 108: Failed to set resolution to {resolution}, using {actual_width}x{actual_height} instead")
+
     if not cam.isOpened():
-        logger.info("  Line 101: Cannot open camera")
-        cam.release()  # Release the camera resources
+        logger.info("  Line 111: Cannot open camera")
+        cam.release() # Release the camera resources
         exit()
+    logger.info("  Line 114: Camera initialized successfully.")
     return cam
 
 def capture_picture(cam, photo_path, file_name):
@@ -236,7 +247,7 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
             (start_time_sec - 1 * 60 - 2, lambda: trigger_relay('Lamp2_off'), "1_min Lamp-2 off -- Flag P down"),
             (start_time_sec - 1 * 60, lambda: trigger_relay('Signal'), "1_min  Warning signal"),
             (start_time_sec - 0 * 60 - 2, lambda: trigger_relay('Lamp1_off'), "Lamp1-off at start"),
-            (start_time_sec - 0 * 60, lambda: trigger_relay('Signal'), "Start signal"),
+            (start_time_sec - 0 * 60, lambda: trigger_relay('Signal'), "Start signal")
         ]
 
         last_triggered_events = {}
