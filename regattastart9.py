@@ -256,7 +256,7 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
                             capture_picture(camera, photo_path, picture_name)
                             logger.info(f"  Line 190: Start_sequence, seconds={seconds}  log_message: {log_message}")
                         # Record that the event has been triggered for this time interval
-                        last_triggered_events[(log_message)] = True
+                        last_triggered_events[(seconds, log_message)] = True
         logger.info(f"  Line 213: Start_sequence, End of iteration: {i}")
 
 def cv_annotate_video(frame, start_time_sec):
