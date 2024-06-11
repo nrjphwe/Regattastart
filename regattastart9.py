@@ -94,7 +94,7 @@ def setup_camera():
     """
     #cam = cv2.VideoCapture("/home/pi/Regattastart/video3.mp4")
     cam = cv2.VideoCapture(0)  # Use 0 for the default camera
-    cam.set(cv2.CAP_PROP_FPS, 5)
+    #cam.set(cv2.CAP_PROP_FPS, 5)
     cam.set(cv2.CAP_PROP_FRAME_WIDTH, 720)
     cam.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
     if not cam.isOpened():
@@ -178,7 +178,7 @@ def video_recording(cam, video_path, file_name, duration=None):
     logger.info(f"  Line 117: Camera frame size: {frame_size}")
     fourcc = cv2.VideoWriter_fourcc(*'XVID')  # H.264 codec with MP4 container
     video_writer = cv2.VideoWriter(os.path.join(video_path, file_name + '.avi'), fourcc, fpsw, frame_size)
-    
+
     logger.info("  Line 121: Started video recording of %s", file_name)
     start_time = time.time()
 
