@@ -465,7 +465,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time, start_t
             break
 
         if recording_stopped == True:
-            logger.info(f"Line 450, Recording stopped: {recording_stopped}")
+            logger.info(f"Line 450, Video1 recording stopped")
             listening = False
             break
 
