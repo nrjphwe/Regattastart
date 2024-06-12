@@ -25,8 +25,6 @@ signal_dur = 0.9 # 0.9 sec
 log_path = '/var/www/html/'
 video_path = '/var/www/html/images/'
 photo_path = '/var/www/html/images/'
-on = False
-off = True
 listening = True  # Define the listening variable
 recording_stopped = False # Global variable
 
@@ -50,7 +48,7 @@ def setup_logging():
     global logger  # Make logger variable global
     logging.config.fileConfig('/usr/lib/cgi-bin/logging.conf')
     logger = logging.getLogger('Start')
-    logger.info("  Line 45: Start logging regattastart9")
+    logger.info("  Line  51: Start logging regattastart9")
     return logger
 
 def trigger_relay(port):
@@ -60,19 +58,19 @@ def trigger_relay(port):
         time.sleep(signal_dur)
         GPIO.output(signal, OFF)
         time.sleep(1 - signal_dur)
-        logger.info ("  Line 66:  Trigger signal %s sec, then wait for 1 - %s sec", signal_dur, signal_dur)
+        logger.info ("  Line 61:  Trigger signal %s sec, then wait for 1 - %s sec", signal_dur, signal_dur)
     elif port == 'Lamp1_on':
         GPIO.output(lamp1, ON)
-        logger.info ('  Line 69 Lamp1_on')
+        logger.info ('  Line 64 Lamp1_on')
     elif port == 'Lamp2_on':
         GPIO.output(lamp2, ON)
-        logger.info ('  Line  72: Lamp2_on')
+        logger.info ('  Line  67: Lamp2_on')
     elif port == 'Lamp1_off':
         GPIO.output(lamp1, OFF)
-        logger.info ('  Line  75: Lamp1_off')
+        logger.info ('  Line  70: Lamp1_off')
     elif port == 'Lamp2_off':
         GPIO.output(lamp2, OFF)
-        logger.info ('  Line  78: Lamp2_off')
+        logger.info ('  Line  73: Lamp2_off')
 
 def remove_picture_files(directory, pattern):
     files = os.listdir(directory)
@@ -119,7 +117,7 @@ def capture_picture(cam, photo_path, file_name):
     for _ in range(8):
         ret, frame = cam.read()
         if not ret:
-            logger.error("Line 111: Failed to capture image")
+            logger.error("  Line 122: Failed to capture image")
             return
 
     # Adding a small delay to stabilize the camera
@@ -128,25 +126,25 @@ def capture_picture(cam, photo_path, file_name):
     # Capture the frame to be saved
     ret, frame = cam.read()
     if not ret:
-        logger.error("  Line 120: Failed to capture image")
+        logger.error("  Line 131: Failed to capture image")
         return
 
     # Rotate the frame by 180 degrees
     frame = cv2.rotate(frame, cv2.ROTATE_180)
 
     cv2.imwrite(os.path.join(photo_path, file_name), frame)
-    logger.info("  Line 124: Capture picture = %s", file_name)
+    logger.info("  Line 138: Capture picture = %s", file_name)
 
 def start_video_recording(cam, video_path, file_name):
     fpsw = 20  # number of frames written per second
     width = int(cam.get(cv2.CAP_PROP_FRAME_WIDTH))
     height = int(cam.get(cv2.CAP_PROP_FRAME_HEIGHT))
     frame_size = (width, height)
-    logger.info(f"  Line 117: Camera frame size: {frame_size}")
+    logger.info(f"  Line 145: Camera frame size: {frame_size}")
     fourcc = cv2.VideoWriter_fourcc(*'XVID')  # H.264 codec with MP4 container
     video_writer = cv2.VideoWriter(os.path.join(video_path, file_name), fourcc, fpsw, frame_size)
 
-    logger.info("  Line 121: Started video recording of %s", file_name)
+    logger.info("  Line 149: Started video recording of %s", file_name)
     return video_writer
 
 def annotate_and_write_frames(cam, video_writer):
@@ -160,7 +158,7 @@ def annotate_and_write_frames(cam, video_writer):
     while True:
         ret, frame = cam.read()
         if not ret:
-            logger.info("  Line 128: Failed to capture frame")
+            logger.info("  Line 163: Failed to capture frame")
             break
 
         # Rotate the frame by 180 degrees
@@ -185,7 +183,7 @@ def annotate_and_write_frames(cam, video_writer):
 
 def stop_video_recording(video_writer):
     video_writer.release()
-    logger.info ("  Line 126: Stopped video recording")
+    logger.info ("  Line 188: Stopped video recording")
 
 def video_recording(cam, video_path, file_name, duration=None):
     fpsw = 20  # number of frames written per second
@@ -196,15 +194,15 @@ def video_recording(cam, video_path, file_name, duration=None):
     fourcc = cv2.VideoWriter_fourcc(*'XVID')  # H.264 codec with MP4 container
     video_writer = cv2.VideoWriter(os.path.join(video_path, file_name + '.avi'), fourcc, fpsw, frame_size)
 
-    logger.info("  Line 121: Started video recording of %s", file_name)
+    logger.info("  Line 199: Started video recording of %s", file_name)
     start_time = time.time()
 
     while True:
         ret, frame = cam.read()
         if not ret:
-            logger.error("  Line 128: Failed to capture frame")
+            logger.error("  Line 205: Failed to capture frame")
             break
-        
+
         # Rotate the frame by 180 degrees
         frame = cv2.rotate(frame, cv2.ROTATE_180)
         video_writer.write(frame)
@@ -214,7 +212,7 @@ def video_recording(cam, video_path, file_name, duration=None):
 
     video_writer.release()
     cv2.destroyAllWindows()
-    logger.info ("  Line 138: Stopped video recording of %s ", file_name)
+    logger.info ("  Line 217: Stopped video recording of %s ", file_name)
 
 def annotate_video_duration(camera, start_time_sec):
     time_now = dt.datetime.now()
@@ -240,11 +238,11 @@ def re_encode_video(video_path, source_file, destination_file):
 
 def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo_path):
     for i in range(num_starts):
-        logger.info(f"  Line 194: Start_sequence. Start of iteration {i}")
+        logger.info(f"  Line 243: Start_sequence. Start of iteration {i}")
         # Adjust the start_time_sec for the second iteration
         if i == 1:
             start_time_sec += dur_between_starts * 60  # Add 5 or 10 minutes for the second iteration
-            logger.info(f"  Line 150: Start_sequence, Next start_time_sec: {start_time_sec}")
+            logger.info(f"  Line 247: Start_sequence, Next start_time_sec: {start_time_sec}")
 
         # Define time intervals for each relay trigger
         time_intervals = [
@@ -276,8 +274,8 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
                 if seconds_now == seconds:
                     # Check if the event has already been triggered for this time interval
                     if (log_message) not in last_triggered_events:
-                        logger.info(f"  Line 184: Start_sequence, seconds: {seconds}, log_message= {log_message}")
-                        logger.info(f"  Line 185: Start_sequence, Triggering event at seconds_now: {seconds_now}")
+                        logger.info(f"  Line 279: Start_sequence, seconds: {seconds}, log_message= {log_message}")
+                        logger.info(f"  Line 280: Start_sequence, Triggering event at seconds_now: {seconds_now}")
                         if action:
                             action()
                             picture_name = f"{i + 1}a_start_{log_message[:5]}.jpg"
@@ -285,7 +283,7 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
                             logger.info(f"  Line 190: Start_sequence, seconds={seconds}  log_message: {log_message}")
                         # Record that the event has been triggered for this time interval
                         last_triggered_events[(seconds, log_message)] = True
-        logger.info(f"  Line 213: Start_sequence, End of iteration: {i}")
+        logger.info(f"  Line 288: Start_sequence, End of iteration: {i}")
 
 def cv_annotate_video(frame, start_time_sec):
     time_now = dt.datetime.now()
@@ -319,16 +317,16 @@ def stop_recording():
 
 def listen_for_messages(timeout=0.1):
     global listening  # Use global flag
-    logger.info("  Line 245: listen_for_messages from PHP script via a named pipe")
+    logger.info("  Line 322: listen_for_messages from PHP script via a named pipe")
     pipe_path = '/var/www/html/tmp/stop_recording_pipe'
-    logger.info(f"  Line 247: pipepath = {pipe_path}")
+    logger.info(f"  Line 324: pipepath = {pipe_path}")
 
     while listening == True:
         try:
             os.unlink(pipe_path)  # Remove existing pipe
         except OSError as e:
             if e.errno != errno.ENOENT:  # Ignore if file doesn't exist
-                logger.info(f"  Line 253, OS error: {e.errno}")
+                logger.info(f"  Line 331: OS error: {e.errno}")
                 raise
 
         os.mkfifo(pipe_path)  # Create a new named pipe
@@ -340,11 +338,11 @@ def listen_for_messages(timeout=0.1):
                 message = fifo.readline().strip()
                 if message == 'stop_recording':
                     stop_recording()
-                    logger.info(f"  Line 268: Message == stop_recording")
+                    logger.info(f"  Line 343: Message == stop_recording")
                     break  # Exit the loop when stop_recording message is received
         recording_stopped = True
-        logger.info(f"  Line 270: end of with open(pipe_path, r)")
-    logger.info(f"  Line 271: Listening thread terminated")
+        logger.info(f"  Line 346: end of with open(pipe_path, r)")
+    logger.info(f"  Line 347: Listening thread terminated")
 
 def finish_recording(cam, video_path, num_starts, video_end, start_time, start_time_sec):
     # Open a video capture object (replace 'your_video_file.mp4' with the actual video file or use 0 for webcam)
@@ -381,12 +379,12 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time, start_t
         # read frame
         ret, frame = cam.read()
         if frame is None:
-            logger.info("Line 311: Frame is None. Ending loop.")
+            logger.info("  Line 384: Frame is None. Ending loop.")
             break
 
         # if frame is read correctly ret is True
         if not ret:
-            logger.info("Line 316: End of video stream. Or can't receive frame (stream end?). Exiting ...")
+            logger.info("  Line 389: End of video stream. Or can't receive frame (stream end?). Exiting ...")
             break
 
         frame = cv2.flip(frame, flipCode = -1) # camera is upside down"
@@ -441,13 +439,13 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time, start_t
         # Check if the maximum recording duration has been reached
         elapsed_time = time.time() - start_time
         if elapsed_time >= 60 * (video_end + 5 * (num_starts - 1)):
-            logger.info(f"  Line 368: elapsed time: {elapsed_time}")
+            logger.info(f"  Line 444: elapsed time: {elapsed_time}")
             listening = False
             recording_stopped = True
             break
 
         if recording_stopped == True:
-            logger.info(f"  Line 374, Recording stopped: {recording_stopped}")
+            logger.info(f"  Line 450, Recording stopped: {recording_stopped}")
             listening = False
             break
 
@@ -459,7 +457,7 @@ def stop_listen_thread():
     global listening
     listening = False
     # Log a message indicating that the listen_thread has been stopped
-    logger.info("  Line 386: stop_listening thread  listening set to False")
+    logger.info("  Line 462: stop_listening thread  listening set to False")
 
 def main():
     stop_event = threading.Event()
@@ -495,7 +493,7 @@ def main():
 
         remove_video_files(photo_path, "video")  # clean up
         remove_picture_files(photo_path, ".jpg") # clean up
-        logger.info("  Line 4449: Weekday=%s, Start_time=%s, video_end=%s, num_starts=%s", week_day, start_time.strftime("%H:%M"), video_end, num_starts)
+        logger.info("  Line 498: Weekday=%s, Start_time=%s, video_end=%s, num_starts=%s", week_day, start_time.strftime("%H:%M"), video_end, num_starts)
 
         if wd == week_day:
             # A loop that waits until close to the 5-minute mark, a loop that continuously checks the
@@ -504,25 +502,25 @@ def main():
                 now = dt.datetime.now()
                 seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
                 if seconds_since_midnight > t5min_warning - 2:
-                    logger.info("  Line 458 Start of outer loop iteration. seconds_since_midnight=%s", seconds_since_midnight)
+                    logger.info("  Line 507 Start of outer loop iteration. seconds_since_midnight=%s", seconds_since_midnight)
                     if num_starts == 1 or num_starts == 2:
-                        logger.info("  Line 460 Start of video recording")
+                        logger.info("  Line 509 Start of video recording")
                         video_writer = start_video_recording(cam, video_path, "video0.avi")
-                        logger.info("  Line 462: Inner loop, entering the start sequence block.")
+                        logger.info("  Line 511: Inner loop, entering the start sequence block.")
                         start_sequence(cam, start_time_sec, num_starts, dur_between_starts, photo_path)
                         if num_starts == 2:
                             start_time_sec = start_time_sec + (dur_between_starts * 60)
-                        logger.info("  Line 466: Wait 2 minutes then stop video0 recording")
+                        logger.info("  Line 515: Wait 2 minutes then stop video0 recording")
                         t0 = dt.datetime.now()
-                        logger.info("  Line 468: start_time_sec= %s, t0= %s",start_time_sec, t0)  #test
+                        logger.info("  Line 517: start_time_sec= %s, t0= %s",start_time_sec, t0)  #test
                         while (dt.datetime.now() - t0).seconds < (119):
                             now = dt.datetime.now()
                             seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
                             annotate_and_write_frames(cam,video_writer)
-                        logger.info("  Line 473: after annotate text")
+                        logger.info("  Line 522: after annotate text")
                         stop_video_recording(video_writer)
                         convert_video_to_mp4(video_path, "video0.avi", "video0.mp4")
-                        logger.info("  Line 476: recording stopped and converted to mp4")
+                        logger.info("  Line 525: recording stopped and converted to mp4")
                     # Exit the loop after the if condition is met
                     break
 
@@ -537,7 +535,7 @@ def main():
         listen_thread = threading.Thread(target=listen_for_messages)
         listen_thread.start()
 
-        logger.info("  Line 465: Finally section, before 'Finish recording'. start_time=%s video_end=%s", start_time, video_end)
+        logger.info("  Line 540: Finally section, before 'Finish recording'. start_time=%s video_end=%s", start_time, video_end)
         time.sleep(2)
         finish_recording(cam,video_path, num_starts, video_end, start_time, start_time_sec)
         
@@ -545,9 +543,9 @@ def main():
         stop_event.set()
         listen_thread.join(timeout=10)
         if listen_thread.is_alive():
-            logger.warning("Line 475: listen_thread is still alive after timeout")
+            logger.info("  Line 548: listen_thread is still alive after timeout")
         else:
-            logger.info("Line 475: listen_thread finished")
+            logger.info("  Line 550: listen_thread finished")
 
         time.sleep(2)
         re_encode_video(video_path, "video1.avi", "video1.mp4")
@@ -555,12 +553,12 @@ def main():
         # After video conversion is complete
         with open('/var/www/html/status.txt', 'w') as status_file:
             status_file.write('complete')
-        logger.info("  Line 475, Finished with finish_recording and recording converted to mp4")
+        logger.info("  Line 558: Finished with finish_recording and recording converted to mp4")
 
         cam.release() # Release camera resources
 
         GPIO.cleanup()
-        logger.info("  Line 489: After GPIO.cleanup, end of program")
+        logger.info("  Line 563: After GPIO.cleanup, end of program")
 
 if __name__ == "__main__":
     #logging.basicConfig(level=logging.WARNING)  # Set log level to WARNING
