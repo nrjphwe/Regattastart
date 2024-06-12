@@ -133,6 +133,7 @@ def capture_picture(cam, photo_path, file_name):
     frame = cv2.rotate(frame, cv2.ROTATE_180)
 
     cv2.imwrite(os.path.join(photo_path, file_name), frame)
+    time.sleep(0.3) # sleep 0.3 sec
     logger.info("  Line 138: Capture picture = %s", file_name)
 
 def start_video_recording(cam, video_path, file_name):
