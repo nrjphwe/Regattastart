@@ -112,42 +112,6 @@ def setup_camera():
     logger.info("  Line 114: Camera initialized successfully.")
     return cam
 
-def capture_picture(cam, photo_path, file_name):
-    # Flush the camera buffer
-    for _ in range(8):
-        ret, frame = cam.read()
-        if not ret:
-            logger.error("  Line 122: Failed to capture image")
-            return
-
-    # Adding a small delay to stabilize the camera
-    cv2.waitKey(100)  # 100 milliseconds delay
-
-    # Capture the frame to be saved
-    ret, frame = cam.read()
-    if not ret:
-        logger.error("  Line 131: Failed to capture image")
-        return
-
-    # Rotate the frame by 180 degrees
-    frame = cv2.rotate(frame, cv2.ROTATE_180)
-
-    cv2.imwrite(os.path.join(photo_path, file_name), frame)
-    time.sleep(0.3) # sleep 0.3 sec
-    logger.info("  Line 138: Capture picture = %s", file_name)
-
-def start_video_recording(cam, video_path, file_name):
-    fpsw = 20  # number of frames written per second
-    width = int(cam.get(cv2.CAP_PROP_FRAME_WIDTH))
-    height = int(cam.get(cv2.CAP_PROP_FRAME_HEIGHT))
-    frame_size = (width, height)
-    logger.info(f"  Line 145: Camera frame size: {frame_size}")
-    fourcc = cv2.VideoWriter_fourcc(*'XVID')  # H.264 codec with MP4 container
-    video_writer = cv2.VideoWriter(os.path.join(video_path, file_name), fourcc, fpsw, frame_size)
-
-    logger.info("  Line 149: Started video recording of %s", file_name)
-    return video_writer
-
 def annotate_and_write_frames(cam, video_writer):
     org = (15,60) # x = 15 from left, y = 60 from top) 
     fontFace=cv2.FONT_HERSHEY_DUPLEX
@@ -181,6 +145,61 @@ def annotate_and_write_frames(cam, video_writer):
 
         video_writer.write(frame)
         return
+
+def capture_picture(cam, photo_path, file_name):
+    org = (15,60) # x = 15 from left, y = 60 from top) 
+    fontFace=cv2.FONT_HERSHEY_DUPLEX
+    fontScale = 0.7
+    color=(0,0,0) #(B, G, R)
+    thickness = 1
+    lineType = cv2.LINE_AA
+    # Flush the camera buffer
+    for _ in range(8):
+        ret, frame = cam.read()
+        if not ret:
+            logger.error("  Line 122: Failed to capture image")
+            return
+
+    # Adding a small delay to stabilize the camera
+    cv2.waitKey(100)  # 100 milliseconds delay
+
+    # Capture the frame to be saved
+    ret, frame = cam.read()
+    if not ret:
+        logger.error("  Line 131: Failed to capture image")
+        return
+
+    # Rotate the frame by 180 degrees
+    frame = cv2.rotate(frame, cv2.ROTATE_180)
+    # Annotate the frame with the current date and time
+    current_time = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+    (text_width, text_height), _ = cv2.getTextSize(current_time, fontFace, fontScale, thickness) # Get text size
+    # Define background rectangle coordinates
+    top_left = (org[0], org[1] - text_height) 
+    bottom_right = (int(org[0] + text_width), int(org[1] + (text_height/2)))
+
+    # Draw filled rectangle as background for the text
+    cv2.rectangle(frame, top_left, bottom_right, (255, 255, 255), cv2.FILLED)
+
+    # Draw text on top of the background
+    cv2.putText(frame,current_time,org,fontFace,fontScale,color,thickness,lineType)
+
+    cv2.imwrite(os.path.join(photo_path, file_name), frame)
+    time.sleep(0.3) # sleep 0.3 sec
+    logger.info("  Line 138: Capture picture = %s", file_name)
+
+def start_video_recording(cam, video_path, file_name):
+    fpsw = 20  # number of frames written per second
+    width = int(cam.get(cv2.CAP_PROP_FRAME_WIDTH))
+    height = int(cam.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    frame_size = (width, height)
+    logger.info(f"  Line 145: Camera frame size: {frame_size}")
+    fourcc = cv2.VideoWriter_fourcc(*'XVID')  # H.264 codec with MP4 container
+    video_writer = cv2.VideoWriter(os.path.join(video_path, file_name), fourcc, fpsw, frame_size)
+
+    logger.info("  Line 149: Started video recording of %s", file_name)
+    return video_writer
 
 def stop_video_recording(video_writer):
     video_writer.release()
