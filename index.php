@@ -8,9 +8,9 @@
     session_start();
     ini_set('display_errors', 1); 
     error_reporting(E_ALL);
-    // Check if video0.mp4 or video1.mp4 exists 
-    $video0Exists = file_exists("images/video0.mp4");
-    $video1Exists = file_exists("images/video1.mp4");
+    // Check if video0.mp4 or video1.mp4 exists and their sizes
+    $video0Exists = file_exists("images/video0.mp4") && filesize("images/video0.mp4") > 0;
+    $video1Exists = file_exists("images/video1.mp4") && filesize("images/video1.mp4") > 0;
     error_log("Line  14: video0Exists = " . $video0Exists);
     error_log("Line  15: video1Exists = " . $video1Exists);
 
