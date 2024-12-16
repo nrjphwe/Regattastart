@@ -26,7 +26,7 @@ timeout_duration = 0.1  # Adjust as needed
 # Variable to store the time when the last boat was detected
 last_detection_time = time.time()
 
-#Define the codec
+# Define the codec
 today = time.strftime("%Y-%m-%d")
 fourcc = cv2.VideoWriter_fourcc(*'x264')  # H.264 codec with MP4 container
 fps_out = 25.0
@@ -37,7 +37,8 @@ cap = cv2.VideoCapture(0)
 width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH) + 0.5)
 height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT) + 0.5)
 frame_size = (width, height)
-video_writer = cv2.VideoWriter('output'+ today + '.x264', fourcc, fps_out, frame_size)
+video_writer = cv2.VideoWriter('output' + today + '.x264', fourcc, fps_out,
+                               frame_size)
 
 while True:
 
@@ -45,15 +46,16 @@ while True:
     if not ret:
         break
 
-    frame = cv2.flip(frame, flipCode = -1) # camera is upside down"
+    frame = cv2.flip(frame, flipCode=-1)  # camera is upside down"
 
     # Perform object detection, preprocess the frame for object 
     # detection using YOLO. The frame is converted into a blob, and
     # the YOLO model is fed with this blob to obtain the detection results.
-    #blob = cv2.dnn.blobFromImage(frame, 0.00392, (416, 416), (0, 0, 0), True, crop=False)
+    # blob = cv2.dnn.blobFromImage(frame, 0.00392, (416, 416), (0, 0, 0), True, crop=False)
     today = time.strftime("%Y%m%d-%H%M%S")
     print(today, "Before object detection, line 70")
-    blob = cv2.dnn.blobFromImage(frame, scalefactor=0.00392, size=(416, 416), swapRB=True, crop=False)
+    blob = cv2.dnn.blobFromImage(frame, scalefactor=0.00392, size=(416, 416), 
+                                 swapRB=True, crop=False)
     net.setInput(blob)
     outs = net.forward(layer_names)
 
@@ -71,35 +73,37 @@ while True:
                 # Update the time when the last boat was detected
                 last_detection_time = time.time()
                 today = time.strftime("%Y%m%d-%H%M%S")
-                print(today, f"Class: {classes[class_id]}, Confidence: {confidence}")
+                print(today, f'Class: {classes[class_id]}', f'Confidence: {confidence}')
                 # Visualize the detected bounding box
                 # Visualize the detected bounding box
                 h, w, _ = frame.shape
                 x, y, w, h = map(int, detection[0:4] * [w, h, w, h])
                 pt1 = (int(x), int(y))
-                pt2 = (int(x + w), int(y + h))                
+                pt2 = (int(x + w), int(y + h))
                 cv2.rectangle(frame, pt1, pt2, (0, 255, 0), 2, cv2.LINE_AA)
 
                 # time in rectangle
-                fontFace=cv2.FONT_HERSHEY_PLAIN
-                detect_time= time.strftime("%H:%M:%S")
+                fontFace = cv2.FONT_HERSHEY_PLAIN
+                detect_time = time.strftime("%H:%M:%S")
                 posx = int(x) + 5
-                posy = int(y +h) - 5 
-                org = (posx,posy)
+                posy = int(y + h) - 5
+                org = (posx, posy)
                 fontScale = 0.7
-                color=(0,0,255) #(B, G, R)
-                cv2.putText(frame,detect_time,org,fontFace,fontScale,color,1,cv2.LINE_AA)
+                color = (0, 0, 255)  # (B, G, R)
+                cv2.putText(frame, detect_time, org, fontFace, fontScale,
+                            color, 1, cv2.LINE_AA)
 
                 # header label
                 label = "2024-02-14 19:30:30 Seconds since last start: 401"
-                org = (20,60)
+                org = (20, 60)
                 fontface = cv2.FONT_HERSHEY_DUPLEX
-                #font = ImageFont.truetype("PAPYRUS.ttf", 80) 
+                # font = ImageFont.truetype("PAPYRUS.ttf", 80) 
                 fontScale = 0.7
-                color=(0,0,255) #(B, G, R)
+                color = (0, 0, 255)  # (B, G, R)
                 thickness = 1
                 lineType = cv2.LINE_AA
-                cv2.putText(frame,label,org,fontFace,fontScale,color,thickness,lineType)
+                cv2.putText(frame, label, org, fontFace, fontScale, 
+                            color, thickness, lineType)
                 video_writer.write(frame)
 
             else:
@@ -110,7 +114,7 @@ while True:
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
-    
+
 #  Pressing 'q' will exit the script.
 # After loop, the script release camera and closes the OpenCV windows
 if video_writer is not None:
