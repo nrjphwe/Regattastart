@@ -12,7 +12,7 @@ import datetime as dt
 import logging
 import logging.config
 import json
-import tempfile # to check the php temp file
+import tempfile  # to check the php temp file
 
 # image recognition
 import cv2
@@ -21,12 +21,12 @@ import subprocess
 import RPi.GPIO as GPIO
 
 # parameter data
-signal_dur = 0.9 # 0.9 sec
+signal_dur = 0.9  # 0.9 sec
 log_path = '/var/www/html/'
 video_path = '/var/www/html/images/'
 photo_path = '/var/www/html/images/'
 listening = True  # Define the listening variable
-recording_stopped = False # Global variable
+recording_stopped = False  # Global variable
 
 # setup gpio()
 ON = GPIO.LOW
