@@ -53,7 +53,7 @@ while True:
     # the YOLO model is fed with this blob to obtain the detection results.
     # blob = cv2.dnn.blobFromImage(frame, 0.00392, (416, 416), (0, 0, 0), True, crop=False)
     today = time.strftime("%Y%m%d-%H%M%S")
-    print(today, "Before object detection, line 70")
+    print(today, "Before object detection, line 56")
     blob = cv2.dnn.blobFromImage(frame, scalefactor=0.00392, size=(416, 416), 
                                  swapRB=True, crop=False)
     net.setInput(blob)
