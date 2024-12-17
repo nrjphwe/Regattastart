@@ -112,11 +112,12 @@ def setup_camera():
     logger.info("Camera initialized successfully.")
     return cam
 
+
 def annotate_and_write_frames(cam, video_writer):
-    org = (15,60) # x = 15 from left, y = 60 from top) 
-    fontFace=cv2.FONT_HERSHEY_DUPLEX
+    org = (15, 60)  # x = 15 from left, y = 60 from top)
+    fontFace = cv2.FONT_HERSHEY_DUPLEX
     fontScale = 0.7
-    color=(0,0,0) #(B, G, R)
+    color = (0, 0, 0)  # (B, G, R)
     thickness = 1
     lineType = cv2.LINE_AA
 
@@ -132,16 +133,19 @@ def annotate_and_write_frames(cam, video_writer):
         # Annotate the frame with the current date and time
         current_time = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
-        (text_width, text_height), _ = cv2.getTextSize(current_time, fontFace, fontScale, thickness) # Get text size
+        (text_width, text_height), _ = cv2.getTextSize(current_time, fontFace,
+                                                       fontScale, thickness)
         # Define background rectangle coordinates
-        top_left = (org[0], org[1] - text_height) 
+        top_left = (org[0], org[1] - text_height)
         bottom_right = (int(org[0] + text_width), int(org[1] + (text_height/2)))
 
         # Draw filled rectangle as background for the text
-        cv2.rectangle(frame, top_left, bottom_right, (255, 255, 255), cv2.FILLED)
+        cv2.rectangle(frame, top_left, bottom_right, (255, 255, 255), 
+                      cv2.FILLED)
 
         # Draw text on top of the background
-        cv2.putText(frame,current_time,org,fontFace,fontScale,color,thickness,lineType)
+        cv2.putText(frame, current_time, org, fontFace, fontScale, color, 
+                    thickness, lineType)
 
         video_writer.write(frame)
         return
@@ -174,7 +178,8 @@ def capture_picture(cam, photo_path, file_name):
     # Annotate the frame with the current date and time
     current_time = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
-    (text_width, text_height), _ = cv2.getTextSize(current_time, fontFace, fontScale, thickness) # Get text size
+    (text_width, text_height), _ = cv2.getTextSize(current_time, fontFace,
+                                                   fontScale, thickness)
     # Define background rectangle coordinates
     top_left = (org[0], org[1] - text_height) 
     bottom_right = (int(org[0] + text_width), int(org[1] + (text_height/2)))
@@ -183,7 +188,8 @@ def capture_picture(cam, photo_path, file_name):
     cv2.rectangle(frame, top_left, bottom_right, (255, 255, 255), cv2.FILLED)
 
     # Draw text on top of the background
-    cv2.putText(frame,current_time,org,fontFace,fontScale,color,thickness,lineType)
+    cv2.putText(frame, current_time, org, fontFace, fontScale, color,
+                thickness, lineType)
 
     cv2.imwrite(os.path.join(photo_path, file_name), frame)
     time.sleep(0.3) # sleep 0.3 sec
@@ -201,9 +207,11 @@ def start_video_recording(cam, video_path, file_name):
     logger.info("Started video recording of %s", file_name)
     return video_writer
 
+
 def stop_video_recording(video_writer):
     video_writer.release()
-    logger.info ("Stopped video recording")
+    logger.info("Stopped video recording")
+
 
 def video_recording(cam, video_path, file_name, duration=None):
     fpsw = 20  # number of frames written per second
@@ -237,7 +245,7 @@ def video_recording(cam, video_path, file_name, duration=None):
 def annotate_video_duration(camera, start_time_sec):
     time_now = dt.datetime.now()
     seconds_since_midnight = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
-    elapsed_time = seconds_since_midnight - start_time_sec #elapsed since last star until now)
+    elapsed_time = seconds_since_midnight - start_time_sec  # elapsed since last star until now)
     camera.annotate_text = f"{dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Seconds since last start: {elapsed_time}"
 
 def convert_video_to_mp4(video_path, source_file, destination_file):
@@ -305,11 +313,13 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
                         last_triggered_events[(seconds, log_message)] = True
         logger.info(f"Start_sequence, End of iteration: {i}")
 
+
 def cv_annotate_video(frame, start_time_sec):
     time_now = dt.datetime.now()
     seconds_since_midnight = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
-    elapsed_time = seconds_since_midnight - start_time_sec #elapsed since last start until now)
-    label = str(dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) +  " Seconds since last start: " +  str(elapsed_time)
+    # elapsed since last start until now)
+    elapsed_time = seconds_since_midnight - start_time_sec
+    label = str(dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Seconds since last start: " + str(elapsed_time)
     org = (15,60) # x = 15 from left, y = 60 from top) 
     fontFace=cv2.FONT_HERSHEY_DUPLEX
     fontScale = 0.7
@@ -327,13 +337,15 @@ def cv_annotate_video(frame, start_time_sec):
 
     # Draw text on top of the background
 
-    cv2.putText(frame,label,org,fontFace,fontScale,color,thickness,lineType)
+    cv2.putText(frame, label, org, fontFace, fontScale, color, thickness, lineType)
+
 
 def stop_recording():
     global listening
     global recording_stopped
     recording_stopped = True
     listening = False  # Set flag to False to terminate the loop in listen_for_messages
+
 
 def listen_for_messages(timeout=0.1):
     global listening  # Use global flag
@@ -358,19 +370,21 @@ def listen_for_messages(timeout=0.1):
                 message = fifo.readline().strip()
                 if message == 'stop_recording':
                     stop_recording()
-                    logger.info(f"Message == stop_recording")
-                    break  # Exit the loop when stop_recording message is received
+                    logger.info("Message == stop_recording")
+                    break  # Exit the loop when stop_recording received
         recording_stopped = True
-        logger.info(f"end of with open(pipe_path, r)")
-    logger.info(f"Listening thread terminated")
+        logger.info("end of with open(pipe_path, r)")
+    logger.info("Listening thread terminated")
+
 
 def finish_recording(cam, video_path, num_starts, video_end, start_time, start_time_sec):
-    # Open a video capture object (replace 'your_video_file.mp4' with the actual video file or use 0 for webcam)
-    #cam = cv2.VideoCapture(os.path.join(video_path, "finish21-6.mp4"))
+    # Open a video capture object (replace 'your_video_file.mp4' with the 
+    # actual video file or use 0 for webcam) 
+    # cam = cv2.VideoCapture(os.path.join(video_path, "finish21-6.mp4"))
     global recording_stopped
 
     # Load the pre-trained object detection model -- YOLO (You Only Look Once)
-    net = cv2.dnn.readNet('/home/pi/darknet/yolov3-tiny.weights', '/home/pi/darknet/cfg/yolov3-tiny.cfg')
+    net = cv2.dnn.readNet('/home/pi/darknet/yolov3.weights', '/home/pi/darknet/cfg/yolov3.cfg')
     # Load COCO names (class labels)
     with open('/home/pi/darknet/data/coco.names', 'r') as f:
         classes = f.read().strip().split('\n')
@@ -378,7 +392,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time, start_t
     layer_names = net.getUnconnectedOutLayersNames()
 
     # Initialize variables
-    #fps = cam.get(cv2.CAP_PROP_FPS)
+    # fps = cam.get(cv2.CAP_PROP_FPS)
     fpsw = 50  # number of frames written per second
     today = time.strftime("%Y%m%d")
     width = int(cam.get(cv2.CAP_PROP_FRAME_WIDTH))
@@ -407,15 +421,15 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time, start_t
             logger.error("End of video stream. Or can't receive frame (stream end?). Exiting ...")
             break
 
-        frame = cv2.flip(frame, flipCode = -1) # camera is upside down"
+        frame = cv2.flip(frame, flipCode=-1)  # camera is upside down"
 
         # Prepare the input image (frame) for the neural network.
-        scalefactor = 0.00392 # A scale factor to normalize the pixel values. This is often set to 1/255.0.
-        size = (416, 416) # The size to which the input image is resized. YOLO models are often trained on 416x416 images.
-        swapRB = True # This swaps the Red and Blue channels, as OpenCV loads images in BGR format by default, but many pre-trained models expect RGB.
-        crop = False # The image is not cropped.
+        scalefactor = 0.00392  # A scale factor to normalize the pixel values. This is often set to 1/255.0.
+        size = (416, 416)  # The size to which the input image is resized. YOLO models are often trained on 416x416 images.
+        swapRB = True  # This swaps the Red and Blue channels, as OpenCV loads images in BGR format by default, but many pre-trained models expect RGB.
+        crop = False  # The image is not cropped.
         blob = cv2.dnn.blobFromImage(frame, scalefactor, size, swapRB, crop)
-        net.setInput(blob) # Sets the input blob as the input to the neural network
+        net.setInput(blob)  # Sets the input blob as the input to the neural network
         outs = net.forward(layer_names)
 
         for out in outs:
@@ -434,25 +448,25 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time, start_t
                     pt2 = (int(x + w), int(y + h))
                     cv2.rectangle(frame, pt1, pt2, (0, 255, 0), 2, cv2.LINE_AA)
                     # time in rectangle
-                    #fontFace=cv2.FONT_HERSHEY_PLAIN
-                    #detect_time= time.strftime("%H:%M:%S")
-                    #posx = int(x) + 5
-                    #posy = int(y + h - 5) 
-                    #org = (posx,posy)
-                    #fontScale = 0.7
-                    #color=(0,0,255) #(B, G, R)
-                    #cv2.putText(frame,detect_time,org,fontFace,fontScale,color,1,cv2.LINE_AA)
+                    # fontFace=cv2.FONT_HERSHEY_PLAIN
+                    # detect_time= time.strftime("%H:%M:%S")
+                    # posx = int(x) + 5
+                    # posy = int(y + h - 5) 
+                    # org = (posx,posy)
+                    # fontScale = 0.7
+                    # color=(0,0,255) #(B, G, R)
+                    # cv2.putText(frame,detect_time,org,fontFace,fontScale,color,1,cv2.LINE_AA)
 
                     for i in range(number_of_detected_frames):
                         # logger.info("331: boat detected.")
                         cv_annotate_video(frame, start_time_sec)
                         video_writer.write(frame)
 
-        if boat_in_current_frame == True: # boat was in frame previously
-            if iteration  > 0:   # Keep recording for a few frames after no boat is detected
+        if boat_in_current_frame is True:  # boat was in frame previously
+            if iteration > 0:   # Keep recording for a few frames after no boat is detected
                 cv_annotate_video(frame, start_time_sec)
                 video_writer.write(frame)
-                iteration  -= 1
+                iteration -= 1
             else:
                 boat_in_current_frame = False
 
@@ -464,8 +478,8 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time, start_t
             recording_stopped = True
             break
 
-        if recording_stopped == True:
-            logger.info(f"Video1 recording stopped")
+        if recording_stopped is True:
+            logger.info('Video1 recording stopped')
             listening = False
             break
 
@@ -473,11 +487,13 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time, start_t
     video_writer.release()  # Release the video writer
     logger.info("cam.release and video_writer release, exited the finish_recording module.")
 
+
 def stop_listen_thread():
     global listening
     listening = False
     # Log a message indicating that the listen_thread has been stopped
     logger.info("462: stop_listening thread  listening set to False")
+
 
 def main():
     stop_event = threading.Event()
@@ -493,12 +509,13 @@ def main():
         sys.exit(1)
 
     try:
-        #logger.info("form_data: %s", form_data)
+        # logger.info("form_data: %s", form_data)
         form_data = json.loads(sys.argv[1])
         week_day = str(form_data["day"])
         video_end = int(form_data["video_end"])
         num_starts = int(form_data["num_starts"])
-        start_time_str = str(form_data["start_time"]) # this is the first start
+        # this is the first start
+        start_time_str = str(form_data["start_time"])
         dur_between_starts = int(form_data["dur_between_starts"])
 
         # Convert to datetime object
@@ -508,7 +525,8 @@ def main():
         start_minute = start_time.minute
         # Calculate start_time_sec
         start_time_sec = 60 * start_minute + 3600 * start_hour
-        t5min_warning = start_time_sec - 5 * 60 # time when the start-machine should begin to execute.
+        # time when the start-machine should begin to execute.
+        t5min_warning = start_time_sec - 5 * 60
         wd = dt.datetime.today().strftime("%A")
 
         remove_video_files(photo_path, "video")  # clean up
@@ -516,8 +534,9 @@ def main():
         logger.info("Weekday=%s, Start_time=%s, video_end=%s, num_starts=%s", week_day, start_time.strftime("%H:%M"), video_end, num_starts)
 
         if wd == week_day:
-            # A loop that waits until close to the 5-minute mark, a loop that continuously checks the
-            # condition without blocking the execution completely
+            # A loop that waits until close to the 5-minute mark, a loop that 
+            # continuously checks the condition without blocking the execution 
+            # completely
             while True:
                 now = dt.datetime.now()
                 seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
@@ -532,7 +551,7 @@ def main():
                             start_time_sec = start_time_sec + (dur_between_starts * 60)
                         logger.info("Wait 2 minutes then stop video0 recording")
                         t0 = dt.datetime.now()
-                        logger.info("start_time_sec= %s, t0= %s",start_time_sec, t0)  #test
+                        logger.info("start_time_sec= %s, t0= %s",start_time_sec, t0)  # test
                         while (dt.datetime.now() - t0).seconds < (119):
                             now = dt.datetime.now()
                             seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
@@ -557,8 +576,8 @@ def main():
 
         logger.info("Finally section, before 'Finish recording'. start_time=%s video_end=%s", start_time, video_end)
         time.sleep(2)
-        finish_recording(cam,video_path, num_starts, video_end, start_time, start_time_sec)
-        
+        finish_recording(cam, video_path, num_starts, video_end, start_time, start_time_sec)
+
         # Signal the listening thread to stop
         stop_event.set()
         listen_thread.join(timeout=10)
@@ -569,17 +588,18 @@ def main():
 
         time.sleep(2)
         re_encode_video(video_path, "video1.avi", "video1.mp4")
-        
+
         # After video conversion is complete
         with open('/var/www/html/status.txt', 'w') as status_file:
             status_file.write('complete')
         logger.info("Finished with finish_recording and recording converted to mp4")
 
-        cam.release() # Release camera resources
+        cam.release()  # Release camera resources
 
         GPIO.cleanup()
         logger.info("After GPIO.cleanup, end of program")
 
+
 if __name__ == "__main__":
-    #logging.basicConfig(level=logging.WARNING)  # Set log level to WARNING
+    # logging.basicConfig(level=logging.WARNING)  # Set log level to WARNING
     main()
