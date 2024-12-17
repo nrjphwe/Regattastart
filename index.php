@@ -1,4 +1,13 @@
 <?php
+    function console_log($output, $with_script_tags = true) {
+        $js_code = 'console.log(' . json_encode($output, JSON_HEX_TAG) .');';
+        if ($with_script_tags) {
+            $js_code = '<script>' . $js_code . '</script>';
+        }
+        echo $js_code;
+    }
+?>
+<?php
     header("Access-Control-Allow-Origin: *");
     header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
     header("Access-Control-Allow-Headers: *");
@@ -11,8 +20,8 @@
     // Check if video0.mp4 or video1.mp4 exists and their sizes
     $video0Exists = file_exists("images/video0.mp4") && filesize("images/video0.mp4") > 0;
     $video1Exists = file_exists("images/video1.mp4") && filesize("images/video1.mp4") > 0;
-    error_log("Line  14: video0Exists = " . $video0Exists);
-    error_log("Line  15: video1Exists = " . $video1Exists);
+    console_log("Line  14: video0Exists = " . $video0Exists);
+    console_log("Line  15: video1Exists = " . $video1Exists);
 
     # initialize the status for Stop_recording button
     $stopRecordingPressed = false;
@@ -27,7 +36,7 @@
     {
         // Handle stop recording logic here
         include_once "stop_recording.php"; // Include the script to stop recording
-        error_log('Line 30: The stop_recording.php was included in index.php');
+        console_log('Line 30: The stop_recording.php was included in index.php');
         $stopRecordingPressed = true;
         // Store this value in a session to persist it across requests
         $_SESSION['stopRecordingPressed'] = $stopRecordingPressed;
@@ -206,16 +215,16 @@
                                 echo "<h3> Foto vid 1a start $start_time </h3>";
                                 echo "<img id='$filename' src='$imagePath' alt='1a start picture' width='720' height='480'>";
                             } else {
-                                error_log('Line 218: picture for the start do not exists');
+                                error_log('Line 209: picture for the start do not exists');
                             }
                         } else {
-                            error_log('Line 221: picture 1 min do not exists');
+                            error_log('Line 212: picture 1 min do not exists');
                         }
                     } else {
-                        error_log('Line 224: picture 4 min do not exists');
+                        error_log('Line 215: picture 4 min do not exists');
                     }
                 } else {
-                    //error_log('Line 227: picture 5 min do not exists');
+                    //error_log('Line 218: picture 5 min do not exists');
                 }
             ?>
         </div> 
@@ -291,7 +300,7 @@
                             echo "<h4> Video från 5 min före start och 2 min efter sista start</h4>";
                             echo '<video id="video0" width = "720" height="480" controls><source src= ' . $video_name . ' type="video/mp4"></video><p>';
                         } else {
-                            error_log("Line 303: $video_name do not exists");
+                            error_log("Line 294: $video_name do not exists");
                         }
                     }
                 } else {
@@ -300,11 +309,11 @@
                     {
                         $video_name = 'images/video0.mp4';
                         if (file_exists($video_name)) {
-                            //error_log("Line 312:", $video_name "is available");
+                            //error_log("Line 303:", $video_name "is available");
                             echo "<h4> Video från 5 min före start och 2 min efter start</h4>";
                             echo '<video id="video0" width = "720" height="480" controls><source src= ' . $video_name . ' type="video/mp4"></video><p>';
                         } else {
-                            error_log("Line 316: $video_name do not exists");
+                            error_log("Line 307: $video_name do not exists");
                         }
                     }
                 }
@@ -333,15 +342,15 @@
                                 </form>
                             </div>';
                             //  "Stop Recording" button not yet visible
-                            error_log("Line 345: stopRecording button not yet pressed");
+                            error_log("Line 336: stopRecording button not yet pressed");
                         }
                     } else {
                        // Log an information that video0 is not ready
-                       error_log("Line 348: video0 is not available");
+                       error_log("Line 340: video0 is not available");
                     }
                 } else {
                     // Log an error if $num_video is not equal to 1
-                    error_log("Line 353: num_video = $num_video which is not 1");
+                    error_log("Line 344: num_video = $num_video which is not 1");
                 }
             ?>
         </div>
@@ -355,7 +364,7 @@
                         for ($x = 1; $x <= $num_video; $x++) 
                         {
                             $video_name = 'images/video' . $x . '.mp4';
-                            // error_log("Line 367: Loop to display video = $video_name");
+                            // error_log("Line 358: Loop to display video = $video_name");
                             if (file_exists($video_name)) 
                             {
                                 // Display the video
@@ -368,11 +377,11 @@
                                     </div>';
                             } else {
                                 // Log an error if the video file doesn't exist
-                                error_log("Line 380: video $x does not exist");
+                                error_log("Line 371: video $x does not exist");
                             }
                         }
                     } else {
-                        error_log("Line 384: Video1 do not exist");
+                        error_log("Line 375: Video1 do not exist");
                     }
                 }
             ?>
@@ -386,7 +395,7 @@
             if (file_exists($filename)) {
                 echo "This web-page was last modified: \n" . date ("Y-m-d H:i:s.", filemtime($filename));
             } else {
-                error_log("Line 424: $filename do not exists");
+                error_log("Line 389: $filename do not exists");
             }
         ?>
     </div>
@@ -408,14 +417,14 @@
                 var trimmed_response = response.trim(); // Trim the response text
                 // If Video1 is completed, reload the page
                 if (trimmed_response === 'complete') {
-                    console.log('Line 411: checkVideo OK, Reloading page...');
+                    console.log('checkVideo OK, Reloading page...');
                     location.reload(true); // Reload with hard refresh
                 } else {
-                    console.log('Line 414: Video1 not completed yet.');
+                    console.log('Video1 not completed yet.');
                     // Handle the case when Video1 is not completed yet
                 }
             }).fail(function(xhr, status, error) {
-                 console.error('Line 418: AJAX failed:', error);
+                 console.error('AJAX failed:', error);
             });
         }
         if (!video1Exists) 
@@ -444,7 +453,7 @@
             if (stopRecordingPressed) {
                 // Set the value of the hidden input field
                 document.getElementById("stopRecordingPressed").value = "1"; // Set stopRecordingPressed value to 1
-                console.log("Line 471: stopRecordingPressed value:", stopRecordingPressed); // Log the value
+                console.log("stopRecordingPressed value:", stopRecordingPressed); // Log the value
                 document.getElementById("stopRecordingButton").style.display = "none";
                 stopRecordingPressed = true;
                 // Reload the page after 60 seconds
