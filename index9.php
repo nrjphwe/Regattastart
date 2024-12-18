@@ -7,8 +7,6 @@
     ini_set('display_errors', 1);
     error_reporting(E_ALL);
     include_once 'functions.php';
-?>
-<?php
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Process and store the form data
         $_SESSION["form_data"] = $_POST;
