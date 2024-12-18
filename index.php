@@ -27,7 +27,6 @@
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['stop_recording'])) 
     {
         // Handle stop recording logic here
-        include_once "stop_recording.php"; // Include the script to stop recording
         console_log('The stop_recording.php was included in index.php');
         $stopRecordingPressed = true;
         // Store this value in a session to persist it across requests
