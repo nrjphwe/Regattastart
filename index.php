@@ -1,13 +1,4 @@
 <?php
-    function console_log($output, $with_script_tags = true) {
-        $js_code = 'console.log(' . json_encode($output, JSON_HEX_TAG) .');';
-        if ($with_script_tags) {
-            $js_code = '<script>' . $js_code . '</script>';
-        }
-        echo $js_code;
-    }
-?>
-<?php
     header("Access-Control-Allow-Origin: *");
     header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
     header("Access-Control-Allow-Headers: *");
@@ -17,6 +8,7 @@
     session_start();
     ini_set('display_errors', 1); 
     error_reporting(E_ALL);
+    include_once 'functions.php';
     // Check if video0.mp4 or video1.mp4 exists and their sizes
     $video0Exists = file_exists("images/video0.mp4") && filesize("images/video0.mp4") > 0;
     $video1Exists = file_exists("images/video1.mp4") && filesize("images/video1.mp4") > 0;
