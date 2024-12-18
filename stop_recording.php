@@ -1,16 +1,7 @@
 <?php
-    function console_log($output, $with_script_tags = true) {
-        $js_code = 'console.log(' . json_encode($output, JSON_HEX_TAG) .');';
-        if ($with_script_tags) {
-            $js_code = '<script>' . $js_code . '</script>';
-        }
-        echo $js_code;
-    }
-?>
-<?php
 // Specify the correct path to the named pipe
 $pipePath = '/var/www/html/tmp/stop_recording_pipe';
-
+include_once 'functions.php';
 // Open the named pipe for writing
 $pipeHandle = fopen($pipePath, 'w');
 if ($pipeHandle === false) {
