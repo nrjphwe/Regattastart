@@ -73,7 +73,7 @@
             if (array_key_exists('start_time', $_SESSION['form_data'])) {
                 // Retrieve the value of the 'start_time' key
                 $start_time = $_SESSION['form_data']['start_time'];
-                console_log("First start time: " . $start_time;)
+                console_log("First start time: " . $start_time);
             }
             if (array_key_exists('video_end', $_SESSION['form_data'])) {
                 $video_end = $_SESSION['form_data']['video_end'];
