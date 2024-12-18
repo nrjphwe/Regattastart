@@ -45,12 +45,14 @@ GPIO.setup(lamp2, GPIO.OUT, initial=GPIO.HIGH)
 with open('/var/www/html/status.txt', 'w') as status_file:
     status_file.write("")
 
+
 def setup_logging():
     global logger  # Make logger variable global
     logging.config.fileConfig('/usr/lib/cgi-bin/logging.conf')
     logger = logging.getLogger('Start')
     logger.info("Start logging regattastart9")
     return logger
+
 
 def trigger_relay(port):
 
@@ -59,19 +61,20 @@ def trigger_relay(port):
         time.sleep(signal_dur)
         GPIO.output(signal, OFF)
         time.sleep(1 - signal_dur)
-        logger.info ("Trigger signal %s sec, then wait for 1 - %s sec", signal_dur, signal_dur)
+        logger.info("Trigger signal %s sec, then wait for 1 - %s sec", signal_dur, signal_dur)
     elif port == 'Lamp1_on':
         GPIO.output(lamp1, ON)
-        logger.info ('Lamp1_on')
+        logger.info('Lamp1_on')
     elif port == 'Lamp2_on':
         GPIO.output(lamp2, ON)
-        logger.info ('Lamp2_on')
+        logger.info('Lamp2_on')
     elif port == 'Lamp1_off':
         GPIO.output(lamp1, OFF)
-        logger.info ('Lamp1_off')
+        logger.info('Lamp1_off')
     elif port == 'Lamp2_off':
         GPIO.output(lamp2, OFF)
-        logger.info ('Lamp2_off')
+        logger.info('Lamp2_off')
+
 
 def remove_picture_files(directory, pattern):
     files = os.listdir(directory)
@@ -80,6 +83,7 @@ def remove_picture_files(directory, pattern):
             file_path = os.path.join(directory, file)
             os.remove(file_path)
 
+
 def remove_video_files(directory, pattern):
     files = os.listdir(directory)
     for file in files:
@@ -87,11 +91,12 @@ def remove_video_files(directory, pattern):
             file_path = os.path.join(directory, file)
             os.remove(file_path)
 
+
 def setup_camera():
     """
     Opens the camera and sets the desired properties for video_recordings
     """
-    #cam = cv2.VideoCapture("/home/pi/Regattastart/video3.mp4")
+    # cam = cv2.VideoCapture("/home/pi/Regattastart/video3.mp4")
     cam = cv2.VideoCapture(0)  # Use 0 for the default camera
     cam.set(cv2.CAP_PROP_FPS, 5)
 
@@ -108,7 +113,7 @@ def setup_camera():
 
     if not cam.isOpened():
         logger.error("Cannot open camera")
-        cam.release() # Release the camera resources
+        cam.release()  # Release the camera resources
         exit()
     logger.info("Camera initialized successfully.")
     return cam
