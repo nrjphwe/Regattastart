@@ -6,15 +6,7 @@
     unset($_SESSION['stopRecordingPressed']);
     ini_set('display_errors', 1);
     error_reporting(E_ALL);
-?>
-<?php
-    function console_log($output, $with_script_tags = true) {
-        $js_code = 'console.log(' . json_encode($output, JSON_HEX_TAG) .');';
-        if ($with_script_tags) {
-            $js_code = '<script>' . $js_code . '</script>';
-        }
-        echo $js_code;
-    }
+    include_once 'functions.php';
 ?>
 <?php
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
