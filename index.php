@@ -23,6 +23,7 @@
 
     // Extract relevant session data
     extract($formData); // This will create variables like $start_time, $video_end, etc.
+    console_log("First start time: " . $start_time);
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['stop_recording'])) 
     {
