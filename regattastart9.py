@@ -40,7 +40,8 @@ GPIO.setup(signal, GPIO.OUT, initial=GPIO.HIGH)
 GPIO.setup(lamp1, GPIO.OUT, initial=GPIO.HIGH)
 GPIO.setup(lamp2, GPIO.OUT, initial=GPIO.HIGH)
 
-# reset the contents of the status variable, used for flagging that video1-conversion is complete. 
+# reset the contents of the status variable, used for flagging that
+# video1-conversion is complete.
 with open('/var/www/html/status.txt', 'w') as status_file:
     status_file.write("")
 
@@ -150,11 +151,12 @@ def annotate_and_write_frames(cam, video_writer):
         video_writer.write(frame)
         return
 
+
 def capture_picture(cam, photo_path, file_name):
-    org = (15,60) # x = 15 from left, y = 60 from top) 
-    fontFace=cv2.FONT_HERSHEY_DUPLEX
+    org = (15, 60)  # x = 15 from left, y = 60 from top) 
+    fontFace = cv2.FONT_HERSHEY_DUPLEX
     fontScale = 0.7
-    color=(0,0,0) #(B, G, R)
+    color = (0, 0, 0)  # (B, G, R)
     thickness = 1
     lineType = cv2.LINE_AA
     # Flush the camera buffer
@@ -192,8 +194,9 @@ def capture_picture(cam, photo_path, file_name):
                 thickness, lineType)
 
     cv2.imwrite(os.path.join(photo_path, file_name), frame)
-    time.sleep(0.3) # sleep 0.3 sec
+    time.sleep(0.3)  # sleep 0.3 sec
     logger.info("Capture picture = %s", file_name)
+
 
 def start_video_recording(cam, video_path, file_name):
     fpsw = 20  # number of frames written per second
@@ -240,7 +243,8 @@ def video_recording(cam, video_path, file_name, duration=None):
 
     video_writer.release()
     cv2.destroyAllWindows()
-    logger.info ("Stopped video recording of %s ", file_name)
+    logger.info("Stopped video recording of %s ", file_name)
+
 
 def annotate_video_duration(camera, start_time_sec):
     time_now = dt.datetime.now()
@@ -248,13 +252,15 @@ def annotate_video_duration(camera, start_time_sec):
     elapsed_time = seconds_since_midnight - start_time_sec  # elapsed since last star until now)
     camera.annotate_text = f"{dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Seconds since last start: {elapsed_time}"
 
+
 def convert_video_to_mp4(video_path, source_file, destination_file):
     convert_video_str = "MP4Box -add {} -fps 20 -new {}".format(
         os.path.join(video_path, source_file),
         os.path.join(video_path, destination_file)
     )
     subprocess.run(convert_video_str, shell=True)
-    logger.info ("Video recording %s converted ", destination_file)
+    logger.info("Video recording %s converted ", destination_file)
+
 
 def re_encode_video(video_path, source_file, destination_file):
     re_encode_video_str = "ffmpeg -loglevel error -i {} -vf fps=20 -vcodec libx264 -f mp4 {}".format(
@@ -262,7 +268,8 @@ def re_encode_video(video_path, source_file, destination_file):
         os.path.join(video_path, destination_file)
     )
     subprocess.run(re_encode_video_str, shell=True)
-    logger.info ("Video %s re-encoded ", destination_file)
+    logger.info("Video %s re-encoded ", destination_file)
+
 
 def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo_path):
     for i in range(num_starts):
@@ -384,7 +391,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time, start_t
     global recording_stopped
 
     # Load the pre-trained object detection model -- YOLO (You Only Look Once)
-    net = cv2.dnn.readNet('/home/pi/darknet/yolov3.weights', '/home/pi/darknet/cfg/yolov3.cfg')
+    net = cv2.dnn.readNet('/home/pi/darknet/yolov3-tiny.weights', '/home/pi/darknet/cfg/yolov3-tiny.cfg')
     # Load COCO names (class labels)
     with open('/home/pi/darknet/data/coco.names', 'r') as f:
         classes = f.read().strip().split('\n')
@@ -398,7 +405,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time, start_t
     width = int(cam.get(cv2.CAP_PROP_FRAME_WIDTH))
     height = int(cam.get(cv2.CAP_PROP_FRAME_HEIGHT))
     frame_size = (width, height)
-    # setup cv2 writer 
+    # setup cv2 writer
     fourcc = cv2.VideoWriter_fourcc(*'XVID')  # H.264 codec with MP4 container
     video_writer = cv2.VideoWriter(video_path + 'video1' + '.avi', fourcc, fpsw, frame_size)
 
@@ -551,11 +558,11 @@ def main():
                             start_time_sec = start_time_sec + (dur_between_starts * 60)
                         logger.info("Wait 2 minutes then stop video0 recording")
                         t0 = dt.datetime.now()
-                        logger.info("start_time_sec= %s, t0= %s",start_time_sec, t0)  # test
+                        logger.info("start_time_sec= %s, t0= %s", start_time_sec, t0)  # test
                         while (dt.datetime.now() - t0).seconds < (119):
                             now = dt.datetime.now()
                             seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
-                            annotate_and_write_frames(cam,video_writer)
+                            annotate_and_write_frames(cam, video_writer)
                         logger.info("after annotate and write text")
                         stop_video_recording(video_writer)
                         convert_video_to_mp4(video_path, "video0.avi", "video0.mp4")
@@ -576,7 +583,8 @@ def main():
 
         logger.info("Finally section, before 'Finish recording'. start_time=%s video_end=%s", start_time, video_end)
         time.sleep(2)
-        finish_recording(cam, video_path, num_starts, video_end, start_time, start_time_sec)
+        finish_recording(cam, video_path, num_starts, video_end, start_time,
+                         start_time_sec)
 
         # Signal the listening thread to stop
         stop_event.set()
