@@ -306,7 +306,7 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
                 break  # Exit the loop if the condition is met
 
             for seconds, action, log_message in time_intervals:
-                #camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                # camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                 time_now = dt.datetime.now()
                 seconds_now = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
 
@@ -332,10 +332,10 @@ def cv_annotate_video(frame, start_time_sec):
     # elapsed since last start until now)
     elapsed_time = seconds_since_midnight - start_time_sec
     label = str(dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Seconds since last start: " + str(elapsed_time)
-    org = (15,60) # x = 15 from left, y = 60 from top) 
-    fontFace=cv2.FONT_HERSHEY_DUPLEX
+    org = (15, 60)  # x = 15 from left, y = 60 from top) 
+    fontFace = cv2.FONT_HERSHEY_DUPLEX
     fontScale = 0.7
-    color=(0,0,0) #(B, G, R)
+    color = (0, 0, 0)  # (B, G, R)
     thickness = 1
     lineType = cv2.LINE_AA
     # Get text size
@@ -421,7 +421,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time, start_t
     # Assume no boat is detected initially
     boat_in_current_frame = False
 
-    while recording_stopped == False:
+    while recording_stopped is False:
         # read frame
         ret, frame = cam.read()
         if frame is None:
