@@ -230,6 +230,8 @@ def video_recording(cam, video_path, file_name, duration=None):
     height = int(cam.get(cv2.CAP_PROP_FRAME_HEIGHT))
     frame_size = (width, height)
     logger.info(f"Camera frame size: {frame_size}")
+    logger.info(f"Recording duration: {duration} seconds")
+
     fourcc = cv2.VideoWriter_fourcc(*'XVID')  # H.264 codec with MP4 container
     video_writer = cv2.VideoWriter(os.path.join(video_path, file_name + '.avi'), fourcc, fpsw, frame_size)
 
@@ -246,7 +248,12 @@ def video_recording(cam, video_path, file_name, duration=None):
         frame = cv2.rotate(frame, cv2.ROTATE_180)
         video_writer.write(frame)
 
-        if duration and (time.time() - start_time) > duration:
+        # Log elapsed time
+        elapsed_time = time.time() - start_time
+        logger.debug(f"Elapsed time: {elapsed_time:.2f} seconds")
+
+        if duration and elapsed_time > duration:
+            logger.info("Recording duration exceeded. Stopping recording.")
             break
 
     video_writer.release()
@@ -422,10 +429,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time, start_t
     post_detection_frames = 50  # Frames to record after detection
     boat_in_current_frame = False
 
-    number_of_non_detected_frames = 60 # was 30 in May
-    number_of_detected_frames = 3 # Set the number of frames to record after detecting a boat
     start_time = time.time()  # Record the start time of the recording
-    iteration = number_of_non_detected_frames
     # Assume no boat is detected initially
     boat_in_current_frame = False
 
