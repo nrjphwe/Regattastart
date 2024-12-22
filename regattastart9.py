@@ -488,8 +488,12 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time, start_t
                 post_detection_frames = 50  # Reset for the next detection
 
         # Check if recording should stop
+        max_duration = 60 * (video_end + 5 * (num_starts - 1))
+        logger.info(f"Maximum recording duration set to: {max_duration} seconds")
+
         elapsed_time = time.time() - start_time
-        if elapsed_time >= 60 * (video_end + 5 * (num_starts - 1)):
+
+        if elapsed_time >= max_duration:
             logger.info("Maximum recording time reached.")
             recording_stopped = True
             break
