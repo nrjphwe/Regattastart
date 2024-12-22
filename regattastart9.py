@@ -14,6 +14,9 @@ import logging.config
 import json
 import tempfile  # to check the php temp file
 
+# Use a deque to store the most recent frames in memory
+from collections import deque
+
 # image recognition
 import cv2
 import numpy as np
@@ -227,6 +230,8 @@ def video_recording(cam, video_path, file_name, duration=None):
     height = int(cam.get(cv2.CAP_PROP_FRAME_HEIGHT))
     frame_size = (width, height)
     logger.info(f"Camera frame size: {frame_size}")
+    logger.info(f"Recording duration: {duration} seconds")
+
     fourcc = cv2.VideoWriter_fourcc(*'XVID')  # H.264 codec with MP4 container
     video_writer = cv2.VideoWriter(os.path.join(video_path, file_name + '.avi'), fourcc, fpsw, frame_size)
 
@@ -243,7 +248,12 @@ def video_recording(cam, video_path, file_name, duration=None):
         frame = cv2.rotate(frame, cv2.ROTATE_180)
         video_writer.write(frame)
 
-        if duration and (time.time() - start_time) > duration:
+        # Log elapsed time
+        elapsed_time = time.time() - start_time
+        logger.debug(f"Elapsed time: {elapsed_time:.2f} seconds")
+
+        if duration and elapsed_time > duration:
+            logger.info("Recording duration exceeded. Stopping recording.")
             break
 
     video_writer.release()
@@ -414,26 +424,25 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time, start_t
     fourcc = cv2.VideoWriter_fourcc(*'XVID')  # H.264 codec with MP4 container
     video_writer = cv2.VideoWriter(video_path + 'video1' + '.avi', fourcc, fpsw, frame_size)
 
-    number_of_non_detected_frames = 60 # was 30 in May
-    number_of_detected_frames = 3 # Set the number of frames to record after detecting a boat
+    # Pre-detection buffer (5 seconds)
+    pre_detection_buffer = deque(maxlen=fpsw * 5)  # Stores last 5 seconds of frames
+    post_detection_frames = 50  # Frames to record after detection
+    boat_in_current_frame = False
+
     start_time = time.time()  # Record the start time of the recording
-    iteration = number_of_non_detected_frames
     # Assume no boat is detected initially
     boat_in_current_frame = False
 
-    while recording_stopped is False:
-        # read frame
-        ret, frame = cam.read()
-        if frame is None:
-            logger.warning("Frame is None. Ending loop.")
-            break
-
-        # if frame is read correctly ret is True
-        if not ret:
-            logger.error("End of video stream. Or can't receive frame (stream end?). Exiting ...")
+    while not recording_stopped:
+        ret, frame = cam.read()  # read frame
+        if not ret or frame is None:
+            logger.warning("Frame is None or stream ended. Exiting loop.")
             break
 
         frame = cv2.flip(frame, flipCode=-1)  # camera is upside down"
+
+        # Add the frame to the pre-detection buffer
+        pre_detection_buffer.append(frame)
 
         # Prepare the input image (frame) for the neural network.
         scalefactor = 0.00392  # A scale factor to normalize the pixel values. This is often set to 1/255.0.
@@ -452,6 +461,17 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time, start_t
 
                 if confidence > 0.2 and classes[class_id] == 'boat':
                     boat_in_current_frame = True
+                    logger.info("Boat detected, saving pre-detection frames.")
+
+                    # Write pre-detection frames to video
+                    while pre_detection_buffer:
+                        video_writer.write(pre_detection_buffer.popleft())
+
+                    # Write current frame and additional frames
+                    for _ in range(post_detection_frames):
+                        cv_annotate_video(frame, start_time_sec)
+                        video_writer.write(frame)
+                    '''
                     iteration = number_of_non_detected_frames  # Reset the count
                     # Visualize the detected bounding box
                     h, w, _ = frame.shape
@@ -459,34 +479,22 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time, start_t
                     pt1 = (int(x), int(y))
                     pt2 = (int(x + w), int(y + h))
                     cv2.rectangle(frame, pt1, pt2, (0, 255, 0), 2, cv2.LINE_AA)
-                    # time in rectangle
-                    # fontFace=cv2.FONT_HERSHEY_PLAIN
-                    # detect_time= time.strftime("%H:%M:%S")
-                    # posx = int(x) + 5
-                    # posy = int(y + h - 5) 
-                    # org = (posx,posy)
-                    # fontScale = 0.7
-                    # color=(0,0,255) #(B, G, R)
-                    # cv2.putText(frame,detect_time,org,fontFace,fontScale,color,1,cv2.LINE_AA)
+                    '''
 
-                    for i in range(number_of_detected_frames):
-                        # logger.info("331: boat detected.")
-                        cv_annotate_video(frame, start_time_sec)
-                        video_writer.write(frame)
-
-        if boat_in_current_frame is True:  # boat was in frame previously
-            if iteration > 0:   # Keep recording for a few frames after no boat is detected
-                cv_annotate_video(frame, start_time_sec)
-                video_writer.write(frame)
-                iteration -= 1
-            else:
+        if boat_in_current_frame:  # boat was in frame previously
+            post_detection_frames -= 1
+            if post_detection_frames <= 0:
                 boat_in_current_frame = False
+                post_detection_frames = 50  # Reset for the next detection
 
-        # Check if the maximum recording duration has been reached
+        # Check if recording should stop
+        max_duration = 60 * (video_end + 5 * (num_starts - 1))
+        logger.info(f"Maximum recording duration set to: {max_duration} seconds")
+
         elapsed_time = time.time() - start_time
-        if elapsed_time >= 60 * (video_end + 5 * (num_starts - 1)):
-            logger.info(f"elapsed time: {elapsed_time}")
-            listening = False
+
+        if elapsed_time >= max_duration:
+            logger.info("Maximum recording time reached.")
             recording_stopped = True
             break
 
