@@ -20,6 +20,10 @@ sudo rm -v /var/www/html/index.html
 sudo cp -v index.php /var/www/html
 sudo cp -v index6.php /var/www/html
 sudo cp -v index9.php /var/www/html
+sudo cp -v functions.php /var/www/html
+sudo cp -v stop_recording.php /var/www/html
+sudo mkdir /var/www/html/tmp
+sudo mkdir /var/www/html/tmp/stop_recording_pipe
 sudo cp -v w3.css /var/www/html
 sudo chmod -R 755 /var/www/html/
 sudo chown -R www-data:www-data /var/www/html
@@ -43,4 +47,4 @@ echo 'KERNEL=="gpiomem", GROUP="gpio", MODE="0660"' | sudo tee -a /etc/udev/rule
 
 echo "=> setup for video encoding...\n"
 sudo apt install -y gpac
-sudo apache2ctl restart
+sudo systemctl restart apache2.service
