@@ -1,4 +1,4 @@
-#!/usr/bin/python3 -u
+#!/home/pi/yolov5_env/bin/python3
 # after git pull, do: sudo cp regattastart9.py /usr/lib/cgi-bin/
 import os
 import errno
