@@ -1,12 +1,19 @@
 #!/home/pi/yolov5_env/bin/python
 # after git pull, do: sudo cp regattastart9.py /usr/lib/cgi-bin/
 import os
-with open("/var/www/html/env_debug.txt", "w") as f:
-    for key, value in os.environ.items():
-        f.write(f"{key}={value}\n")
 import errno
 import select
 import sys
+
+# Debug information
+with open('/var/www/html/debug_info.txt', 'w') as f:
+    f.write(f"Python executable: {sys.executable}\n")
+    f.write(f"Python version: {sys.version}\n")
+    f.write(f"sys.path: {sys.path}\n")
+    f.write(f"OpenCV version: {cv2.__version__}\n")
+
+
+
 
 # Extend the PATH to include the virtual environment's bin directory
 os.environ["PATH"] += ":/home/pi/yolov5_env/bin"
