@@ -4,6 +4,8 @@ import os
 import errno
 import select
 import sys
+activate_this = '/home/pi/yolov5_env/bin/activate_this.py'
+exec(open(activate_this).read(), {'__file__': activate_this})
 sys.path.append('/home/pi/yolov5_env/lib/python3.11/site-packages')
 import threading
 import time
