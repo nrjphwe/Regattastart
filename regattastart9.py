@@ -5,21 +5,18 @@ import errno
 import select
 import sys
 
+# Manually add the virtual environment's site-packages directory to sys.path
+venv_path = "/home/pi/yolov5_env/lib/python3.11/site-packages"
+if venv_path not in sys.path:
+    sys.path.insert(0, venv_path)
+
+
 # Debug information
 with open('/var/www/html/debug_info.txt', 'w') as f:
     f.write(f"Python executable: {sys.executable}\n")
     f.write(f"Python version: {sys.version}\n")
     f.write(f"sys.path: {sys.path}\n")
     f.write(f"OpenCV version: {cv2.__version__}\n")
-
-
-
-
-# Extend the PATH to include the virtual environment's bin directory
-os.environ["PATH"] += ":/home/pi/yolov5_env/bin"
-
-# Manually add the virtual environment's site-packages
-sys.path.append('/home/pi/yolov5_env/lib/python3.11/site-packages')
 
 
 # sys.path.append('/home/pi/yolov5_env/lib/python3.11/site-packages')
