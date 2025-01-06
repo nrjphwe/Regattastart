@@ -1,6 +1,5 @@
-#!/home/pi/yolov5_env/bin/python3
+#!/home/pi/yolov5_env/bin/python
 # after git pull, do: sudo cp regattastart9.py /usr/lib/cgi-bin/
-import os
 import os
 with open("/var/www/html/env_debug.txt", "w") as f:
     for key, value in os.environ.items():
