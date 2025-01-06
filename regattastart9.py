@@ -4,7 +4,7 @@ import os
 import errno
 import select
 import sys
-sys.path.append('/home/pi/opencv/build/lib/python3')
+sys.path.append('/home/pi/yolov5_env/lib/python3.11/site-packages')
 import threading
 import time
 from datetime import datetime
