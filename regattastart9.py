@@ -8,20 +8,15 @@ with open("/var/www/html/env_debug.txt", "w") as f:
 import errno
 import select
 import sys
-import site
 
-# Path to the virtual environment
-venv_path = '/home/pi/yolov5_env'
+# Extend the PATH to include the virtual environment's bin directory
+os.environ["PATH"] += ":/home/pi/yolov5_env/bin"
 
-# Add the site-packages of the virtual environment to sys.path
-site.addsitedir(f'{venv_path}/lib/python3.11/site-packages')
+# Manually add the virtual environment's site-packages
+sys.path.append('/home/pi/yolov5_env/lib/python3.11/site-packages')
 
-# Update the sys.path for the virtual environment's binary paths
-sys.path.insert(0, f'{venv_path}/bin')
-sys.path.insert(0, f'{venv_path}/lib/python3.11')
-sys.path.insert(0, f'{venv_path}/lib/python3.11/lib-dynload')
 
-#sys.path.append('/home/pi/yolov5_env/lib/python3.11/site-packages')
+# sys.path.append('/home/pi/yolov5_env/lib/python3.11/site-packages')
 import threading
 import time
 from datetime import datetime
