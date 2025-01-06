@@ -4,8 +4,19 @@ import os
 import errno
 import select
 import sys
-activate_this = '/home/pi/yolov5_env/bin/activate_this.py'
-exec(open(activate_this).read(), {'__file__': activate_this})
+import site
+
+# Path to the virtual environment
+venv_path = '/home/pi/yolov5_env'
+
+# Add the site-packages of the virtual environment to sys.path
+site.addsitedir(f'{venv_path}/lib/python3.11/site-packages')
+
+# Update the sys.path for the virtual environment's binary paths
+sys.path.insert(0, f'{venv_path}/bin')
+sys.path.insert(0, f'{venv_path}/lib/python3.11')
+sys.path.insert(0, f'{venv_path}/lib/python3.11/lib-dynload')
+
 sys.path.append('/home/pi/yolov5_env/lib/python3.11/site-packages')
 import threading
 import time
