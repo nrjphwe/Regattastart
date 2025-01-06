@@ -274,7 +274,7 @@ def convert_video_to_mp4(video_path, source_file, destination_file):
         os.path.join(video_path, destination_file)
     )
     subprocess.run(convert_video_str, shell=True)
-    logger.info("Video recording %s converted ", destination_file)
+    logger.info("Recording of %s converted ", destination_file)
 
 
 def re_encode_video(video_path, source_file, destination_file):
