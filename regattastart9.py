@@ -17,7 +17,7 @@ sys.path.insert(0, f'{venv_path}/bin')
 sys.path.insert(0, f'{venv_path}/lib/python3.11')
 sys.path.insert(0, f'{venv_path}/lib/python3.11/lib-dynload')
 
-sys.path.append('/home/pi/yolov5_env/lib/python3.11/site-packages')
+#sys.path.append('/home/pi/yolov5_env/lib/python3.11/site-packages')
 import threading
 import time
 from datetime import datetime
