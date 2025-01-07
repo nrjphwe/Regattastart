@@ -10,14 +10,17 @@ venv_path = "/home/pi/yolov5_env/lib/python3.11/site-packages"
 if venv_path not in sys.path:
     sys.path.insert(0, venv_path)
 
-
-# Debug information
-with open('/var/www/html/debug_info.txt', 'w') as f:
-    f.write(f"Python executable: {sys.executable}\n")
-    f.write(f"Python version: {sys.version}\n")
-    f.write(f"sys.path: {sys.path}\n")
-    f.write(f"OpenCV version: {cv2.__version__}\n")
-
+output_path = "/var/www/html/output.txt"
+try:
+    import cv2
+    with open(output_path, "w") as f:
+        f.write(f"OpenCV version: {cv2.__version__}\n")
+except Exception as e:
+    with open(output_path, "w") as f:
+        f.write(f"Error importing cv2: {e}\n")
+        f.write(f"sys.path: {sys.path}\n")
+        f.write(f"Current user: {os.geteuid()}\n")
+        f.write(f"Environment: {os.environ}\n")
 
 # sys.path.append('/home/pi/yolov5_env/lib/python3.11/site-packages')
 import threading
@@ -33,7 +36,6 @@ import tempfile  # to check the php temp file
 from collections import deque
 
 # image recognition
-import cv2
 import numpy as np
 import subprocess
 import RPi.GPIO as GPIO
