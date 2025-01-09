@@ -186,6 +186,7 @@ def annotate_and_write_frames(cam, video_writer):
 
 
 def capture_picture(cam, photo_path, file_name):
+    logger.info("Attempting to capture picture...")
     org = (15, 60)  # x = 15 from left, y = 60 from top)
     fontFace = cv2.FONT_HERSHEY_DUPLEX
     fontScale = 0.7
@@ -196,7 +197,7 @@ def capture_picture(cam, photo_path, file_name):
     for _ in range(8):
         ret, frame = cam.read()
         if not ret:
-            logger.error("Failed to capture image")
+            logger.error("Failed to capture image on flush")
             return
 
     # Adding a small delay to stabilize the camera
@@ -205,9 +206,11 @@ def capture_picture(cam, photo_path, file_name):
     # Capture the frame to be saved
     ret, frame = cam.read()
     if not ret:
-        logger.error("Failed to capture image")
+        logger.error("Failed to capture image after flush")
         return
 
+    # Process frame...
+    logger.info(f"Successfully captured image: {file_name}")
     # Rotate the frame by 180 degrees
     frame = cv2.rotate(frame, cv2.ROTATE_180)
     # Annotate the frame with the current date and time
