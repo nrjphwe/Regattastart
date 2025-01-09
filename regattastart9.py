@@ -133,13 +133,15 @@ def setup_camera(retries=3, delay=0.1):
 
     # Set FPS and resolution
     cam.set(cv2.CAP_PROP_FPS, 5)
-    resolution = (1024, 768)  # Choose a resolution from the supported list
+    resolution = (640, 480)  # Choose a resolution from the supported list
     cam.set(cv2.CAP_PROP_FRAME_WIDTH, resolution[0])
     cam.set(cv2.CAP_PROP_FRAME_HEIGHT, resolution[1])
 
     # Verify the resolution was set correctly
     actual_width = cam.get(cv2.CAP_PROP_FRAME_WIDTH)
     actual_height = cam.get(cv2.CAP_PROP_FRAME_HEIGHT)
+    logger.info(f"Camera resolution set to {actual_width}x{actual_height}")
+
     if (actual_width, actual_height) != resolution:
         logger.error(f"Failed to set resolution to {resolution}, using {actual_width}x{actual_height} instead")
 
