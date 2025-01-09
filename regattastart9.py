@@ -186,7 +186,7 @@ def annotate_and_write_frames(cam, video_writer):
 
 
 def capture_picture(cam, photo_path, file_name):
-    org = (15, 60)  # x = 15 from left, y = 60 from top) 
+    org = (15, 60)  # x = 15 from left, y = 60 from top)
     fontFace = cv2.FONT_HERSHEY_DUPLEX
     fontScale = 0.7
     color = (0, 0, 0)  # (B, G, R)
@@ -545,6 +545,9 @@ def main():
     global listening  # Declare listening as global
     logger = setup_logging()  # Initialize the logger
     cam = setup_camera()
+    if cam is None:
+        logger.error("Camera setup failed, exiting.")
+        exit()
     listening = True  # Initialize the global listening flag
     listen_thread = None  # Initialize listen_thread variable
 
