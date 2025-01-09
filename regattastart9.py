@@ -112,15 +112,27 @@ def remove_video_files(directory, pattern):
             os.remove(file_path)
 
 
-def setup_camera():
+def setup_camera(retries=3, delay=2):
     """
     Opens the camera and sets the desired properties for video_recordings
+    Retries if the camera is not available initially.
     """
-    # cam = cv2.VideoCapture("/home/pi/Regattastart/video3.mp4")
-    cam = cv2.VideoCapture(0)  # Use 0 for the default camera
-    cam.set(cv2.CAP_PROP_FPS, 5)
+    cam = None
+    for attempt in range(retries):
+        cam = cv2.VideoCapture(0)  # Use 0 for the default camera
+        # cam = cv2.VideoCapture("/home/pi/Regattastart/video3.mp4")
+        if cam.isOpened():
+            break
+        else:
+            logger.warning(f"Attempt {attempt + 1} to open camera failed. Retrying in {delay} seconds...")
+            time.sleep(delay)
 
-    # Select a supported resolution from the listed ones
+    if not cam or not cam.isOpened():
+        logger.error("Cannot open camera after multiple attempts.")
+        exit()  # Terminate the program if the camera couldn't be opened
+
+    # Set FPS and resolution
+    cam.set(cv2.CAP_PROP_FPS, 5)
     resolution = (1024, 768)  # Choose a resolution from the supported list
     cam.set(cv2.CAP_PROP_FRAME_WIDTH, resolution[0])
     cam.set(cv2.CAP_PROP_FRAME_HEIGHT, resolution[1])
@@ -131,10 +143,6 @@ def setup_camera():
     if (actual_width, actual_height) != resolution:
         logger.error(f"Failed to set resolution to {resolution}, using {actual_width}x{actual_height} instead")
 
-    if not cam.isOpened():
-        logger.error("Cannot open camera")
-        cam.release()  # Release the camera resources
-        exit()
     logger.info("Camera initialized successfully.")
     return cam
 
