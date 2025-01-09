@@ -112,7 +112,7 @@ def remove_video_files(directory, pattern):
             os.remove(file_path)
 
 
-def setup_camera(retries=3, delay=2):
+def setup_camera(retries=3, delay=0.1):
     """
     Opens the camera and sets the desired properties for video_recordings
     Retries if the camera is not available initially.
