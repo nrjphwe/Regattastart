@@ -152,11 +152,12 @@
                                 $steps = 5; // Interval in minutes
                                 $loops = 24 * (60 / $steps); // Number of intervals in a day
 
-                                // Get the current time and subtract 5 minutes
+                                // Get the current time and add 5 minutes
                                 $current = time(); 
+                                $adjusted_time = $current - (5 * 60);
 
                                 // Calculate the nearest time in 5-minute intervals
-                                $nearest_time = strtotime('today') + ceil(($current - strtotime('today')) / (5 * 60)) * (5 * 60);
+                                $nearest_time = strtotime('today') + ceil(($adjusted_time - strtotime('today')) / (5 * 60)) * (5 * 60);
 
                                 // Format the pre-selected option
                                 $start_time_option = date('H:i', $nearest_time);
