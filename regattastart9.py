@@ -10,6 +10,8 @@ venv_path = "/home/pi/yolov5_env/lib/python3.11/site-packages"
 if venv_path not in sys.path:
     sys.path.insert(0, venv_path)
 
+import torch
+
 output_path = "/var/www/html/output.txt"
 try:
     import cv2
@@ -405,12 +407,12 @@ def listen_for_messages(timeout=0.1):
     pipe_path = '/var/www/html/tmp/stop_recording_pipe'
     logger.info(f"pipepath = {pipe_path}")
 
-    while listening == True:
+    while listening:
         try:
             os.unlink(pipe_path)  # Remove existing pipe
         except OSError as e:
             if e.errno != errno.ENOENT:  # Ignore if file doesn't exist
-                logger.error(f"331: OS error: {e.errno}")
+                logger.error(f"os.unlink -> OS error: {e.errno}")
                 raise
 
         os.mkfifo(pipe_path)  # Create a new named pipe
@@ -424,7 +426,6 @@ def listen_for_messages(timeout=0.1):
                     stop_recording()
                     logger.info("Message == stop_recording")
                     break  # Exit the loop when stop_recording received
-        recording_stopped = True
         logger.info("end of with open(pipe_path, r)")
     logger.info("Listening thread terminated")
 
@@ -435,21 +436,17 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time, start_t
     # cam = cv2.VideoCapture(os.path.join(video_path, "finish21-6.mp4"))
     global recording_stopped
 
-    # Load the pre-trained object detection model -- YOLO (You Only Look Once)
-    net = cv2.dnn.readNet('/home/pi/darknet/yolov3-tiny.weights', '/home/pi/darknet/cfg/yolov3-tiny.cfg')
-    # Load COCO names (class labels)
-    with open('/home/pi/darknet/data/coco.names', 'r') as f:
-        classes = f.read().strip().split('\n')
-    # Load the configuration and weights for YOLO
-    layer_names = net.getUnconnectedOutLayersNames()
+    # Load the pre-trained YOLOv5 model (e.g., yolov5s)
+    model = torch.hub.load('ultralytics/yolov5', 'yolov5s')
+    model.classes = [8]  # Filter for 'boat' class (COCO ID for 'boat' is 8)
 
     # Initialize variables
-    # fps = cam.get(cv2.CAP_PROP_FPS)
     fpsw = 50  # number of frames written per second
     today = time.strftime("%Y%m%d")
     width = int(cam.get(cv2.CAP_PROP_FRAME_WIDTH))
     height = int(cam.get(cv2.CAP_PROP_FRAME_HEIGHT))
     frame_size = (width, height)
+
     # setup cv2 writer
     fourcc = cv2.VideoWriter_fourcc(*'XVID')  # H.264 codec with MP4 container
     video_writer = cv2.VideoWriter(video_path + 'video1' + '.avi', fourcc, fpsw, frame_size)
@@ -470,9 +467,35 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time, start_t
             break
 
         frame = cv2.flip(frame, flipCode=-1)  # camera is upside down"
-
         # Add the frame to the pre-detection buffer
         pre_detection_buffer.append(frame)
+
+        # Perform inference using YOLOv5
+        results = model(frame)
+
+        # Parse the detection results
+        detections = results.pandas().xyxy[0]  # Results as a DataFrame
+        for _, row in detections.iterrows():
+            class_name = row['name']
+            confidence = row['confidence']
+            x1, y1, x2, y2 = int(row['xmin']), int(row['ymin']), int(row['xmax']), int(row['ymax'])
+
+        if confidence > 0.2 and class_name == 'boat':  # Check if detection is a boat
+            boat_in_current_frame = True
+            logger.info("Boat detected, saving pre-detection frames.")
+
+            # Write pre-detection frames to video
+            while pre_detection_buffer:
+                video_writer.write(pre_detection_buffer.popleft())
+
+            # Draw bounding boxes and save post-detection frames
+            for _ in range(post_detection_frames):
+                cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
+                cv2.putText(frame, f"{class_name} {confidence:.2f}", (x1, y1 - 10),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+                video_writer.write(frame)
+
+
 
         # Prepare the input image (frame) for the neural network.
         scalefactor = 0.00392  # A scale factor to normalize the pixel values. This is often set to 1/255.0.
@@ -480,6 +503,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time, start_t
         swapRB = True  # This swaps the Red and Blue channels, as OpenCV loads images in BGR format by default, but many pre-trained models expect RGB.
         crop = False  # The image is not cropped.
         blob = cv2.dnn.blobFromImage(frame, scalefactor, size, swapRB, crop)
+
         net.setInput(blob)  # Sets the input blob as the input to the neural network
         outs = net.forward(layer_names)
 
