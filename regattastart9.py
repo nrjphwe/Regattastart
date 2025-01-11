@@ -442,7 +442,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time, start_t
 
     # Initialize variables
     fpsw = 50  # number of frames written per second
-    today = time.strftime("%Y%m%d")
+    # today = time.strftime("%Y%m%d")
     width = int(cam.get(cv2.CAP_PROP_FRAME_WIDTH))
     height = int(cam.get(cv2.CAP_PROP_FRAME_HEIGHT))
     frame_size = (width, height)
@@ -457,8 +457,6 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time, start_t
     boat_in_current_frame = False
 
     start_time = time.time()  # Record the start time of the recording
-    # Assume no boat is detected initially
-    boat_in_current_frame = False
 
     while not recording_stopped:
         ret, frame = cam.read()  # read frame
@@ -467,8 +465,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time, start_t
             break
 
         frame = cv2.flip(frame, flipCode=-1)  # camera is upside down"
-        # Add the frame to the pre-detection buffer
-        pre_detection_buffer.append(frame)
+        pre_detection_buffer.append(frame) # Add the frame to the pre-detection buffer
 
         # Perform inference using YOLOv5
         results = model(frame)
@@ -495,46 +492,6 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time, start_t
                             cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
                 video_writer.write(frame)
 
-
-
-        # Prepare the input image (frame) for the neural network.
-        scalefactor = 0.00392  # A scale factor to normalize the pixel values. This is often set to 1/255.0.
-        size = (416, 416)  # The size to which the input image is resized. YOLO models are often trained on 416x416 images.
-        swapRB = True  # This swaps the Red and Blue channels, as OpenCV loads images in BGR format by default, but many pre-trained models expect RGB.
-        crop = False  # The image is not cropped.
-        blob = cv2.dnn.blobFromImage(frame, scalefactor, size, swapRB, crop)
-
-        net.setInput(blob)  # Sets the input blob as the input to the neural network
-        outs = net.forward(layer_names)
-
-        for out in outs:
-            for detection in out:
-                scores = detection[5:]
-                class_id = np.argmax(scores)
-                confidence = scores[class_id]
-
-                if confidence > 0.2 and classes[class_id] == 'boat':
-                    boat_in_current_frame = True
-                    logger.info("Boat detected, saving pre-detection frames.")
-
-                    # Write pre-detection frames to video
-                    while pre_detection_buffer:
-                        video_writer.write(pre_detection_buffer.popleft())
-
-                    # Write current frame and additional frames
-                    for _ in range(post_detection_frames):
-                        cv_annotate_video(frame, start_time_sec)
-                        video_writer.write(frame)
-                    '''
-                    iteration = number_of_non_detected_frames  # Reset the count
-                    # Visualize the detected bounding box
-                    h, w, _ = frame.shape
-                    x, y, w, h = map(int, detection[0:4] * [w, h, w, h])
-                    pt1 = (int(x), int(y))
-                    pt2 = (int(x + w), int(y + h))
-                    cv2.rectangle(frame, pt1, pt2, (0, 255, 0), 2, cv2.LINE_AA)
-                    '''
-
         if boat_in_current_frame:  # boat was in frame previously
             post_detection_frames -= 1
             if post_detection_frames <= 0:
@@ -543,10 +500,9 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time, start_t
 
         # Check if recording should stop
         max_duration = 60 * (video_end + 5 * (num_starts - 1))
-        logger.info(f"Maximum recording duration set to: {max_duration} seconds")
+        logger.info(f"Maximum recording duration set to: {max_duration} s")
 
         elapsed_time = time.time() - start_time
-
         if elapsed_time >= max_duration:
             logger.info("Maximum recording time reached.")
             recording_stopped = True
@@ -554,7 +510,6 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time, start_t
 
         if recording_stopped is True:
             logger.info('Video1 recording stopped')
-            listening = False
             break
 
     cam.release()  # Don't forget to release the camera resources when done
