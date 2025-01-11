@@ -148,22 +148,30 @@
                                 $start_time = isset($_SESSION["form_data"]["start_time"]) ? $_SESSION["form_data"]["start_time"] : "";
                                 $steps = 5; // Interval in minutes
                                 $loops = 24 * (60 / $steps); // Number of intervals in a day
-                                // Get the current time in seconds since the Unix Epoch
+
+                                // Get the current time and subtract 5 minutes
                                 $current = time(); 
+                                $adjusted_time = $current - (5 * 60); // Subtract 5 minutes
+
                                 // Get the number of seconds elapsed since midnight
-                                $seconds_since_midnight = $current - strtotime('today');
+                                $seconds_since_midnight = $adjusted_time - strtotime('today');
+
                                 // Calculate the nearest time in 5-minute intervals
                                 $nearest_time = strtotime('today') + round($seconds_since_midnight / (5 * 60)) * (5 * 60);
+                                
+                                // Format the pre-selected option
                                 $start_time_option = date('H:i', $nearest_time);
                             ?>
                             Start Time: <select name="start_time" id="start_time">
                                 <?php
                                     // Loop through the intervals in a day starting from the nearest time
-                                    for ($i = 1; $i < $loops; $i++) {
+                                    for ($i = 0; $i < $loops; $i++) {
                                         // Calculate the time for this option
                                         $time_option = date('H:i', $nearest_time + ($i * $steps * 60));
+
                                         // Check if this option should be selected
                                         $selected = ($time_option == $start_time_option) ? "selected" : ""; 
+                                        
                                         // Output the option tag
                                         echo '<option value="' . $time_option . '" ' . $selected . '>' . $time_option . '</option>';
                                     }
