@@ -154,7 +154,7 @@
 
                                 // Get the current time and add 5 minutes
                                 $current = time(); 
-                                $adjusted_time = $current - (5 * 60);
+                                $adjusted_time = $current + (5 * 60);
 
                                 // Calculate the nearest time in 5-minute intervals
                                 $nearest_time = strtotime('today') + ceil(($adjusted_time - strtotime('today')) / (5 * 60)) * (5 * 60);
