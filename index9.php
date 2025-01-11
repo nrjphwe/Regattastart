@@ -149,7 +149,7 @@
                                 $steps = 5; // Interval in minutes
                                 $loops = 24 * (60 / $steps); // Number of intervals in a day
                                 // Get the current time in seconds since the Unix Epoch
-                                $current = strotime(); 
+                                $current = time(); 
                                 // Get the number of seconds elapsed since midnight
                                 $seconds_since_midnight = $current - strtotime('today');
                                 // Calculate the nearest time in 5-minute intervals
@@ -159,7 +159,7 @@
                             Start Time: <select name="start_time" id="start_time">
                                 <?php
                                     // Loop through the intervals in a day starting from the nearest time
-                                    for ($i = 0; $i < $loops; $i++) {
+                                    for ($i = 1; $i < $loops; $i++) {
                                         // Calculate the time for this option
                                         $time_option = date('H:i', $nearest_time + ($i * $steps * 60));
                                         // Check if this option should be selected
