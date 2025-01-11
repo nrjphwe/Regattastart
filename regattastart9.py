@@ -566,17 +566,21 @@ def main():
         logger.info("Weekday=%s, Start_time=%s, video_end=%s, num_starts=%s", week_day, start_time.strftime("%H:%M"), video_end, num_starts)
 
         if wd == week_day:
-            # A loop that waits until close to the 5-minute mark, a loop that 
-            # continuously checks the condition without blocking the execution 
-            # completely
+            # A loop that waits until close to the 5-minute mark, a loop
+            # that continuously checks the condition without blocking
+            # the execution completely
             while True:
                 now = dt.datetime.now()
                 seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
                 if seconds_since_midnight > t5min_warning - 2:
                     logger.info("Start of outer loop iteration. seconds_since_midnight=%s", seconds_since_midnight)
                     if num_starts == 1 or num_starts == 2:
+                        if not video_writer.isOpened():
+                            logger.error("VideoWriter failed during recording. Exiting.")
+                            break
                         logger.info("Start of video recording")
                         video_writer = start_video_recording(cam, video_path, "video0.avi")
+
                         logger.info("Inner loop, entering the start sequence block.")
                         start_sequence(cam, start_time_sec, num_starts, dur_between_starts, photo_path)
                         if num_starts == 2:
