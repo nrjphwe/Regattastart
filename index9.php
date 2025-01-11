@@ -149,7 +149,7 @@
                                 $steps = 5; // Interval in minutes
                                 $loops = 24 * (60 / $steps); // Number of intervals in a day
                                 // Get the current time in seconds since the Unix Epoch
-                                $current = time(); 
+                                $current = strotime(); 
                                 // Get the number of seconds elapsed since midnight
                                 $seconds_since_midnight = $current - strtotime('today');
                                 // Calculate the nearest time in 5-minute intervals
