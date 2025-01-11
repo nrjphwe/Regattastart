@@ -145,6 +145,9 @@
                             <p></p>
                             <div data-tap-disabled="true">
                             <?php 
+                                // Set the correct time zone (adjust as needed)
+                                date_default_timezone_set('Europe/Stockholm'); //your time zone
+
                                 $start_time = isset($_SESSION["form_data"]["start_time"]) ? $_SESSION["form_data"]["start_time"] : "";
                                 $steps = 5; // Interval in minutes
                                 $loops = 24 * (60 / $steps); // Number of intervals in a day
@@ -171,7 +174,7 @@
 
                                         // Check if this option should be selected
                                         $selected = ($time_option == $start_time_option) ? "selected" : ""; 
-                                        
+
                                         // Output the option tag
                                         echo '<option value="' . $time_option . '" ' . $selected . '>' . $time_option . '</option>';
                                     }
