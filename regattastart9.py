@@ -25,7 +25,7 @@ import tempfile  # to check the php temp file
 # Use a deque to store the most recent frames in memory
 from collections import deque
 
-# camera 
+# camera
 from picamera2 import Picamera2
 from picamera2.encoders import JpegEncoder
 from picamera2.outputs import FileOutput
@@ -209,15 +209,20 @@ def capture_picture(cam: Picamera2, photo_path: str, file_name: str):
 
 
 def start_video_recording(cam, video_path, file_name):
-    fpsw = 20  # number of frames written per second
-    width = int(cam.get(cv2.CAP_PROP_FRAME_WIDTH))
-    height = int(cam.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    fpsw = 20  # Frames per second for video writing
+    width = cam.preview_configuration.main.size[0]  # Get the width from preview configuration
+    height = cam.preview_configuration.main.size[1]  # Get the height from preview configuration
     frame_size = (width, height)
     logger.info(f"Camera frame size: {frame_size}")
-    fourcc = cv2.VideoWriter_fourcc(*'XVID')  # H.264 codec with MP4 container
+
+    # Initialize the video writer (XVID codec or similar)
+    fourcc = cv2.VideoWriter_fourcc(*'XVID')  # XVID codec (you can change this if you prefer another codec)
     video_writer = cv2.VideoWriter(os.path.join(video_path, file_name), fourcc, fpsw, frame_size)
+
     if not video_writer.isOpened():
         logger.error("VideoWriter failed during recording.")
+        return None  # Return None if the VideoWriter failed to open
+
     logger.info("Started video recording of %s", file_name)
     return video_writer
 
