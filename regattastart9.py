@@ -12,7 +12,7 @@ if venv_path not in sys.path:
 
 import torch
 
-output_path = "/var/www/html/output.txt"
+output_path = "/var/www/html/"
 try:
     import cv2
     with open(output_path, "w") as f:
@@ -36,6 +36,11 @@ import tempfile  # to check the php temp file
 
 # Use a deque to store the most recent frames in memory
 from collections import deque
+
+# camera 
+from picamera2 import Picamera2
+from picamera2.encoders import JpegEncoder
+from picamera2.outputs import FileOutput
 
 # image recognition
 import numpy as np
@@ -114,41 +119,28 @@ def remove_video_files(directory, pattern):
             os.remove(file_path)
 
 
-def setup_camera(retries=3, delay=0.1):
+def setup_camera(resolution=(640, 480), fps=5):
     """
-    Opens the camera and sets the desired properties for video_recordings
-    Retries if the camera is not available initially.
+    Configures the camera using picamera2.
+    Sets the desired resolution and FPS for video recordings.
     """
-    cam = None
-    for attempt in range(retries):
-        cam = cv2.VideoCapture(0)  # Use 0 for the default camera
-        # cam = cv2.VideoCapture("/home/pi/Regattastart/video3.mp4")
-        if cam.isOpened():
-            break
-        else:
-            logger.warning(f"Attempt {attempt + 1} to open camera failed. Retrying in {delay} seconds...")
-            time.sleep(delay)
+    picam2 = Picamera2()
 
-    if not cam or not cam.isOpened():
-        logger.error("Cannot open camera after multiple attempts.")
-        exit()  # Terminate the program if the camera couldn't be opened
+    # Configure preview settings
+    preview_config = picam2.preview_configuration
+    preview_config.main.size = resolution
+    preview_config.main.format = "RGB888"
+    preview_config.controls.FrameRate = fps
+    preview_config.align()
+    picam2.configure(preview_config)
 
-    # Set FPS and resolution
-    cam.set(cv2.CAP_PROP_FPS, 5)
-    resolution = (640, 480)  # Choose a resolution from the supported list
-    cam.set(cv2.CAP_PROP_FRAME_WIDTH, resolution[0])
-    cam.set(cv2.CAP_PROP_FRAME_HEIGHT, resolution[1])
+    # Start the camera
+    picam2.start()
 
-    # Verify the resolution was set correctly
-    actual_width = cam.get(cv2.CAP_PROP_FRAME_WIDTH)
-    actual_height = cam.get(cv2.CAP_PROP_FRAME_HEIGHT)
-    logger.info(f"Camera resolution set to {actual_width}x{actual_height}")
+    actual_resolution = preview_config.main.size
+    logger.info(f"Camera initialized with resolution {actual_resolution} and {fps} FPS.")
 
-    if (actual_width, actual_height) != resolution:
-        logger.error(f"Failed to set resolution to {resolution}, using {actual_width}x{actual_height} instead")
-
-    logger.info("Camera initialized successfully.")
-    return cam
+    return picam2
 
 
 def annotate_and_write_frames(cam, video_writer):
@@ -189,53 +181,43 @@ def annotate_and_write_frames(cam, video_writer):
         return
 
 
-def capture_picture(cam, photo_path, file_name):
+def capture_picture(cam: Picamera2, photo_path: str, file_name: str):
     logger.info("Attempting to capture picture...")
-    org = (15, 60)  # x = 15 from left, y = 60 from top)
-    fontFace = cv2.FONT_HERSHEY_DUPLEX
-    fontScale = 0.7
-    color = (0, 0, 0)  # (B, G, R)
-    thickness = 1
-    lineType = cv2.LINE_AA
-    # Flush the camera buffer
-    for _ in range(8):
-        ret, frame = cam.read()
-        if not ret:
-            logger.error("Failed to capture image on flush")
-            return
 
-    # Adding a small delay to stabilize the camera
-    cv2.waitKey(100)  # 100 milliseconds delay
+    # Capture the image
+    frame = cam.capture_array()
 
-    # Capture the frame to be saved
-    ret, frame = cam.read()
-    if not ret:
-        logger.error("Failed to capture image after flush")
-        return
+    # Rotate the frame by 180 degrees (picamera2 frames are numpy arrays)
+    frame = np.rot90(frame, 2)
 
-    # Process frame...
-    logger.info(f"Successfully captured image: {file_name}")
-    # Rotate the frame by 180 degrees
-    frame = cv2.rotate(frame, cv2.ROTATE_180)
     # Annotate the frame with the current date and time
     current_time = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    org = (15, 60)  # Position for text on the image
+    font_scale = 0.7
+    color = (0, 0, 0)  # Text color (B, G, R)
+    thickness = 1
 
-    (text_width, text_height), _ = cv2.getTextSize(current_time, fontFace,
-                                                   fontScale, thickness)
-    # Define background rectangle coordinates
-    top_left = (org[0], org[1] - text_height) 
-    bottom_right = (int(org[0] + text_width), int(org[1] + (text_height/2)))
+    # Put the timestamp on the image
+    font = cv2.FONT_HERSHEY_DUPLEX
+    text_size = cv2.getTextSize(current_time, font, font_scale, thickness)[0]
+    text_x = org[0]
+    text_y = org[1] - text_size[1]
 
-    # Draw filled rectangle as background for the text
-    cv2.rectangle(frame, top_left, bottom_right, (255, 255, 255), cv2.FILLED)
+    # Draw the background rectangle for the text
+    cv2.rectangle(frame, (text_x, text_y), 
+                  (text_x + text_size[0], text_y + text_size[1]), (255, 255, 255), -1)
 
-    # Draw text on top of the background
-    cv2.putText(frame, current_time, org, fontFace, fontScale, color,
-                thickness, lineType)
+    # Draw the text
+    cv2.putText(frame, current_time, org, font, font_scale, color, thickness, cv2.LINE_AA)
 
-    cv2.imwrite(os.path.join(photo_path, file_name), frame)
-    time.sleep(0.3)  # sleep 0.3 sec
-    logger.info("Capture picture = %s", file_name)
+    # Save the image
+    image_path = os.path.join(photo_path, file_name)
+    cv2.imwrite(image_path, frame)
+
+    # Sleep to stabilize the camera
+    time.sleep(0.3)  # 0.3 seconds
+
+    logger.info(f"Successfully captured image: {file_name}")
 
 
 def start_video_recording(cam, video_path, file_name):
@@ -246,7 +228,8 @@ def start_video_recording(cam, video_path, file_name):
     logger.info(f"Camera frame size: {frame_size}")
     fourcc = cv2.VideoWriter_fourcc(*'XVID')  # H.264 codec with MP4 container
     video_writer = cv2.VideoWriter(os.path.join(video_path, file_name), fourcc, fpsw, frame_size)
-
+    if not video_writer.isOpened():
+        logger.error("VideoWriter failed during recording.")
     logger.info("Started video recording of %s", file_name)
     return video_writer
 
@@ -577,7 +560,6 @@ def main():
                     if num_starts == 1 or num_starts == 2:
                         logger.info("Start of video recording")
                         video_writer = start_video_recording(cam, video_path, "video0.avi")
-
                         logger.info("Inner loop, entering the start sequence block.")
                         start_sequence(cam, start_time_sec, num_starts, dur_between_starts, photo_path)
                         if num_starts == 2:
