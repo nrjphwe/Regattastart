@@ -12,18 +12,6 @@ if venv_path not in sys.path:
 
 import torch
 
-output_path = "/var/www/html/"
-try:
-    import cv2
-    with open(output_path, "w") as f:
-        f.write(f"OpenCV version: {cv2.__version__}\n")
-except Exception as e:
-    with open(output_path, "w") as f:
-        f.write(f"Error importing cv2: {e}\n")
-        f.write(f"sys.path: {sys.path}\n")
-        f.write(f"Current user: {os.geteuid()}\n")
-        f.write(f"Environment: {os.environ}\n")
-
 # sys.path.append('/home/pi/yolov5_env/lib/python3.11/site-packages')
 import threading
 import time
