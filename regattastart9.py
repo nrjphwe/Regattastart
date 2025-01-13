@@ -15,6 +15,7 @@ import torch
 # sys.path.append('/home/pi/yolov5_env/lib/python3.11/site-packages')
 import threading
 import time
+import cv2
 from datetime import datetime
 import datetime as dt
 import logging
@@ -206,7 +207,6 @@ def capture_picture(cam: Picamera2, photo_path: str, file_name: str):
     time.sleep(0.3)  # 0.3 seconds
 
     logger.info(f"Successfully captured image: {file_name}")
-
 
 def start_video_recording(cam, video_path, file_name):
     fpsw = 20  # Frames per second for video writing
@@ -437,18 +437,21 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time):
     boat_in_current_frame = False
 
     start_time = time.time()  # Record the start time of the recording
+    max_duration = 60 * (video_end + 5 * (num_starts - 1))
+    logger.info(f"Maximum recording duration: {max_duration} seconds")
+
 
     while not recording_stopped:
         frame = cam.capture_array()  # Capture frame as numpy array
 
         frame = cv2.flip(frame, cv2.ROTATE_180)  # camera is upside down"
-        pre_detection_buffer.append(frame)  # Add the frame to the pre-detection buffer
+        pre_detection_buffer.append(frame)  # Add the frame to pre-detection buffer
 
         # Perform inference using YOLOv5
         results = model(frame)
-
-        # Parse the detection results
         detections = results.pandas().xyxy[0]  # Results as a DataFrame
+
+        # Process detections
         for _, row in detections.iterrows():
             class_name = row['name']
             confidence = row['confidence']
@@ -469,6 +472,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time):
                             cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
                 video_writer.write(frame)
 
+         # Handle post-detection frame countdown
         if boat_in_current_frame:  # boat was in frame previously
             post_detection_frames -= 1
             if post_detection_frames <= 0:
@@ -476,9 +480,6 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time):
                 post_detection_frames = 50  # Reset for the next detection
 
         # Check if recording should stop
-        max_duration = 60 * (video_end + 5 * (num_starts - 1))
-        logger.info(f"Maximum recording duration set to: {max_duration} s")
-
         elapsed_time = time.time() - start_time
         if elapsed_time >= max_duration:
             logger.info("Maximum recording time reached.")
