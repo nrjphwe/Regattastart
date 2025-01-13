@@ -406,7 +406,7 @@ def listen_for_messages(timeout=0.1):
     logger.info("Listening thread terminated")
 
 
-def finish_recording(cam, video_path, num_starts, video_end, start_time, start_time_sec):
+def finish_recording(cam, video_path, num_starts, video_end, start_time):
     # Open a video capture object (replace 'your_video_file.mp4' with the 
     # actual video file or use 0 for webcam) 
     # cam = cv2.VideoCapture(os.path.join(video_path, "finish21-6.mp4"))
@@ -419,9 +419,11 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time, start_t
     # Initialize variables
     fpsw = 50  # number of frames written per second
     # today = time.strftime("%Y%m%d")
-    width = int(cam.get(cv2.CAP_PROP_FRAME_WIDTH))
-    height = int(cam.get(cv2.CAP_PROP_FRAME_HEIGHT))
+
+    width = cam.preview_configuration.main.size[0]  # Get the width from preview configuration
+    height = cam.preview_configuration.main.size[1]  # Get the height from preview configuration
     frame_size = (width, height)
+    logger.info(f"Camera frame size: {frame_size}")
 
     # setup cv2 writer
     fourcc = cv2.VideoWriter_fourcc(*'XVID')  # H.264 codec with MP4 container
