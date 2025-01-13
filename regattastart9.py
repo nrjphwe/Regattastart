@@ -416,18 +416,20 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time):
     model = torch.hub.load('ultralytics/yolov5', 'yolov5s')
     model.classes = [8]  # Filter for 'boat' class (COCO ID for 'boat' is 8)
 
-    # Initialize variables
-    fpsw = 50  # number of frames written per second
-    # today = time.strftime("%Y%m%d")
-
+    # Setup parameters
+    fpsw = 20  # number of frames written per second
     width = cam.preview_configuration.main.size[0]  # Get the width from preview configuration
     height = cam.preview_configuration.main.size[1]  # Get the height from preview configuration
     frame_size = (width, height)
     logger.info(f"Camera frame size: {frame_size}")
 
-    # setup cv2 writer
+    # setup video writer
     fourcc = cv2.VideoWriter_fourcc(*'XVID')  # H.264 codec with MP4 container
     video_writer = cv2.VideoWriter(video_path + 'video1' + '.avi', fourcc, fpsw, frame_size)
+
+    if not video_writer.isOpened():
+        logger.error("VideoWriter failed to initialize.")
+        return
 
     # Pre-detection buffer (5 seconds)
     pre_detection_buffer = deque(maxlen=fpsw * 5)  # Stores last 5 seconds of frames
@@ -437,13 +439,10 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time):
     start_time = time.time()  # Record the start time of the recording
 
     while not recording_stopped:
-        ret, frame = cam.read()  # read frame
-        if not ret or frame is None:
-            logger.warning("Frame is None or stream ended. Exiting loop.")
-            break
+        frame = cam.capture_array()  # Capture frame as numpy array
 
-        frame = cv2.flip(frame, flipCode=-1)  # camera is upside down"
-        pre_detection_buffer.append(frame) # Add the frame to the pre-detection buffer
+        frame = cv2.flip(frame, cv2.ROTATE_180)  # camera is upside down"
+        pre_detection_buffer.append(frame)  # Add the frame to the pre-detection buffer
 
         # Perform inference using YOLOv5
         results = model(frame)
