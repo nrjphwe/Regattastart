@@ -126,7 +126,7 @@ def setup_camera(resolution=(640, 480), fps=5):
     picam2.start()
 
     # actual_resolution = preview_config.main.size
-    logger.info(f"Camera initialized with resolution {actual_resolution} and {fps} FPS.")
+    logger.info(f"Camera initialized with resolution {resolution} and {fps} FPS.")
 
     return picam2
 
