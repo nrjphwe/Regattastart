@@ -440,10 +440,8 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time):
     max_duration = 60 * (video_end + 5 * (num_starts - 1))
     logger.info(f"Maximum recording duration: {max_duration} seconds")
 
-
     while not recording_stopped:
         frame = cam.capture_array()  # Capture frame as numpy array
-
         frame = cv2.flip(frame, cv2.ROTATE_180)  # camera is upside down"
         pre_detection_buffer.append(frame)  # Add the frame to pre-detection buffer
 
@@ -472,7 +470,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time):
                             cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
                 video_writer.write(frame)
 
-         # Handle post-detection frame countdown
+        # Handle post-detection frame countdown
         if boat_in_current_frame:  # boat was in frame previously
             post_detection_frames -= 1
             if post_detection_frames <= 0:
@@ -586,8 +584,7 @@ def main():
 
         logger.info("Finally section, before 'Finish recording'. start_time=%s video_end=%s", start_time, video_end)
         time.sleep(2)
-        finish_recording(cam, video_path, num_starts, video_end, start_time,
-                         start_time_sec)
+        finish_recording(cam, video_path, num_starts, video_end, start_time)
 
         # Signal the listening thread to stop
         stop_event.set()
