@@ -117,7 +117,7 @@ def setup_camera(resolution=(640, 480), fps=5):
 
     # Configure preview settings
     preview_config = picam2.create_preview_configuration(
-        main={"size": resolution, "format": "RGB888"},
+        main={"size": resolution, "format": "RGB2BGR"},
         controls={"FrameRate": fps}
     )
     picam2.configure(preview_config)
@@ -132,7 +132,7 @@ def setup_camera(resolution=(640, 480), fps=5):
 
 def annotate_and_write_frames(cam: Picamera2, video_writer):
     """
-    Captures frames from the picamera2, annotates each frame with a timestamp, 
+    Captures frames from the picamera2, annotates each frame with a timestamp
     and writes them to a video file using the provided video writer.
     """
     org = (15, 60)  # x = 15 from left, y = 60 from top
@@ -173,13 +173,11 @@ def annotate_and_write_frames(cam: Picamera2, video_writer):
 
 def capture_picture(cam: Picamera2, photo_path: str, file_name: str):
     logger.info("Attempting to capture picture...")
-
-    # Capture the image
-    frame = cam.capture_array()
-
     try:
         frame = cam.capture_array()
         # Perform operations on the frame...
+        # Convert RGB to BGR (OpenCV uses BGR format)
+        frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
         frame = np.rot90(frame, 2)  # Rotate the frame by 180 degrees 
 
         # Annotate the frame with the current date and time
