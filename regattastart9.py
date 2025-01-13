@@ -116,11 +116,10 @@ def setup_camera(resolution=(640, 480), fps=5):
     picam2 = Picamera2()
 
     # Configure preview settings
-    preview_config = picam2.preview_configuration
-    preview_config.main.size = resolution
-    preview_config.main.format = "RGB888"
-    preview_config.controls.FrameRate = fps
-    preview_config.align()
+    preview_config = picam2.create_preview_configuration(
+    main={"size": resolution, "format": "RGB888"},
+    controls={"FrameRate": fps}
+    )
     picam2.configure(preview_config)
 
     # Start the camera
