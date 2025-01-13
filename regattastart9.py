@@ -130,6 +130,7 @@ def setup_camera(resolution=(640, 480), fps=5):
 
     return picam2
 
+
 def annotate_and_write_frames(cam: Picamera2, video_writer):
     """
     Captures frames from the picamera2, annotates each frame with a timestamp
