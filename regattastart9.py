@@ -117,13 +117,12 @@ def setup_camera(resolution=(640, 480), fps=5):
 
     # Configure preview settings
     preview_config = picam2.create_preview_configuration(
-        main={"size": resolution, "format": "RGB2BGR"},
+        main={"size": resolution, "format": "RGB888"},
         controls={"FrameRate": fps}
     )
     picam2.configure(preview_config)
 
-    # Start the camera
-    picam2.start()
+    picam2.start() # Start the camera
 
     # actual_resolution = preview_config.main.size
     logger.info(f"Camera initialized with resolution {resolution} and {fps} FPS.")
