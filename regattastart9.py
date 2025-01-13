@@ -130,43 +130,45 @@ def setup_camera(resolution=(640, 480), fps=5):
 
     return picam2
 
-
-def annotate_and_write_frames(cam, video_writer):
-    org = (15, 60)  # x = 15 from left, y = 60 from top)
+def annotate_and_write_frames(cam: Picamera2, video_writer):
+    """
+    Captures frames from the picamera2, annotates each frame with a timestamp, 
+    and writes them to a video file using the provided video writer.
+    """
+    org = (15, 60)  # x = 15 from left, y = 60 from top
     fontFace = cv2.FONT_HERSHEY_DUPLEX
     fontScale = 0.7
     color = (0, 0, 0)  # (B, G, R)
     thickness = 1
     lineType = cv2.LINE_AA
 
-    while True:
-        ret, frame = cam.read()
-        if not ret:
-            logger.error("Failed to capture frame")
-            break
+    try:
+        while True:
+            # Capture frame using picamera2
+            frame = cam.capture_array()
 
-        # Rotate the frame by 180 degrees
-        frame = cv2.rotate(frame, cv2.ROTATE_180)
+            # Rotate the frame by 180 degrees
+            frame = np.rot90(frame, 2)
 
-        # Annotate the frame with the current date and time
-        current_time = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            # Annotate the frame with the current date and time
+            current_time = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
-        (text_width, text_height), _ = cv2.getTextSize(current_time, fontFace,
-                                                       fontScale, thickness)
-        # Define background rectangle coordinates
-        top_left = (org[0], org[1] - text_height)
-        bottom_right = (int(org[0] + text_width), int(org[1] + (text_height/2)))
+            # Calculate text size and background rectangle
+            (text_width, text_height), _ = cv2.getTextSize(current_time, fontFace, fontScale, thickness)
+            top_left = (org[0], org[1] - text_height - 5)
+            bottom_right = (org[0] + text_width + 10, org[1] + 5)
 
-        # Draw filled rectangle as background for the text
-        cv2.rectangle(frame, top_left, bottom_right, (255, 255, 255), 
-                      cv2.FILLED)
+            # Draw background rectangle for the timestamp
+            cv2.rectangle(frame, top_left, bottom_right, (255, 255, 255), cv2.FILLED)
 
-        # Draw text on top of the background
-        cv2.putText(frame, current_time, org, fontFace, fontScale, color, 
-                    thickness, lineType)
+            # Draw the timestamp text
+            cv2.putText(frame, current_time, org, fontFace, fontScale, color, thickness, lineType)
 
-        video_writer.write(frame)
-        return
+            # Write the annotated frame to the video file
+            video_writer.write(frame)
+
+    except Exception as e:
+        logger.error(f"Error while capturing or writing frames: {e}")
 
 
 def capture_picture(cam: Picamera2, photo_path: str, file_name: str):
@@ -178,7 +180,7 @@ def capture_picture(cam: Picamera2, photo_path: str, file_name: str):
     try:
         frame = cam.capture_array()
         # Perform operations on the frame...
-        frame = np.rot90(frame, 2) # Rotate the frame by 180 degrees 
+        frame = np.rot90(frame, 2)  # Rotate the frame by 180 degrees 
 
         # Annotate the frame with the current date and time
         current_time = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
