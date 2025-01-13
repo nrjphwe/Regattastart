@@ -193,8 +193,7 @@ def capture_picture(cam: Picamera2, photo_path: str, file_name: str):
     text_y = org[1] - text_size[1]
 
     # Draw the background rectangle for the text
-    cv2.rectangle(frame, (text_x, text_y), 
-                  (text_x + text_size[0], text_y + text_size[1]), (255, 255, 255), -1)
+    cv2.rectangle(frame, (text_x, text_y),(text_x + text_size[0], text_y + text_size[1]), (255, 255, 255), -1)
 
     # Draw the text
     cv2.putText(frame, current_time, org, font, font_scale, color, thickness, cv2.LINE_AA)
@@ -207,6 +206,7 @@ def capture_picture(cam: Picamera2, photo_path: str, file_name: str):
     time.sleep(0.3)  # 0.3 seconds
 
     logger.info(f"Successfully captured image: {file_name}")
+
 
 def start_video_recording(cam, video_path, file_name):
     fpsw = 20  # Frames per second for video writing
