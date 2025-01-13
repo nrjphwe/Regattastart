@@ -117,15 +117,15 @@ def setup_camera(resolution=(640, 480), fps=5):
 
     # Configure preview settings
     preview_config = picam2.create_preview_configuration(
-    main={"size": resolution, "format": "RGB888"},
-    controls={"FrameRate": fps}
+        main={"size": resolution, "format": "RGB888"},
+        controls={"FrameRate": fps}
     )
     picam2.configure(preview_config)
 
     # Start the camera
     picam2.start()
 
-    actual_resolution = preview_config.main.size
+    # actual_resolution = preview_config.main.size
     logger.info(f"Camera initialized with resolution {actual_resolution} and {fps} FPS.")
 
     return picam2
@@ -175,36 +175,42 @@ def capture_picture(cam: Picamera2, photo_path: str, file_name: str):
     # Capture the image
     frame = cam.capture_array()
 
-    # Rotate the frame by 180 degrees (picamera2 frames are numpy arrays)
-    frame = np.rot90(frame, 2)
+    try:
+        frame = cam.capture_array()
+        # Perform operations on the frame...
+        frame = np.rot90(frame, 2) # Rotate the frame by 180 degrees 
 
-    # Annotate the frame with the current date and time
-    current_time = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    org = (15, 60)  # Position for text on the image
-    font_scale = 0.7
-    color = (0, 0, 0)  # Text color (B, G, R)
-    thickness = 1
+        # Annotate the frame with the current date and time
+        current_time = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        org = (15, 60)  # Position for text on the image
+        font_scale = 0.7
+        color = (0, 0, 0)  # Text color (B, G, R)
+        thickness = 1
 
-    # Put the timestamp on the image
-    font = cv2.FONT_HERSHEY_DUPLEX
-    text_size = cv2.getTextSize(current_time, font, font_scale, thickness)[0]
-    text_x = org[0]
-    text_y = org[1] - text_size[1]
+        # Put the timestamp on the image
+        font = cv2.FONT_HERSHEY_DUPLEX
+        text_size = cv2.getTextSize(current_time, font, font_scale, thickness)[0]
+        text_x = org[0]
+        text_y = org[1] - text_size[1]
 
-    # Draw the background rectangle for the text
-    cv2.rectangle(frame, (text_x, text_y),(text_x + text_size[0], text_y + text_size[1]), (255, 255, 255), -1)
+        # Draw the background rectangle for the text
+        cv2.rectangle(frame, (text_x, text_y), (text_x + text_size[0], text_y + text_size[1]), (255, 255, 255), -1)
 
-    # Draw the text
-    cv2.putText(frame, current_time, org, font, font_scale, color, thickness, cv2.LINE_AA)
+        # Draw the text
+        cv2.putText(frame, current_time, org, font, font_scale, color, thickness, cv2.LINE_AA)
 
-    # Save the image
-    image_path = os.path.join(photo_path, file_name)
-    cv2.imwrite(image_path, frame)
+        # Save the image
+        image_path = os.path.join(photo_path, file_name)
+        cv2.imwrite(image_path, frame)
 
-    # Sleep to stabilize the camera
-    time.sleep(0.3)  # 0.3 seconds
+        # Sleep to stabilize the camera
+        # time.sleep(0.3)  # 0.3 seconds
 
-    logger.info(f"Successfully captured image: {file_name}")
+    except Exception as e:
+        logger.error(f"Error capturing picture: {e}")
+        return
+
+    logger.info(f"Successfully captured image picture: {file_name}")
 
 
 def start_video_recording(cam, video_path, file_name):
