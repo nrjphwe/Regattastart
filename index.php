@@ -8,6 +8,16 @@
     session_start();
     ini_set('display_errors', 1); 
     error_reporting(E_ALL);
+    if (isset($_SESSION["form_data"])) {
+        $form_data = $_SESSION["form_data"];
+        echo '<pre>';
+        print_r($form_data);
+        echo '</pre>';
+    } else {
+        echo "No form data found.";
+    }
+
+
     include_once 'functions.php';
     // Check if video0.mp4 or video1.mp4 exists and their sizes
     $video0Exists = file_exists("images/video0.mp4") && filesize("images/video0.mp4") > 0;
@@ -17,15 +27,6 @@
 
     # initialize the status for Stop_recording button
     $stopRecordingPressed = false;
-
-    if (isset($_SESSION["form_data"])) {
-        echo '<pre>';
-        print_r($_SESSION["form_data"]);
-        echo '</pre>';
-    }
-
-
-
     // Retrieve session data
     $formData = isset($_SESSION['form_data']) && is_array($_SESSION['form_data']) ? $_SESSION['form_data'] : [];
     $start_time = $formData['start_time'] ?? null;
