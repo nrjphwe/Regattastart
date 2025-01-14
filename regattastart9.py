@@ -187,7 +187,9 @@ def capture_picture(cam: Picamera2, photo_path: str, file_name: str):
         # Perform operations on the frame...
         # Convert RGB to BGR (OpenCV uses BGR format)
         frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
-        frame = np.rot90(frame, 2)  # Rotate the frame by 180 degrees 
+        frame = np.rot90(frame, 2)  # Rotate the frame by 180 degrees
+
+        logger.debug(f"Frame shape: {frame.shape}, dtype: {frame.dtype}")
 
         # Annotate the frame with the current date and time
         current_time = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
