@@ -377,8 +377,13 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
                     last_triggered_events[(event_time, log_message)] = True
                     break  # Break out of the loop to avoid reprocessing this event
 
-            # Sleep for a short duration to avoid processing the same second repeatedly
-            time.sleep(1)
+            # Sleep until the next event time
+            future_events = [t for t, _, _ in time_intervals if t > seconds_now]
+            if future_events:
+                next_event_time = min(future_events)
+                sleep_duration = max(0, next_event_time - seconds_now)
+                logger.debug(f"Sleeping for {sleep_duration} seconds until next event.")
+                time.sleep(sleep_duration)
 
             # Update current time
             time_now = dt.datetime.now()
