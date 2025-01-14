@@ -151,14 +151,13 @@ def annotate_and_write_frames(cam: Picamera2, video_writer):
             frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
 
             # Draw a rectangle on the image (example processing)
-            top_left = (org[0], org[1] - text_height - 5)
-            bottom_right = (org[0] + text_width + 10, org[1] + 5)
-            # height, width, _ = frame.shape
-            # top_left = (int(width * 0.25), int(height * 0.25))
-            # bottom_right = (int(width * 0.75), int(height * 0.75))
+            # top_left = (org[0], org[1] - text_height - 5)
+            # bottom_right = (org[0] + text_width + 10, org[1] + 5)
+            height, width, _ = frame.shape
+            top_left = (int(width * 0.25), int(height * 0.25))
+            bottom_right = (int(width * 0.75), int(height * 0.75))
             color = (0, 255, 0)  # Green in BGR
             # thickness = 2
-
 
             # Annotate the frame with the current date and time
             current_time = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
