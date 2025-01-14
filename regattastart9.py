@@ -122,7 +122,7 @@ def setup_camera(resolution=(640, 480), fps=5):
     )
     picam2.configure(preview_config)
 
-    picam2.start() # Start the camera
+    picam2.start()  # Start the camera
 
     # actual_resolution = preview_config.main.size
     logger.info(f"Camera initialized with resolution {resolution} and {fps} FPS.")
@@ -138,28 +138,38 @@ def annotate_and_write_frames(cam: Picamera2, video_writer):
     org = (15, 60)  # x = 15 from left, y = 60 from top
     fontFace = cv2.FONT_HERSHEY_DUPLEX
     fontScale = 0.7
-    color = (0, 0, 0)  # (B, G, R)
+    # color = (0, 0, 0)  # (B, G, R)
     thickness = 1
     lineType = cv2.LINE_AA
 
     try:
         while True:
-            # Capture frame using picamera2
-            frame = cam.capture_array()
+            frame = cam.capture_array()  # Capture frame using picamera2
+            frame = np.rot90(frame, 2)  # Rotate the frame by 180 degrees
 
-            # Rotate the frame by 180 degrees
-            frame = np.rot90(frame, 2)
+            # Ensure the image is in the correct format for OpenCV
+            frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
+
+            # Draw a rectangle on the image (example processing)
+            top_left = (org[0], org[1] - text_height - 5)
+            bottom_right = (org[0] + text_width + 10, org[1] + 5)
+            # height, width, _ = frame.shape
+            # top_left = (int(width * 0.25), int(height * 0.25))
+            # bottom_right = (int(width * 0.75), int(height * 0.75))
+            color = (0, 255, 0)  # Green in BGR
+            # thickness = 2
+
 
             # Annotate the frame with the current date and time
             current_time = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
-            # Calculate text size and background rectangle
-            (text_width, text_height), _ = cv2.getTextSize(current_time, fontFace, fontScale, thickness)
-            top_left = (org[0], org[1] - text_height - 5)
-            bottom_right = (org[0] + text_width + 10, org[1] + 5)
-
             # Draw background rectangle for the timestamp
             cv2.rectangle(frame, top_left, bottom_right, (255, 255, 255), cv2.FILLED)
+
+            # Calculate text size and background rectangle
+            (text_width, text_height), _ = cv2.getTextSize(current_time, fontFace, fontScale, thickness)
+
+            cv2.rectangle(frame, top_left, bottom_right, color, thickness)
 
             # Draw the timestamp text
             cv2.putText(frame, current_time, org, fontFace, fontScale, color, thickness, lineType)
