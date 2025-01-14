@@ -185,6 +185,7 @@ def capture_picture(cam: Picamera2, photo_path: str, file_name: str):
     try:
         frame = cam.capture_array()
         # Perform operations on the frame...
+        frame = np.copy(frame)
         # Convert RGB to BGR (OpenCV uses BGR format)
         frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
         frame = np.rot90(frame, 2)  # Rotate the frame by 180 degrees
@@ -201,8 +202,8 @@ def capture_picture(cam: Picamera2, photo_path: str, file_name: str):
         # Put the timestamp on the image
         font = cv2.FONT_HERSHEY_DUPLEX
         text_size = cv2.getTextSize(current_time, font, font_scale, thickness)[0]
-        text_x = org[0]
-        text_y = org[1] - text_size[1]
+        text_x = int(org[0])
+        text_y = int(org[1] - text_size[1])
 
         # Draw the background rectangle for the text
         cv2.rectangle(frame, (text_x, text_y), (text_x + text_size[0], text_y + text_size[1]), (255, 255, 255), -1)
