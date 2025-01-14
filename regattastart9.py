@@ -332,7 +332,7 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
             (start_time_sec - 4 * 60, lambda: trigger_relay('Signal'), "4_min Warning signal"),
             (start_time_sec - 1 * 60 - 2, lambda: trigger_relay('Lamp2_off'), "1_min Lamp-2 off -- Flag P down"),
             (start_time_sec - 1 * 60, lambda: trigger_relay('Signal'), "1_min  Warning signal"),
-            (start_time_sec - 0 * 60 - 2, lambda: trigger_relay('Lamp1_off'), "Lamp1-off at start"),
+            (start_time_sec - 0 * 60 - 2, lambda: trigger_relay('Lamp1_off'), "Start Lamp1-off"),
             (start_time_sec - 0 * 60, lambda: trigger_relay('Signal'), "Start signal")
         ]
 
@@ -596,7 +596,7 @@ def main():
         wd = dt.datetime.today().strftime("%A")
 
         remove_video_files(photo_path, "video")  # clean up
-        remove_picture_files(photo_path, ".jpg") # clean up
+        remove_picture_files(photo_path, ".jpg")  # clean up
         logger.info("Weekday=%s, Start_time=%s, video_end=%s, num_starts=%s", week_day, start_time.strftime("%H:%M"), video_end, num_starts)
 
         if wd == week_day:
@@ -617,7 +617,7 @@ def main():
                             start_time_sec = start_time_sec + (dur_between_starts * 60)
                         logger.info("Wait 2 minutes then stop video0 recording")
                         t0 = dt.datetime.now()
-                        logger.info("start_time_sec= %s, t0= %s", start_time_sec, t0)  # test
+                        logger.info("start_time_sec= %s, t0= %s", start_time_sec, t0.second)  # test
                         while (dt.datetime.now() - t0).seconds < (119):
                             now = dt.datetime.now()
                             seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
