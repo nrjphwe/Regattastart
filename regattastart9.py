@@ -617,7 +617,8 @@ def main():
                             start_time_sec = start_time_sec + (dur_between_starts * 60)
                         logger.info("Wait 2 minutes then stop video0 recording")
                         t0 = dt.datetime.now()
-                        logger.info("start_time_sec - t0 %s", start_time_sec - t0)  # test
+                        diff = start_time_sec - t0
+                        logger.info("start_time_sec - t0 %s", diff)  # test
                         while (dt.datetime.now() - t0).seconds < (119):
                             now = dt.datetime.now()
                             seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
