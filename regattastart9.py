@@ -317,7 +317,7 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
     for i in range(num_starts):
         logger.info(f"Start_sequence. Start of iteration {i}")
         # Adjust the start_time_sec for the second iteration
-        #if i == 1:
+        # if i == 1:
         #    start_time_sec += dur_between_starts * 60  # Add 5 or 10 minutes for the second iteration
         #    logger.info(f"Start_sequence, Next start_time_sec: {start_time_sec}")
 
@@ -339,7 +339,7 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
 
         last_triggered_events = {}
         time_now = dt.datetime.now()
-        #seconds_since_midnight = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
+        # seconds_since_midnight = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
         seconds_now = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
 
         '''
