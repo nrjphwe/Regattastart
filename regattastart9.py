@@ -204,7 +204,10 @@ def capture_picture(cam: Picamera2, photo_path: str, file_name: str):
         text_x = int(org[0])
         text_y = int(org[1] - text_size[1])
 
+        logger.debug(f"Drawing rectangle at: ({text_x}, {text_y}) to ({text_x + text_size[0]}, {text_y + text_size[1]})")
+
         # Draw the background rectangle for the text
+        frame = np.ascontiguousarray(frame)  # Ensure array compatibility
         cv2.rectangle(frame, (text_x, text_y), (text_x + text_size[0], text_y + text_size[1]), (255, 255, 255), -1)
 
         # Draw the text
