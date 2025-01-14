@@ -20,7 +20,7 @@
 
     // Retrieve session data
     $formData = isset($_SESSION['form_data']) && is_array($_SESSION['form_data']) ? $_SESSION['form_data'] : [];
-
+    console_log("formData: ". $formData);
     // Extract relevant session data
     extract($formData); // This will create variables like $start_time, $video_end, etc.
     console_log("First start time: " . $start_time);
