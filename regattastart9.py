@@ -324,7 +324,6 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
         iteration_start_time = start_time_sec + i * dur_between_starts * 60
         logger.info(f"Start_sequence. Iteration {i + 1}, start time: {iteration_start_time}")
 
-
         # Define time intervals for each relay trigger
         time_intervals = [
             (start_time_sec - 5 * 60, lambda: trigger_relay('Lamp1_on'), "5_min Lamp-1 On -- Up with Flag O"),
@@ -374,15 +373,12 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
                         action()
                         picture_name = f"{i + 1}a_start_{log_message[:5]}.jpg"
                         capture_picture(camera, photo_path, picture_name)
+                        # Mark the event as triggered
                     last_triggered_events[(event_time, log_message)] = True
+                    break  # Break out of the loop to avoid reprocessing this event
 
-            # Sleep until the next event time
-            future_events = [t for t, _, _ in time_intervals if t > seconds_now]
-            if future_events:
-                next_event_time = min(future_events)
-                sleep_duration = max(0, next_event_time - seconds_now)
-                logger.debug(f"Sleeping for {sleep_duration} seconds until next event.")
-                time.sleep(sleep_duration)
+            # Sleep for a short duration to avoid processing the same second repeatedly
+            time.sleep(1)
 
             # Update current time
             time_now = dt.datetime.now()
