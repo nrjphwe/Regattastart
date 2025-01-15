@@ -470,6 +470,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time):
     # cam = cv2.VideoCapture(os.path.join(video_path, "finish21-6.mp4"))
     global recording_stopped
     confidence = 0.0  # Default value
+    class_name = ""
 
     # Load the pre-trained YOLOv5 model (e.g., yolov5s)
     model = torch.hub.load('ultralytics/yolov5', 'yolov5s')
