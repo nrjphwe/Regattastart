@@ -621,7 +621,8 @@ def main():
                         logger.info(f"(dt.datetime.now() - t0).seconds: {(dt.datetime.now() - t0).seconds}")
                         while ((dt.datetime.now() - t0).seconds < 119):
                             now = dt.datetime.now()
-                            logger.info(f"now {now} strftime: {time.strftime("%H:%M:%S", now)} ")
+                            now_strf = time.strftime("%H:%M:%S", now)
+                            logger.info(f"now {now} strftime: {now_strf} ")
                             seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
                             logger.info(f"seconds_since_midnight {seconds_since_midnight}")
                             logger.info(f"dt.datetime.now(): {dt.datetime.now()} t0: {t0}")  # test
