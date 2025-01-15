@@ -621,7 +621,7 @@ def main():
                         while (dt.datetime.now() - t0).seconds < (119):
                             now = dt.datetime.now()
                             seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
-                            logger.info("start_time_sec= %s, t0= %s", start_time_sec, t0)  # test
+                            logger.info("dt.datetime.now()= %s, t0= %s", dt.datetime.now(), t0)  # test
                             annotate_and_write_frames(cam, video_writer)
                         logger.info("after annotate and write text")
                         stop_video_recording(video_writer)
