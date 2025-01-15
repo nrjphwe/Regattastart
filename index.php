@@ -8,6 +8,7 @@
     session_start();
     ini_set('display_errors', 1); 
     error_reporting(E_ALL);
+    
     if (isset($_SESSION["form_data"])) {
         $form_data = $_SESSION["form_data"];
         echo '<pre>';
