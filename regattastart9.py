@@ -619,11 +619,11 @@ def main():
                         t0 = dt.datetime.now()
                         logger.info("start_time_sec= %s, t0= %s", start_time_sec, t0)  # test
                         logger.info(f"(dt.datetime.now() - t0).seconds: {(dt.datetime.now() - t0).seconds}")
-                        while (dt.datetime.now() - t0).seconds < (119):
+                        while ((dt.datetime.now() - t0).seconds < 119):
                             now = dt.datetime.now()
-                            logger.info(f"now {now} strftime: {time.strftime("%H:%M:%S",now)} ")
-                            logger.info(f"seconds_since_midnight {seconds_since_midnight}")
+                            logger.info(f"now {now} strftime: {time.strftime("%H:%M:%S", now)} ")
                             seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
+                            logger.info(f"seconds_since_midnight {seconds_since_midnight}")
                             logger.info(f"dt.datetime.now(): {dt.datetime.now()} t0: {t0}")  # test
                             annotate_and_write_frames(cam, video_writer)
                         logger.info("after annotate and write text")
