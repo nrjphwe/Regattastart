@@ -621,7 +621,7 @@ def main():
 
                         logger.info("Wait 2 minutes then stop video0 recording")
                         t0 = dt.datetime.now()
-                        logger.info("(dt.datetime.now() - t0).seconds:" (dt.datetime.now() - t0).seconds)
+                        logger.info("(dt.datetime.now() - t0).seconds:", (dt.datetime.now() - t0).seconds)
                         while (dt.datetime.now() - t0).seconds < (119):
                             annotate_and_write_frames(cam, video_writer)
 
