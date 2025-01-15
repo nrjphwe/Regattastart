@@ -609,7 +609,7 @@ def main():
                 if seconds_since_midnight > t5min_warning - 2:
                     logger.info("Start of outer loop iteration. seconds_since_midnight=%s", seconds_since_midnight)
 
-                    if num_starts in (1,2):
+                    if num_starts in (1, 2):
                         logger.info("Start of video recording")
                         video_writer = start_video_recording(cam, video_path, "video0.avi")
 
@@ -621,7 +621,7 @@ def main():
 
                         logger.info("Wait 2 minutes then stop video0 recording")
                         t0 = dt.datetime.now()
-
+                        logger.info("(dt.datetime.now() - t0).seconds:" (dt.datetime.now() - t0).seconds)
                         while (dt.datetime.now() - t0).seconds < (119):
                             annotate_and_write_frames(cam, video_writer)
 
