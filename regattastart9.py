@@ -549,7 +549,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time):
             logger.info('Video1 recording stopped')
             break
 
-    cam.release()  # Don't forget to release the camera resources when done
+    # cam.release()  # Don't forget to release the camera resources when done
     video_writer.release()  # Release the video writer
     logger.info("cam.release and video_writer release, exited the finish_recording module.")
 
