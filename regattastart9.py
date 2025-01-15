@@ -608,26 +608,21 @@ def main():
                 seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
                 if seconds_since_midnight > t5min_warning - 2:
                     logger.info("Start of outer loop iteration. seconds_since_midnight=%s", seconds_since_midnight)
-
-                    if num_starts in (1, 2):
+                    if num_starts == 1 or num_starts == 2:
                         logger.info("Start of video recording")
                         video_writer = start_video_recording(cam, video_path, "video0.avi")
-
                         logger.info("Inner loop, entering the start sequence block.")
                         start_sequence(cam, start_time_sec, num_starts, dur_between_starts, photo_path)
-
                         if num_starts == 2:
-                            start_time_sec += dur_between_starts * 60
-
+                            start_time_sec = start_time_sec + (dur_between_starts * 60)
                         logger.info("Wait 2 minutes then stop video0 recording")
                         t0 = dt.datetime.now()
-                        logger.info(f"(dt.datetime.now() - t0).seconds: {(dt.datetime.now() - t0).seconds}")
-
+                        logger.info("start_time_sec= %s, t0= %s", start_time_sec, t0)  # test
                         while (dt.datetime.now() - t0).seconds < (119):
-                            logger.info(f"(dt.datetime.now() - t0).seconds: {(dt.datetime.now() - t0).seconds}")
+                            now = dt.datetime.now()
+                            seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
                             annotate_and_write_frames(cam, video_writer)
-
-                        logger.info("stopping video recording")
+                        logger.info("after annotate and write text")
                         stop_video_recording(video_writer)
                         convert_video_to_mp4(video_path, "video0.avi", "video0.mp4")
                         logger.info("Video0 recording stopped and converted to mp4")
