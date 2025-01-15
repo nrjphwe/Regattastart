@@ -624,6 +624,7 @@ def main():
                         logger.info(f"(dt.datetime.now() - t0).seconds: {(dt.datetime.now() - t0).seconds}")
 
                         while (dt.datetime.now() - t0).seconds < (119):
+                            logger.info(f"(dt.datetime.now() - t0).seconds: {(dt.datetime.now() - t0).seconds}")
                             annotate_and_write_frames(cam, video_writer)
 
                         logger.info("stopping video recording")
