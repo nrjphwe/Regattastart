@@ -603,11 +603,13 @@ def main():
             # A loop that waits until close to the 5-minute mark, a loop
             # that continuously checks the condition without blocking
             # the execution completely
+            t0 = dt.datetime.now()
             while True:
                 now = dt.datetime.now()
                 seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
                 if seconds_since_midnight > t5min_warning - 2:
-                    logger.info("Start of outer loop iteration. seconds_since_midnight=%s", seconds_since_midnight)
+                    logger.info("Start of outer loop iteration. seconds_since_midnight=%d", seconds_since_midnight)
+                    logger.info("start_time_sec=%d, t0=%s", start_time_sec, t0)
                     if num_starts == 1 or num_starts == 2:
                         logger.info("Start of video recording")
                         video_writer = start_video_recording(cam, video_path, "video0.avi")
@@ -616,9 +618,9 @@ def main():
                         if num_starts == 2:
                             start_time_sec = start_time_sec + (dur_between_starts * 60)
                         logger.info("Wait 2 minutes then stop video0 recording")
-                        t0 = dt.datetime.now()
-                        logger.info("start_time_sec= %s, t0= %s", start_time_sec, t0)  # test
-                        logger.info(f"(dt.datetime.now() - t0).seconds: {(dt.datetime.now() - t0).seconds}")
+                        # t0 = dt.datetime.now()
+
+                        logger.info("(dt.datetime.now() - t0).seconds: %d", (dt.datetime.now() - t0).seconds)
                         while ((dt.datetime.now() - t0).seconds < 119):
                             now = dt.datetime.now()
                             now_strf = time.strftime("%H:%M:%S",time.localtime() )
@@ -627,6 +629,7 @@ def main():
                             logger.info(f"seconds_since_midnight {seconds_since_midnight}")
                             logger.info(f"dt.datetime.now(): {dt.datetime.now()} t0: {t0}")  # test
                             annotate_and_write_frames(cam, video_writer)
+                            time.sleep(0.1)  # Small delay to reduce CPU usage
                         logger.info("after annotate and write text")
                         stop_video_recording(video_writer)
                         convert_video_to_mp4(video_path, "video0.avi", "video0.mp4")
