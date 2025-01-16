@@ -132,189 +132,6 @@ def setup_camera(resolution=(640, 480), fps=5):
     return picam2
 
 
-def annotate_and_write_frames(cam: Picamera2, video_writer):
-    """
-    Captures frames from the picamera2, annotates each frame with a timestamp
-    and writes them to a video file using the provided video writer.
-    """
-    org = (15, 60)  # x = 15 from left, y = 60 from top
-    fontFace = cv2.FONT_HERSHEY_DUPLEX
-    fontScale = 0.7
-    # color = (0, 0, 0)  # (B, G, R)
-    thickness = 1
-    lineType = cv2.LINE_AA
-
-    try:
-        while True:
-            frame = cam.capture_array()  # Capture frame using picamera2
-            frame = np.rot90(frame, 2)  # Rotate the frame by 180 degrees
-
-            # Ensure the image is in the correct format for OpenCV
-            frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
-
-            # Draw a rectangle on the image (example processing)
-            # top_left = (org[0], org[1] - text_height - 5)
-            # bottom_right = (org[0] + text_width + 10, org[1] + 5)
-            height, width, _ = frame.shape
-            top_left = (int(width * 0.25), int(height * 0.25))
-            bottom_right = (int(width * 0.75), int(height * 0.75))
-            color = (0, 255, 0)  # Green in BGR
-            # thickness = 2
-
-            # Annotate the frame with the current date and time
-            current_time = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-
-            # Draw background rectangle for the timestamp
-            cv2.rectangle(frame, top_left, bottom_right, (255, 255, 255), cv2.FILLED)
-
-            # Calculate text size and background rectangle
-            (text_width, text_height), _ = cv2.getTextSize(current_time, fontFace, fontScale, thickness)
-
-            cv2.rectangle(frame, top_left, bottom_right, color, thickness)
-
-            # Draw the timestamp text
-            cv2.putText(frame, current_time, org, fontFace, fontScale, color, thickness, lineType)
-
-            # Write the annotated frame to the video file
-            video_writer.write(frame)
-
-    except Exception as e:
-        logger.error(f"Error while capturing or writing frames: {e}")
-
-
-def capture_picture(cam: Picamera2, photo_path: str, file_name: str):
-    logger.info("Attempting to capture picture...")
-    try:
-        frame = cam.capture_array()
-        # Perform operations on the frame...
-        frame = np.copy(frame)
-        frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)  # Convert to BGR
-        frame = np.rot90(frame, 2)  # Rotate the frame by 180 degrees
-
-        logger.debug(f"Frame shape: {frame.shape}, dtype: {frame.dtype}")
-
-        # Annotate the frame with the current date and time
-        current_time = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        org = (15, 60)  # Position for text on the image
-        font_scale = 0.7
-        color = (0, 0, 0)  # Text color (B, G, R)
-        thickness = 1
-
-        # Put the timestamp on the image
-        font = cv2.FONT_HERSHEY_DUPLEX
-        text_size = cv2.getTextSize(current_time, font, font_scale, thickness)[0]
-        text_x = int(org[0])
-        text_y = int(org[1] - text_size[1])
-
-        logger.debug(f"Drawing rectangle at: ({text_x}, {text_y}) to ({text_x + text_size[0]}, {text_y + text_size[1]})")
-
-        # Draw the background rectangle for the text
-        frame = np.ascontiguousarray(frame)  # Ensure array compatibility
-        cv2.rectangle(frame, (text_x, text_y), (text_x + text_size[0], text_y + text_size[1]), (255, 255, 255), -1)
-
-        # Draw the text
-        cv2.putText(frame, current_time, org, font, font_scale, color, thickness, cv2.LINE_AA)
-
-        # Save the image
-        image_path = os.path.join(photo_path, file_name)
-        cv2.imwrite(image_path, frame)
-
-        # Sleep to stabilize the camera
-        # time.sleep(0.3)  # 0.3 seconds
-
-    except Exception as e:
-        logger.error(f"Error capturing picture: {e}")
-        return
-
-    logger.info(f"Successfully captured image picture: {file_name}")
-
-
-def start_video_recording(cam, video_path, file_name):
-    fpsw = 20  # Frames per second for video writing
-    width = cam.preview_configuration.main.size[0]  # Get the width from preview configuration
-    height = cam.preview_configuration.main.size[1]  # Get the height from preview configuration
-    frame_size = (width, height)
-    logger.info(f"Camera frame size: {frame_size}")
-
-    # Initialize the video writer (XVID codec or similar)
-    fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # XVID codec (you can change this if you prefer another codec)
-    video_writer = cv2.VideoWriter(os.path.join(video_path, file_name), fourcc, fpsw, frame_size)
-
-    if not video_writer.isOpened():
-        logger.error("VideoWriter failed during recording.")
-        return None  # Return None if the VideoWriter failed to open
-
-    logger.info("Started video recording of %s", file_name)
-    return video_writer
-
-
-def stop_video_recording(video_writer):
-    video_writer.release()
-    logger.info("Stopped video recording")
-
-
-def video_recording(cam, video_path, file_name, duration=None):
-    fpsw = 20  # number of frames written per second
-    width = int(cam.get(cv2.CAP_PROP_FRAME_WIDTH))
-    height = int(cam.get(cv2.CAP_PROP_FRAME_HEIGHT))
-    frame_size = (width, height)
-    logger.info(f"Camera frame size: {frame_size}")
-    logger.info(f"Recording duration: {duration} seconds")
-
-    fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # H.264 codec with MP4 container
-    video_writer = cv2.VideoWriter(os.path.join(video_path, file_name + '.mp4'), fourcc, fpsw, frame_size)
-
-    logger.info("Started video recording of %s", file_name)
-    start_time = time.time()
-
-    while True:
-        ret, frame = cam.read()
-        if not ret:
-            logger.error("Failed to capture frame")
-            break
-
-        # Rotate the frame by 180 degrees
-        frame = cv2.rotate(frame, cv2.ROTATE_180)
-        video_writer.write(frame)
-
-        # Log elapsed time
-        elapsed_time = time.time() - start_time
-        logger.debug(f"Elapsed time: {elapsed_time:.2f} seconds")
-
-        if duration and elapsed_time > duration:
-            logger.info("Recording duration exceeded. Stopping recording.")
-            break
-
-    video_writer.release()
-    cv2.destroyAllWindows()
-    logger.info("Stopped video recording of %s ", file_name)
-
-
-def annotate_video_duration(camera, start_time_sec):
-    time_now = dt.datetime.now()
-    seconds_since_midnight = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
-    elapsed_time = seconds_since_midnight - start_time_sec  # elapsed since last star until now)
-    camera.annotate_text = f"{dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Seconds since last start: {elapsed_time}"
-
-
-def convert_video_to_mp4(video_path, source_file, destination_file):
-    convert_video_str = "MP4Box -add {} -fps 20 -new {}".format(
-        os.path.join(video_path, source_file),
-        os.path.join(video_path, destination_file)
-    )
-    subprocess.run(convert_video_str, shell=True)
-    logger.info("Video recording %s converted ", destination_file)
-
-
-def re_encode_video(video_path, source_file, destination_file):
-    re_encode_video_str = "ffmpeg -loglevel error -i {} -vf fps=20 -vcodec libx264 -f mp4 {}".format(
-        os.path.join(video_path, source_file),
-        os.path.join(video_path, destination_file)
-    )
-    subprocess.run(re_encode_video_str, shell=True)
-    logger.info("Video %s re-encoded ", destination_file)
-
-
 def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo_path):
     for i in range(num_starts):
         logger.info(f"Start_sequence. Start of iteration {i}")
@@ -393,6 +210,190 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
         logger.info(f"End of iteration {i + 1}")
 
 
+def annotate_and_write_frames(cam: Picamera2, video_writer):
+    """
+    Captures frames from the picamera2, annotates each frame with a timestamp
+    and writes them to a video file using the provided video writer.
+    """
+    org = (15, 60)  # x = 15 from left, y = 60 from top
+    fontFace = cv2.FONT_HERSHEY_DUPLEX
+    fontScale = 0.7
+    # color = (0, 0, 0)  # (B, G, R)
+    thickness = 1
+    lineType = cv2.LINE_AA
+
+    try:
+        while True:
+            frame = cam.capture_array()  # Capture frame using picamera2
+            frame = np.rot90(frame, 2)  # Rotate the frame by 180 degrees
+
+            # Ensure the image is in the correct format for OpenCV
+            frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
+
+            # Draw a rectangle on the image (example processing)
+            # top_left = (org[0], org[1] - text_height - 5)
+            # bottom_right = (org[0] + text_width + 10, org[1] + 5)
+            height, width, _ = frame.shape
+            top_left = (int(width * 0.25), int(height * 0.25))
+            bottom_right = (int(width * 0.75), int(height * 0.75))
+            color = (0, 255, 0)  # Green in BGR
+            # thickness = 2
+
+            # Annotate the frame with the current date and time
+            current_time = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+            # Draw background rectangle for the timestamp
+            cv2.rectangle(frame, top_left, bottom_right, (255, 255, 255), cv2.FILLED)
+
+            # Calculate text size and background rectangle
+            (text_width, text_height), _ = cv2.getTextSize(current_time, fontFace, fontScale, thickness)
+
+            cv2.rectangle(frame, top_left, bottom_right, color, thickness)
+
+            # Draw the timestamp text
+            cv2.putText(frame, current_time, org, fontFace, fontScale, color, thickness, lineType)
+
+            # Write the annotated frame to the video file
+            video_writer.write(frame)
+
+    except Exception as e:
+        logger.error(f"Error while capturing or writing frames: {e}")
+
+
+def capture_picture(cam: Picamera2, photo_path: str, file_name: str):
+    logger.info("Attempting to capture picture...")
+    org = (15, 60)  # Position for text on the image
+    font_scale = 0.7
+    color = (0, 0, 0)  # Text color (B, G, R)
+    thickness = 1
+    font = cv2.FONT_HERSHEY_DUPLEX
+
+    try:
+        frame = cam.capture_array()
+        # Perform operations on the frame...
+        frame = np.copy(frame)
+        frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)  # Convert to BGR
+        frame = np.rot90(frame, 2)  # Rotate the frame by 180 degrees
+
+        logger.debug(f"Frame shape: {frame.shape}, dtype: {frame.dtype}")
+
+        # Annotate the frame with the current date and time
+        current_time = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        text_size = cv2.getTextSize(current_time, font, font_scale, thickness)[0]
+        text_x = int(org[0])
+        text_y = int(org[1] - text_size[1])
+
+        logger.debug(f"Drawing rectangle at: ({text_x}, {text_y}) to ({text_x + text_size[0]}, {text_y + text_size[1]})")
+
+        # Draw the background rectangle for the text
+        frame = np.ascontiguousarray(frame)  # Ensure array compatibility
+        cv2.rectangle(frame, (text_x, text_y), (text_x + text_size[0], text_y + text_size[1]), (255, 255, 255), -1)
+
+        # Draw the text
+        cv2.putText(frame, current_time, org, font, font_scale, color, thickness, cv2.LINE_AA)
+
+        # Save the image
+        image_path = os.path.join(photo_path, file_name)
+        cv2.imwrite(image_path, frame)
+
+        # Sleep to stabilize the camera
+        # time.sleep(0.3)  # 0.3 seconds
+
+    except Exception as e:
+        logger.error(f"Error capturing picture: {e}")
+        return
+
+    logger.info(f"Successfully captured image picture: {file_name}")
+
+
+def start_video_recording(cam, video_path, file_name):
+    fpsw = 20  # Frames per second for video writing
+    width = cam.preview_configuration.main.size[0]  # Get the width from preview configuration
+    height = cam.preview_configuration.main.size[1]  # Get the height from preview configuration
+    frame_size = (width, height)
+    logger.info(f"Camera frame size: {frame_size}")
+
+    # Initialize the video writer (XVID codec or similar)
+    fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # XVID codec (you can change this if you prefer another codec)
+    video_writer = cv2.VideoWriter(os.path.join(video_path, file_name), fourcc, fpsw, frame_size)
+
+    if not video_writer.isOpened():
+        logger.error("VideoWriter failed during recording.")
+        return None  # Return None if the VideoWriter failed to open
+
+    logger.info("Started video recording of %s", file_name)
+    return video_writer
+
+
+def stop_video_recording(video_writer):
+    video_writer.release()
+    logger.info("Stopped video recording")
+
+
+def video_recording(cam, video_path, file_name, duration=None):
+    fpsw = 20  # number of frames written per second
+    width = int(cam.get(cv2.CAP_PROP_FRAME_WIDTH))
+    height = int(cam.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    frame_size = (width, height)
+    logger.info(f"Camera frame size: {frame_size}")
+    logger.info(f"Recording duration: {duration} seconds")
+
+    fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # H.264 codec with MP4 container
+    video_writer = cv2.VideoWriter(os.path.join(video_path, file_name + '.mp4'), fourcc, fpsw, frame_size)
+
+    logger.info("Started video recording of %s", file_name)
+    start_time = time.time()
+
+    while True:
+        ret, frame = cam.read()
+        if not ret:
+            logger.error("Failed to capture frame")
+            break
+        else:
+            logger.debug("Captured frame successfully")
+
+        # Rotate the frame by 180 degrees
+        frame = cv2.rotate(frame, cv2.ROTATE_180)
+        video_writer.write(frame)
+
+        # Log elapsed time
+        elapsed_time = time.time() - start_time
+        logger.debug(f"Elapsed time: {elapsed_time:.2f} seconds")
+
+        if duration and elapsed_time > duration:
+            logger.info("Recording duration exceeded. Stopping recording.")
+            break
+
+    video_writer.release()
+    cv2.destroyAllWindows()
+    logger.info("Stopped video recording of %s ", file_name)
+
+
+def annotate_video_duration(camera, start_time_sec):
+    time_now = dt.datetime.now()
+    seconds_since_midnight = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
+    elapsed_time = seconds_since_midnight - start_time_sec  # elapsed since last star until now)
+    camera.annotate_text = f"{dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Seconds since last start: {elapsed_time}"
+
+
+def convert_video_to_mp4(video_path, source_file, destination_file):
+    convert_video_str = "MP4Box -add {} -fps 20 -new {}".format(
+        os.path.join(video_path, source_file),
+        os.path.join(video_path, destination_file)
+    )
+    subprocess.run(convert_video_str, shell=True)
+    logger.info("Video recording %s converted ", destination_file)
+
+
+def re_encode_video(video_path, source_file, destination_file):
+    re_encode_video_str = "ffmpeg -loglevel error -i {} -vf fps=20 -vcodec libx264 -f mp4 {}".format(
+        os.path.join(video_path, source_file),
+        os.path.join(video_path, destination_file)
+    )
+    subprocess.run(re_encode_video_str, shell=True)
+    logger.info("Video %s re-encoded ", destination_file)
+
+
 def cv_annotate_video(frame, start_time_sec):
     time_now = dt.datetime.now()
     seconds_since_midnight = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
@@ -408,7 +409,7 @@ def cv_annotate_video(frame, start_time_sec):
     # Get text size
     (text_width, text_height), _ = cv2.getTextSize(label, fontFace, fontScale, thickness)
     # Define background rectangle coordinates
-    top_left = (org[0], org[1] - text_height) 
+    top_left = (org[0], org[1] - text_height)
     bottom_right = (int(org[0] + text_width), int(org[1] + (text_height/2)))
 
     # Draw filled rectangle as background for the text
@@ -629,10 +630,7 @@ def main():
                         while ((dt.datetime.now() - t0).seconds < 119):
                             now = dt.datetime.now()
                             now_strf = time.strftime("%H:%M:%S",time.localtime() )
-                            logger.info(f"now {now} strftime: {now_strf} ")
                             seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
-                            logger.info(f"seconds_since_midnight {seconds_since_midnight}")
-                            logger.info(f"dt.datetime.now(): {dt.datetime.now()} t0: {t0}")  # test
                             annotate_and_write_frames(cam, video_writer)
                             time.sleep(0.1)  # Small delay to reduce CPU usage
                         logger.info("after annotate and write text")
@@ -666,7 +664,7 @@ def main():
             logger.info("listen_thread finished")
 
         time.sleep(2)
-        #re_encode_video(video_path, "video1.avi", "video1.mp4")
+        # re_encode_video(video_path, "video1.avi", "video1.mp4")
 
         # After video conversion is complete
         with open('/var/www/html/status.txt', 'w') as status_file:
