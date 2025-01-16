@@ -235,7 +235,7 @@ def start_video_recording(cam, video_path, file_name):
     logger.info(f"Camera frame size: {frame_size}")
 
     # Initialize the video writer (XVID codec or similar)
-    fourcc = cv2.VideoWriter_fourcc(*'XVID')  # XVID codec (you can change this if you prefer another codec)
+    fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # XVID codec (you can change this if you prefer another codec)
     video_writer = cv2.VideoWriter(os.path.join(video_path, file_name), fourcc, fpsw, frame_size)
 
     if not video_writer.isOpened():
@@ -259,7 +259,7 @@ def video_recording(cam, video_path, file_name, duration=None):
     logger.info(f"Camera frame size: {frame_size}")
     logger.info(f"Recording duration: {duration} seconds")
 
-    fourcc = cv2.VideoWriter_fourcc(*'XVID')  # H.264 codec with MP4 container
+    fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # H.264 codec with MP4 container
     video_writer = cv2.VideoWriter(os.path.join(video_path, file_name + '.avi'), fourcc, fpsw, frame_size)
 
     logger.info("Started video recording of %s", file_name)
@@ -484,7 +484,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time):
     logger.info(f"Camera frame size: {frame_size}")
 
     # setup video writer
-    fourcc = cv2.VideoWriter_fourcc(*'XVID')  # H.264 codec with MP4 container
+    fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # H.264 codec with MP4 container
     video_writer = cv2.VideoWriter(video_path + 'video1' + '.avi', fourcc, fpsw, frame_size)
 
     if not video_writer.isOpened():
@@ -635,8 +635,8 @@ def main():
                             time.sleep(0.1)  # Small delay to reduce CPU usage
                         logger.info("after annotate and write text")
                         stop_video_recording(video_writer)
-                        convert_video_to_mp4(video_path, "video0.avi", "video0.mp4")
-                        logger.info("Video0 recording stopped and converted to mp4")
+                        # convert_video_to_mp4(video_path, "video0.avi", "video0.mp4")
+                        # logger.info("Video0 recording stopped and converted to mp4")
                     # Exit the loop after the if condition is met
                     break
 
@@ -671,7 +671,7 @@ def main():
             status_file.write('complete')
         logger.info("Finished with finish_recording and recording converted to mp4")
 
-        #cam.release()  # Release camera resources
+        # cam.release()  # Release camera resources
 
         GPIO.cleanup()
         logger.info("After GPIO.cleanup, end of program")
