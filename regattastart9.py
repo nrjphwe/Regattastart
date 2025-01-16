@@ -30,6 +30,8 @@ from collections import deque
 from picamera2 import Picamera2
 from picamera2.encoders import JpegEncoder
 from picamera2.outputs import FileOutput
+picamera2_logger = logging.getLogger('picamera2')
+picamera2_logger.setLevel(logging.ERROR)  # Change to ERROR to suppress more logs
 
 # image recognition
 import numpy as np
