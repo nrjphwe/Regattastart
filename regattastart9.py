@@ -260,7 +260,7 @@ def video_recording(cam, video_path, file_name, duration=None):
     logger.info(f"Recording duration: {duration} seconds")
 
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # H.264 codec with MP4 container
-    video_writer = cv2.VideoWriter(os.path.join(video_path, file_name + '.avi'), fourcc, fpsw, frame_size)
+    video_writer = cv2.VideoWriter(os.path.join(video_path, file_name + '.mp4'), fourcc, fpsw, frame_size)
 
     logger.info("Started video recording of %s", file_name)
     start_time = time.time()
@@ -485,7 +485,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time):
 
     # setup video writer
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # H.264 codec with MP4 container
-    video_writer = cv2.VideoWriter(video_path + 'video1' + '.avi', fourcc, fpsw, frame_size)
+    video_writer = cv2.VideoWriter(video_path + 'video1' + '.mp4', fourcc, fpsw, frame_size)
 
     if not video_writer.isOpened():
         logger.error("VideoWriter failed to initialize.")
@@ -615,7 +615,7 @@ def main():
                     logger.info("start_time_sec=%d, t0=%s", start_time_sec, t0)
                     if num_starts == 1 or num_starts == 2:
                         logger.info("Start of video recording")
-                        video_writer = start_video_recording(cam, video_path, "video0.avi")
+                        video_writer = start_video_recording(cam, video_path, "video0.mp4")
                         logger.info("Inner loop, entering the start sequence block.")
                         start_sequence(cam, start_time_sec, num_starts, dur_between_starts, photo_path)
                         if num_starts == 2:
@@ -664,7 +664,7 @@ def main():
             logger.info("listen_thread finished")
 
         time.sleep(2)
-        re_encode_video(video_path, "video1.avi", "video1.mp4")
+        #re_encode_video(video_path, "video1.avi", "video1.mp4")
 
         # After video conversion is complete
         with open('/var/www/html/status.txt', 'w') as status_file:
