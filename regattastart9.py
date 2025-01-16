@@ -671,7 +671,7 @@ def main():
             status_file.write('complete')
         logger.info("Finished with finish_recording and recording converted to mp4")
 
-        cam.release()  # Release camera resources
+        #cam.release()  # Release camera resources
 
         GPIO.cleanup()
         logger.info("After GPIO.cleanup, end of program")
