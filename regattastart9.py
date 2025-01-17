@@ -640,8 +640,9 @@ def main():
                     logger.info("start_time_sec=%d, t0=%s", start_time_sec, t0)
                     if num_starts == 1 or num_starts == 2:
                         logger.info("Start of video recording")
-                        video_writer = start_video_recording_with_picamera2(cam, video_path, "video0.avi")
                         # video_writer = start_video_recording(cam, video_path, "video0.avi")
+                        # video_writer = start_video_recording_with_picamera2(cam, video_path, "video0.avi")
+                        start_video_recording_with_picamera2(cam, video_path, "video0.avi")
 
                         logger.info("Inner loop, entering the start sequence block.")
                         start_sequence(cam, start_time_sec, num_starts, dur_between_starts, photo_path)
