@@ -650,6 +650,7 @@ def main():
                             start_time_sec = start_time_sec + (dur_between_starts * 60)
 
                         logger.info("Wait 2 minutes then stop video0 recording")
+                        logger info(f"t0 = {t0}, dt.datetime.now(): {dt.datetime.now()}")
                         logger.info("(dt.datetime.now() - t0).seconds: %d", (dt.datetime.now() - t0).seconds)
                         while ((dt.datetime.now() - t0).seconds < 119):
                             now = dt.datetime.now()
@@ -658,7 +659,7 @@ def main():
 
                             annotate_and_write_frames_picamera2(cam)  # Update overlay text in preview
                             time.sleep(0.1)  # Small delay to reduce CPU usage
-                        logger.info("Stopping video0 recording after after annotate and write text")
+                        logger.info("Stopping video0 recording after after annotate and write frames")
                         # stop_video_recording(video_writer)
                         stop_video_recording_picamera2
                         # convert_video_to_mp4(video_path, "video0.avi", "video0.mp4")
