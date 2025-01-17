@@ -642,7 +642,7 @@ def main():
                             time.sleep(0.1)  # Small delay to reduce CPU usage
                         logger.info("Stopping video0 recording after after annotate and write frames")
                         # stop_video_recording(video_writer)
-                        stop_video_recording_picamera2
+                        stop_video_recording_picamera2(cam)
                         # convert_video_to_mp4(video_path, "video0.avi", "video0.mp4")
                         # logger.info("Video0 recording stopped and converted to mp4")
 
