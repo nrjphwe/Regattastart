@@ -308,12 +308,14 @@ def start_video_recording_with_picamera2(cam, video_path, file_name):
     logger.info(f"Recording started with Picamera2: {full_path}")
     return full_path
 
+
 def stop_video_recording_picamera2(cam):
     """
     Stops video recording using Picamera2.
     """
     cam.stop_recording()
     logger.info("Recording stopped.")
+
 
 # previous used stop
 def stop_video_recording(video_writer):
@@ -364,7 +366,8 @@ def annotate_and_write_frames_picamera2(cam):
     Annotates the preview with the current timestamp (for Picamera2 preview).
     """
     current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    cam.set_overlay(current_time)
+    overlay_text = f"Date & Time: {current_time}"
+    cam.set_overlay(overlay_text)
 
 # previous used annotation
 def annotate_video_duration(camera, start_time_sec):
