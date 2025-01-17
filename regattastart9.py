@@ -332,7 +332,14 @@ def start_video_recording_with_picamera2(cam, video_path, file_name):
     logger.info(f"Recording started with Picamera2: {full_path}")
     return full_path
 
+def stop_video_recording_picamera2(cam):
+    """
+    Stops video recording using Picamera2.
+    """
+    cam.stop_recording()
+    logger.info("Recording stopped.")
 
+# previous used stop
 def stop_video_recording(video_writer):
     video_writer.release()
     logger.info("Stopped video recording")
@@ -376,7 +383,14 @@ def video_recording(cam, video_path, file_name, duration=None):
     cv2.destroyAllWindows()
     logger.info("Stopped video recording of %s ", file_name)
 
+def annotate_and_write_frames_picamera2(cam):
+    """
+    Annotates the preview with the current timestamp (for Picamera2 preview).
+    """
+    current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    cam.set_overlay_text(current_time)
 
+# previous used annotation
 def annotate_video_duration(camera, start_time_sec):
     time_now = dt.datetime.now()
     seconds_since_midnight = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
@@ -509,7 +523,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time):
 
     start_time = time.time()  # Record the start time of the recording
     max_duration = 60 * (video_end + 5 * (num_starts - 1))
-    logger.info(f"Maximum recording duration: {max_duration} seconds")
+    logger.info(f"Video1, max recording duration: {max_duration} seconds")
 
     while not recording_stopped:
         frame = cam.capture_array()  # Capture frame as numpy array
@@ -628,27 +642,32 @@ def main():
                         logger.info("Start of video recording")
                         video_writer = start_video_recording_with_picamera2(cam, video_path, "video0.avi")
                         # video_writer = start_video_recording(cam, video_path, "video0.avi")
+
                         logger.info("Inner loop, entering the start sequence block.")
                         start_sequence(cam, start_time_sec, num_starts, dur_between_starts, photo_path)
+
                         if num_starts == 2:
                             start_time_sec = start_time_sec + (dur_between_starts * 60)
-                        logger.info("Wait 2 minutes then stop video0 recording")
-                        # t0 = dt.datetime.now()
 
+                        logger.info("Wait 2 minutes then stop video0 recording")
                         logger.info("(dt.datetime.now() - t0).seconds: %d", (dt.datetime.now() - t0).seconds)
                         while ((dt.datetime.now() - t0).seconds < 119):
                             now = dt.datetime.now()
-                            seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
-                            annotate_and_write_frames(cam, video_writer)
+                            # seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
+                            # annotate_and_write_frames(cam, video_writer)
+
+                            annotate_and_write_frames_picamera2(cam)  # Update overlay text in preview
                             time.sleep(0.1)  # Small delay to reduce CPU usage
-                        logger.info("after annotate and write text")
-                        stop_video_recording(video_writer)
+                        logger.info("Stopping video0 recording after after annotate and write text")
+                        # stop_video_recording(video_writer)
+                        stop_video_recording_picamera2
                         # convert_video_to_mp4(video_path, "video0.avi", "video0.mp4")
                         # logger.info("Video0 recording stopped and converted to mp4")
+
                     # Exit the loop after the if condition is met
                     break
 
-        time.sleep(2)  # Introduce a delay of 2 seconds
+                time.sleep(2)  # Introduce a delay of 2 seconds
 
     except json.JSONDecodeError as e:
         logger.error("Failed to parse JSON: %", str(e))
