@@ -28,7 +28,7 @@ from collections import deque
 
 # camera
 from picamera2.encoders import H264Encoder
-from picamera2 import Picamera2
+from picamera2 import Picamera2, MappedArray
 from picamera2.encoders import JpegEncoder
 from picamera2.outputs import FileOutput
 picamera2_logger = logging.getLogger('picamera2')
@@ -299,14 +299,36 @@ def start_video_recording(cam, video_path, file_name):
     logger.info(f"start_video_recording file: {file_name}")
     return video_writer
 
+def apply_timestamp(request):
+    timestamp = time.strftime("%Y-%m-%d %X")  # Current timestamp
+    colour = (0, 255, 0)  # Green text
+    origin = (10, 30)  # Position on frame
+    font = cv2.FONT_HERSHEY_SIMPLEX
+    scale = 1
+    thickness = 2
+
+    # Overlay the timestamp on the frame
+    with MappedArray(request, "main") as m:
+        cv2.putText(m.array, timestamp, origin, font, scale, colour, thickness)
 
 # Start Video Recording (Picamera2)
-def start_video_recording_with_picamera2(cam, video_path, file_name):
-    full_path = os.path.join(video_path, file_name)
-    encoder = H264Encoder(bitrate=2000000)  # Adjust bitrate
-    cam.start_recording(encoder, full_path)
-    logger.info(f"Recording started with Picamera2: {full_path}")
-    return full_path
+def start_video_recording_with_picamera2(cam, video_path, file_name, bitrate= 2000000):
+    """
+    Start video recording using H264Encoder.
+    """
+    # Configure the H264 encoder with a custom bitrate
+    encoder = H264Encoder(bitrate=bitrate)
+
+    output_file = os.path.join(video_path, file_name)
+
+    # Configure the pre-callback for adding the timestamp
+    cam.pre_callback = apply_timestamp
+
+     # Start recording
+    cam.start_recording(encoder, output_file)
+    logger.info(f"Started recording video: {output_file} with bitrate {bitrate}")
+
+    return cam
 
 
 def stop_video_recording_picamera2(cam):
@@ -318,7 +340,7 @@ def stop_video_recording_picamera2(cam):
 
 
 # previous used stop
-def stop_video_recording(video_writer):
+def stop_video_recording_picmera2(video_writer):
     video_writer.release()
     logger.info("Stopped video recording")
 
@@ -569,7 +591,7 @@ def main():
     stop_event = threading.Event()
     global listening  # Declare listening as global
     logger = setup_logging()  # Initialize the logger
-    cam = setup_camera()
+    cam = setup_camera(resolution=(640, 480), fps=30)
     if cam is None:
         logger.error("Camera setup failed, exiting.")
         exit()
@@ -620,7 +642,7 @@ def main():
                         logger.info("Start of video recording")
                         # video_writer = start_video_recording(cam, video_path, "video0.avi")
                         # video_writer = start_video_recording_with_picamera2(cam, video_path, "video0.avi")
-                        start_video_recording_with_picamera2(cam, video_path, "video0.avi")
+                        start_video_recording_with_picamera2(cam, video_path, "video0.avi", bitrate=2000000)
 
                         logger.info("Inner loop, entering the start sequence block.")
                         start_sequence(cam, start_time_sec, num_starts, dur_between_starts, photo_path)
