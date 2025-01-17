@@ -636,7 +636,7 @@ def main():
                 seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
                 if seconds_since_midnight > t5min_warning - 2:
                     logger.info("Start of outer loop iteration. seconds_since_midnight=%d", seconds_since_midnight)
-                    logger.info("start_time_sec=%d, t0=%s", start_time_sec, t0)
+                    logger.info("start_time_sec=%d", start_time_sec)
                     if num_starts == 1 or num_starts == 2:
                         logger.info("Start of video recording")
                         # video_writer = start_video_recording(cam, video_path, "video0.avi")
