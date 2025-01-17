@@ -158,30 +158,6 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
         # seconds_since_midnight = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
         seconds_now = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
 
-        '''
-        if seconds_since_midnight >= start_time_sec:
-            break  # Exit the loop if the condition is met
-
-        for seconds, action, log_message in time_intervals:
-            # camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            time_now = dt.datetime.now()
-            seconds_now = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
-
-            # Check if the event should be triggered based on the current time
-            if seconds_now == seconds:
-                # Check if the event has already been triggered for this time interval
-                if (log_message) not in last_triggered_events:
-                    logger.info(f"Start_sequence, seconds: {seconds}, log_message= {log_message}")
-                    logger.info(f"Start_sequence, Triggering event at seconds_now: {seconds_now}")
-                    if action:
-                        action()
-                        picture_name = f"{i + 1}a_start_{log_message[:5]}.jpg"
-                        capture_picture(camera, photo_path, picture_name)
-                        logger.info(f"Start_sequence, seconds={seconds}  log_message: {log_message}")
-                    # Record that the event has been triggered for this time interval
-                    last_triggered_events[(seconds, log_message)] = True
-        logger.info(f"Start_sequence, End of iteration: {i}")
-        '''
         while seconds_now < iteration_start_time:
             for event_time, action, log_message in time_intervals:
                 if seconds_now >= event_time and (event_time, log_message) not in last_triggered_events:
@@ -301,7 +277,7 @@ def capture_picture(cam: Picamera2, photo_path: str, file_name: str):
         logger.error(f"Error capturing picture: {e}")
         return
 
-    logger.info(f"Successfully captured image picture: {file_name}")
+    logger.info(f"Successfully captured image: {file_name}")
 
 # Start Video Recording (OpenCV)
 def start_video_recording(cam, video_path, file_name):
