@@ -631,11 +631,11 @@ def main():
             # A loop that waits until close to the 5-minute mark, a loop
             # that continuously checks the condition without blocking
             # the execution completely
-            t0 = dt.datetime.now()
             while True:
                 now = dt.datetime.now()
                 seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
                 if seconds_since_midnight > t5min_warning - 2:
+                    t0 = dt.datetime.now()
                     logger.info("Start of outer loop iteration. seconds_since_midnight=%d", seconds_since_midnight)
                     logger.info("start_time_sec=%d, t0=%s", start_time_sec, t0)
                     if num_starts == 1 or num_starts == 2:
