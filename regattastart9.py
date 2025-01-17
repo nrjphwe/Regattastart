@@ -388,7 +388,7 @@ def annotate_and_write_frames_picamera2(cam):
     Annotates the preview with the current timestamp (for Picamera2 preview).
     """
     current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    cam.set_overlay_text(current_time)
+    cam.set_overlay(current_time)
 
 # previous used annotation
 def annotate_video_duration(camera, start_time_sec):
