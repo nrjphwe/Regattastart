@@ -27,6 +27,7 @@ import tempfile  # to check the php temp file
 from collections import deque
 
 # camera
+from picamera2.encoders import H264Encoder
 from picamera2 import Picamera2
 from picamera2.encoders import JpegEncoder
 from picamera2.outputs import FileOutput
@@ -302,7 +303,7 @@ def capture_picture(cam: Picamera2, photo_path: str, file_name: str):
 
     logger.info(f"Successfully captured image picture: {file_name}")
 
-
+# Start Video Recording (OpenCV)
 def start_video_recording(cam, video_path, file_name):
     fpsw = 20  # Frames per second for video writing
     width = int(cam.preview_configuration.main.size[0])  # Get the width from preview configuration
@@ -316,12 +317,19 @@ def start_video_recording(cam, video_path, file_name):
 
     if not video_writer.isOpened():
         logger.error("start_video_recording: VideoWriter failed.")
-        #   # Return None if the VideoWriter failed to open
-        exit()
+        return None  #  if the VideoWriter failed to open
+        # exit()
 
     logger.info(f"start_video_recording file: {file_name}")
     return video_writer
 
+# Start Video Recording (Picamera2)
+def start_video_recording_with_picamera2(cam, video_path, file_name):
+    full_path = os.path.join(video_path, file_name)
+    encoder = H264Encoder(bitrate=2000000)  # Adjust bitrate
+    cam.start_recording(encoder, full_path)
+    logger.info(f"Recording started with Picamera2: {full_path}")
+    return full_path
 
 def stop_video_recording(video_writer):
     video_writer.release()
@@ -616,7 +624,8 @@ def main():
                     logger.info("start_time_sec=%d, t0=%s", start_time_sec, t0)
                     if num_starts == 1 or num_starts == 2:
                         logger.info("Start of video recording")
-                        video_writer = start_video_recording(cam, video_path, "video0.avi")
+                        video_writer = start_video_recording_with_picamera2(cam, video_path, "video0.avi")
+                        #video_writer = start_video_recording(cam, video_path, "video0.avi")
                         logger.info("Inner loop, entering the start sequence block.")
                         start_sequence(cam, start_time_sec, num_starts, dur_between_starts, photo_path)
                         if num_starts == 2:
