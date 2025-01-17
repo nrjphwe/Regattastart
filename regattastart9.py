@@ -123,12 +123,9 @@ def setup_camera(resolution=(640, 480), fps=5):
         controls={"FrameRate": fps}
     )
     picam2.configure(preview_config)
-
     picam2.start()  # Start the camera
 
-    # actual_resolution = preview_config.main.size
     logger.info(f"setup_camera with resolution {resolution} and {fps} FPS.")
-
     return picam2
 
 
@@ -261,7 +258,7 @@ def annotate_and_write_frames(cam: Picamera2, video_writer):
 
 
 def capture_picture(cam: Picamera2, photo_path: str, file_name: str):
-    logger.info("Attempting to capture picture...")
+    logger.info("capture_picture: Attempting to capture picture...")
     org = (15, 60)  # Position for text on the image
     font_scale = 0.7
     color = (0, 0, 0)  # Text color (B, G, R)
@@ -275,7 +272,7 @@ def capture_picture(cam: Picamera2, photo_path: str, file_name: str):
         frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)  # Convert to BGR
         frame = np.rot90(frame, 2)  # Rotate the frame by 180 degrees
 
-        logger.debug(f"Frame shape: {frame.shape}, dtype: {frame.dtype}")
+        logger.debug(f"capture_picture: Frame shape: {frame.shape}, dtype: {frame.dtype}")
 
         # Annotate the frame with the current date and time
         current_time = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
@@ -283,7 +280,7 @@ def capture_picture(cam: Picamera2, photo_path: str, file_name: str):
         text_x = int(org[0])
         text_y = int(org[1] - text_size[1])
 
-        logger.debug(f"Drawing rectangle at: ({text_x}, {text_y}) to ({text_x + text_size[0]}, {text_y + text_size[1]})")
+        logger.debug(f"capture_picture: Drawing rectangle at: ({text_x}, {text_y}) to ({text_x + text_size[0]}, {text_y + text_size[1]})")
 
         # Draw the background rectangle for the text
         frame = np.ascontiguousarray(frame)  # Ensure array compatibility
@@ -314,14 +311,15 @@ def start_video_recording(cam, video_path, file_name):
     logger.info(f"start_video_recording, camera frame size: {frame_size}")
 
     # Initialize the video writer (XVID codec or similar)
-    fourcc = cv2.VideoWriter_fourcc(*'XVID')  # XVID codec (you can change this if you prefer another codec)
+    fourcc = cv2.VideoWriter_fourcc(*'XVID')  # Use 'XVID' for .avi, or 'mp4v' for .mp4
     video_writer = cv2.VideoWriter(os.path.join(video_path, file_name), fourcc, fpsw, frame_size)
 
     if not video_writer.isOpened():
         logger.error("start_video_recording: VideoWriter failed.")
-        return None  # Return None if the VideoWriter failed to open
+        #   # Return None if the VideoWriter failed to open
+        exit()
 
-    logger.info("Started video recording of %s", file_name)
+    logger.info(f"start_video_recording file: {file_name}")
     return video_writer
 
 
