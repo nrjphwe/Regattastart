@@ -323,6 +323,7 @@ def start_video_recording(cam, video_path, file_name):
     logger.info(f"start_video_recording file: {file_name}")
     return video_writer
 
+
 # Start Video Recording (Picamera2)
 def start_video_recording_with_picamera2(cam, video_path, file_name):
     full_path = os.path.join(video_path, file_name)
@@ -330,6 +331,7 @@ def start_video_recording_with_picamera2(cam, video_path, file_name):
     cam.start_recording(encoder, full_path)
     logger.info(f"Recording started with Picamera2: {full_path}")
     return full_path
+
 
 def stop_video_recording(video_writer):
     video_writer.release()
@@ -625,7 +627,7 @@ def main():
                     if num_starts == 1 or num_starts == 2:
                         logger.info("Start of video recording")
                         video_writer = start_video_recording_with_picamera2(cam, video_path, "video0.avi")
-                        #video_writer = start_video_recording(cam, video_path, "video0.avi")
+                        # video_writer = start_video_recording(cam, video_path, "video0.avi")
                         logger.info("Inner loop, entering the start sequence block.")
                         start_sequence(cam, start_time_sec, num_starts, dur_between_starts, photo_path)
                         if num_starts == 2:
