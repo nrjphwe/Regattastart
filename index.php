@@ -8,16 +8,15 @@
     session_start();
     ini_set('display_errors', 1); 
     error_reporting(E_ALL);
-    
-    if (isset($_SESSION["form_data"])) {
-        $form_data = $_SESSION["form_data"];
-        echo '<pre>';
-        print_r($form_data);
-        echo '</pre>';
-    } else {
-        echo "No form data found.";
-    }
-
+    //
+    //if (isset($_SESSION["form_data"])) {
+    //    $form_data = $_SESSION["form_data"];
+    //    echo '<pre>';
+    //    print_r($form_data);
+    //    echo '</pre>';
+    //} else {
+    //    echo "No form data found.";
+    //}
 
     include_once 'functions.php';
     // Check if video0.mp4 or video1.mp4 exists and their sizes
