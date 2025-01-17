@@ -127,7 +127,7 @@ def setup_camera(resolution=(640, 480), fps=5):
     picam2.start()  # Start the camera
 
     # actual_resolution = preview_config.main.size
-    logger.info(f"Camera initialized with resolution {resolution} and {fps} FPS.")
+    logger.info(f"setup_camera with resolution {resolution} and {fps} FPS.")
 
     return picam2
 
@@ -308,17 +308,17 @@ def capture_picture(cam: Picamera2, photo_path: str, file_name: str):
 
 def start_video_recording(cam, video_path, file_name):
     fpsw = 20  # Frames per second for video writing
-    width = cam.preview_configuration.main.size[0]  # Get the width from preview configuration
-    height = cam.preview_configuration.main.size[1]  # Get the height from preview configuration
+    width = int(cam.preview_configuration.main.size[0])  # Get the width from preview configuration
+    height = int(cam.preview_configuration.main.size[1]) # Get the height from preview configuration
     frame_size = (width, height)
-    logger.info(f"Camera frame size: {frame_size}")
+    logger.info(f"start_video_recording, camera frame size: {frame_size}")
 
     # Initialize the video writer (XVID codec or similar)
-    fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # XVID codec (you can change this if you prefer another codec)
+    fourcc = cv2.VideoWriter_fourcc(*'XVID')  # XVID codec (you can change this if you prefer another codec)
     video_writer = cv2.VideoWriter(os.path.join(video_path, file_name), fourcc, fpsw, frame_size)
 
     if not video_writer.isOpened():
-        logger.error("VideoWriter failed during recording.")
+        logger.error("start_video_recording: VideoWriter failed.")
         return None  # Return None if the VideoWriter failed to open
 
     logger.info("Started video recording of %s", file_name)
@@ -618,7 +618,7 @@ def main():
                     logger.info("start_time_sec=%d, t0=%s", start_time_sec, t0)
                     if num_starts == 1 or num_starts == 2:
                         logger.info("Start of video recording")
-                        video_writer = start_video_recording(cam, video_path, "video0.mp4")
+                        video_writer = start_video_recording(cam, video_path, "video0.avi")
                         logger.info("Inner loop, entering the start sequence block.")
                         start_sequence(cam, start_time_sec, num_starts, dur_between_starts, photo_path)
                         if num_starts == 2:
@@ -629,7 +629,6 @@ def main():
                         logger.info("(dt.datetime.now() - t0).seconds: %d", (dt.datetime.now() - t0).seconds)
                         while ((dt.datetime.now() - t0).seconds < 119):
                             now = dt.datetime.now()
-                            now_strf = time.strftime("%H:%M:%S",time.localtime() )
                             seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
                             annotate_and_write_frames(cam, video_writer)
                             time.sleep(0.1)  # Small delay to reduce CPU usage
