@@ -635,7 +635,6 @@ def main():
                 now = dt.datetime.now()
                 seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
                 if seconds_since_midnight > t5min_warning - 2:
-                    t0 = dt.datetime.now()
                     logger.info("Start of outer loop iteration. seconds_since_midnight=%d", seconds_since_midnight)
                     logger.info("start_time_sec=%d, t0=%s", start_time_sec, t0)
                     if num_starts == 1 or num_starts == 2:
@@ -651,6 +650,7 @@ def main():
                             start_time_sec = start_time_sec + (dur_between_starts * 60)
 
                         logger.info("Wait 2 minutes then stop video0 recording")
+                        t0 = dt.datetime.now()
                         logger.info(f"t0 = {t0}, dt.datetime.now(): {dt.datetime.now()}")
                         logger.info("(dt.datetime.now() - t0).seconds: %d", (dt.datetime.now() - t0).seconds)
                         while ((dt.datetime.now() - t0).seconds < 119):
