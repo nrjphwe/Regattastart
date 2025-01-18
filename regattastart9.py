@@ -154,6 +154,7 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
                     logger.info(f"Start_sequence: {log_message} at {event_time}")
                     if action:
                         action()
+                        logger.debug(f"action = {action}")
                         picture_name = f"{i + 1}a_start_{log_message[:5]}.jpg"
                         capture_picture(camera, photo_path, picture_name)
                         # Mark the event as triggered
@@ -645,6 +646,7 @@ def main():
                         logger.info(f"t0 = {t0}, dt.datetime.now(): {dt.datetime.now()}")
                         logger.info("(dt.datetime.now() - t0).seconds: %d", (dt.datetime.now() - t0).seconds)
                         while ((dt.datetime.now() - t0).seconds < 119):
+                            logger.debug("in while loop, 649")
                             now = dt.datetime.now()
                             logger.info(f"dt.datetime.now(): {dt.datetime.now()}")
                             # seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
