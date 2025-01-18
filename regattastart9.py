@@ -133,13 +133,9 @@ def setup_camera(resolution=(640, 480), fps=5):
 def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo_path):
     for i in range(1, num_starts):
         logger.info(f"Start_sequence. Start of iteration {i}")
-        # Adjust the start_time_sec for the second iteration
-        # if i == 1:
-        #    start_time_sec += dur_between_starts * 60  # Add 5 or 10 minutes for the second iteration
-        #    logger.info(f"Start_sequence, Next start_time_sec: {start_time_sec}")
 
-        iteration_start_time = start_time_sec + i * dur_between_starts * 60
-        logger.info(f"Start_sequence. Iteration {i + 1}, iteration_start time: {iteration_start_time}")
+        iteration_start_time = start_time_sec + (i-1) * dur_between_starts * 60
+        logger.info(f"Start_sequence. Iteration {i}, iteration_start time: {iteration_start_time}")
 
         # Define time intervals for each relay trigger
         time_intervals = [
