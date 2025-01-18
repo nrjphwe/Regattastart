@@ -579,10 +579,8 @@ def main():
                     logger.info("Start of outer loop iteration. seconds_since_midnight=%d", seconds_since_midnight)
                     logger.info("start_time_sec=%d", start_time_sec)
                     if num_starts == 1 or num_starts == 2:
-                        logger.info("Start of video0 recording with video_writer")
-                        # video_writer = start_video_recording(cam, video_path, "video0.avi")
+                        logger.info("Start of video0 recording")
                         start_video_recording_new(cam, video_path, "video0.avi", bitrate=2000000)
-
                         logger.info("Inner loop, entering the start sequence block.")
                         start_sequence(cam, start_time_sec, num_starts, dur_between_starts, photo_path)
 
@@ -591,20 +589,17 @@ def main():
 
                         logger.info("Wait 2 minutes then stop video0 recording")
                         t0 = dt.datetime.now()
-                        logger.info(f"t0 = {t0}, dt.datetime.now(): {dt.datetime.now()}")
-                        logger.info("(dt.datetime.now() - t0).seconds: %d", (dt.datetime.now() - t0).seconds)
+                        logger.debug(f"t0 = {t0}, dt.datetime.now(): {dt.datetime.now()}")
+                        logger.debug("(dt.datetime.now() - t0).seconds: %d", (dt.datetime.now() - t0).seconds)
                         while ((dt.datetime.now() - t0).seconds < 119):
                             logger.debug("in while loop")
                             now = dt.datetime.now()
-                            logger.info(f"(dt.datetime.now() - t0).seconds: {(dt.datetime.now() - t0).seconds}")
-                            # seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
-                            # annotate_and_write_frames_picamera2(cam)  # Update overlay text in preview
+                            logger.debug(f"(dt.datetime.now() - t0).seconds: {(dt.datetime.now() - t0).seconds}")
                             time.sleep(0.9)  # Small delay to reduce CPU usage
-                        logger.info("Stopping video0 recording after after annotate and write frames")
                         stop_video_recording(cam)
-                        # stop_video_recording_picamera2(cam)
-                        # convert_video_to_mp4(video_path, "video0.avi", "video0.mp4")
-                        # logger.info("Video0 recording stopped and converted to mp4")
+                        logger.debug("Stopping video0 recording after after annotate and write frames")
+                        convert_video_to_mp4(video_path, "video0.avi", "video0.mp4")
+                        logger.debug("Video0 recording stopped and converted to mp4")
 
                     # Exit the loop after the if condition is met
                     break
