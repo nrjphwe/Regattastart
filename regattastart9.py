@@ -293,7 +293,7 @@ def stop_video_recording(cam):
 
 
 def video_recording(cam, video_path, file_name, duration=None):
-    fpsw = 20  # number of frames written per second
+    fps = 5  # number of frames written per second
     width = int(cam.get(cv2.CAP_PROP_FRAME_WIDTH))
     height = int(cam.get(cv2.CAP_PROP_FRAME_HEIGHT))
     frame_size = (width, height)
@@ -301,7 +301,7 @@ def video_recording(cam, video_path, file_name, duration=None):
     logger.info(f"Recording duration: {duration} seconds")
 
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # H.264 codec with MP4 container
-    video_writer = cv2.VideoWriter(os.path.join(video_path, file_name + '.mp4'), fourcc, fpsw, frame_size)
+    video_writer = cv2.VideoWriter(os.path.join(video_path, file_name + '.mp4'), fourcc, fps, frame_size)
 
     logger.info("Started video recording of %s", file_name)
     start_time = time.time()
@@ -531,7 +531,7 @@ def main():
     stop_event = threading.Event()
     global listening  # Declare listening as global
     logger = setup_logging()  # Initialize the logger
-    cam = setup_picam2(resolution=(640, 480), fps=20)
+    cam = setup_picam2(resolution=(640, 480), fps=5)
     if cam is None:
         logger.error("Camera setup failed, exiting.")
         exit()
