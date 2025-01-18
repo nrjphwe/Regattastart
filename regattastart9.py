@@ -105,6 +105,63 @@ def remove_video_files(directory, pattern):
             os.remove(file_path)
 
 
+def setup_picam2(resolution=(640, 480), fps=5):
+    """
+    Configures the camera using picamera2.
+    Sets the desired resolution and FPS for video recordings.
+    """
+    picam2 = Picamera2()
+
+    # Configure preview settings
+    preview_config = picam2.create_preview_configuration(
+        main={"size": resolution, "format": "RGB888"},
+        controls={"FrameRate": fps}
+    )
+    picam2.configure(preview_config)
+    picam2.start()  # Start the camera
+
+    logger.info(f"setup_camera with resolution {resolution} and {fps} FPS.")
+    return picam2
+
+
+def annotate_frame(frame, text):
+    position = (15, 60)  # x = 15 from left, y = 60 from top
+    fontFace = cv2.FONT_HERSHEY_DUPLEX
+    fontScale = 0.7
+    # color = (0, 0, 0)  # (B, G, R)
+    thickness = 1
+    lineType = cv2.LINE_AA
+
+    # Draw a rectangle on the image (example processing)
+    # top_left = (org[0], org[1] - text_height - 5)
+    # bottom_right = (org[0] + text_width + 10, org[1] + 5)
+    height, width, _ = frame.shape
+    top_left = (int(width * 0.25), int(height * 0.25))
+    bottom_right = (int(width * 0.75), int(height * 0.75))
+    color = (0, 255, 0)  # Green in BGR
+
+    # Draw background rectangle for the timestamp
+    cv2.rectangle(frame, top_left, bottom_right, (255, 255, 255), cv2.FILLED)
+
+    # Calculate text size and background rectangle
+    (text_width, text_height), _ = cv2.getTextSize(text, fontFace, fontScale, thickness)
+
+    cv2.rectangle(frame, top_left, bottom_right, color, thickness)
+
+    # Draw the timestamp text
+    cv2.putText(frame, text, position, fontFace, fontScale, color, thickness, lineType)
+
+
+def capture_picture(picam2, photo_path, file_name):
+    current_time = datetime.now()
+    with MappedArray(picam2, "main") as m:
+        now = current_time.strftime("%Y-%m-%d %H:%M:%S")
+        annotate_frame(m.array, now)
+        cv2.imwrite(os.path.join(photo_path, file_name), m.array)
+
+    logger.info("Capture picture = %s", file_name)
+
+
 def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo_path):
     for i in range(num_starts):
         logger.info(f"Start_sequence. Start of iteration {i+1}")
@@ -137,7 +194,7 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
                         action()
                         logger.debug(f"log_message[:5] = {log_message[:5]}")
                         picture_name = f"{i + 1}a_start_{log_message[:5]}.jpg"
-                        capture_picture_with_picam2(camera, photo_path, picture_name)
+                        capture_picture(camera, photo_path, picture_name)
                         # Mark the event as triggered
                     last_triggered_events[(event_time, log_message)] = True
                     break  # Break out of the loop to avoid reprocessing this event
@@ -154,190 +211,6 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
             time_now = dt.datetime.now()
             seconds_now = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
         logger.info(f"End of iteration {i + 1}")
-
-
-def setup_picam2(resolution=(640, 480), fps=5):
-    """
-    Configures the camera using picamera2.
-    Sets the desired resolution and FPS for video recordings.
-    """
-    picam2 = Picamera2()
-
-    # Configure preview settings
-    preview_config = picam2.create_preview_configuration(
-        main={"size": resolution, "format": "RGB888"},
-        controls={"FrameRate": fps}
-    )
-    picam2.configure(preview_config)
-    picam2.start()  # Start the camera
-
-    logger.info(f"setup_camera with resolution {resolution} and {fps} FPS.")
-    return picam2
-
-
-def setup_camera(resolution=(640, 480), fps=20):
-    """
-    Opens the camera and sets the desired properties for video_recordings
-    """
-    # cam = cv2.VideoCapture("/home/pi/Regattastart/video3.mp4")
-    cam = cv2.VideoCapture(0)  # Use 0 for the default camera
-    cam.set(cv2.CAP_PROP_FPS, fps)
-
-    # Select a supported resolution from the listed ones
-    resolution = (640, 480)  # Choose a resolution from the supported list
-    cam.set(cv2.CAP_PROP_FRAME_WIDTH, resolution[0])
-    cam.set(cv2.CAP_PROP_FRAME_HEIGHT, resolution[1])
-
-    # Verify the resolution was set correctly
-    actual_width = cam.get(cv2.CAP_PROP_FRAME_WIDTH)
-    actual_height = cam.get(cv2.CAP_PROP_FRAME_HEIGHT)
-    if (actual_width, actual_height) != resolution:
-        logger.error(f"Failed to set resolution to {resolution}, using {actual_width}x{actual_height} instead")
-
-    if not cam.isOpened():
-        logger.error("Cannot open camera")
-        return None
-
-    logger.info("Camera initialized successfully.")
-    return cam
-
-
-def annotate_and_write_frames(cam, video_writer):
-    """
-    Captures frames from the picamera2, annotates each frame with a timestamp
-    and writes them to a video file using the provided video writer.
-    """
-    org = (15, 60)  # x = 15 from left, y = 60 from top
-    fontFace = cv2.FONT_HERSHEY_DUPLEX
-    fontScale = 0.7
-    # color = (0, 0, 0)  # (B, G, R)
-    thickness = 1
-    lineType = cv2.LINE_AA
-
-    try:
-        while True:
-            frame = cam.capture_array()  # Capture frame using picamera2
-            frame = np.rot90(frame, 2)  # Rotate the frame by 180 degrees
-
-            # Ensure the image is in the correct format for OpenCV
-            frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
-
-            # Draw a rectangle on the image (example processing)
-            # top_left = (org[0], org[1] - text_height - 5)
-            # bottom_right = (org[0] + text_width + 10, org[1] + 5)
-            height, width, _ = frame.shape
-            top_left = (int(width * 0.25), int(height * 0.25))
-            bottom_right = (int(width * 0.75), int(height * 0.75))
-            color = (0, 255, 0)  # Green in BGR
-            # thickness = 2
-
-            # Annotate the frame with the current date and time
-            current_time = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-
-            # Draw background rectangle for the timestamp
-            cv2.rectangle(frame, top_left, bottom_right, (255, 255, 255), cv2.FILLED)
-
-            # Calculate text size and background rectangle
-            (text_width, text_height), _ = cv2.getTextSize(current_time, fontFace, fontScale, thickness)
-
-            cv2.rectangle(frame, top_left, bottom_right, color, thickness)
-
-            # Draw the timestamp text
-            cv2.putText(frame, current_time, org, fontFace, fontScale, color, thickness, lineType)
-
-            # Write the annotated frame to the video file
-            video_writer.write(frame)
-
-    except Exception as e:
-        logger.error(f"Error while capturing or writing frames: {e}")
-
-
-def capture_picture_with_picam2(picam2, photo_path: str, file_name: str):
-    logger.info("Attempting to capture picture with picam2...")
-    try:
-        frame = cam.capture_array()
-        logger.debug(f"Frame shape: {frame.shape}, dtype: {frame.dtype}")
-
-        # Ensure frame compatibility with OpenCV
-        frame = np.ascontiguousarray(frame)
-
-        # Convert RGB to BGR (OpenCV uses BGR format)
-        frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
-        frame = np.rot90(frame, 2)  # Rotate the frame by 180 degrees
-
-        # Annotate the frame with the current date and time
-        current_time = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        org = (15, 60)  # Position for text on the image
-        font_scale = 0.7
-        color = (0, 0, 0)  # Text color (B, G, R)
-        thickness = 1
-        font = cv2.FONT_HERSHEY_DUPLEX
-
-        # Calculate text size and draw background rectangle
-        text_size = cv2.getTextSize(current_time, font, font_scale, thickness)[0]
-        text_x = org[0]
-        text_y = org[1] - text_size[1]
-        logger.debug(f"Drawing rectangle at: ({text_x}, {text_y}) to ({text_x + text_size[0]}, {text_y + text_size[1]})")
-        cv2.rectangle(frame, (text_x, text_y), (text_x + text_size[0], text_y + text_size[1]), (255, 255, 255), -1)
-
-        # Draw the text
-        cv2.putText(frame, current_time, org, font, font_scale, color, thickness, cv2.LINE_AA)
-
-        # Save the image
-        image_path = os.path.join(photo_path, file_name)
-        cv2.imwrite(image_path, frame)
-
-    except Exception as e:
-        logger.error(f"Error capturing picture: {e}")
-        return
-
-    logger.info(f"Successfully captured image: {file_name}")
-
-
-def capture_picture(cam, photo_path, file_name):
-    org = (15, 60)  # x = 15 from left, y = 60 from top) 
-    fontFace = cv2.FONT_HERSHEY_DUPLEX
-    fontScale = 0.7
-    color = (0, 0, 0)  # (B, G, R)
-    thickness = 1
-    lineType = cv2.LINE_AA
-    # Flush the camera buffer
-    for _ in range(8):
-        ret, frame = cam.read()
-        if not ret:
-            logger.error("Failed to capture image")
-            return
-
-    # Adding a small delay to stabilize the camera
-    cv2.waitKey(100)  # 100 milliseconds delay
-
-    # Capture the frame to be saved
-    ret, frame = cam.read()
-    if not ret:
-        logger.error("Failed to capture image")
-        return
-
-    # Rotate the frame by 180 degrees
-    frame = cv2.rotate(frame, cv2.ROTATE_180)
-    # Annotate the frame with the current date and time
-    current_time = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-
-    (text_width, text_height), _ = cv2.getTextSize(current_time, fontFace,
-                                                   fontScale, thickness)
-    # Define background rectangle coordinates
-    top_left = (org[0], org[1] - text_height)
-    bottom_right = (int(org[0] + text_width), int(org[1] + (text_height/2)))
-
-    # Draw filled rectangle as background for the text
-    cv2.rectangle(frame, top_left, bottom_right, (255, 255, 255), cv2.FILLED)
-
-    # Draw text on top of the background
-    cv2.putText(frame, current_time, org, fontFace, fontScale, color,
-                thickness, lineType)
-
-    cv2.imwrite(os.path.join(photo_path, file_name), frame)
-    time.sleep(0.3)  # sleep 0.3 sec
-    logger.info("Capture picture = %s", file_name)
 
 
 # Start Video Recording (OpenCV)
@@ -408,16 +281,6 @@ def start_video_recording_with_picamera2(cam, video_path, file_name, bitrate= 20
     logger.info(f"Started recording video: {output_file} with bitrate {bitrate}")
 
     return cam
-
-
-def annotate_and_write_frames_picamera2(cam):
-    """
-    Annotates the preview with the current timestamp (for Picamera2 preview).
-    """
-    current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    overlay_text = f"Date & Time: {current_time}"
-    cam.set_overlay(overlay_text)
-
 
 def stop_video_recording_picamera2(cam):
     """
@@ -664,15 +527,10 @@ def main():
     stop_event = threading.Event()
     global listening  # Declare listening as global
     logger = setup_logging()  # Initialize the logger
-    cam = setup_camera(resolution=(640, 480), fps=20)
+    cam = setup_picam2(resolution=(640, 480), fps=20)
     if cam is None:
         logger.error("Camera setup failed, exiting.")
         exit()
-    picam2 = setup_picam2(resolution=(640, 480), fps=20)
-    if picam2 is None:
-        logger.error("Picam2 setup failed, exiting.")
-        exit()
-
     listening = True  # Initialize the global listening flag
     listen_thread = None  # Initialize listen_thread variable
 
