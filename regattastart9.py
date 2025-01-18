@@ -1,5 +1,10 @@
 #!/home/pi/yolov5_env/bin/python
 # after git pull, do: sudo cp regattastart9.py /usr/lib/cgi-bin/
+# Manually add the virtual environment's site-packages directory to sys.path
+venv_path = "/home/pi/yolov5_env/lib/python3.11/site-packages"
+if venv_path not in sys.path:
+    sys.path.insert(0, venv_path)
+
 import cv2
 # Use a deque to store the most recent frames in memory
 from collections import deque
@@ -25,11 +30,6 @@ import tempfile  # to check the php temp file
 
 picamera2_logger = logging.getLogger('picamera2')
 picamera2_logger.setLevel(logging.ERROR)  # Change to ERROR to suppress more logs
-
-# Manually add the virtual environment's site-packages directory to sys.path
-venv_path = "/home/pi/yolov5_env/lib/python3.11/site-packages"
-if venv_path not in sys.path:
-    sys.path.insert(0, venv_path)
 
 # parameter data
 signal_dur = 0.9  # 0.9 sec
