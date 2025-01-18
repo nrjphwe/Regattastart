@@ -464,6 +464,7 @@ def finish_recording(picam2, video_path, num_starts, video_end, start_time):
     logger.info(f"Video1, max recording duration: {max_duration} seconds")
 
     while not recording_stopped:
+        logger.info(f"recording_stopped= {recording_stopped}")
         frame = picam2.capture_array()  # Capture frame as numpy array
         frame = cv2.flip(frame, cv2.ROTATE_180)  # camera is upside down"
         pre_detection_buffer.append(frame)  # Add the frame to pre-detection buffer
@@ -478,7 +479,7 @@ def finish_recording(picam2, video_path, num_starts, video_end, start_time):
             confidence = row['confidence']
             x1, y1, x2, y2 = int(row['xmin']), int(row['ymin']), int(row['xmax']), int(row['ymax'])
 
-        # logger.debug(f"Confidence: {confidence}, Class Name: {class_name}")
+        logger.debug(f"Confidence: {confidence}, Class Name: {class_name}")
         if confidence > 0.2 and class_name == 'boat':  # Check if detection is a boat
             boat_in_current_frame = True
             logger.info("Boat detected, saving pre-detection frames.")
@@ -615,6 +616,7 @@ def main():
         logger.info("Finally section, before 'Finish recording'. start_time=%s video_end=%s", start_time, video_end)
         time.sleep(2)
         finish_recording(cam, video_path, num_starts, video_end, start_time)
+        logger.info("After finished_recording")
 
         # Signal the listening thread to stop
         stop_event.set()
@@ -625,7 +627,7 @@ def main():
             logger.info("listen_thread finished")
 
         time.sleep(2)
-        # re_encode_video(video_path, "video1.avi", "video1.mp4")
+        re_encode_video(video_path, "video1.avi", "video1.mp4")
 
         # After video conversion is complete
         with open('/var/www/html/status.txt', 'w') as status_file:
