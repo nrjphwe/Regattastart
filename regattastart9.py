@@ -184,7 +184,7 @@ def setup_camera(resolution=(640, 480), fps=20):
     cam.set(cv2.CAP_PROP_FPS, fps)
 
     # Select a supported resolution from the listed ones
-    resolution = (1024, 768)  # Choose a resolution from the supported list
+    resolution = (640, 480)  # Choose a resolution from the supported list
     cam.set(cv2.CAP_PROP_FRAME_WIDTH, resolution[0])
     cam.set(cv2.CAP_PROP_FRAME_HEIGHT, resolution[1])
 
@@ -200,7 +200,6 @@ def setup_camera(resolution=(640, 480), fps=20):
 
     logger.info("Camera initialized successfully.")
     return cam
-
 
 
 def annotate_and_write_frames(cam, video_writer):
@@ -513,7 +512,7 @@ def listen_for_messages(timeout=0.1):
     logger.info("Listening thread terminated")
 
 
-def finish_recording(cam, video_path, num_starts, video_end, start_time):
+def finish_recording(picam2, video_path, num_starts, video_end, start_time):
     # Open a video capture object (replace 'your_video_file.mp4' with the 
     # actual video file or use 0 for webcam) 
     # cam = cv2.VideoCapture(os.path.join(video_path, "finish21-6.mp4"))
@@ -527,8 +526,8 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time):
 
     # Setup parameters
     fpsw = 20  # number of frames written per second
-    width = cam.preview_configuration.main.size[0]  # Get the width from preview configuration
-    height = cam.preview_configuration.main.size[1]  # Get the height from preview configuration
+    width = picam2.preview_configuration.main.size[0]  # Get the width from preview configuration
+    height = picam2.preview_configuration.main.size[1]  # Get the height from preview configuration
     frame_size = (width, height)
     logger.info(f"Camera frame size: {frame_size}")
 
@@ -550,7 +549,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time):
     logger.info(f"Video1, max recording duration: {max_duration} seconds")
 
     while not recording_stopped:
-        frame = cam.capture_array()  # Capture frame as numpy array
+        frame = picam2.capture_array()  # Capture frame as numpy array
         frame = cv2.flip(frame, cv2.ROTATE_180)  # camera is upside down"
         pre_detection_buffer.append(frame)  # Add the frame to pre-detection buffer
 
@@ -683,11 +682,11 @@ def main():
                             # seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
                             annotate_and_write_frames(cam, video_writer)
 
-                            #annotate_and_write_frames_picamera2(cam)  # Update overlay text in preview
+                            # annotate_and_write_frames_picamera2(cam)  # Update overlay text in preview
                             time.sleep(0.1)  # Small delay to reduce CPU usage
                         logger.info("Stopping video0 recording after after annotate and write frames")
                         stop_video_recording(video_writer)
-                        #stop_video_recording_picamera2(cam)
+                        # stop_video_recording_picamera2(cam)
                         # convert_video_to_mp4(video_path, "video0.avi", "video0.mp4")
                         # logger.info("Video0 recording stopped and converted to mp4")
 
