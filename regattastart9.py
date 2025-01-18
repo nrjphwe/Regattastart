@@ -331,7 +331,15 @@ def video_recording(cam, video_path, file_name, duration=None):
     logger.info("Stopped video recording of %s ", file_name)
 
 
-def convert_video_to_mp4(video_path, source_file, destination_file):
+def convert_video_to_mp4(video_path, input_file, output_file):
+    source = os.path.join(video_path, input_file)
+    dest = os.path.join(video_path, output_file)
+    command = ["ffmpeg", "-i", source, "-vcodec", "libx264", "-crf", "23", "-preset", "fast", dest]
+    subprocess.run(command, check=True)
+    logger.info("Video recording %s converted ", output_file)
+
+
+def convert_video_to_mp4_old(video_path, source_file, destination_file):
     convert_video_str = "MP4Box -add {} -fps 20 -new {}".format(
         os.path.join(video_path, source_file),
         os.path.join(video_path, destination_file)
