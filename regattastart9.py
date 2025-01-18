@@ -252,58 +252,57 @@ def annotate_and_write_frames(cam, video_writer):
     except Exception as e:
         logger.error(f"Error while capturing or writing frames: {e}")
 
-
-def capture_picture(cam: Picamera2, photo_path: str, file_name: str):
-    logger.info("capture_picture: Attempting to capture picture...")
-    org = (15, 60)  # Position for text on the image
-    font_scale = 0.7
-    color = (0, 0, 0)  # Text color (B, G, R)
+def capture_picture(cam, photo_path, file_name):
+    org = (15, 60)  # x = 15 from left, y = 60 from top) 
+    fontFace = cv2.FONT_HERSHEY_DUPLEX
+    fontScale = 0.7
+    color = (0, 0, 0)  # (B, G, R)
     thickness = 1
-    font = cv2.FONT_HERSHEY_DUPLEX
+    lineType = cv2.LINE_AA
+    # Flush the camera buffer
+    for _ in range(8):
+        ret, frame = cam.read()
+        if not ret:
+            logger.error("Failed to capture image")
+            return
 
-    try:
-        frame = cam.capture_array()
-        # Perform operations on the frame...
-        frame = np.copy(frame)
-        frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)  # Convert to BGR
-        frame = np.rot90(frame, 2)  # Rotate the frame by 180 degrees
+    # Adding a small delay to stabilize the camera
+    cv2.waitKey(100)  # 100 milliseconds delay
 
-        logger.debug(f"capture_picture: Frame shape: {frame.shape}, dtype: {frame.dtype}")
-
-        # Annotate the frame with the current date and time
-        current_time = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        text_size = cv2.getTextSize(current_time, font, font_scale, thickness)[0]
-        text_x = int(org[0])
-        text_y = int(org[1] - text_size[1])
-
-        logger.debug(f"capture_picture: Drawing rectangle at: ({text_x}, {text_y}) to ({text_x + text_size[0]}, {text_y + text_size[1]})")
-
-        # Draw the background rectangle for the text
-        frame = np.ascontiguousarray(frame)  # Ensure array compatibility
-        cv2.rectangle(frame, (text_x, text_y), (text_x + text_size[0], text_y + text_size[1]), (255, 255, 255), -1)
-
-        # Draw the text
-        cv2.putText(frame, current_time, org, font, font_scale, color, thickness, cv2.LINE_AA)
-
-        # Save the image
-        image_path = os.path.join(photo_path, file_name)
-        cv2.imwrite(image_path, frame)
-
-        # Sleep to stabilize the camera
-        # time.sleep(0.3)  # 0.3 seconds
-
-    except Exception as e:
-        logger.error(f"Error capturing picture: {e}")
+    # Capture the frame to be saved
+    ret, frame = cam.read()
+    if not ret:
+        logger.error("Failed to capture image")
         return
 
-    logger.info(f"Successfully captured image: {file_name}")
+    # Rotate the frame by 180 degrees
+    frame = cv2.rotate(frame, cv2.ROTATE_180)
+    # Annotate the frame with the current date and time
+    current_time = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+    (text_width, text_height), _ = cv2.getTextSize(current_time, fontFace,
+                                                   fontScale, thickness)
+    # Define background rectangle coordinates
+    top_left = (org[0], org[1] - text_height)
+    bottom_right = (int(org[0] + text_width), int(org[1] + (text_height/2)))
+
+    # Draw filled rectangle as background for the text
+    cv2.rectangle(frame, top_left, bottom_right, (255, 255, 255), cv2.FILLED)
+
+    # Draw text on top of the background
+    cv2.putText(frame, current_time, org, fontFace, fontScale, color,
+                thickness, lineType)
+
+    cv2.imwrite(os.path.join(photo_path, file_name), frame)
+    time.sleep(0.3)  # sleep 0.3 sec
+    logger.info("Capture picture = %s", file_name)
 
 
 # Start Video Recording (OpenCV)
 def start_video_recording(cam, video_path, file_name):
     fpsw = 20  # Frames per second for video writing
-    #width = int(cam.preview_configuration.main.size[0])  # Get the width from preview configuration
-    #height = int(cam.preview_configuration.main.size[1])  # Get the height from preview configuration
+    # width = int(cam.preview_configuration.main.size[0])  # Get the width from preview configuration
+    # height = int(cam.preview_configuration.main.size[1])  # Get the height from preview configuration
     width = int(cam.get(cv2.CAP_PROP_FRAME_WIDTH))
     height = int(cam.get(cv2.CAP_PROP_FRAME_HEIGHT))
     frame_size = (width, height)
