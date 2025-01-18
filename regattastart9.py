@@ -214,7 +214,7 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
 
 
 # Start Video Recording (OpenCV)
-def start_video_recording(cam, video_path, file_name):
+def start_video_recording_old(cam, video_path, file_name):
     fps = cam.get(cv2.CAP_PROP_FPS)
     # width = int(cam.preview_configuration.main.size[0])  # Get the width from preview configuration
     # height = int(cam.preview_configuration.main.size[1])  # Get the height from preview configuration
@@ -266,7 +266,7 @@ def apply_timestamp(request):
         cv2.putText(m.array, timestamp, origin, font, scale, colour, thickness)
 
 
-def start_video_recording_with_picamera2(cam, video_path, file_name, bitrate= 2000000):
+def start_video_recording_new(cam, video_path, file_name, bitrate= 2000000):
     """
     Start video recording using H264Encoder.
     """
@@ -280,7 +280,6 @@ def start_video_recording_with_picamera2(cam, video_path, file_name, bitrate= 20
     cam.start_recording(encoder, output_file)
     logger.info(f"Started recording video: {output_file} with bitrate {bitrate}")
 
-    return cam
 
 def stop_video_recording_picamera2(cam):
     """
@@ -576,8 +575,8 @@ def main():
                     logger.info("start_time_sec=%d", start_time_sec)
                     if num_starts == 1 or num_starts == 2:
                         logger.info("Start of video0 recording with video_writer")
-                        video_writer = start_video_recording(cam, video_path, "video0.avi")
-                        # start_video_recording_with_picamera2(cam, video_path, "video0.avi", bitrate=2000000)
+                        # video_writer = start_video_recording(cam, video_path, "video0.avi")
+                        start_video_recording_new(cam, video_path, "video0.avi", bitrate=2000000)
 
                         logger.info("Inner loop, entering the start sequence block.")
                         start_sequence(cam, start_time_sec, num_starts, dur_between_starts, photo_path)
@@ -594,7 +593,6 @@ def main():
                             now = dt.datetime.now()
                             logger.info(f"dt.datetime.now(): {dt.datetime.now()}")
                             # seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
-                            annotate_and_write_frames(cam, video_writer)
 
                             # annotate_and_write_frames_picamera2(cam)  # Update overlay text in preview
                             time.sleep(0.1)  # Small delay to reduce CPU usage
