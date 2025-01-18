@@ -1,5 +1,7 @@
 #!/home/pi/yolov5_env/bin/python
 # after git pull, do: sudo cp regattastart9.py /usr/lib/cgi-bin/
+
+import sys
 # Manually add the virtual environment's site-packages directory to sys.path
 venv_path = "/home/pi/yolov5_env/lib/python3.11/site-packages"
 if venv_path not in sys.path:
@@ -22,7 +24,7 @@ from picamera2.outputs import FileOutput
 import RPi.GPIO as GPIO
 import select
 import subprocess
-import sys
+
 import threading
 import time
 import torch
