@@ -152,9 +152,9 @@ def annotate_frame(frame, text):
     cv2.putText(frame, text, position, fontFace, fontScale, color, thickness, lineType)
 
 
-def capture_picture(picam2, photo_path, file_name):
+def capture_picture(camera, photo_path, file_name):
     current_time = datetime.now()
-    with MappedArray(picam2, "main") as m:
+    with MappedArray(camera, "main") as m:
         now = current_time.strftime("%Y-%m-%d %H:%M:%S")
         annotate_frame(m.array, now)
         cv2.imwrite(os.path.join(photo_path, file_name), m.array)
