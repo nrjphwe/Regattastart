@@ -104,8 +104,7 @@ def remove_video_files(directory, pattern):
             file_path = os.path.join(directory, file)
             os.remove(file_path)
 
-
-def setup_camera(resolution=(640, 480), fps=5):
+def setup_picam2(resolution=(640, 480), fps=5):
     """
     Configures the camera using picamera2.
     Sets the desired resolution and FPS for video recordings.
@@ -122,6 +121,33 @@ def setup_camera(resolution=(640, 480), fps=5):
 
     logger.info(f"setup_camera with resolution {resolution} and {fps} FPS.")
     return picam2
+
+
+def setup_camera():
+    """
+    Opens the camera and sets the desired properties for video_recordings
+    """
+    # cam = cv2.VideoCapture("/home/pi/Regattastart/video3.mp4")
+    cam = cv2.VideoCapture(0)  # Use 0 for the default camera
+    cam.set(cv2.CAP_PROP_FPS, 5)
+
+    # Select a supported resolution from the listed ones
+    resolution = (1024, 768)  # Choose a resolution from the supported list
+    cam.set(cv2.CAP_PROP_FRAME_WIDTH, resolution[0])
+    cam.set(cv2.CAP_PROP_FRAME_HEIGHT, resolution[1])
+
+    # Verify the resolution was set correctly
+    actual_width = cam.get(cv2.CAP_PROP_FRAME_WIDTH)
+    actual_height = cam.get(cv2.CAP_PROP_FRAME_HEIGHT)
+    if (actual_width, actual_height) != resolution:
+        logger.error(f"Failed to set resolution to {resolution}, using {actual_width}x{actual_height} instead")
+
+    if not cam.isOpened():
+        logger.error("Cannot open camera")
+        cam.release()  # Release the camera resources
+        exit()
+    logger.info("Camera initialized successfully.")
+    return cam
 
 
 def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo_path):
@@ -154,7 +180,7 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
                     logger.info(f"Start_sequence: {log_message} at {event_time}")
                     if action:
                         action()
-                        logger.debug(f"action = {action}")
+                        logger.debug(f"log_message[:5] = {log_message[:5]}")
                         picture_name = f"{i + 1}a_start_{log_message[:5]}.jpg"
                         capture_picture(camera, photo_path, picture_name)
                         # Mark the event as triggered
@@ -175,7 +201,7 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
         logger.info(f"End of iteration {i + 1}")
 
 
-def annotate_and_write_frames(cam: Picamera2, video_writer):
+def annotate_and_write_frames(cam, video_writer):
     """
     Captures frames from the picamera2, annotates each frame with a timestamp
     and writes them to a video file using the provided video writer.
@@ -292,6 +318,14 @@ def start_video_recording(cam, video_path, file_name):
     return video_writer
 
 
+# previous used annotation
+def annotate_video_duration(camera, start_time_sec):
+    time_now = dt.datetime.now()
+    seconds_since_midnight = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
+    elapsed_time = seconds_since_midnight - start_time_sec  # elapsed since last star until now)
+    camera.annotate_text = f"{dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Seconds since last start: {elapsed_time}"
+
+
 def apply_timestamp(request):
     timestamp = time.strftime("%Y-%m-%d %X")  # Current timestamp
     colour = (0, 255, 0)  # Green text
@@ -322,6 +356,15 @@ def start_video_recording_with_picamera2(cam, video_path, file_name, bitrate= 20
     return cam
 
 
+def annotate_and_write_frames_picamera2(cam):
+    """
+    Annotates the preview with the current timestamp (for Picamera2 preview).
+    """
+    current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    overlay_text = f"Date & Time: {current_time}"
+    cam.set_overlay(overlay_text)
+
+
 def stop_video_recording_picamera2(cam):
     """
     Stops video recording using Picamera2.
@@ -331,7 +374,7 @@ def stop_video_recording_picamera2(cam):
 
 
 # previous used stop
-def stop_video_recording_picmera2(video_writer):
+def stop_video_recording(video_writer):
     video_writer.release()
     logger.info("Stopped video recording")
 
@@ -374,20 +417,6 @@ def video_recording(cam, video_path, file_name, duration=None):
     cv2.destroyAllWindows()
     logger.info("Stopped video recording of %s ", file_name)
 
-def annotate_and_write_frames_picamera2(cam):
-    """
-    Annotates the preview with the current timestamp (for Picamera2 preview).
-    """
-    current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    overlay_text = f"Date & Time: {current_time}"
-    cam.set_overlay(overlay_text)
-
-# previous used annotation
-def annotate_video_duration(camera, start_time_sec):
-    time_now = dt.datetime.now()
-    seconds_since_midnight = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
-    elapsed_time = seconds_since_midnight - start_time_sec  # elapsed since last star until now)
-    camera.annotate_text = f"{dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Seconds since last start: {elapsed_time}"
 
 
 def convert_video_to_mp4(video_path, source_file, destination_file):
@@ -630,10 +659,9 @@ def main():
                     logger.info("Start of outer loop iteration. seconds_since_midnight=%d", seconds_since_midnight)
                     logger.info("start_time_sec=%d", start_time_sec)
                     if num_starts == 1 or num_starts == 2:
-                        logger.info("Start of video0 recording")
-                        # video_writer = start_video_recording(cam, video_path, "video0.avi")
-                        # video_writer = start_video_recording_with_picamera2(cam, video_path, "video0.avi")
-                        start_video_recording_with_picamera2(cam, video_path, "video0.avi", bitrate=2000000)
+                        logger.info("Start of video0 recording with video_writer")
+                        video_writer = start_video_recording(cam, video_path, "video0.avi")
+                        # start_video_recording_with_picamera2(cam, video_path, "video0.avi", bitrate=2000000)
 
                         logger.info("Inner loop, entering the start sequence block.")
                         start_sequence(cam, start_time_sec, num_starts, dur_between_starts, photo_path)
@@ -650,13 +678,13 @@ def main():
                             now = dt.datetime.now()
                             logger.info(f"dt.datetime.now(): {dt.datetime.now()}")
                             # seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
-                            # annotate_and_write_frames(cam, video_writer)
+                            annotate_and_write_frames(cam, video_writer)
 
-                            annotate_and_write_frames_picamera2(cam)  # Update overlay text in preview
+                            #annotate_and_write_frames_picamera2(cam)  # Update overlay text in preview
                             time.sleep(0.1)  # Small delay to reduce CPU usage
                         logger.info("Stopping video0 recording after after annotate and write frames")
-                        # stop_video_recording(video_writer)
-                        stop_video_recording_picamera2(cam)
+                        stop_video_recording(video_writer)
+                        #stop_video_recording_picamera2(cam)
                         # convert_video_to_mp4(video_path, "video0.avi", "video0.mp4")
                         # logger.info("Video0 recording stopped and converted to mp4")
 
