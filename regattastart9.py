@@ -153,12 +153,15 @@ def annotate_frame(frame, text):
 
 
 def capture_picture(camera, photo_path, file_name):
-    current_time = datetime.now()
-    with MappedArray(camera, "main") as m:
-        now = current_time.strftime("%Y-%m-%d %H:%M:%S")
+    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    # Capture a single request
+    request = camera.capture_request()
+    with MappedArray(request, "main") as m:
         annotate_frame(m.array, now)
         cv2.imwrite(os.path.join(photo_path, file_name), m.array)
 
+    request.release()
     logger.info("Capture picture = %s", file_name)
 
 
@@ -266,7 +269,7 @@ def apply_timestamp(request):
         cv2.putText(m.array, timestamp, origin, font, scale, colour, thickness)
 
 
-def start_video_recording_new(cam, video_path, file_name, bitrate= 2000000):
+def start_video_recording_new(cam, video_path, file_name, bitrate=2000000):
     """
     Start video recording using H264Encoder.
     """
