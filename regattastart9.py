@@ -284,18 +284,12 @@ def start_video_recording_new(cam, video_path, file_name, bitrate=2000000):
     logger.info(f"Started recording video: {output_file} with bitrate {bitrate}")
 
 
-def stop_video_recording_picamera2(cam):
+def stop_video_recording(cam):
     """
     Stops video recording using Picamera2.
     """
     cam.stop_recording()
     logger.info("Recording stopped.")
-
-
-# previous used stop
-def stop_video_recording(video_writer):
-    video_writer.release()
-    logger.info("Stopped video recording")
 
 
 def video_recording(cam, video_path, file_name, duration=None):
@@ -592,15 +586,14 @@ def main():
                         logger.info(f"t0 = {t0}, dt.datetime.now(): {dt.datetime.now()}")
                         logger.info("(dt.datetime.now() - t0).seconds: %d", (dt.datetime.now() - t0).seconds)
                         while ((dt.datetime.now() - t0).seconds < 119):
-                            logger.debug("in while loop, 649")
+                            logger.debug("in while loop")
                             now = dt.datetime.now()
-                            logger.info(f"dt.datetime.now(): {dt.datetime.now()}")
+                            logger.info(f"(dt.datetime.now() - t0).seconds: {(dt.datetime.now() - t0).seconds}")
                             # seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
-
                             # annotate_and_write_frames_picamera2(cam)  # Update overlay text in preview
-                            time.sleep(0.1)  # Small delay to reduce CPU usage
+                            time.sleep(0.9)  # Small delay to reduce CPU usage
                         logger.info("Stopping video0 recording after after annotate and write frames")
-                        stop_video_recording(video_writer)
+                        stop_video_recording(cam)
                         # stop_video_recording_picamera2(cam)
                         # convert_video_to_mp4(video_path, "video0.avi", "video0.mp4")
                         # logger.info("Video0 recording stopped and converted to mp4")
