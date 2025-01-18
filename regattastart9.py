@@ -252,7 +252,7 @@ def annotate_and_write_frames(cam, video_writer):
         logger.error(f"Error while capturing or writing frames: {e}")
 
 
-def capture_picture_with_picam2(cam: Picamera2, photo_path: str, file_name: str):
+def capture_picture_with_picam2(picam2, photo_path: str, file_name: str):
     logger.info("Attempting to capture picture with picam2...")
     try:
         frame = cam.capture_array()
@@ -668,6 +668,11 @@ def main():
     if cam is None:
         logger.error("Camera setup failed, exiting.")
         exit()
+    picam2 = start_video_recording_with_picamera2(resolution=(640, 480), fps=20)
+    if picam2 is None:
+        logger.error("Picam2 setup failed, exiting.")
+        exit()
+
     listening = True  # Initialize the global listening flag
     listen_thread = None  # Initialize listen_thread variable
 
