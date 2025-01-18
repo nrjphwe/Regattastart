@@ -1,43 +1,35 @@
 #!/home/pi/yolov5_env/bin/python
 # after git pull, do: sudo cp regattastart9.py /usr/lib/cgi-bin/
-import os
+import cv2
+# Use a deque to store the most recent frames in memory
+from collections import deque
+from datetime import datetime
+import datetime as dt
 import errno
+import json
+import logging
+import logging.config
+import numpy as np # image recognition
+import os
+from picamera2.encoders import H264Encoder
+from picamera2 import Picamera2, MappedArray
+from picamera2.outputs import FileOutput
+import RPi.GPIO as GPIO
 import select
+import subprocess
 import sys
+import threading
+import time
+import torch
+import tempfile  # to check the php temp file
+
+picamera2_logger = logging.getLogger('picamera2')
+picamera2_logger.setLevel(logging.ERROR)  # Change to ERROR to suppress more logs
 
 # Manually add the virtual environment's site-packages directory to sys.path
 venv_path = "/home/pi/yolov5_env/lib/python3.11/site-packages"
 if venv_path not in sys.path:
     sys.path.insert(0, venv_path)
-
-import torch
-
-# sys.path.append('/home/pi/yolov5_env/lib/python3.11/site-packages')
-import threading
-import time
-import cv2
-from datetime import datetime
-import datetime as dt
-import logging
-import logging.config
-import json
-import tempfile  # to check the php temp file
-
-# Use a deque to store the most recent frames in memory
-from collections import deque
-
-# camera
-from picamera2.encoders import H264Encoder
-from picamera2 import Picamera2, MappedArray
-from picamera2.encoders import JpegEncoder
-from picamera2.outputs import FileOutput
-picamera2_logger = logging.getLogger('picamera2')
-picamera2_logger.setLevel(logging.ERROR)  # Change to ERROR to suppress more logs
-
-# image recognition
-import numpy as np
-import subprocess
-import RPi.GPIO as GPIO
 
 # parameter data
 signal_dur = 0.9  # 0.9 sec
