@@ -668,7 +668,7 @@ def main():
     if cam is None:
         logger.error("Camera setup failed, exiting.")
         exit()
-    picam2 = start_video_recording_with_picamera2(resolution=(640, 480), fps=20)
+    picam2 = setup_picam2(resolution=(640, 480), fps=20)
     if picam2 is None:
         logger.error("Picam2 setup failed, exiting.")
         exit()
