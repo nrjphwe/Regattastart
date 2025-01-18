@@ -125,31 +125,29 @@ def setup_picam2(resolution=(640, 480), fps=5):
 
 
 def annotate_frame(frame, text):
-    position = (15, 60)  # x = 15 from left, y = 60 from top
+    org = (15, 60)  # x = 15 from left, y = 60 from top
     fontFace = cv2.FONT_HERSHEY_DUPLEX
     fontScale = 0.7
-    # color = (0, 0, 0)  # (B, G, R)
+    color = (0, 255, 0)  # (B, G, R)
     thickness = 1
     lineType = cv2.LINE_AA
 
     # Draw a rectangle on the image (example processing)
-    # top_left = (org[0], org[1] - text_height - 5)
-    # bottom_right = (org[0] + text_width + 10, org[1] + 5)
-    height, width, _ = frame.shape
-    top_left = (int(width * 0.25), int(height * 0.25))
-    bottom_right = (int(width * 0.75), int(height * 0.75))
-    color = (0, 255, 0)  # Green in BGR
-
-    # Draw background rectangle for the timestamp
-    cv2.rectangle(frame, top_left, bottom_right, (255, 255, 255), cv2.FILLED)
+    # height, width, _ = frame.shape
+    # top_left = (int(width * 0.25), int(height * 0.25))
+    # bottom_right = (int(width * 0.75), int(height * 0.75))
+    # ßcolor = (0, 255, 0)  # Green in BGR
 
     # Calculate text size and background rectangle
     (text_width, text_height), _ = cv2.getTextSize(text, fontFace, fontScale, thickness)
+    top_left = (org[0], org[1] - text_height - 5)
+    bottom_right = (org[0] + text_width + 10, org[1] + 5)
 
+    # Draw background rectangle for the timestamp
     cv2.rectangle(frame, top_left, bottom_right, color, thickness)
 
     # Draw the timestamp text
-    cv2.putText(frame, text, position, fontFace, fontScale, color, thickness, lineType)
+    cv2.putText(frame, text, org, fontFace, fontScale, color, thickness, lineType)
 
 
 def capture_picture(camera, photo_path, file_name):
@@ -168,9 +166,8 @@ def capture_picture(camera, photo_path, file_name):
 def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo_path):
     for i in range(num_starts):
         logger.info(f"Start_sequence. Start of iteration {i+1}")
-
         iteration_start_time = start_time_sec + (i) * dur_between_starts * 60
-        logger.info(f"Start_sequence. Iteration {i+1}, iteration_start time: {iteration_start_time}")
+        logger.debug(f"Start_sequence. Iteration {i+1}, iteration_start time: {iteration_start_time}")
 
         # Define time intervals for each relay trigger
         time_intervals = [
