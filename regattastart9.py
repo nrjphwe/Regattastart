@@ -472,6 +472,7 @@ def finish_recording(picam2, video_path, num_starts, video_end, start_time):
         # Perform inference using YOLOv5
         results = model(frame)
         detections = results.pandas().xyxy[0]  # Results as a DataFrame
+        logger.debug(f"detections: {detections}")
 
         # Process detections
         for _, row in detections.iterrows():
@@ -590,9 +591,9 @@ def main():
                         logger.debug(f"t0 = {t0}, dt.datetime.now(): {dt.datetime.now()}")
                         logger.debug("(dt.datetime.now() - t0).seconds: %d", (dt.datetime.now() - t0).seconds)
                         while ((dt.datetime.now() - t0).seconds < 119):
-                            logger.debug("in while loop")
+                            # logger.debug("in while loop")
                             now = dt.datetime.now()
-                            logger.debug(f"(dt.datetime.now() - t0).seconds: {(dt.datetime.now() - t0).seconds}")
+                            # logger.debug(f"(dt.datetime.now() - t0).seconds: {(dt.datetime.now() - t0).seconds}")
                             time.sleep(0.9)  # Small delay to reduce CPU usage
                         stop_video_recording(cam)
                         logger.debug("Stopping video0 recording after after annotate and write frames")
