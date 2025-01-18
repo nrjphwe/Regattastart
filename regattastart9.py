@@ -270,6 +270,7 @@ def capture_picture(cam: Picamera2, photo_path: str, file_name: str):
 
     logger.info(f"Successfully captured image: {file_name}")
 
+
 # Start Video Recording (OpenCV)
 def start_video_recording(cam, video_path, file_name):
     fpsw = 20  # Frames per second for video writing
@@ -290,32 +291,31 @@ def start_video_recording(cam, video_path, file_name):
     logger.info(f"start_video_recording file: {file_name}")
     return video_writer
 
+
 def apply_timestamp(request):
     timestamp = time.strftime("%Y-%m-%d %X")  # Current timestamp
     colour = (0, 255, 0)  # Green text
     origin = (10, 30)  # Position on frame
     font = cv2.FONT_HERSHEY_SIMPLEX
     scale = 1
-    thickness = 2
+    thickness = 1
 
     # Overlay the timestamp on the frame
     with MappedArray(request, "main") as m:
         cv2.putText(m.array, timestamp, origin, font, scale, colour, thickness)
 
-# Start Video Recording (Picamera2)
+
 def start_video_recording_with_picamera2(cam, video_path, file_name, bitrate= 2000000):
     """
     Start video recording using H264Encoder.
     """
-    # Configure the H264 encoder with a custom bitrate
-    encoder = H264Encoder(bitrate=bitrate)
-
     output_file = os.path.join(video_path, file_name)
 
     # Configure the pre-callback for adding the timestamp
     cam.pre_callback = apply_timestamp
 
-     # Start recording
+    encoder = H264Encoder(bitrate=bitrate)
+
     cam.start_recording(encoder, output_file)
     logger.info(f"Started recording video: {output_file} with bitrate {bitrate}")
 
