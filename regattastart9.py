@@ -125,11 +125,11 @@ def setup_camera(resolution=(640, 480), fps=5):
 
 
 def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo_path):
-    for i in range(1, num_starts):
-        logger.info(f"Start_sequence. Start of iteration {i}")
+    for i in range(num_starts):
+        logger.info(f"Start_sequence. Start of iteration {i+1}")
 
-        iteration_start_time = start_time_sec + (i-1) * dur_between_starts * 60
-        logger.info(f"Start_sequence. Iteration {i}, iteration_start time: {iteration_start_time}")
+        iteration_start_time = start_time_sec + (i) * dur_between_starts * 60
+        logger.info(f"Start_sequence. Iteration {i+1}, iteration_start time: {iteration_start_time}")
 
         # Define time intervals for each relay trigger
         time_intervals = [
@@ -629,7 +629,7 @@ def main():
                     logger.info("Start of outer loop iteration. seconds_since_midnight=%d", seconds_since_midnight)
                     logger.info("start_time_sec=%d", start_time_sec)
                     if num_starts == 1 or num_starts == 2:
-                        logger.info("Start of video recording")
+                        logger.info("Start of video0 recording")
                         # video_writer = start_video_recording(cam, video_path, "video0.avi")
                         # video_writer = start_video_recording_with_picamera2(cam, video_path, "video0.avi")
                         start_video_recording_with_picamera2(cam, video_path, "video0.avi", bitrate=2000000)
