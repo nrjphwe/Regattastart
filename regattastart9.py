@@ -302,8 +302,10 @@ def capture_picture(cam: Picamera2, photo_path: str, file_name: str):
 # Start Video Recording (OpenCV)
 def start_video_recording(cam, video_path, file_name):
     fpsw = 20  # Frames per second for video writing
-    width = int(cam.preview_configuration.main.size[0])  # Get the width from preview configuration
-    height = int(cam.preview_configuration.main.size[1]) # Get the height from preview configuration
+    #width = int(cam.preview_configuration.main.size[0])  # Get the width from preview configuration
+    #height = int(cam.preview_configuration.main.size[1])  # Get the height from preview configuration
+    width = int(cam.get(cv2.CAP_PROP_FRAME_WIDTH))
+    height = int(cam.get(cv2.CAP_PROP_FRAME_HEIGHT))
     frame_size = (width, height)
     logger.info(f"start_video_recording, camera frame size: {frame_size}")
 
@@ -313,7 +315,7 @@ def start_video_recording(cam, video_path, file_name):
 
     if not video_writer.isOpened():
         logger.error("start_video_recording: VideoWriter failed.")
-        return None  #  if the VideoWriter failed to open
+        return None  # if the VideoWriter failed to open
         # exit()
 
     logger.info(f"start_video_recording file: {file_name}")
