@@ -175,13 +175,13 @@ def setup_picam2(resolution=(640, 480), fps=5):
     return picam2
 
 
-def setup_camera():
+def setup_camera(resolution=(640, 480), fps=20):
     """
     Opens the camera and sets the desired properties for video_recordings
     """
     # cam = cv2.VideoCapture("/home/pi/Regattastart/video3.mp4")
     cam = cv2.VideoCapture(0)  # Use 0 for the default camera
-    cam.set(cv2.CAP_PROP_FPS, 5)
+    cam.set(cv2.CAP_PROP_FPS, fps)
 
     # Select a supported resolution from the listed ones
     resolution = (1024, 768)  # Choose a resolution from the supported list
@@ -196,8 +196,8 @@ def setup_camera():
 
     if not cam.isOpened():
         logger.error("Cannot open camera")
-        cam.release()  # Release the camera resources
-        exit()
+        return None
+
     logger.info("Camera initialized successfully.")
     return cam
 
@@ -613,8 +613,7 @@ def main():
     stop_event = threading.Event()
     global listening  # Declare listening as global
     logger = setup_logging()  # Initialize the logger
-    # cam = setup_camera(resolution=(640, 480), fps=30)
-    cam = setup_camera()
+    cam = setup_camera(resolution=(640, 480), fps=20)
     if cam is None:
         logger.error("Camera setup failed, exiting.")
         exit()
