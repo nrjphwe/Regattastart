@@ -104,51 +104,6 @@ def remove_video_files(directory, pattern):
             file_path = os.path.join(directory, file)
             os.remove(file_path)
 
-def setup_picam2(resolution=(640, 480), fps=5):
-    """
-    Configures the camera using picamera2.
-    Sets the desired resolution and FPS for video recordings.
-    """
-    picam2 = Picamera2()
-
-    # Configure preview settings
-    preview_config = picam2.create_preview_configuration(
-        main={"size": resolution, "format": "RGB888"},
-        controls={"FrameRate": fps}
-    )
-    picam2.configure(preview_config)
-    picam2.start()  # Start the camera
-
-    logger.info(f"setup_camera with resolution {resolution} and {fps} FPS.")
-    return picam2
-
-
-def setup_camera():
-    """
-    Opens the camera and sets the desired properties for video_recordings
-    """
-    # cam = cv2.VideoCapture("/home/pi/Regattastart/video3.mp4")
-    cam = cv2.VideoCapture(0)  # Use 0 for the default camera
-    cam.set(cv2.CAP_PROP_FPS, 5)
-
-    # Select a supported resolution from the listed ones
-    resolution = (1024, 768)  # Choose a resolution from the supported list
-    cam.set(cv2.CAP_PROP_FRAME_WIDTH, resolution[0])
-    cam.set(cv2.CAP_PROP_FRAME_HEIGHT, resolution[1])
-
-    # Verify the resolution was set correctly
-    actual_width = cam.get(cv2.CAP_PROP_FRAME_WIDTH)
-    actual_height = cam.get(cv2.CAP_PROP_FRAME_HEIGHT)
-    if (actual_width, actual_height) != resolution:
-        logger.error(f"Failed to set resolution to {resolution}, using {actual_width}x{actual_height} instead")
-
-    if not cam.isOpened():
-        logger.error("Cannot open camera")
-        cam.release()  # Release the camera resources
-        exit()
-    logger.info("Camera initialized successfully.")
-    return cam
-
 
 def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo_path):
     for i in range(num_starts):
@@ -199,6 +154,53 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
             time_now = dt.datetime.now()
             seconds_now = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
         logger.info(f"End of iteration {i + 1}")
+
+
+def setup_picam2(resolution=(640, 480), fps=5):
+    """
+    Configures the camera using picamera2.
+    Sets the desired resolution and FPS for video recordings.
+    """
+    picam2 = Picamera2()
+
+    # Configure preview settings
+    preview_config = picam2.create_preview_configuration(
+        main={"size": resolution, "format": "RGB888"},
+        controls={"FrameRate": fps}
+    )
+    picam2.configure(preview_config)
+    picam2.start()  # Start the camera
+
+    logger.info(f"setup_camera with resolution {resolution} and {fps} FPS.")
+    return picam2
+
+
+def setup_camera():
+    """
+    Opens the camera and sets the desired properties for video_recordings
+    """
+    # cam = cv2.VideoCapture("/home/pi/Regattastart/video3.mp4")
+    cam = cv2.VideoCapture(0)  # Use 0 for the default camera
+    cam.set(cv2.CAP_PROP_FPS, 5)
+
+    # Select a supported resolution from the listed ones
+    resolution = (1024, 768)  # Choose a resolution from the supported list
+    cam.set(cv2.CAP_PROP_FRAME_WIDTH, resolution[0])
+    cam.set(cv2.CAP_PROP_FRAME_HEIGHT, resolution[1])
+
+    # Verify the resolution was set correctly
+    actual_width = cam.get(cv2.CAP_PROP_FRAME_WIDTH)
+    actual_height = cam.get(cv2.CAP_PROP_FRAME_HEIGHT)
+    if (actual_width, actual_height) != resolution:
+        logger.error(f"Failed to set resolution to {resolution}, using {actual_width}x{actual_height} instead")
+
+    if not cam.isOpened():
+        logger.error("Cannot open camera")
+        cam.release()  # Release the camera resources
+        exit()
+    logger.info("Camera initialized successfully.")
+    return cam
+
 
 
 def annotate_and_write_frames(cam, video_writer):
@@ -611,7 +613,8 @@ def main():
     stop_event = threading.Event()
     global listening  # Declare listening as global
     logger = setup_logging()  # Initialize the logger
-    cam = setup_camera(resolution=(640, 480), fps=30)
+    # cam = setup_camera(resolution=(640, 480), fps=30)
+    cam = setup_camera()
     if cam is None:
         logger.error("Camera setup failed, exiting.")
         exit()
