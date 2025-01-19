@@ -428,12 +428,17 @@ def listen_for_messages(timeout=0.1):
 
 
 def finish_recording(picam2, video_path, num_starts, video_end, start_time):
-    # Open a video capture object (replace 'your_video_file.mp4' with the 
-    # actual video file or use 0 for webcam) 
+    # Open a video capture object (replace 'your_video_file.mp4' with the
+    # actual video file or use 0 for webcam)
     # cam = cv2.VideoCapture(os.path.join(video_path, "finish21-6.mp4"))
     global recording_stopped
     confidence = 0.0  # Default value
     class_name = ""
+
+    # ensure camera being started.
+    if not picam2.started:
+        logger.error("Camera is not started. Starting it now...")
+        picam2.start()
 
     # Load the pre-trained YOLOv5 model (e.g., yolov5s)
     model = torch.hub.load('ultralytics/yolov5', 'yolov5s')
