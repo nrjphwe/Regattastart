@@ -18,6 +18,7 @@ import logging
 import logging.config
 import numpy as np # image recognition
 import os
+from libcamera import Transform
 from picamera2.encoders import H264Encoder
 from picamera2 import Picamera2, MappedArray
 from picamera2.outputs import FileOutput
@@ -115,12 +116,13 @@ def setup_picam2(resolution=(640, 480), fps=5):
     # Configure preview settings
     preview_config = picam2.create_preview_configuration(
         main={"size": resolution, "format": "RGB888"},
-        controls={"FrameRate": fps}
+        controls={"FrameRate": fps}, 
+        transform=libcamera.Transform(hflip=True, vflip=True)  # Apply horizontal and vertical flips
     )
     picam2.configure(preview_config)
 
     # Apply 180-degree rotation (horizontal and vertical flip)
-    picam2.set_controls({"transform": {"hflip": True, "vflip": True}})
+    #picam2.set_controls({"transform": {"hflip": True, "vflip": True}})
 
     picam2.start()  # Start the camera
 
