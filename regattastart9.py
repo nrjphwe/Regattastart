@@ -154,7 +154,7 @@ def annotate_frame(frame, text):
     cv2.putText(frame, text, org, fontFace, fontScale, color, thickness, lineType)
 
 
-def capture_picture(camera, photo_path, file_name):
+def capture_picture_gpt(camera, photo_path, file_name):
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     # Temporarily override the transform to disable flipping
@@ -176,6 +176,58 @@ def capture_picture(camera, photo_path, file_name):
     camera.start()
 
     logger.info("Captured picture = %s", file_name)
+
+
+
+def capture_picture(cam, photo_path, file_name):
+    '''
+    org = (15, 60)  # x = 15 from left, y = 60 from top) 
+    fontFace = cv2.FONT_HERSHEY_DUPLEX
+    fontScale = 0.7
+    color = (0, 0, 0)  # (B, G, R)
+    thickness = 1
+    lineType = cv2.LINE_AA
+    '''
+    # Flush the camera buffer
+    for _ in range(8):
+        ret, frame = cam.read()
+        if not ret:
+            logger.error("Failed to capture image")
+            return
+
+    # Adding a small delay to stabilize the camera
+    cv2.waitKey(100)  # 100 milliseconds delay
+
+    # Capture the frame to be saved
+    ret, frame = cam.read()
+    if not ret:
+        logger.error("Failed to capture image")
+        return
+
+    # Rotate the frame by 180 degrees
+    frame = cv2.rotate(frame, cv2.ROTATE_180)
+    # Annotate the frame with the current date and time
+    current_time = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+    #(text_width, text_height), _ = cv2.getTextSize(current_time, fontFace,
+    #                                               fontScale, thickness)
+    # Define background rectangle coordinates
+    #top_left = (org[0], org[1] - text_height) 
+    #bottom_right = (int(org[0] + text_width), int(org[1] + (text_height/2)))
+
+    # Draw filled rectangle as background for the text
+    #cv2.rectangle(frame, top_left, bottom_right, (255, 255, 255), cv2.FILLED)
+
+    # Draw text on top of the background
+    #cv2.putText(frame, current_time, org, fontFace, fontScale, color,
+    #            thickness, lineType)
+
+    cv2.imwrite(os.path.join(photo_path, file_name), frame)
+    time.sleep(0.3)  # sleep 0.3 sec
+    logger.info("Capture picture = %s", file_name)
+
+
+
 
 
 def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo_path):
