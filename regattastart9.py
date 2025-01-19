@@ -154,7 +154,7 @@ def annotate_frame(frame, text):
     cv2.putText(frame, text, org, fontFace, fontScale, color, thickness, lineType)
 
 
-def capture_picture(camera, photo_path, file_name):
+def capture_picture_gpt(camera, photo_path, file_name):
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     # Temporarily override the transform to disable flipping
@@ -178,25 +178,7 @@ def capture_picture(camera, photo_path, file_name):
     logger.info("Captured picture = %s", file_name)
 
 
-def capture_picture_old(cam, photo_path, file_name):
-    '''
-    org = (15, 60)  # x = 15 from left, y = 60 from top) 
-    fontFace = cv2.FONT_HERSHEY_DUPLEX
-    fontScale = 0.7
-    color = (0, 0, 0)  # (B, G, R)
-    thickness = 1
-    lineType = cv2.LINE_AA
-    '''
-    # Flush the camera buffer
-    for _ in range(8):
-        ret, frame = cam.read()
-        if not ret:
-            logger.error("Failed to capture image")
-            return
-
-    # Adding a small delay to stabilize the camera
-    cv2.waitKey(100)  # 100 milliseconds delay
-
+def capture_picture(cam, photo_path, file_name):
     # Capture the frame to be saved
     ret, frame = cam.read()
     if not ret:
