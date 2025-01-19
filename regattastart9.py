@@ -466,6 +466,7 @@ def finish_recording(picam2, video_path, num_starts, video_end, start_time):
     while not recording_stopped:
         logger.info(f"recording_stopped= {recording_stopped}")
         frame = picam2.capture_array()  # Capture frame as numpy array
+        logger.debug(f"   frame= {frame}")
         # frame = cv2.flip(frame, cv2.ROTATE_180)  # camera is upside down"
         pre_detection_buffer.append(frame)  # Add the frame to pre-detection buffer
 
