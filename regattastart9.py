@@ -118,6 +118,9 @@ def setup_picam2(resolution=(640, 480), fps=5):
         controls={"FrameRate": fps}
     )
     picam2.configure(preview_config)
+    # Apply 180-degree rotation (horizontal and vertical flip)
+    picam2.set_controls({"transform": {hflip=True, vflip=True}})
+
     picam2.start()  # Start the camera
 
     logger.info(f"setup_camera with resolution {resolution} and {fps} FPS.")
@@ -144,7 +147,7 @@ def annotate_frame(frame, text):
     bottom_right = (org[0] + text_width + 10, org[1] + 5)
 
     # Draw background rectangle for the timestamp
-    cv2.rectangle(frame, top_left, bottom_right, color, thickness)
+    # cv2.rectangle(frame, top_left, bottom_right, color, thickness)
 
     # Draw the timestamp text
     cv2.putText(frame, text, org, fontFace, fontScale, color, thickness, lineType)
@@ -280,7 +283,7 @@ def video_recording(cam, video_path, file_name, duration=None):
             logger.debug("Captured frame successfully")
 
         # Rotate the frame by 180 degrees
-        frame = cv2.rotate(frame, cv2.ROTATE_180)
+        #frame = cv2.rotate(frame, cv2.ROTATE_180)
         video_writer.write(frame)
 
         # Log elapsed time
@@ -606,7 +609,7 @@ def main():
             status_file.write('complete')
         logger.info("Finished with finish_recording and recording converted to mp4")
 
-        cam.release()  # Release camera resources
+        stop_video_recording(cam)
 
         GPIO.cleanup()
         logger.info("After GPIO.cleanup, end of program")
