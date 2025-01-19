@@ -316,7 +316,7 @@ def cv_annotate_video(frame, start_time_sec):
     # elapsed since last start until now)
     elapsed_time = seconds_since_midnight - start_time_sec
     label = str(dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Seconds since last start: " + str(elapsed_time)
-    org = (15, 60)  # x = 15 from left, y = 60 from top) 
+    org = (15, 60)  # x = 15 from left, y = 60 from top)
     fontFace = cv2.FONT_HERSHEY_DUPLEX
     fontScale = 0.7
     color = (0, 0, 0)  # (B, G, R)
@@ -409,7 +409,7 @@ def finish_recording(picam2, video_path, num_starts, video_end, start_time):
 
     # setup video writer
     fourcc = cv2.VideoWriter_fourcc(*'XVID')  # Use 'XVID' for .avi, or 'mp4v' for .mp4
-    video_writer = cv2.VideoWriter(video_path + 'video1' + '.AVI', fourcc, fpsw, frame_size)
+    video_writer = cv2.VideoWriter(video_path + 'video1' + '.avi', fourcc, fpsw, frame_size)
 
     if not video_writer.isOpened():
         logger.error("VideoWriter failed to initialize.")
