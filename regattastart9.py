@@ -159,8 +159,10 @@ def capture_picture(camera, photo_path, file_name):
     # Capture a single request
     request = camera.capture_request()
     with MappedArray(request, "main") as m:
-        #annotate_frame(m.array, now)
-        cv2.imwrite(os.path.join(photo_path, file_name), m.array)
+        # annotate_frame(m.array, now)
+        # Flip the frame vertically and horizontally (180-degree rotation)
+        flipped_frame = cv2.flip(m.array, -1)  # -1 flips both axes
+        cv2.imwrite(os.path.join(photo_path, file_name), flipped_frame)
 
     request.release()
     logger.info("Capture picture = %s", file_name)
