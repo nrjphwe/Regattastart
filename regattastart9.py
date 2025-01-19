@@ -157,18 +157,25 @@ def annotate_frame(frame, text):
 def capture_picture(camera, photo_path, file_name):
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
+    # Temporarily override the transform to disable flipping
+    still_config = camera.create_still_configuration(transform=Transform(hflip=False, vflip=False))
+    camera.configure(still_config)
+
     # Capture a single request
     request = camera.capture_request()
     with MappedArray(request, "main") as m:
-        # annotate_frame(m.array, now)
-        # Flip the frame vertically and horizontally (180-degree rotation)
-        #flipped_frame = cv2.flip(m.array, -1)  # -1 flips both axes
-        # rotated_frame = cv2.rotate(m.array, cv2.ROTATE_90_CLOCKWISE)
-        # cv2.imwrite(os.path.join(photo_path, file_name), flipped_frame)
-        cv2.imwrite(os.path.join(photo_path, file_name))
+        # Annotate the frame (optional)
+        #annotate_frame(m.array, now)  # Assuming annotate_frame is defined elsewhere
+        # Save the frame to file
+        cv2.imwrite(os.path.join(photo_path, file_name), m.array)
 
     request.release()
-    logger.info("Capture picture = %s", file_name)
+
+    # Revert to the previous configuration
+    camera.configure(camera.create_preview_configuration())
+    camera.start()
+
+    logger.info("Captured picture = %s", file_name)
 
 
 def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo_path):
