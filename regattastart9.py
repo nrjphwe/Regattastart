@@ -213,38 +213,6 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
         logger.info(f"End of iteration {i + 1}")
 
 
-# Start Video Recording (OpenCV)
-def start_video_recording_old(cam, video_path, file_name):
-    fps = cam.get(cv2.CAP_PROP_FPS)
-    # width = int(cam.preview_configuration.main.size[0])  # Get the width from preview configuration
-    # height = int(cam.preview_configuration.main.size[1])  # Get the height from preview configuration
-    width = int(cam.get(cv2.CAP_PROP_FRAME_WIDTH))
-    height = int(cam.get(cv2.CAP_PROP_FRAME_HEIGHT))
-    frame_size = (width, height)
-    logger.info(f"start_video_recording, camera frame size: {frame_size}")
-    output_file = os.path.join(video_path, file_name)
-
-    # Initialize the video writer (XVID codec or similar)
-    fourcc = cv2.VideoWriter_fourcc(*'XVID')  # Use 'XVID' for .avi, or 'mp4v' for .mp4
-    video_writer = cv2.VideoWriter(output_file, fourcc, fps, frame_size)
-    logger.info(f"Recording started: {file_name}")
-
-    while True:
-        ret, frame = cam.read()
-        if not ret:
-            logger.error("Failed to capture frame")
-            break
-
-        # Annotate the frame with the current timestamp
-        timestamp = dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        cv2.putText(frame, timestamp, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA)
-
-        # Write the frame to the video file
-        video_writer.write(frame)
-    video_writer.release()
-    logger.info(f"Recording saved to {output_file}")
-
-
 # previous used annotation
 def annotate_video_duration(camera, start_time_sec):
     time_now = dt.datetime.now()
@@ -328,30 +296,18 @@ def video_recording(cam, video_path, file_name, duration=None):
     logger.info("Stopped video recording of %s ", file_name)
 
 
-def convert_video_to_mp4(video_path, input_file, output_file):
+def process_video(video_path, input_file, output_file, frame_rate=None):
     source = os.path.join(video_path, input_file)
     dest = os.path.join(video_path, output_file)
-    command = ["ffmpeg", "-i", source, "-vcodec", "libx264", "-crf", "23", "-preset", "fast", dest]
+
+    command = ["ffmpeg", "-i", source, "-vcodec", "libx264", "-crf", "23", "-preset", "fast"]
+
+    if frame_rate:
+        command.extend(["-vf", f"fps={frame_rate}"])
+
+    command.append(dest)
     subprocess.run(command, check=True)
-    logger.info("Video recording %s converted ", output_file)
-
-
-def convert_video_to_mp4_old(video_path, source_file, destination_file):
-    convert_video_str = "MP4Box -add {} -fps 20 -new {}".format(
-        os.path.join(video_path, source_file),
-        os.path.join(video_path, destination_file)
-    )
-    subprocess.run(convert_video_str, shell=True)
-    logger.info("Video recording %s converted ", destination_file)
-
-
-def re_encode_video(video_path, source_file, destination_file):
-    re_encode_video_str = "ffmpeg -loglevel error -i {} -vf fps=20 -vcodec libx264 -f mp4 {}".format(
-        os.path.join(video_path, source_file),
-        os.path.join(video_path, destination_file)
-    )
-    subprocess.run(re_encode_video_str, shell=True)
-    logger.info("Video %s re-encoded ", destination_file)
+    logger.info("Video processed: %s", output_file)
 
 
 def cv_annotate_video(frame, start_time_sec):
@@ -466,7 +422,7 @@ def finish_recording(picam2, video_path, num_starts, video_end, start_time):
 
     start_time = time.time()  # Record the start time of the recording
     max_duration = 60 * (video_end + 5 * (num_starts - 1))
-    logger.info(f"Video1, max recording duration: {max_duration} seconds")
+    logger.debug(f"Video1, max recording duration: {max_duration} seconds")
 
     while not recording_stopped:
         logger.info(f"recording_stopped= {recording_stopped}")
@@ -475,7 +431,7 @@ def finish_recording(picam2, video_path, num_starts, video_end, start_time):
         except Exception as e:
             logger.error(f"Failed to capture frame: {e}")
             break  # Exit the loop if the camera fails
-        logger.debug(f"   frame= {frame}")
+
         # frame = cv2.flip(frame, cv2.ROTATE_180)  # camera is upside down"
         pre_detection_buffer.append(frame)  # Add the frame to pre-detection buffer
 
@@ -487,7 +443,7 @@ def finish_recording(picam2, video_path, num_starts, video_end, start_time):
             break  # Exit the loop or handle it appropriately
 
         detections = results.pandas().xyxy[0]  # Results as a DataFrame
-        logger.debug(f"detections: {detections}")
+        # logger.debug(f"detections: {detections}")
 
         # Process detections
         for _, row in detections.iterrows():
@@ -531,7 +487,7 @@ def finish_recording(picam2, video_path, num_starts, video_end, start_time):
 
     # cam.release()  # Don't forget to release the camera resources when done
     video_writer.release()  # Release the video writer
-    logger.info("cam.release and video_writer release, exited the finish_recording module.")
+    logger.info("video_writer release, exited the finish_recording module.")
 
 
 def stop_listen_thread():
@@ -612,8 +568,8 @@ def main():
                             time.sleep(0.9)  # Small delay to reduce CPU usage
                         stop_video_recording(cam)
                         logger.debug("Stopping video0 recording after after annotate and write frames")
-                        convert_video_to_mp4(video_path, "video0.avi", "video0.mp4")
-                        logger.debug("Video0 recording stopped and converted to mp4")
+                        process_video(video_path, "video0.avi", "video0.mp4", frame_rate=20)
+                        logger.debug("Video0 converted to mp4")
 
                     # Exit the loop after the if condition is met
                     break
@@ -643,15 +599,14 @@ def main():
             logger.info("listen_thread finished")
 
         time.sleep(2)
-        convert_video_to_mp4(video_path, "video1.avi", "video1.mp4")
-        # re_encode_video(video_path, "video1.avi", "video1.mp4")
+        process_video(video_path, "video1.avi", "video1.mp4")
 
         # After video conversion is complete
         with open('/var/www/html/status.txt', 'w') as status_file:
             status_file.write('complete')
         logger.info("Finished with finish_recording and recording converted to mp4")
 
-        # cam.release()  # Release camera resources
+        cam.release()  # Release camera resources
 
         GPIO.cleanup()
         logger.info("After GPIO.cleanup, end of program")
