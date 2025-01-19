@@ -465,13 +465,22 @@ def finish_recording(picam2, video_path, num_starts, video_end, start_time):
 
     while not recording_stopped:
         logger.info(f"recording_stopped= {recording_stopped}")
-        frame = picam2.capture_array()  # Capture frame as numpy array
+        try:
+            frame = picam2.capture_array()
+        except Exception as e:
+            logger.error(f"Failed to capture frame: {e}")
+            break  # Exit the loop if the camera fails
         logger.debug(f"   frame= {frame}")
         # frame = cv2.flip(frame, cv2.ROTATE_180)  # camera is upside down"
         pre_detection_buffer.append(frame)  # Add the frame to pre-detection buffer
 
         # Perform inference using YOLOv5
-        results = model(frame)
+        try:
+            results = model(frame)
+        except Exception as e:
+            logger.error(f"YOLOv5 inference failed: {e}")
+            break  # Exit the loop or handle it appropriately
+
         detections = results.pandas().xyxy[0]  # Results as a DataFrame
         logger.debug(f"detections: {detections}")
 
