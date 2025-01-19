@@ -452,8 +452,8 @@ def finish_recording(picam2, video_path, num_starts, video_end, start_time):
     logger.info(f"Camera frame size: {frame_size}")
 
     # setup video writer
-    fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # H.264 codec with MP4 container
-    video_writer = cv2.VideoWriter(video_path + 'video1' + '.mp4', fourcc, fpsw, frame_size)
+    fourcc = cv2.VideoWriter_fourcc(*'XVID')  # Use 'XVID' for .avi, or 'mp4v' for .mp4
+    video_writer = cv2.VideoWriter(video_path + 'video1' + '.AVI', fourcc, fpsw, frame_size)
 
     if not video_writer.isOpened():
         logger.error("VideoWriter failed to initialize.")
@@ -643,7 +643,8 @@ def main():
             logger.info("listen_thread finished")
 
         time.sleep(2)
-        re_encode_video(video_path, "video1.avi", "video1.mp4")
+        convert_video_to_mp4(video_path, "video1.avi", "video1.mp4")
+        # re_encode_video(video_path, "video1.avi", "video1.mp4")
 
         # After video conversion is complete
         with open('/var/www/html/status.txt', 'w') as status_file:
