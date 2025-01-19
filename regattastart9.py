@@ -158,22 +158,21 @@ def capture_picture(camera, photo_path, file_name):
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     # Temporarily override the transform to disable flipping
-    #still_config = camera.create_still_configuration(transform=Transform(hflip=False, vflip=False))
-    #camera.configure(still_config)
+    # still_config = camera.create_still_configuration(transform=Transform(hflip=False, vflip=False))
+    # camera.configure(still_config)
 
     # Capture a single request
-    request = camera.capture_request()
-    with MappedArray(request, "main") as m:
-        # Annotate the frame (optional)
-        annotate_frame(m.array, now)  # Assuming annotate_frame is defined elsewhere
-        cv2.imwrite(os.path.join(photo_path, file_name), m.array)
-        # cv2.imwrite(os.path.join(photo_path, file_name))
+    #request = camera.capture_request()
+    #with MappedArray(request, "main") as m:
+    #    # Annotate the frame (optional)
+    #    annotate_frame(m.array, now)  # Assuming annotate_frame is defined elsewhere
+    #    cv2.imwrite(os.path.join(photo_path, file_name), m.array)
 
-    request.release()
+    cv2.imwrite(os.path.join(photo_path, file_name))
+    #request.release()
 
     # Revert to the previous configuration
-    #camera.configure(camera.create_preview_configuration())
-    
+    # camera.configure(camera.create_preview_configuration())
     camera.start()
 
     logger.info("Captured picture = %s", file_name)
