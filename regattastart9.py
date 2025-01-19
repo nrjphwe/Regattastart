@@ -139,7 +139,7 @@ def annotate_frame(frame, text):
     # height, width, _ = frame.shape
     # top_left = (int(width * 0.25), int(height * 0.25))
     # bottom_right = (int(width * 0.75), int(height * 0.75))
-    # ßcolor = (0, 255, 0)  # Green in BGR
+    # color = (0, 255, 0)  # Green in BGR
 
     # Calculate text size and background rectangle
     (text_width, text_height), _ = cv2.getTextSize(text, fontFace, fontScale, thickness)
@@ -159,7 +159,7 @@ def capture_picture(camera, photo_path, file_name):
     # Capture a single request
     request = camera.capture_request()
     with MappedArray(request, "main") as m:
-        annotate_frame(m.array, now)
+        #annotate_frame(m.array, now)
         cv2.imwrite(os.path.join(photo_path, file_name), m.array)
 
     request.release()
@@ -227,8 +227,9 @@ def annotate_video_duration(camera, start_time_sec):
 def apply_timestamp(request):
     timestamp = time.strftime("%Y-%m-%d %X")  # Current timestamp
     colour = (0, 255, 0)  # Green text
-    origin = (10, 30)  # Position on frame
-    font = cv2.FONT_HERSHEY_SIMPLEX
+    origin = (15, 60)  # Position on frame
+    # font = cv2.FONT_HERSHEY_SIMPLEX
+    font = cv2.FONT_HERSHEY_DUPLEX
     scale = 1
     thickness = 1
 
@@ -295,7 +296,7 @@ def video_recording(cam, video_path, file_name, duration=None):
             break
 
     video_writer.release()
-    cv2.destroyAllWindows()
+    # cv2.destroyAllWindows()
     logger.info("Stopped video recording of %s ", file_name)
 
 
