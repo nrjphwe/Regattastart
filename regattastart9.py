@@ -143,9 +143,9 @@ def annotate_frame(frame, text):
     # color = (0, 255, 0)  # Green in BGR
 
     # Calculate text size and background rectangle
-    (text_width, text_height), _ = cv2.getTextSize(text, fontFace, fontScale, thickness)
-    top_left = (org[0], org[1] - text_height - 5)
-    bottom_right = (org[0] + text_width + 10, org[1] + 5)
+    # (text_width, text_height), _ = cv2.getTextSize(text, fontFace, fontScale, thickness)
+    # top_left = (org[0], org[1] - text_height - 5)
+    # bottom_right = (org[0] + text_width + 10, org[1] + 5)
 
     # Draw background rectangle for the timestamp
     # cv2.rectangle(frame, top_left, bottom_right, color, thickness)
@@ -154,7 +154,7 @@ def annotate_frame(frame, text):
     cv2.putText(frame, text, org, fontFace, fontScale, color, thickness, lineType)
 
 
-def capture_picture_gpt(camera, photo_path, file_name):
+def capture_picture(camera, photo_path, file_name):
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     # Temporarily override the transform to disable flipping
@@ -165,9 +165,9 @@ def capture_picture_gpt(camera, photo_path, file_name):
     request = camera.capture_request()
     with MappedArray(request, "main") as m:
         # Annotate the frame (optional)
-        # annotate_frame(m.array, now)  # Assuming annotate_frame is defined elsewhere
-        # cv2.imwrite(os.path.join(photo_path, file_name), m.array)
-        cv2.imwrite(os.path.join(photo_path, file_name))
+        annotate_frame(m.array, now)  # Assuming annotate_frame is defined elsewhere
+        cv2.imwrite(os.path.join(photo_path, file_name), m.array)
+        # cv2.imwrite(os.path.join(photo_path, file_name))
 
     request.release()
 
@@ -178,8 +178,7 @@ def capture_picture_gpt(camera, photo_path, file_name):
     logger.info("Captured picture = %s", file_name)
 
 
-
-def capture_picture(cam, photo_path, file_name):
+def capture_picture_old(cam, photo_path, file_name):
     '''
     org = (15, 60)  # x = 15 from left, y = 60 from top) 
     fontFace = cv2.FONT_HERSHEY_DUPLEX
@@ -207,7 +206,7 @@ def capture_picture(cam, photo_path, file_name):
     # Rotate the frame by 180 degrees
     frame = cv2.rotate(frame, cv2.ROTATE_180)
     # Annotate the frame with the current date and time
-    current_time = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    # current_time = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
     #(text_width, text_height), _ = cv2.getTextSize(current_time, fontFace,
     #                                               fontScale, thickness)
