@@ -114,15 +114,13 @@ def setup_picam2(resolution=(640, 480), fps=5):
     picam2 = Picamera2()
 
     # Configure preview settings
+    # Apply 180-degree rotation (horizontal and vertical flip)
     preview_config = picam2.create_preview_configuration(
         main={"size": resolution, "format": "RGB888"},
         controls={"FrameRate": fps}, 
         transform=Transform(hflip=True, vflip=True)  # Apply horizontal and vertical flips
     )
     picam2.configure(preview_config)
-
-    # Apply 180-degree rotation (horizontal and vertical flip)
-    #picam2.set_controls({"transform": {"hflip": True, "vflip": True}})
 
     picam2.start()  # Start the camera
 
@@ -164,9 +162,10 @@ def capture_picture(camera, photo_path, file_name):
     with MappedArray(request, "main") as m:
         # annotate_frame(m.array, now)
         # Flip the frame vertically and horizontally (180-degree rotation)
-        flipped_frame = cv2.flip(m.array, -1)  # -1 flips both axes
+        #flipped_frame = cv2.flip(m.array, -1)  # -1 flips both axes
         # rotated_frame = cv2.rotate(m.array, cv2.ROTATE_90_CLOCKWISE)
-        cv2.imwrite(os.path.join(photo_path, file_name), flipped_frame)
+        # cv2.imwrite(os.path.join(photo_path, file_name), flipped_frame)
+        cv2.imwrite(os.path.join(photo_path, file_name))
 
     request.release()
     logger.info("Capture picture = %s", file_name)
