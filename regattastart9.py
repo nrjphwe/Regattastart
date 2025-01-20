@@ -484,7 +484,7 @@ def finish_recording(picam2, video_path, num_starts, video_end, start_time):
         logger.debug(f"Confidence: {confidence}, Class Name: {class_name}")
         if confidence > 0.42 and class_name == 'boat':  # Check if detection is a boat
             boat_in_current_frame = True
-            #logger.info("Boat detected, saving pre-detection frames.")
+            # logger.info("Boat detected, saving pre-detection frames.")
 
             # Write pre-detection frames to video
             while pre_detection_buffer:
@@ -515,6 +515,7 @@ def finish_recording(picam2, video_path, num_starts, video_end, start_time):
             logger.info('Video1 recording stopped')
             break
 
+    stop_video_recording(picam2)
     # cam.release()  # Don't forget to release the camera resources when done
     video_writer.release()  # Release the video writer
     logger.info("video_writer release, exited the finish_recording module.")
