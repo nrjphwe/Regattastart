@@ -154,31 +154,22 @@ def annotate_frame(frame, text):
     cv2.putText(frame, text, org, fontFace, fontScale, color, thickness, lineType)
 
 
-def capture_picture_gpt(camera, photo_path, file_name):
-    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
-    # Temporarily override the transform to disable flipping
-    # still_config = camera.create_still_configuration(transform=Transform(hflip=False, vflip=False))
-    # camera.configure(still_config)
+def capture_picture(camera, photo_path, file_name):
 
     # Capture a single request
-    #request = camera.capture_request()
-    #with MappedArray(request, "main") as m:
-    #    # Annotate the frame (optional)
-    #    annotate_frame(m.array, now)  # Assuming annotate_frame is defined elsewhere
-    #    cv2.imwrite(os.path.join(photo_path, file_name), m.array)
+    request = camera.capture_request()
+    with MappedArray(request, "main") as m:
+        frame = m.array  # Get the frame as a NumPy array
+        # Rotate the frame by 180 degrees
+        rotated_frame = cv2.rotate(frame, cv2.ROTATE_180)
+        # Save the rotated frame to the file
+        cv2.imwrite(os.path.join(photo_path, file_name), rotated_frame)
 
-    cv2.imwrite(os.path.join(photo_path, file_name))
-    # request.release()
-
-    # Revert to the previous configuration
-    # camera.configure(camera.create_preview_configuration())
-    camera.start()
-
+    request.release()
     logger.info("Captured picture = %s", file_name)
 
 
-def capture_picture(cam, photo_path, file_name):
+def capture_picture_CV(cam, photo_path, file_name):
     # Capture the frame to be saved
     ret, frame = cam.read()
     if not ret:
