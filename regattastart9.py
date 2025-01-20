@@ -161,9 +161,10 @@ def capture_picture(camera, photo_path, file_name):
     with MappedArray(request, "main") as m:
         frame = m.array  # Get the frame as a NumPy array
         # Rotate the frame by 180 degrees
-        rotated_frame = cv2.rotate(frame, cv2.ROTATE_180)
+        # rotated_frame = cv2.rotate(frame, cv2.ROTATE_180)
         # Save the rotated frame to the file
-        cv2.imwrite(os.path.join(photo_path, file_name), rotated_frame)
+        # cv2.imwrite(os.path.join(photo_path, file_name), rotated_frame)
+        cv2.imwrite(os.path.join(photo_path, file_name), frame)
 
     request.release()
     logger.info("Captured picture = %s", file_name)
@@ -178,27 +179,9 @@ def capture_picture_CV(cam, photo_path, file_name):
 
     # Rotate the frame by 180 degrees
     frame = cv2.rotate(frame, cv2.ROTATE_180)
-    # Annotate the frame with the current date and time
-    # current_time = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-
-    #(text_width, text_height), _ = cv2.getTextSize(current_time, fontFace,
-    #                                               fontScale, thickness)
-    # Define background rectangle coordinates
-    #top_left = (org[0], org[1] - text_height) 
-    #bottom_right = (int(org[0] + text_width), int(org[1] + (text_height/2)))
-
-    # Draw filled rectangle as background for the text
-    #cv2.rectangle(frame, top_left, bottom_right, (255, 255, 255), cv2.FILLED)
-
-    # Draw text on top of the background
-    #cv2.putText(frame, current_time, org, fontFace, fontScale, color,
-    #            thickness, lineType)
-
     cv2.imwrite(os.path.join(photo_path, file_name), frame)
     time.sleep(0.3)  # sleep 0.3 sec
     logger.info("Capture picture = %s", file_name)
-
-
 
 
 
@@ -465,7 +448,7 @@ def finish_recording(picam2, video_path, num_starts, video_end, start_time):
     logger.debug(f"Video1, max recording duration: {max_duration} seconds")
 
     while not recording_stopped:
-        #logger.debug(f"recording_stopped= {recording_stopped}")
+        # logger.debug(f"recording_stopped= {recording_stopped}")
         try:
             frame = picam2.capture_array()
         except Exception as e:
