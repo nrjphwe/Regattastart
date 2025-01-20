@@ -117,7 +117,7 @@ def setup_picam2(resolution=(640, 480), fps=5):
     # Apply 180-degree rotation (horizontal and vertical flip)
     preview_config = picam2.create_preview_configuration(
         main={"size": resolution, "format": "RGB888"},
-        controls={"FrameRate": fps}, 
+        controls={"FrameRate": fps},
         transform=Transform(hflip=True, vflip=True)  # Apply horizontal and vertical flips
     )
     picam2.configure(preview_config)
@@ -169,7 +169,7 @@ def capture_picture_gpt(camera, photo_path, file_name):
     #    cv2.imwrite(os.path.join(photo_path, file_name), m.array)
 
     cv2.imwrite(os.path.join(photo_path, file_name))
-    #request.release()
+    # request.release()
 
     # Revert to the previous configuration
     # camera.configure(camera.create_preview_configuration())
