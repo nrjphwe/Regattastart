@@ -644,6 +644,7 @@ def main():
 
         sys.exit(0)  # Exit the program cleanly
 
+
 if __name__ == "__main__":
     # logging.basicConfig(level=logging.WARNING)  # Set log level to WARNING
     try:
@@ -652,3 +653,4 @@ if __name__ == "__main__":
         logger.error(f"An unhandled exception occurred: {e}", exc_info=True)
     finally:
         logger.info("Exiting program")
+        sys.exit(0)  # Exit the program cleanly
