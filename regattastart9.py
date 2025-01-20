@@ -30,6 +30,13 @@ import threading
 import time
 import torch
 import tempfile  # to check the php temp file
+import warnings
+warnings.filterwarnings(
+    "ignore",
+    message="`torch.cuda.amp.autocast(args...)` is deprecated",
+    category=FutureWarning
+)
+
 
 picamera2_logger = logging.getLogger('picamera2')
 picamera2_logger.setLevel(logging.ERROR)  # Change to ERROR to suppress more logs
