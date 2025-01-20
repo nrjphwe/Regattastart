@@ -641,7 +641,13 @@ def main():
         GPIO.cleanup()
         logger.info("After GPIO.cleanup, end of program")
 
+        sys.exit(0)  # Exit the program cleanly
 
 if __name__ == "__main__":
     # logging.basicConfig(level=logging.WARNING)  # Set log level to WARNING
-    main()
+    try:
+        main()
+    except Exception as e:
+        logger.error(f"An unhandled exception occurred: {e}", exc_info=True)
+    finally:
+        logger.info("Exiting program")
