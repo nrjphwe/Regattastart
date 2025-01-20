@@ -31,10 +31,12 @@ import time
 import torch
 import tempfile  # to check the php temp file
 import warnings
+
 warnings.filterwarnings(
     "ignore",
     message="`torch.cuda.amp.autocast(args...)` is deprecated",
-    category=FutureWarning
+    category=FutureWarning,
+    module=".*ultralytics_yolov5_master.*"
 )
 
 
