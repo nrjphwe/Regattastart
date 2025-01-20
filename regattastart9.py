@@ -465,7 +465,7 @@ def finish_recording(picam2, video_path, num_starts, video_end, start_time):
     logger.debug(f"Video1, max recording duration: {max_duration} seconds")
 
     while not recording_stopped:
-        logger.info(f"recording_stopped= {recording_stopped}")
+        #logger.debug(f"recording_stopped= {recording_stopped}")
         try:
             frame = picam2.capture_array()
         except Exception as e:
@@ -494,7 +494,7 @@ def finish_recording(picam2, video_path, num_starts, video_end, start_time):
         logger.debug(f"Confidence: {confidence}, Class Name: {class_name}")
         if confidence > 0.2 and class_name == 'boat':  # Check if detection is a boat
             boat_in_current_frame = True
-            logger.info("Boat detected, saving pre-detection frames.")
+            #logger.info("Boat detected, saving pre-detection frames.")
 
             # Write pre-detection frames to video
             while pre_detection_buffer:
