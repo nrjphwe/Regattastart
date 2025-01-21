@@ -601,29 +601,36 @@ def main():
         time.sleep(2)
         finish_recording(cam, video_path, num_starts, video_end, start_time)
         logger.info("After finished_recording")
+        try:
+            stop_event.set() # Signal the listening thread to stop
+            listen_thread.join(timeout=10)
+            if listen_thread.is_alive():
+                logger.info("listen_thread is still alive after timeout")
+            else:
+                logger.info("listen_thread finished")
 
-        # Signal the listening thread to stop
-        stop_event.set()
-        listen_thread.join(timeout=10)
-        if listen_thread.is_alive():
-            logger.info("listen_thread is still alive after timeout")
-        else:
-            logger.info("listen_thread finished")
+            time.sleep(2)
+            process_video(video_path, "video1.avi", "video1.mp4")
 
-        time.sleep(2)
-        process_video(video_path, "video1.avi", "video1.mp4")
+            # After video conversion is complete
+            with open('/var/www/html/status.txt', 'w') as status_file:
+                status_file.write('complete')
+            logger.info("Finished with finish_recording and recording converted to mp4")
 
-        # After video conversion is complete
-        with open('/var/www/html/status.txt', 'w') as status_file:
-            status_file.write('complete')
-        logger.info("Finished with finish_recording and recording converted to mp4")
+        except Exception as e:
+            logger.error(f"An error occurred in the 'finally' section: {e}", exc_info=True)
 
-        stop_video_recording(cam)
+        finally:
+            # Stop video recording and clean up camera resources
+            logger.info("Stopping video recording")
+            stop_video_recording(cam)
 
-        GPIO.cleanup()
-        logger.info("After GPIO.cleanup, end of program")
+            GPIO.cleanup()
+            logger.info("After GPIO.cleanup, end of program")
 
-        sys.exit(0)  # Exit the program cleanly
+            # Log the end of the program
+            logger.info("Program has ended")         
+            sys.exit(0)  # Exit the program cleanly
 
 
 if __name__ == "__main__":
@@ -634,4 +641,4 @@ if __name__ == "__main__":
         logger.error(f"An unhandled exception occurred: {e}", exc_info=True)
     finally:
         logger.info("Exiting program")
-        sys.exit(0)  # Exit the program cleanly
+        # sys.exit(0)  # Exit the program cleanly
