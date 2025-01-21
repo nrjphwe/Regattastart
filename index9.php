@@ -4,6 +4,10 @@
     header("Access-Control-Allow-Headers: *");
 
     define('APP_VERSION', '24.12.17'); // You can replace '1.0.0' with your desired version number
+    // Set session lifetime to a day (86400 seconds)
+    ini_set('session.gc_maxlifetime', 86400);
+    ini_set('session.cookie_lifetime', 86400);
+    
     session_id("regattastart");
     session_start();
     ini_set('display_errors', 1);
@@ -11,9 +15,6 @@
 
     // Unset the session variable set in index.php
     unset($_SESSION['stopRecordingPressed']);
-    // Set session lifetime to a day (86400 seconds)
-    ini_set('session.gc_maxlifetime', 86400);
-    ini_set('session.cookie_lifetime', 86400);
 
     if (isset($_SESSION["form_data"])) {
         echo '<pre>';
@@ -83,8 +84,10 @@
 <!-- Text on top of page retrieved from index6 or index9 -->
 <div style="text-align: center;">
     <?php
-    function console_log($message) {
-        echo "<script>console.log(". json_encode($message) .");</script>";
+    if (!function_exists('console_log')) {
+        function console_log($message) {
+            echo "<script>console.log(". json_encode($message) .");</script>";
+        }
     }
 
     if (isset($_SESSION['form_data']) && is_array($_SESSION['form_data'])) {
