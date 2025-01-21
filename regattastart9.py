@@ -432,7 +432,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time):
     boat_in_current_frame = False
 
     start_time = time.time()  # Record the start time of the recording
-    max_duration = video_end
+    max_duration = video_end * 60
     logger.debug(f"Video1, max recording duration: {max_duration} seconds")
 
     while not recording_stopped:
@@ -488,7 +488,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time):
         # Check if recording should stop
         elapsed_time = time.time() - start_time
         if elapsed_time >= max_duration:
-            logger.info("Maximum recording time reached.")
+            logger.debug(f"Maximum recording time reached, elapsed _time={elapsed_time}")
             recording_stopped = True
             break
 
