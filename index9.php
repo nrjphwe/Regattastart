@@ -1,11 +1,20 @@
 <?php
+    header("Access-Control-Allow-Origin: *");
+    header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+    header("Access-Control-Allow-Headers: *");
+
     define('APP_VERSION', '24.12.17'); // You can replace '1.0.0' with your desired version number
     session_id("regattastart");
     session_start();
-    // Unset the session variable set in index.php
-    unset($_SESSION['stopRecordingPressed']);
     ini_set('display_errors', 1);
     error_reporting(E_ALL);
+
+    // Unset the session variable set in index.php
+    unset($_SESSION['stopRecordingPressed']);
+    // Set session lifetime to a day (86400 seconds)
+    ini_set('session.gc_maxlifetime', 86400);
+    ini_set('session.cookie_lifetime', 86400);
+    
     if (isset($_SESSION["form_data"])) {
         echo '<pre>';
         print_r($_SESSION["form_data"]);
