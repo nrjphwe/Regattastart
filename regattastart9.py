@@ -268,45 +268,6 @@ def stop_video_recording(cam):
     logger.info("Recording stopped.")
 
 
-def video_recording(cam, video_path, file_name, duration=None):
-    fps = 5  # number of frames written per second
-    width = int(cam.get(cv2.CAP_PROP_FRAME_WIDTH))
-    height = int(cam.get(cv2.CAP_PROP_FRAME_HEIGHT))
-    frame_size = (width, height)
-    logger.info(f"Camera frame size: {frame_size}")
-    logger.info(f"Recording duration: {duration} seconds")
-
-    fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # H.264 codec with MP4 container
-    video_writer = cv2.VideoWriter(os.path.join(video_path, file_name + '.mp4'), fourcc, fps, frame_size)
-
-    logger.info("Started video recording of %s", file_name)
-    start_time = time.time()
-
-    while True:
-        ret, frame = cam.read()
-        if not ret:
-            logger.error("Failed to capture frame")
-            break
-        else:
-            logger.debug("Captured frame successfully")
-
-        # Rotate the frame by 180 degrees
-        # frame = cv2.rotate(frame, cv2.ROTATE_180)
-        video_writer.write(frame)
-
-        # Log elapsed time
-        elapsed_time = time.time() - start_time
-        logger.debug(f"Elapsed time: {elapsed_time:.2f} seconds")
-
-        if duration and elapsed_time > duration:
-            logger.info("Recording duration exceeded. Stopping recording.")
-            break
-
-    video_writer.release()
-    # cv2.destroyAllWindows()
-    logger.info("Stopped video recording of %s ", file_name)
-
-
 def process_video(video_path, input_file, output_file, frame_rate=None):
     source = os.path.join(video_path, input_file)
     dest = os.path.join(video_path, output_file)
@@ -437,7 +398,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time):
     post_detection_frames = 50  # Frames to record after detection
     boat_in_current_frame = False
 
-    start_time = time.time()  # Record the start time of the recording
+    # start_time = time.time()  # Record the start time of the recording
     max_duration = video_end * 60
     logger.debug(f"Video1, max recording duration: {max_duration} seconds")
 
