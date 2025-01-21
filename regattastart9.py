@@ -479,7 +479,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time):
 
             # Draw bounding boxes and save post-detection frames
             for _ in range(post_detection_frames):
-                cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
+                cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 1)
                 cv2.putText(frame, f"{class_name} {confidence:.2f}", (x1, y1 - 10),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
                 video_writer.write(frame)
