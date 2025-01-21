@@ -233,8 +233,8 @@ def annotate_video_duration(camera, start_time_sec):
     elapsed_time = seconds_since_midnight - start_time_sec  # elapsed since last star until now)
     camera.annotate_text = f"{dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Seconds since last start: {elapsed_time}"
 
-# Function for adding the timestamp
-def apply_timestamp(request):
+
+def apply_timestamp(request):  # Function for adding the timestamp
     timestamp = time.strftime("%Y-%m-%d %X")  # Current timestamp
     colour = (0, 255, 0)  # Green text
     origin = (15, 50)  # Position on frame
@@ -357,44 +357,50 @@ def stop_recording():
     listening = False  # Set flag to False to terminate the loop in listen_for_messages
 
 
-def listen_for_messages(timeout=0.1):
+def listen_for_messages(stop_event, timeout=0.1):
     global listening  # Use global flag
     logger.info("listen_for_messages from PHP script via a named pipe")
     pipe_path = '/var/www/html/tmp/stop_recording_pipe'
     logger.info(f"pipepath = {pipe_path}")
-
-    while listening:
+    while not stop_event.is_set():
         try:
-            if os.path.exists(pipe_path):
-                if os.path.isdir(pipe_path):
-                    logger.error(f"{pipe_path} is a directory. Remove it or use another path.")
-                    raise IsADirectoryError(f"{pipe_path} is a directory.")
-                else:
-                    os.unlink(pipe_path)  # Remove existing file or pipe
-        except OSError as e:
-            if e.errno != errno.ENOENT:  # Ignore if file doesn't exist
-                logger.error(f"os.unlink -> OS error: {e.errno}")
-                raise
-        try:
-            os.mkfifo(pipe_path)  # Create a new named pipe
-        except OSError as e:
-            logger.error(f"Failed to create pipe: {e}")
-            raise
-        try:
-            with open(pipe_path, 'r') as fifo:
-                # Use select to wait for input with a timeout
-                rlist, _, _ = select.select([fifo], [], [], timeout)
-                if rlist:
-                    message = fifo.readline().strip()
-                    if message == 'stop_recording':
-                        stop_recording()
-                        logger.info("Message == stop_recording")
-                        break  # Exit the loop when stop_recording received
-            logger.info("end of with open(pipe_path, r)")
-        except OSError as e:
-            logger.error(f"Error while opening or reading pipe: {e}")
-            raise
-    logger.info("Listening thread terminated")
+            while listening:
+                try:
+                    if os.path.exists(pipe_path):
+                        if os.path.isdir(pipe_path):
+                            logger.error(f"{pipe_path} is a directory. Remove it or use another path.")
+                            raise IsADirectoryError(f"{pipe_path} is a directory.")
+                        else:
+                            os.unlink(pipe_path)  # Remove existing file or pipe
+                except OSError as e:
+                    if e.errno != errno.ENOENT:  # Ignore if file doesn't exist
+                        logger.error(f"os.unlink -> OS error: {e.errno}")
+                        raise
+                try:
+                    os.mkfifo(pipe_path)  # Create a new named pipe
+                except OSError as e:
+                    logger.error(f"Failed to create pipe: {e}")
+                    raise
+                try:
+                    with open(pipe_path, 'r') as fifo:
+                        # Use select to wait for input with a timeout
+                        rlist, _, _ = select.select([fifo], [], [], timeout)
+                        if rlist:
+                            message = fifo.readline().strip()
+                            if message == 'stop_recording':
+                                stop_recording()
+                                logger.info("Message == stop_recording")
+                                break  # Exit the loop when stop_recording received
+                    logger.info("end of with open(pipe_path, r)")
+                except OSError as e:
+                    logger.error(f"Error while opening or reading pipe: {e}")
+                    raise
+            logger.info("Listening thread terminated")
+            time.sleep(1)  # Add a small delay to prevent high CPU usage
+        except Exception as e:
+            logger.error(f"Error in listen_for_messages: {e}", exc_info=True)
+            break
+    logger.info("Listening thread exiting")
 
 
 def finish_recording(cam, video_path, num_starts, video_end, start_time):
@@ -594,7 +600,7 @@ def main():
     finally:
         logger.info("Finally section, before listen_for_message")
         # Start a thread for listening for messages with a timeout
-        listen_thread = threading.Thread(target=listen_for_messages)
+        listen_thread = threading.Thread(target=listen_for_messages, args=(stop_event,))
         listen_thread.start()
 
         logger.info("Finally section, before 'Finish recording'. start_time=%s video_end=%s", start_time, video_end)
@@ -602,7 +608,7 @@ def main():
         finish_recording(cam, video_path, num_starts, video_end, start_time)
         logger.info("After finished_recording")
         try:
-            stop_event.set() # Signal the listening thread to stop
+            stop_event.set()  # Signal the listening thread to stop
             listen_thread.join(timeout=10)
             if listen_thread.is_alive():
                 logger.info("listen_thread is still alive after timeout")
@@ -621,16 +627,18 @@ def main():
             logger.error(f"An error occurred in the 'finally' section: {e}", exc_info=True)
 
         finally:
-            # Stop video recording and clean up camera resources
-            logger.info("Stopping video recording")
-            stop_video_recording(cam)
+            try:
+                stop_video_recording(cam) # Ensure the camera recording is stopped
+                cam.close()           # Release the camera resources
+            except Exception as e:
+                logger.error(f"Error while cleaning up camera: {e}")
 
             GPIO.cleanup()
             logger.info("After GPIO.cleanup, end of program")
 
             # Log the end of the program
-            logger.info("Program has ended")         
-            sys.exit(0)  # Exit the program cleanly
+            logger.info("Program has ended")
+            os._exit(0)  # Forcibly terminate the process
 
 
 if __name__ == "__main__":
