@@ -469,7 +469,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time):
             x1, y1, x2, y2 = int(row['xmin']), int(row['ymin']), int(row['xmax']), int(row['ymax'])
 
         logger.debug(f"Confidence: {confidence}, Class Name: {class_name}")
-        if confidence > 0.42 and class_name == 'boat':  # Check if detection is a boat
+        if confidence > 0.3 and class_name == 'boat':  # Check if detection is a boat
             boat_in_current_frame = True
             # logger.info("Boat detected, saving pre-detection frames.")
 
