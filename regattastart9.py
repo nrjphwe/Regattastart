@@ -310,6 +310,10 @@ def video_recording(cam, video_path, file_name, duration=None):
 def process_video(video_path, input_file, output_file, frame_rate=None):
     source = os.path.join(video_path, input_file)
     dest = os.path.join(video_path, output_file)
+    if not os.path.exists(source) or os.path.getsize(source) <= 6000:
+        logger.debug(f"Warning: {input_file} is empty or does not exist. Skipping conversion.")
+        return
+
     command = ["ffmpeg", "-i", source, "-vcodec", "libx264", "-crf", "23", "-preset", "fast"]
 
     if frame_rate:
