@@ -14,7 +14,7 @@
     // Set session lifetime to a day (86400 seconds)
     ini_set('session.gc_maxlifetime', 86400);
     ini_set('session.cookie_lifetime', 86400);
-    
+
     if (isset($_SESSION["form_data"])) {
         echo '<pre>';
         print_r($_SESSION["form_data"]);
@@ -83,44 +83,30 @@
 <!-- Text on top of page retrieved from index6 or index9 -->
 <div style="text-align: center;">
     <?php
-        if (isset($_SESSION['form_data']) && is_array($_SESSION['form_data'])) {
+    function console_log($message) {
+        echo "<script>console.log(". json_encode($message) .");</script>";
+    }
 
-            if (array_key_exists('start_time', $_SESSION['form_data'])) {
-                // Retrieve the value of the 'start_time' key
-                $start_time = $_SESSION['form_data']['start_time'];
-                console_log("First start time: " . $start_time);
-            }
-            if (array_key_exists('video_end', $_SESSION['form_data'])) {
-                $video_end = $_SESSION['form_data']['video_end'];
-                console_log(", Video end duration :  $video_end + 2 minutes after start, ");
-            }
-            if (array_key_exists('num_starts', $_SESSION['form_data'])) {
-                $num_starts = $_SESSION['form_data']['num_starts'];
-                console_log( " Number of starts: $num_starts");
-            }
-            if (array_key_exists('dur_between_starts', $_SESSION['form_data'])) {
-                $dur_between_starts = $_SESSION['form_data']['dur_between_starts'];
-                console_log(", Duration between starts: $dur_between_starts");
-            }
-            if (array_key_exists('video_dur', $_SESSION['form_data'])) {
-                $video_dur = $_SESSION['form_data']['video_dur'];
-                console_log(" Video duration: $video_dur");
-            }
-            if (array_key_exists('video_delay', $_SESSION['form_data'])) {
-                $video_delay = $_SESSION['form_data']['video_delay'];
-                console_log(" Video delay after start: " . $video_delay);
-            }
-            if (array_key_exists('num_video', $_SESSION['form_data'])) {
-                $num_video = $_SESSION['form_data']['num_video'];
-                console_log(" Number of videos during finish: " . $num_video);
-            } else {
-                $num_video = 1;
-            }
-        }
-        else {
-            // 'form_data' array not set or not an array
-            console_log("Line 108: No form data found in the session.");
-        }
+    if (isset($_SESSION['form_data']) && is_array($_SESSION['form_data'])) {
+        $start_time = $_SESSION['form_data']['start_time'] ?? "Not set";
+        $video_end = $_SESSION['form_data']['video_end'] ?? "Not set";
+        $num_starts = $_SESSION['form_data']['num_starts'] ?? "Not set";
+        $dur_between_starts = $_SESSION['form_data']['dur_between_starts'] ?? "Not set";
+        $video_dur = $_SESSION['form_data']['video_dur'] ?? "Not set";
+        $video_delay = $_SESSION['form_data']['video_delay'] ?? "Not set";
+        $num_video = $_SESSION['form_data']['num_video'] ?? 1;
+
+        // Log to console
+        console_log("First start time: $start_time");
+        console_log("Video end duration: $video_end + 2 minutes after start");
+        console_log("Number of starts: $num_starts");
+        console_log("Duration between starts: $dur_between_starts");
+        console_log("Video duration: $video_dur");
+        console_log("Video delay after start: $video_delay");
+        console_log("Number of videos during finish: $num_video");
+    } else {
+        console_log("No form data found in the session.");
+    }
     ?>
 </div>
 <header>
