@@ -39,7 +39,6 @@ warnings.filterwarnings(
     module=".*ultralytics_yolov5_master.*"
 )
 
-
 picamera2_logger = logging.getLogger('picamera2')
 picamera2_logger.setLevel(logging.ERROR)  # Change to ERROR to suppress more logs
 
@@ -164,9 +163,7 @@ def annotate_frame(frame, text):
 
 
 def capture_picture(camera, photo_path, file_name):
-
-    # Capture a single request
-    request = camera.capture_request()
+    request = camera.capture_request()  # Capture a single request
     with MappedArray(request, "main") as m:
         frame = m.array  # Get the frame as a NumPy array
         # Rotate the frame by 180 degrees
@@ -177,21 +174,6 @@ def capture_picture(camera, photo_path, file_name):
 
     request.release()
     logger.info("Captured picture = %s", file_name)
-
-
-def capture_picture_CV(cam, photo_path, file_name):
-    # Capture the frame to be saved
-    ret, frame = cam.read()
-    if not ret:
-        logger.error("Failed to capture image")
-        return
-
-    # Rotate the frame by 180 degrees
-    frame = cv2.rotate(frame, cv2.ROTATE_180)
-    cv2.imwrite(os.path.join(photo_path, file_name), frame)
-    time.sleep(0.3)  # sleep 0.3 sec
-    logger.info("Capture picture = %s", file_name)
-
 
 
 def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo_path):
@@ -223,7 +205,7 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
                     logger.info(f"Start_sequence: {log_message} at {event_time}")
                     if action:
                         action()
-                        logger.debug(f"log_message[:5] = {log_message[:5]}")
+                        # logger.debug(f"log_message[:5] = {log_message[:5]}")
                         picture_name = f"{i + 1}a_start_{log_message[:5]}.jpg"
                         capture_picture(camera, photo_path, picture_name)
                         # Mark the event as triggered
@@ -251,19 +233,19 @@ def annotate_video_duration(camera, start_time_sec):
     elapsed_time = seconds_since_midnight - start_time_sec  # elapsed since last star until now)
     camera.annotate_text = f"{dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Seconds since last start: {elapsed_time}"
 
-
+# Function for adding the timestamp
 def apply_timestamp(request):
     timestamp = time.strftime("%Y-%m-%d %X")  # Current timestamp
     colour = (0, 255, 0)  # Green text
-    origin = (15, 60)  # Position on frame
+    origin = (15, 50)  # Position on frame
     # font = cv2.FONT_HERSHEY_SIMPLEX
     font = cv2.FONT_HERSHEY_DUPLEX
-    scale = 1
+    fontScale = 1
     thickness = 1
 
     # Overlay the timestamp on the frame
     with MappedArray(request, "main") as m:
-        cv2.putText(m.array, timestamp, origin, font, scale, colour, thickness)
+        cv2.putText(m.array, timestamp, origin, font, fontScale, colour, thickness)
 
 
 def start_video_recording_new(cam, video_path, file_name, bitrate=2000000):
@@ -282,9 +264,6 @@ def start_video_recording_new(cam, video_path, file_name, bitrate=2000000):
 
 
 def stop_video_recording(cam):
-    """
-    Stops video recording using Picamera2.
-    """
     cam.stop_recording()
     logger.info("Recording stopped.")
 
@@ -312,7 +291,7 @@ def video_recording(cam, video_path, file_name, duration=None):
             logger.debug("Captured frame successfully")
 
         # Rotate the frame by 180 degrees
-        #frame = cv2.rotate(frame, cv2.ROTATE_180)
+        # frame = cv2.rotate(frame, cv2.ROTATE_180)
         video_writer.write(frame)
 
         # Log elapsed time
@@ -331,7 +310,6 @@ def video_recording(cam, video_path, file_name, duration=None):
 def process_video(video_path, input_file, output_file, frame_rate=None):
     source = os.path.join(video_path, input_file)
     dest = os.path.join(video_path, output_file)
-
     command = ["ffmpeg", "-i", source, "-vcodec", "libx264", "-crf", "23", "-preset", "fast"]
 
     if frame_rate:
@@ -339,10 +317,10 @@ def process_video(video_path, input_file, output_file, frame_rate=None):
 
     command.append(dest)
     subprocess.run(command, check=True)
-    logger.info("Video processed: %s", output_file)
+    logger.debug("Video processed: %s", output_file)
 
 
-def cv_annotate_video(frame, start_time_sec):
+def annotate_video_cv(frame, start_time_sec):
     time_now = dt.datetime.now()
     seconds_since_midnight = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
     # elapsed since last start until now)
@@ -415,18 +393,15 @@ def listen_for_messages(timeout=0.1):
     logger.info("Listening thread terminated")
 
 
-def finish_recording(picam2, video_path, num_starts, video_end, start_time):
-    # Open a video capture object (replace 'your_video_file.mp4' with the
-    # actual video file or use 0 for webcam)
-    # cam = cv2.VideoCapture(os.path.join(video_path, "finish21-6.mp4"))
+def finish_recording(cam, video_path, num_starts, video_end, start_time):
     global recording_stopped
     confidence = 0.0  # Default value
     class_name = ""
 
     # ensure camera being started.
-    if not picam2.started:
+    if not cam.started:
         logger.error("Camera is not started. Starting it now...")
-        picam2.start()
+        cam.start()
 
     # Load the pre-trained YOLOv5 model (e.g., yolov5s)
     model = torch.hub.load('ultralytics/yolov5', 'yolov5s')
@@ -434,8 +409,8 @@ def finish_recording(picam2, video_path, num_starts, video_end, start_time):
 
     # Setup parameters
     fpsw = 20  # number of frames written per second
-    width = picam2.preview_configuration.main.size[0]  # Get the width from preview configuration
-    height = picam2.preview_configuration.main.size[1]  # Get the height from preview configuration
+    width = cam.preview_configuration.main.size[0]  # Get the width from preview configuration
+    height = cam.preview_configuration.main.size[1]  # Get the height from preview configuration
     frame_size = (width, height)
     logger.info(f"Camera frame size: {frame_size}")
 
@@ -453,13 +428,13 @@ def finish_recording(picam2, video_path, num_starts, video_end, start_time):
     boat_in_current_frame = False
 
     start_time = time.time()  # Record the start time of the recording
-    max_duration = 60 * (video_end + 5 * (num_starts - 1))
+    max_duration = video_end
     logger.debug(f"Video1, max recording duration: {max_duration} seconds")
 
     while not recording_stopped:
         # logger.debug(f"recording_stopped= {recording_stopped}")
         try:
-            frame = picam2.capture_array()
+            frame = cam.capture_array()
         except Exception as e:
             logger.error(f"Failed to capture frame: {e}")
             break  # Exit the loop if the camera fails
@@ -517,7 +492,7 @@ def finish_recording(picam2, video_path, num_starts, video_end, start_time):
             logger.info('Video1 recording stopped')
             break
 
-    stop_video_recording(picam2)
+    stop_video_recording(cam)
     # cam.release()  # Don't forget to release the camera resources when done
     video_writer.release()  # Release the video writer
     logger.info("video_writer release, exited the finish_recording module.")
