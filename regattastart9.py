@@ -339,8 +339,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
     confidence = 0.0  # Default value
     class_name = ""
 
-    # ensure camera being started.
-    if not cam.started:
+    if not cam.started:  # ensure camera being started.
         logger.error("Camera is not started. Starting it now...")
         cam.start()
 
@@ -408,22 +407,18 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
                 while pre_detection_buffer:
                     video_writer.write(pre_detection_buffer.popleft())
 
-                # Draw bounding boxes and save post-detection frames
-                '''
-                logger.debug(f"post_detection_frames: {post_detection_frames}")
-                for _ in range(post_detection_frames, 2):
-                    cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 1)
-                    cv2.putText(frame, f"{class_name} {confidence:.2f}", (x1, y1 - 10),
-                                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
-                '''
-                video_writer.write(frame)
-
         # Handle post-detection frame countdown
-        if boat_in_current_frame:  # boat was in frame previously
+        if boat_in_current_frame:
             post_detection_frames -= 1
             if post_detection_frames <= 0:
                 boat_in_current_frame = False
                 post_detection_frames = 50  # Reset for the next detection
+
+        # Always write the current frame to ensure smooth playback
+        video_writer.write(frame)
+
+        # Log the remaining post-detection frames for debugging
+        logger.debug(f"post_detection_frames: {post_detection_frames}")
 
         # Check if recording should stop
         time_now = dt.datetime.now()
