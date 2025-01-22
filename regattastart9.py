@@ -369,7 +369,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
     boat_in_current_frame = False
 
     # Duration of video1 recording
-    max_duration = video_end * 60
+    max_duration = video_end * 60 + (num_starts-1)*5
     logger.debug(f"Video1, max recording duration: {max_duration} seconds")
 
     while not recording_stopped:
@@ -389,7 +389,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
 
         detections = results.pandas().xyxy[0]  # Results as a DataFrame
 
-        # Process detections
+        # Parse the detection results
         for _, row in detections.iterrows():
             class_name = row['name']
             confidence = row['confidence']
@@ -406,7 +406,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
 
                 # Draw bounding boxes and save post-detection frames
                 logger.debug(f"post_detection_frames: {post_detection_frames}")
-                for _ in range(post_detection_frames):
+                for _ in range(post_detection_frames, 2):
                     cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 1)
                     cv2.putText(frame, f"{class_name} {confidence:.2f}", (x1, y1 - 10),
                                 cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
