@@ -364,7 +364,7 @@ def listen_for_messages(stop_event, timeout=0.1):
     logger.info("Listening thread exiting")
 
 
-def finish_recording(cam, video_path, num_starts, video_end, start_time):
+def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
     global recording_stopped
     confidence = 0.0  # Default value
     class_name = ""
@@ -398,19 +398,16 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time):
     post_detection_frames = 50  # Frames to record after detection
     boat_in_current_frame = False
 
-    # start_time = time.time()  # Record the start time of the recording
+    # Duration of video1 recording
     max_duration = video_end * 60
     logger.debug(f"Video1, max recording duration: {max_duration} seconds")
 
     while not recording_stopped:
-        # logger.debug(f"recording_stopped= {recording_stopped}")
         try:
             frame = cam.capture_array()
         except Exception as e:
             logger.error(f"Failed to capture frame: {e}")
             break  # Exit the loop if the camera fails
-
-        # frame = cv2.flip(frame, cv2.ROTATE_180)  # camera is upside down"
         pre_detection_buffer.append(frame)  # Add the frame to pre-detection buffer
 
         # Perform inference using YOLOv5
@@ -421,7 +418,6 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time):
             break  # Exit the loop or handle it appropriately
 
         detections = results.pandas().xyxy[0]  # Results as a DataFrame
-        # logger.debug(f"detections: {detections}")
 
         # Process detections
         for _, row in detections.iterrows():
@@ -453,7 +449,12 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time):
                 post_detection_frames = 50  # Reset for the next detection
 
         # Check if recording should stop
-        elapsed_time = time.time() - start_time
+        logger.debug(f"xxxx start_time_sec: {start_time_sec}")
+
+        time_now = dt.datetime.now()
+        seconds_since_midnight = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
+
+        elapsed_time = seconds_since_midnight - start_time_sec
         if elapsed_time >= max_duration:
             logger.debug(f"Maximum recording time reached, elapsed _time={elapsed_time}")
             recording_stopped = True
@@ -566,7 +567,7 @@ def main():
 
         logger.info("Finally section, before 'Finish recording'. start_time=%s video_end=%s", start_time, video_end)
         time.sleep(2)
-        finish_recording(cam, video_path, num_starts, video_end, start_time)
+        finish_recording(cam, video_path, num_starts, video_end, start_time_sec)
         logger.info("After finished_recording")
         try:
             stop_event.set()  # Signal the listening thread to stop
