@@ -131,32 +131,17 @@ def setup_picam2(resolution=(640, 480), fps=5):
     picam2.configure(preview_config)
 
     picam2.start()  # Start the camera
-
     logger.info(f"setup_camera with resolution {resolution} and {fps} FPS.")
     return picam2
 
 
-def annotate_frame(frame, text):
+def annotate_frame(frame, text):  # Not used
     org = (15, 60)  # x = 15 from left, y = 60 from top
     fontFace = cv2.FONT_HERSHEY_DUPLEX
     fontScale = 0.7
     color = (0, 255, 0)  # (B, G, R)
     thickness = 1
     lineType = cv2.LINE_AA
-
-    # Draw a rectangle on the image (example processing)
-    # height, width, _ = frame.shape
-    # top_left = (int(width * 0.25), int(height * 0.25))
-    # bottom_right = (int(width * 0.75), int(height * 0.75))
-    # color = (0, 255, 0)  # Green in BGR
-
-    # Calculate text size and background rectangle
-    # (text_width, text_height), _ = cv2.getTextSize(text, fontFace, fontScale, thickness)
-    # top_left = (org[0], org[1] - text_height - 5)
-    # bottom_right = (org[0] + text_width + 10, org[1] + 5)
-
-    # Draw background rectangle for the timestamp
-    # cv2.rectangle(frame, top_left, bottom_right, color, thickness)
 
     # Draw the timestamp text
     cv2.putText(frame, text, org, fontFace, fontScale, color, thickness, lineType)
@@ -168,10 +153,9 @@ def capture_picture(camera, photo_path, file_name):
         frame = m.array  # Get the frame as a NumPy array
         # Rotate the frame by 180 degrees
         # rotated_frame = cv2.rotate(frame, cv2.ROTATE_180)
-        # Save the rotated frame to the file
+        # Save the frame to the file
         # cv2.imwrite(os.path.join(photo_path, file_name), rotated_frame)
         cv2.imwrite(os.path.join(photo_path, file_name), frame)
-
     request.release()
     logger.info("Captured picture = %s", file_name)
 
@@ -226,14 +210,6 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
         logger.info(f"End of iteration {i + 1}")
 
 
-# previous used annotation
-def annotate_video_duration(camera, start_time_sec):
-    time_now = dt.datetime.now()
-    seconds_since_midnight = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
-    elapsed_time = seconds_since_midnight - start_time_sec  # elapsed since last star until now)
-    camera.annotate_text = f"{dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Seconds since last start: {elapsed_time}"
-
-
 def apply_timestamp(request):  # Function for adding the timestamp
     timestamp = time.strftime("%Y-%m-%d %X")  # Current timestamp
     colour = (0, 255, 0)  # Green text
@@ -250,15 +226,12 @@ def apply_timestamp(request):  # Function for adding the timestamp
 
 def start_video_recording_new(cam, video_path, file_name, bitrate=2000000):
     """
-    Start video recording using H264Encoder.
+    Start video recording using H264Encoder and with timestamp.
     """
     output_file = os.path.join(video_path, file_name)
-
     # Configure the pre-callback for adding the timestamp
     cam.pre_callback = apply_timestamp
-
     encoder = H264Encoder(bitrate=bitrate)
-
     cam.start_recording(encoder, output_file)
     logger.info(f"Started recording video: {output_file} with bitrate {bitrate}")
 
@@ -285,7 +258,7 @@ def process_video(video_path, input_file, output_file, frame_rate=None):
     logger.debug("Video processed: %s", output_file)
 
 
-def annotate_video_cv(frame, start_time_sec):
+def annotate_video_cv(frame, start_time_sec):  # Not used
     time_now = dt.datetime.now()
     seconds_since_midnight = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
     # elapsed since last start until now)
@@ -302,12 +275,9 @@ def annotate_video_cv(frame, start_time_sec):
     # Define background rectangle coordinates
     top_left = (org[0], org[1] - text_height)
     bottom_right = (int(org[0] + text_width), int(org[1] + (text_height/2)))
-
     # Draw filled rectangle as background for the text
     cv2.rectangle(frame, top_left, bottom_right, (255, 255, 255), cv2.FILLED)
-
     # Draw text on top of the background
-
     cv2.putText(frame, label, org, fontFace, fontScale, color, thickness, lineType)
 
 
@@ -425,21 +395,22 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
             confidence = row['confidence']
             x1, y1, x2, y2 = int(row['xmin']), int(row['ymin']), int(row['xmax']), int(row['ymax'])
 
-        logger.debug(f"Confidence: {confidence}, Class Name: {class_name}")
-        if confidence > 0.3 and class_name == 'boat':  # Check if detection is a boat
-            boat_in_current_frame = True
-            # logger.info("Boat detected, saving pre-detection frames.")
+            logger.debug(f"Confidence: {confidence}, Class Name: {class_name}")
+            if confidence > 0.3 and class_name == 'boat':  # Check if detection is a boat
+                boat_in_current_frame = True
+                # logger.info("Boat detected, saving pre-detection frames.")
 
-            # Write pre-detection frames to video
-            while pre_detection_buffer:
-                video_writer.write(pre_detection_buffer.popleft())
+                # Write pre-detection frames to video
+                while pre_detection_buffer:
+                    video_writer.write(pre_detection_buffer.popleft())
 
-            # Draw bounding boxes and save post-detection frames
-            for _ in range(post_detection_frames):
-                cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 1)
-                cv2.putText(frame, f"{class_name} {confidence:.2f}", (x1, y1 - 10),
-                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
-                video_writer.write(frame)
+                # Draw bounding boxes and save post-detection frames
+                logger.debug(f"post_detection_frames: {post_detection_frames}")
+                for _ in range(post_detection_frames):
+                    cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 1)
+                    cv2.putText(frame, f"{class_name} {confidence:.2f}", (x1, y1 - 10),
+                                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+                    video_writer.write(frame)
 
         # Handle post-detection frame countdown
         if boat_in_current_frame:  # boat was in frame previously
@@ -449,11 +420,8 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
                 post_detection_frames = 50  # Reset for the next detection
 
         # Check if recording should stop
-        logger.debug(f"xxxx start_time_sec: {start_time_sec}")
-
         time_now = dt.datetime.now()
         seconds_since_midnight = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
-
         elapsed_time = seconds_since_midnight - start_time_sec
         if elapsed_time >= max_duration:
             logger.debug(f"Maximum recording time reached, elapsed _time={elapsed_time}")
@@ -465,7 +433,6 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
             break
 
     stop_video_recording(cam)
-    # cam.release()  # Don't forget to release the camera resources when done
     video_writer.release()  # Release the video writer
     logger.info("video_writer release, exited the finish_recording module.")
 
