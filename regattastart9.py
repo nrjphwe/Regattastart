@@ -398,19 +398,25 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
             logger.debug(f"Confidence: {confidence}, Class Name: {class_name}")
             if confidence > 0.3 and class_name == 'boat':  # Check if detection is a boat
                 boat_in_current_frame = True
-                # logger.info("Boat detected, saving pre-detection frames.")
+
+                # Draw bounding box and label on the frame
+                cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
+                cv2.putText(frame, f"{class_name} {confidence:.2f}", (x1, y1 - 10),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1)
 
                 # Write pre-detection frames to video
                 while pre_detection_buffer:
                     video_writer.write(pre_detection_buffer.popleft())
 
                 # Draw bounding boxes and save post-detection frames
+                '''
                 logger.debug(f"post_detection_frames: {post_detection_frames}")
                 for _ in range(post_detection_frames, 2):
                     cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 1)
                     cv2.putText(frame, f"{class_name} {confidence:.2f}", (x1, y1 - 10),
                                 cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
-                    video_writer.write(frame)
+                '''
+                video_writer.write(frame)
 
         # Handle post-detection frame countdown
         if boat_in_current_frame:  # boat was in frame previously
@@ -506,8 +512,8 @@ def main():
 
                         logger.info("Wait 2 minutes then stop video0 recording")
                         t0 = dt.datetime.now()
-                        logger.debug(f"t0 = {t0}, dt.datetime.now(): {dt.datetime.now()}")
-                        logger.debug("(dt.datetime.now() - t0).seconds: %d", (dt.datetime.now() - t0).seconds)
+                        # logger.debug(f"t0 = {t0}, dt.datetime.now(): {dt.datetime.now()}")
+                        # logger.debug("(dt.datetime.now() - t0).seconds: %d", (dt.datetime.now() - t0).seconds)
                         while ((dt.datetime.now() - t0).seconds < 119):
                             # logger.debug("in while loop")
                             now = dt.datetime.now()
