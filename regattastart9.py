@@ -389,14 +389,18 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
         detections = results.pandas().xyxy[0]  # Results as a DataFrame
 
         # Parse the detection results
+        logger.debug(f"Total detections: {len(detections)}")
+        if len(detections) == 0:
+            logger.debug("No detections in the current frame.")
+
         for _, row in detections.iterrows():
             class_name = row['name']
             confidence = row['confidence']
             x1, y1, x2, y2 = int(row['xmin']), int(row['ymin']), int(row['xmax']), int(row['ymax'])
 
-            logger.debug(f"Confidence: {confidence}, Class Name: {class_name}")
             if confidence > 0.3 and class_name == 'boat':  # Check if detection is a boat
                 boat_in_current_frame = True
+                logger.debug(f"Boat detected: {class_name} ({confidence:.2f}) at [{x1}, {y1}, {x2}, {y2}]")
 
                 # Draw bounding box and label on the frame
                 cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
@@ -406,19 +410,22 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
                 # Write pre-detection frames to video
                 while pre_detection_buffer:
                     video_writer.write(pre_detection_buffer.popleft())
+                    logger.debug("Flushing pre-detection buffer.")
 
-        # Handle post-detection frame countdown
-        if boat_in_current_frame:
-            post_detection_frames -= 1
-            if post_detection_frames <= 0:
-                boat_in_current_frame = False
-                post_detection_frames = 50  # Reset for the next detection
+        # Write frames if a boat is detected or during post-detection countdown
+        if boat_in_current_frame or post_detection_frames > 0:
+            video_writer.write(frame)
+            logger.debug("Frame written (boat detected or post-detection).")
 
-        # Always write the current frame to ensure smooth playback
-        video_writer.write(frame)
+            if boat_in_current_frame:
+                post_detection_frames = 50  # Reset post-detection countdown
+            else:
+                post_detection_frames -= 1
+                logger.debug(f"Post-detection frames remaining: {post_detection_frames}")
 
-        # Log the remaining post-detection frames for debugging
-        logger.debug(f"post_detection_frames: {post_detection_frames}")
+        # Log if no frame is written
+        if not boat_in_current_frame and post_detection_frames <= 0:
+            logger.debug("No detections, frame not written.")
 
         # Check if recording should stop
         time_now = dt.datetime.now()
