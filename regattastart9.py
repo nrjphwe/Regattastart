@@ -436,7 +436,6 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
 
     if recording_stopped is True:
         logger.info('Video1 recording stopped')
-        break
 
     stop_video_recording(cam)
     video_writer.release()  # Release the video writer
