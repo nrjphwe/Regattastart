@@ -377,7 +377,9 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
         except Exception as e:
             logger.error(f"Failed to capture frame: {e}")
             break  # Exit the loop if the camera fails
+
         pre_detection_buffer.append(frame)  # Add the frame to pre-detection buffer
+        boat_in_current_frame = False  # Reset detection flag for this frame
 
         # Perform inference using YOLOv5
         try:
@@ -387,9 +389,9 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
             break  # Exit the loop or handle it appropriately
 
         detections = results.pandas().xyxy[0]  # Results as a DataFrame
+        logger.debug(f"Total detections: {len(detections)}")
 
         # Parse the detection results
-        logger.debug(f"Total detections: {len(detections)}")
         if len(detections) == 0:
             logger.debug("No detections in the current frame.")
 
@@ -423,11 +425,6 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
                 post_detection_frames -= 1
                 logger.debug(f"Post-detection frames remaining: {post_detection_frames}")
 
-        # Write frame based on conditions
-        if boat_in_current_frame or post_detection_frames > 0:
-            video_writer.write(frame)
-            post_detection_frames = 50 if boat_in_current_frame else post_detection_frames - 1
-
         # Check if recording should stop
         time_now = dt.datetime.now()
         seconds_since_midnight = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
@@ -437,9 +434,9 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
             recording_stopped = True
             break
 
-        if recording_stopped is True:
-            logger.info('Video1 recording stopped')
-            break
+    if recording_stopped is True:
+        logger.info('Video1 recording stopped')
+        break
 
     stop_video_recording(cam)
     video_writer.release()  # Release the video writer
