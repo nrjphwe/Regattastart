@@ -114,7 +114,7 @@ def remove_video_files(directory, pattern):
             os.remove(file_path)
 
 
-def setup_picam2(resolution=(640, 480), fps=5):
+def setup_picam2(resolution=(640, 480), fps=10):
     """
     Configures the camera using picamera2.
     Sets the desired resolution and FPS for video recordings.
@@ -454,7 +454,7 @@ def main():
     stop_event = threading.Event()
     global listening  # Declare listening as global
     logger = setup_logging()  # Initialize the logger
-    cam = setup_picam2(resolution=(640, 480), fps=5)
+    cam = setup_picam2(resolution=(640, 480), fps=10)
     if cam is None:
         logger.error("Camera setup failed, exiting.")
         exit()
