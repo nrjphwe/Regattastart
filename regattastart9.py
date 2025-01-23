@@ -423,9 +423,10 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
                 post_detection_frames -= 1
                 logger.debug(f"Post-detection frames remaining: {post_detection_frames}")
 
-        # Log if no frame is written
-        if not boat_in_current_frame and post_detection_frames <= 0:
-            logger.debug("No detections, frame not written.")
+        # Write frame based on conditions
+        if boat_in_current_frame or post_detection_frames > 0:
+            video_writer.write(frame)
+            post_detection_frames = 50 if boat_in_current_frame else post_detection_frames - 1
 
         # Check if recording should stop
         time_now = dt.datetime.now()
