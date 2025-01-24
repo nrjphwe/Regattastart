@@ -364,7 +364,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
 
     # Pre-detection buffer (5 seconds)
     pre_detection_buffer = deque(maxlen=fpsw * 5)  # Stores last 5 seconds of frames
-    post_detection_frames = 50  # Frames to record after detection
+    post_detection_frames = 25  # Frames to record after detection
     boat_in_current_frame = False
 
     # Duration of video1 recording
@@ -423,7 +423,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
             logger.debug("Frame written (boat detected or post-detection).")
 
             if boat_in_current_frame:
-                post_detection_frames = 50  # Reset post-detection countdown
+                post_detection_frames = 25  # Reset post-detection countdown
             else:
                 post_detection_frames -= 1
                 logger.debug(f"Post-detection frames remaining: {post_detection_frames}")
