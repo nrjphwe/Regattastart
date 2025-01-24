@@ -400,7 +400,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
             confidence = row['confidence']
             x1, y1, x2, y2 = int(row['xmin']), int(row['ymin']), int(row['xmax']), int(row['ymax'])
 
-            if confidence > 0.3 and class_name == 'boat':
+            if confidence > 0.2 and class_name == 'boat':
                 boat_in_current_frame = True
                 logger.debug(f"Boat detected: {class_name} ({confidence:.2f}) at [{x1}, {y1}, {x2}, {y2}]")
 
@@ -413,6 +413,8 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
                 while pre_detection_buffer:
                     video_writer.write(pre_detection_buffer.popleft())
                     logger.debug("Flushing pre-detection buffer.")
+            else:
+                boat_in_current_frame = False
 
         # Write frames if a boat is detected or during post-detection countdown
         logger.debug(f"xxx post-detection_frames:{post_detection_frames}")
@@ -540,6 +542,7 @@ def main():
 
         logger.info("Finally section, before 'Finish recording'. start_time=%s video_end=%s", start_time, video_end)
         time.sleep(2)
+
         finish_recording(cam, video_path, num_starts, video_end, start_time_sec)
         logger.info("After finished_recording")
         try:
