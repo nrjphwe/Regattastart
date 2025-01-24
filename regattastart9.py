@@ -415,6 +415,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
                     logger.debug("Flushing pre-detection buffer.")
                 video_writer.write(frame)
                 logger.debug("Frame written for boat detected")
+                post_detection_frames = 25
             else:
                 boat_in_current_frame = False
 
