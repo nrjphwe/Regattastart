@@ -244,7 +244,7 @@ def start_video_recording_new(cam, video_path, file_name, bitrate=2000000):
     Start video recording using H264Encoder and with timestamp.
     """
     actual_fps = measure_frame_rate(cam)
-    print(f"Vide recording, Measured Frame Rate: {actual_fps:.2f} FPS")
+    print(f"Video recording, Measured Frame Rate: {actual_fps:.2f} FPS")
     output_file = os.path.join(video_path, file_name)
     # Configure the pre-callback for adding the timestamp
     cam.pre_callback = apply_timestamp
