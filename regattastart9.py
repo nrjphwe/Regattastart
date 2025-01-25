@@ -419,13 +419,13 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
             else:
                 boat_in_current_frame = False
 
-        # Write frames if a boat is detected or during post-detection countdown
-        logger.debug(f"xxx post-detection_frames:{post_detection_frames}")
-        while post_detection_frames > 0:
-            cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
-            video_writer.write(frame)
-            post_detection_frames -= 1
-            logger.debug(f"Post-detection frames remaining: {post_detection_frames}")
+            # Write frames if a boat is detected or during post-detection countdown
+            logger.debug(f"xxx post-detection_frames:{post_detection_frames}")
+            while post_detection_frames > 0:
+                cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
+                video_writer.write(frame)
+                post_detection_frames -= 1
+                logger.debug(f"Post-detection frames remaining: {post_detection_frames}")
 
         # Check if recording should stop
         time_now = dt.datetime.now()
