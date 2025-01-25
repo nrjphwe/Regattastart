@@ -20,7 +20,7 @@ import numpy as np # image recognition
 import os
 from libcamera import Transform
 from picamera2.encoders import H264Encoder
-from picamera2 import Picamera2, MappedArray
+from picamera2 import Picamera2, MappedArray, Transform
 from picamera2.outputs import FileOutput
 import RPi.GPIO as GPIO
 import select
@@ -134,6 +134,20 @@ def setup_picam2(resolution=(640, 480), fps=10):
     logger.info(f"setup_camera with resolution {resolution} and {fps} FPS.")
     return picam2
 
+def measure_frame_rate(picam2, duration=5):
+    frame_timestamps = []
+    start_time = time.time()
+
+    while time.time() - start_time < duration:
+        frame = picam2.capture_array()  # Capture a frame
+        frame_timestamps.append(time.time())  # Record the timestamp
+
+    # Calculate frame intervals and average frame rate
+    intervals = [t2 - t1 for t1, t2 in zip(frame_timestamps[:-1], frame_timestamps[1:])]
+    avg_frame_rate = 1 / (sum(intervals) / len(intervals)) if intervals else 0
+
+    return avg_frame_rate
+
 
 def annotate_frame(frame, text):  # Not used
     org = (15, 60)  # x = 15 from left, y = 60 from top
@@ -228,6 +242,8 @@ def start_video_recording_new(cam, video_path, file_name, bitrate=2000000):
     """
     Start video recording using H264Encoder and with timestamp.
     """
+    actual_fps = measure_frame_rate(cam)
+    print(f"Vide recording, Measured Frame Rate: {actual_fps:.2f} FPS")
     output_file = os.path.join(video_path, file_name)
     # Configure the pre-callback for adding the timestamp
     cam.pre_callback = apply_timestamp
@@ -343,16 +359,24 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
         logger.error("Camera is not started. Starting it now...")
         cam.start()
 
+    actual_fps = measure_frame_rate(cam)
+    print(f"Finish recording, Measured Frame Rate: {actual_fps:.2f} FPS")
+
     # Load the pre-trained YOLOv5 model (e.g., yolov5s)
     model = torch.hub.load('ultralytics/yolov5', 'yolov5s')
     model.classes = [8]  # Filter for 'boat' class (COCO ID for 'boat' is 8)
 
     # Setup parameters
-    fpsw = 20  # number of frames written per second
+    pre_detection_duration = 5  # Seconds
     width = cam.preview_configuration.main.size[0]  # Get the width from preview configuration
     height = cam.preview_configuration.main.size[1]  # Get the height from preview configuration
     frame_size = (width, height)
     logger.info(f"Camera frame size: {frame_size}")
+
+    # Pre-detection buffer (5 seconds)
+    fpsw = 10  # number of frames written per second
+    pre_detection_duration = 5  # Seconds
+    pre_detection_buffer = deque(maxlen=fpsw * pre_detection_duration)  # Automatically manages size
 
     # setup video writer
     fourcc = cv2.VideoWriter_fourcc(*'XVID')  # Use 'XVID' for .avi, or 'mp4v' for .mp4
@@ -362,11 +386,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
         logger.error("VideoWriter failed to initialize.")
         return
 
-    # Pre-detection buffer (5 seconds)
-    max_buffer_size = 50
-    pre_detection_buffer = deque(maxlen=fpsw * 5)  # Stores last 5 seconds of frames
-    if len(pre_detection_buffer) > max_buffer_size:
-        pre_detection_buffer.popleft()
+    # Post detection
     post_detection_frames = 25  # Frames to record after detection
     boat_in_current_frame = False
 
