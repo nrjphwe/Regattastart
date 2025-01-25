@@ -200,7 +200,7 @@
                                 <option value="90" <?php if(isset($video_end) && $video_end == "90"){echo "selected=\"selected\"";} ?> value="90">90</option>
                                 <option value="120" <?php if(isset($video_end) && $video_end == "120"){echo "selected=\"selected\"";} ?> value="120">120</option>
                                 <option value="180" <?php if(isset($video_end) && $video_end == "180"){echo "selected=\"selected\"";} ?> value="180">180</option>
-                                <option value="10" <?php if(isset($video_end) && $video_end == "10"){echo "selected=\"selected\"";} ?> value="10">10</option>
+                                <option value="20" <?php if(isset($video_end) && $video_end == "20"){echo "selected=\"selected\"";} ?> value="20">20</option>
                             </select>
                             <br>
                             <p style="font-size:11px">
