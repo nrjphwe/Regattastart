@@ -361,7 +361,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
         cam.start()
 
     actual_fps = measure_frame_rate(cam)
-    print(f"Finish recording, Measured Frame Rate: {actual_fps:.2f} FPS")
+    logger.info(f"Finish recording, Measured Frame Rate: {actual_fps:.2f} FPS")
 
     # Load the pre-trained YOLOv5 model (e.g., yolov5s)
     model = torch.hub.load('ultralytics/yolov5', 'yolov5s')
@@ -489,7 +489,7 @@ def main():
 
     # Check if a command-line argument (JSON data) is provided
     if len(sys.argv) < 2:
-        print("No JSON data provided as a command-line argument.")
+        logger.error("No JSON data provided as a command-line argument.")
         sys.exit(1)
 
     try:
