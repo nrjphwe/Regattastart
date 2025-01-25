@@ -134,12 +134,13 @@ def setup_picam2(resolution=(640, 480), fps=10):
     logger.info(f"setup_camera with resolution {resolution} and {fps} FPS.")
     return picam2
 
-def measure_frame_rate(picam2, duration=5):
+
+def measure_frame_rate(cam, duration=5):
     frame_timestamps = []
     start_time = time.time()
 
     while time.time() - start_time < duration:
-        frame = picam2.capture_array()  # Capture a frame
+        cam.capture_array()  # Capture a frame
         frame_timestamps.append(time.time())  # Record the timestamp
 
     # Calculate frame intervals and average frame rate
