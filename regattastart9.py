@@ -363,7 +363,10 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
         return
 
     # Pre-detection buffer (5 seconds)
+    max_buffer_size = 50
     pre_detection_buffer = deque(maxlen=fpsw * 5)  # Stores last 5 seconds of frames
+    if len(pre_detection_buffer) > max_buffer_size:
+        pre_detection_buffer.popleft()
     post_detection_frames = 25  # Frames to record after detection
     boat_in_current_frame = False
 
@@ -383,7 +386,9 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
 
         # Perform inference using YOLOv5
         try:
-            results = model(frame)
+            frame_resized = cv2.resize(frame, (640, 480))  # Resize for faster processing
+            results = model(frame_resized)
+            # results = model(frame)
         except Exception as e:
             logger.error(f"YOLOv5 inference failed: {e}")
             break  # Exit the loop or handle it appropriately
