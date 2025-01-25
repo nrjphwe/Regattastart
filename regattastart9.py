@@ -239,12 +239,12 @@ def apply_timestamp(request):  # Function for adding the timestamp
         cv2.putText(m.array, timestamp, origin, font, fontScale, colour, thickness)
 
 
-def start_video_recording_new(cam, video_path, file_name, bitrate=2000000):
+def start_video_recording(cam, video_path, file_name, bitrate=2000000):
     """
     Start video recording using H264Encoder and with timestamp.
     """
     actual_fps = measure_frame_rate(cam)
-    print(f"Video recording, Measured Frame Rate: {actual_fps:.2f} FPS")
+    logging.debug(f"Video recording, Measured Frame Rate: {actual_fps:.2f} FPS")
     output_file = os.path.join(video_path, file_name)
     # Configure the pre-callback for adding the timestamp
     cam.pre_callback = apply_timestamp
@@ -529,7 +529,7 @@ def main():
                     logger.info("start_time_sec=%d", start_time_sec)
                     if num_starts == 1 or num_starts == 2:
                         logger.info("Start of video0 recording")
-                        start_video_recording_new(cam, video_path, "video0.avi", bitrate=2000000)
+                        start_video_recording(cam, video_path, "video0.avi", bitrate=2000000)
                         logger.info("Inner loop, entering the start sequence block.")
                         start_sequence(cam, start_time_sec, num_starts, dur_between_starts, photo_path)
 
