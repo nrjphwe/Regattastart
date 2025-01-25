@@ -388,7 +388,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
         return
 
     # Post detection
-    post_detection_frames = 25  # Frames to record after detection
+    post_detection_frames = 100  # Frames to record after detection
     boat_in_current_frame = False
 
     # Duration of video1 recording
@@ -396,6 +396,8 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
     logger.debug(f"Video1, max recording duration: {max_duration} seconds")
 
     while not recording_stopped:
+        # Reset the detection flag for this frame
+        boat_in_current_frame = False
         try:
             frame = cam.capture_array()
         except Exception as e:
@@ -403,7 +405,6 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
             break  # Exit the loop if the camera fails
 
         pre_detection_buffer.append(frame)  # Add the frame to pre-detection buffer
-        boat_in_current_frame = False  # Reset detection flag for this frame
 
         # Perform inference using YOLOv5
         try:
@@ -437,16 +438,20 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
 
                 # Write pre-detection frames to video
                 while pre_detection_buffer:
+                    logger.debug(f"Pre-detection buffer size: {len(pre_detection_buffer)}")
                     video_writer.write(pre_detection_buffer.popleft())
                     logger.debug("Flushing pre_detection buffer.")
 
         # Write the current frame if a boat is detected or during post-detection countdown
         if boat_in_current_frame:
-            post_detection_frames = 25  # Reset post-detection countdown
+            post_detection_frames = 100  # Reset post-detection countdown
 
         if boat_in_current_frame or post_detection_frames > 0:
-            video_writer.write(frame)
-            logger.debug("Frame written (boat detected or post-detection).")
+            try:
+                video_writer.write(frame)
+            except Exception as e:
+                logger.error(f"Failed to write frame: {e}")
+            logger.debug(f"Frame written (Post-detection countdown: {post_detection_frames}")
 
             if not boat_in_current_frame:  # Only decrement countdown if no boat detected
                 post_detection_frames -= 1
