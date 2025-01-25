@@ -417,11 +417,15 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
                 # Write pre-detection frames to video
                 while pre_detection_buffer:
                     video_writer.write(pre_detection_buffer.popleft())
-                    logger.debug("Flushing pre-detection buffer.")
+                    logger.debug("Flushing pre_detection buffer.")
+
+        # Write the current frame if a boat is detected or during post-detection countdown
+        if boat_in_current_frame:
+            post_detection_frames = 25  # Reset post-detection countdown
 
         if boat_in_current_frame or post_detection_frames > 0:
             video_writer.write(frame)
-            logger.debug("Frame written for boat detected or post-detection: {post_detection_frames}")
+            logger.debug("Frame written (boat detected or post-detection).")
 
             if not boat_in_current_frame:  # Only decrement countdown if no boat detected
                 post_detection_frames -= 1
