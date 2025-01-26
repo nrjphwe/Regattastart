@@ -374,7 +374,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
     logger.info(f"Finish recording, Measured Frame Rate: {actual_fps:.2f} FPS")
 
     # Setup pre-detection parameters
-    pre_detection_duration = 5  # Seconds
+    pre_detection_duration = 2  # Seconds
     pre_detection_buffer = deque(maxlen=fpsw * pre_detection_duration)  # Automatically manages size
 
     # Load the pre-trained YOLOv5 model (e.g., yolov5s)
@@ -388,9 +388,9 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
         logger.error("VideoWriter failed to initialize.")
         return
 
-    # setup post detection
-    max_post_detection_duration = 5  # Record frames during 5 sec after detection
-    post_detection_frames = 50  # Initial setting, to record after detection
+    # setup Post detection
+    max_post_detection_duration = 2  # Record frames during 5 sec after detection
+    number_of_post_frames = int(fpsw * max_post_detection_duration) # Initial setting, to record after detection
     boat_in_current_frame = False
 
     frame_counter = 0  # Initialize a frame counter
@@ -421,7 +421,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
 
             # Process detection results
             detections = results.pandas().xyxy[0]  # Results as a DataFrame
-            logger.debug(f"Total detections: {len(detections)}")
+            logger.debug(f"Len detections: {len(detections)}")
 
             # Parse the detection results ????
             if len(detections) == 0:
@@ -444,21 +444,21 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
                     # Write pre-detection frames to video
                     while pre_detection_buffer:
                         video_writer.write(pre_detection_buffer.popleft())
-                        logger.debug(f"Pre-detection buffer size: {len(pre_detection_buffer)}")
+                        logger.debug(f"Pre-detection buffer len: {len(pre_detection_buffer)}")
 
         # Handle post-detection frames
         # Write the current frame if a boat is detected or during post-detection countdown
         if boat_in_current_frame:
-            post_detection_frames = int(max_post_detection_duration * fpsw)  # Reset countdown
+            number_of_post_frames = int(max_post_detection_duration * fpsw)  # Reset countdown
 
-        if boat_in_current_frame or post_detection_frames > 0:
+        if boat_in_current_frame or number_of_post_frames > 0:
             try:
                 video_writer.write(frame)
             except Exception as e:
                 logger.error(f"Failed to write frame: {e}")
             if not boat_in_current_frame:
-                post_detection_frames -= 1
-            logger.debug(f"Frame written (Post-detection countdown: {post_detection_frames}")
+                number_of_post_frames -= 1
+            logger.debug(f"Number_of_post_frames (Post-detection countdown: {number_of_post_frames}")
 
         # Check if recording should stop
         time_now = dt.datetime.now()
