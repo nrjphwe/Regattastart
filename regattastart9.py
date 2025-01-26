@@ -353,9 +353,19 @@ def listen_for_messages(stop_event, timeout=0.1):
 
 def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
     global recording_stopped
-    confidence = 0.0  # Default value
-    class_name = ""
+    confidence = 0.0  # Initial value
+    class_name = "" # Initial value
+    fpsw = 10  # Number of frames written per second
 
+    # Set duration of video1 recording
+    max_duration = (video_end + (num_starts-1)*5) * 60 
+    logger.debug(f"Video1, max recording duration: {max_duration} seconds")
+
+    # Camera
+    width = cam.preview_configuration.main.size[0]  # Get the width from preview configuration
+    height = cam.preview_configuration.main.size[1]  # Get the height from preview configuration
+    frame_size = (width, height)
+    logger.info(f"Camera frame size: {frame_size}")
     if not cam.started:  # ensure camera being started.
         logger.error("Camera is not started. Starting it now...")
         cam.start()
@@ -363,94 +373,93 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
     actual_fps = measure_frame_rate(cam)
     logger.info(f"Finish recording, Measured Frame Rate: {actual_fps:.2f} FPS")
 
+    # Setup pre-detection parameters
+    pre_detection_duration = 5  # Seconds
+    pre_detection_buffer = deque(maxlen=fpsw * pre_detection_duration)  # Automatically manages size
+
     # Load the pre-trained YOLOv5 model (e.g., yolov5s)
     model = torch.hub.load('ultralytics/yolov5', 'yolov5s')
     model.classes = [8]  # Filter for 'boat' class (COCO ID for 'boat' is 8)
 
-    # Setup parameters
-    pre_detection_duration = 5  # Seconds
-    width = cam.preview_configuration.main.size[0]  # Get the width from preview configuration
-    height = cam.preview_configuration.main.size[1]  # Get the height from preview configuration
-    frame_size = (width, height)
-    logger.info(f"Camera frame size: {frame_size}")
-
-    # Pre-detection buffer (5 seconds)
-    fpsw = 10  # number of frames written per second
-    pre_detection_duration = 5  # Seconds
-    pre_detection_buffer = deque(maxlen=fpsw * pre_detection_duration)  # Automatically manages size
-
     # setup video writer
     fourcc = cv2.VideoWriter_fourcc(*'XVID')  # Use 'XVID' for .avi, or 'mp4v' for .mp4
     video_writer = cv2.VideoWriter(video_path + 'video1' + '.avi', fourcc, fpsw, frame_size)
-
     if not video_writer.isOpened():
         logger.error("VideoWriter failed to initialize.")
         return
 
-    # Post detection
-    post_detection_frames = 100  # Frames to record after detection
+    # setup post detection
+    max_post_detection_duration = 5  # record frames 5 sec after detection
     boat_in_current_frame = False
 
-    # Duration of video1 recording
-    max_duration = video_end * 60 + (num_starts-1)*5
-    logger.debug(f"Video1, max recording duration: {max_duration} seconds")
+    frame_counter = 0  # Initialize a frame counter
 
     while not recording_stopped:
         # Reset the detection flag for this frame
         boat_in_current_frame = False
+
+        # Capture a frame from the camera
         try:
             frame = cam.capture_array()
         except Exception as e:
             logger.error(f"Failed to capture frame: {e}")
             break  # Exit the loop if the camera fails
 
-        pre_detection_buffer.append(frame)  # Add the frame to pre-detection buffer
+        # Increment the frame counter
+        frame_counter += 1
 
-        # Perform inference using YOLOv5
-        try:
-            frame_resized = cv2.resize(frame, (640, 480))  # Resize for faster processing
-            results = model(frame_resized)
-            # results = model(frame)
-        except Exception as e:
-            logger.error(f"YOLOv5 inference failed: {e}")
-            break  # Exit the loop or handle it appropriately
+        # Add the frame to the pre-detection buffer
+        pre_detection_buffer.append(frame)
+        # ?????
 
-        detections = results.pandas().xyxy[0]  # Results as a DataFrame
-        logger.debug(f"Total detections: {len(detections)}")
+        # Perform inference only on every 5th frame
+        if frame_counter % 5 == 0:
+            try:
+                frame_resized = cv2.resize(frame, (640, 480))  # Resize for faster processing
+                results = model(frame_resized)
+            except Exception as e:
+                logger.error(f"YOLOv5 inference failed: {e}")
+                break  # Exit the loop or handle it appropriately
 
-        # Parse the detection results
-        if len(detections) == 0:
-            logger.debug("No detections in the current frame.")
+            # Process detection results
+            detections = results.pandas().xyxy[0]  # Results as a DataFrame
+            logger.debug(f"Total detections: {len(detections)}")
 
-        for _, row in detections.iterrows():
-            class_name = row['name']
-            confidence = row['confidence']
-            x1, y1, x2, y2 = int(row['xmin']), int(row['ymin']), int(row['xmax']), int(row['ymax'])
+            # Parse the detection results ????
+            if len(detections) == 0:
+                logger.debug("No detections in the current frame.")
 
-            if confidence > 0.2 and class_name == 'boat':
-                boat_in_current_frame = True
-                logger.debug(f"Boat detected: {class_name} ({confidence:.2f}) at [{x1}, {y1}, {x2}, {y2}]")
+            for _, row in detections.iterrows():
+                class_name = row['name']
+                confidence = row['confidence']
 
-                # Draw bounding box and label on the frame
-                cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
-                cv2.putText(frame, f"{class_name} {confidence:.2f}", (x1, y1 - 10),
-                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1)
+                if confidence > 0.2 and class_name == 'boat':
+                    boat_in_current_frame = True
+                    logger.debug(f"Boat detected: {class_name} ({confidence:.2f})")
 
-                # Write pre-detection frames to video
-                while pre_detection_buffer:
-                    logger.debug(f"Pre-detection buffer size: {len(pre_detection_buffer)}")
-                    video_writer.write(pre_detection_buffer.popleft())
-                    logger.debug("Flushing pre_detection buffer.")
+                    # Draw bounding box and label on the frame
+                    x1, y1, x2, y2 = int(row['xmin']), int(row['ymin']), int(row['xmax']), int(row['ymax'])
+                    cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
+                    cv2.putText(frame, f"{class_name} {confidence:.2f}", (x1, y1 - 10),
+                                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1)
 
+                    # Write pre-detection frames to video
+                    while pre_detection_buffer:
+                        video_writer.write(pre_detection_buffer.popleft())
+                        logger.debug(f"Pre-detection buffer size: {len(pre_detection_buffer)}")
+
+        # Handle post-detection frames
         # Write the current frame if a boat is detected or during post-detection countdown
         if boat_in_current_frame:
-            post_detection_frames = 100  # Reset post-detection countdown
+            post_detection_frames = int(max_post_detection_duration * fpsw)  # Reset countdown
 
         if boat_in_current_frame or post_detection_frames > 0:
             try:
                 video_writer.write(frame)
             except Exception as e:
                 logger.error(f"Failed to write frame: {e}")
+            if not boat_in_current_frame:
+                post_detection_frames -= 1
             logger.debug(f"Frame written (Post-detection countdown: {post_detection_frames}")
 
             if not boat_in_current_frame:  # Only decrement countdown if no boat detected
