@@ -408,6 +408,8 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
 
         # Add the frame to the pre-detection buffer
         pre_detection_buffer.append(frame)
+        for idx, frame in enumerate(pre_detection_buffer):
+            logging.debug(f"Buffer[{idx}] - Frame timestamp: {frame.timestamp}")
         # ?????
 
         # Perform inference only on every 2nd frame
@@ -443,8 +445,10 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
 
                     # Write pre-detection frames to video
                     while pre_detection_buffer:
-                        video_writer.write(pre_detection_buffer.popleft())
-                        logger.debug(f"Pre-detection buffer len: {len(pre_detection_buffer)}")
+                        for idx, frame in enumerate(pre_detection_buffer):
+                            logging.debug(f"Buffer[{idx}] - Frame timestamp: {frame.timestamp}")
+                            video_writer.write(pre_detection_buffer.popleft())
+                            #logger.debug(f"Pre-detection buffer len: {len(pre_detection_buffer)}")
 
         # Handle post-detection frames
         # Write the current frame if a boat is detected or during post-detection countdown
