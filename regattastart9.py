@@ -396,7 +396,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
     frame_counter = 0  # Initialize a frame counter
 
     while not recording_stopped:
-        boat_in_current_frame = False # Reset detection flag for this frame
+        boat_in_current_frame = False  # Reset detection flag for this frame
         frame_counter += 1  # Increment the frame counter
 
         # Capture a frame from the camera
@@ -410,8 +410,8 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
         pre_detection_buffer.append(frame)
         # ?????
 
-        # Perform inference only on every 5th frame
-        if frame_counter % 5 == 0:
+        # Perform inference only on every 2nd frame
+        if frame_counter % 2 == 0:
             try:
                 frame_resized = cv2.resize(frame, (640, 480))  # Resize for faster processing
                 results = model(frame_resized)
