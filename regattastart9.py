@@ -265,7 +265,7 @@ def process_video(video_path, input_file, output_file, frame_rate=None):
         logger.debug(f"Warning: {input_file} is empty or does not exist. Skipping conversion.")
         return
 
-    command = ["ffmpeg", "-i", source, "-vcodec", "libx264", "-crf", "23", "-preset", "fast"]
+    command = ["ffmpeg", "-i", source, "-vcodec", "libx264", "-crf", "23", "-preset", "ultrafast"]
 
     if frame_rate:
         command.extend(["-vf", f"fps={frame_rate}"])
