@@ -466,6 +466,9 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
                         logger.debug(f"Pre-detection buffer len: {len(pre_detection_buffer)}")
                         for idx, item in enumerate(pre_detection_buffer):
                             logging.debug(f"Buffer[{idx}] - Type: {type(item)}, Length: {len(item)}")
+                    # Clear the pre-detection buffer
+                    pre_detection_buffer.clear()
+                    logging.debug("Pre-detection buffer cleared after writing frames.")
 
         # Handle post-detection frames
         # Write the current frame if a boat is detected or during post-detection countdown
