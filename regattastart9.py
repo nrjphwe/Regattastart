@@ -426,8 +426,6 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
             pre_detection_buffer.append((current_frame, timestamp))
             processed_timestamps.append(timestamp)
             logging.debug(f"xxxFrame added to buffer: Timestamp={timestamp}")
-            for idx, current_frame in enumerate(pre_detection_buffer):
-                logging.debug(f"Buffer[{idx}] - Frame timestamp: {current_frame.timestamp}")
         else:
             logging.debug(f"xxxDuplicate frame detected: Timestamp={timestamp}. Skipping.")
 
@@ -464,10 +462,8 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
 
                     # Write pre-detection frames to video
                     while pre_detection_buffer:
-                        for idx, frame in enumerate(pre_detection_buffer):
-                            logging.debug(f"Buffer[{idx}] - Frame timestamp: {frame.timestamp}")
-                            video_writer.write(pre_detection_buffer.popleft())
-                            # logger.debug(f"Pre-detection buffer len: {len(pre_detection_buffer)}")
+                        video_writer.write(pre_detection_buffer.popleft())
+                        logger.debug(f"Pre-detection buffer len: {len(pre_detection_buffer)}")
 
         # Handle post-detection frames
         # Write the current frame if a boat is detected or during post-detection countdown
