@@ -462,7 +462,8 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
 
                     # Write pre-detection frames to video
                     while pre_detection_buffer:
-                        video_writer.write(pre_detection_buffer.popleft())
+                        frame, timestamp = pre_detection_buffer.popleft()
+                        video_writer.write(frame)
                         logger.debug(f"Pre-detection buffer len: {len(pre_detection_buffer)}")
 
         # Handle post-detection frames
