@@ -416,7 +416,6 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
         try:
             current_frame = cam.capture_array()
             timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")  # Assign a timestamp (with microseconds)
-
         except Exception as e:
             logger.error(f"Failed to capture frame: {e}")
             break  # Exit the loop if the camera fails
@@ -465,6 +464,9 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
                         frame, timestamp = pre_detection_buffer.popleft()
                         video_writer.write(frame)
                         logger.debug(f"Pre-detection buffer len: {len(pre_detection_buffer)}")
+                        for idx, item in enumerate(pre_detection_buffer):
+                            logging.debug(f"Buffer[{idx}] - Type: {type(item)}, Length: {len(item)}")
+
 
         # Handle post-detection frames
         # Write the current frame if a boat is detected or during post-detection countdown
