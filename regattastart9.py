@@ -483,7 +483,6 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
                 number_of_post_frames -= 1
             logger.debug(f"Number_of_post_frames (Post-detection countdown: {number_of_post_frames}")
 
-
         if frame_counter % 100 == 0:
             cleanup_processed_timestamps(processed_timestamps)
         # Check if recording should stop
