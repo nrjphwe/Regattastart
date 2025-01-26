@@ -83,7 +83,7 @@ def trigger_relay(port):
         time.sleep(signal_dur)
         GPIO.output(signal, OFF)
         time.sleep(1 - signal_dur)
-        logger.info("Trigger signal %s sec, then wait for 1 - %s sec", signal_dur, signal_dur)
+        logger.info(f"Trigger signal {signal_dur} sec, then wait for {(1 - signal_dur)} sec")
     elif port == 'Lamp1_on':
         GPIO.output(lamp1, ON)
         logger.info('Lamp1_on')
