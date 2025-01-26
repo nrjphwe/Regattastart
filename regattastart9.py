@@ -389,7 +389,8 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
         return
 
     # setup post detection
-    max_post_detection_duration = 5  # record frames 5 sec after detection
+    max_post_detection_duration = 5  # Record frames during 5 sec after detection
+    post_detection_frames = 50  # Initial setting, to record after detection
     boat_in_current_frame = False
 
     frame_counter = 0  # Initialize a frame counter
