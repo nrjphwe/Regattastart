@@ -397,6 +397,8 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
     while not recording_stopped:
         # Reset the detection flag for this frame
         boat_in_current_frame = False
+        # Increment the frame counter
+        frame_counter += 1
 
         # Capture a frame from the camera
         try:
@@ -404,9 +406,6 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
         except Exception as e:
             logger.error(f"Failed to capture frame: {e}")
             break  # Exit the loop if the camera fails
-
-        # Increment the frame counter
-        frame_counter += 1
 
         # Add the frame to the pre-detection buffer
         pre_detection_buffer.append(frame)
@@ -461,10 +460,6 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
             if not boat_in_current_frame:
                 post_detection_frames -= 1
             logger.debug(f"Frame written (Post-detection countdown: {post_detection_frames}")
-
-            if not boat_in_current_frame:  # Only decrement countdown if no boat detected
-                post_detection_frames -= 1
-                logger.debug(f"Post-detection frames remaining: {post_detection_frames}")
 
         # Check if recording should stop
         time_now = dt.datetime.now()
