@@ -401,8 +401,8 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
         return
 
     # setup Post detection
-    max_post_detection_duration = 2  # Record frames during 5 sec after detection
-    number_of_post_frames = int(fpsw * max_post_detection_duration) # Initial setting, to record after detection
+    max_post_detection_duration = 3  # Record frames during 5 sec after detection
+    number_of_post_frames = int(fpsw * max_post_detection_duration)  # Initial setting, to record after detection
     boat_in_current_frame = False
 
     processed_timestamps = []
@@ -414,15 +414,15 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
 
         # Capture a frame from the camera
         try:
-            current_frame = cam.capture_array()
-            timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")  # Assign a timestamp (with microseconds)
+            frame = cam.capture_array()
+            timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")  # timestamp (with microseconds)
         except Exception as e:
             logger.error(f"Failed to capture frame: {e}")
             break  # Exit the loop if the camera fails
 
         if timestamp not in processed_timestamps:
             # Add frame to buffer and record its timestamp
-            pre_detection_buffer.append((current_frame, timestamp))
+            pre_detection_buffer.append((frame, timestamp))
             processed_timestamps.append(timestamp)
             logging.debug(f"xxxFrame added to buffer: Timestamp={timestamp}")
         else:
@@ -431,7 +431,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
         # Perform inference only on every 2nd frame
         if frame_counter % 2 == 0:
             try:
-                frame_resized = cv2.resize(current_frame, (640, 480))  # Resize for faster processing
+                frame_resized = cv2.resize(frame, (640, 480))  # Resize for faster processing
                 results = model(frame_resized)
             except Exception as e:
                 logger.error(f"YOLOv5 inference failed: {e}")
@@ -455,8 +455,8 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
 
                     # Draw bounding box and label on the frame
                     x1, y1, x2, y2 = int(row['xmin']), int(row['ymin']), int(row['xmax']), int(row['ymax'])
-                    cv2.rectangle(current_frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
-                    cv2.putText(current_frame, f"{class_name} {confidence:.2f}", (x1, y1 - 10),
+                    cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
+                    cv2.putText(frame, f"{class_name} {confidence:.2f}", (x1, y1 - 10),
                                 cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1)
 
                     # Write pre-detection frames to video
@@ -467,7 +467,6 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
                         for idx, item in enumerate(pre_detection_buffer):
                             logging.debug(f"Buffer[{idx}] - Type: {type(item)}, Length: {len(item)}")
 
-
         # Handle post-detection frames
         # Write the current frame if a boat is detected or during post-detection countdown
         if boat_in_current_frame:
@@ -475,7 +474,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
 
         if boat_in_current_frame or number_of_post_frames > 0:
             try:
-                video_writer.write(current_frame)
+                video_writer.write(frame)
             except Exception as e:
                 logger.error(f"Failed to write frame: {e}")
             if not boat_in_current_frame:
