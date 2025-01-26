@@ -396,10 +396,8 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
     frame_counter = 0  # Initialize a frame counter
 
     while not recording_stopped:
-        # Reset the detection flag for this frame
-        boat_in_current_frame = False
-        # Increment the frame counter
-        frame_counter += 1
+        boat_in_current_frame = False # Reset detection flag for this frame
+        frame_counter += 1  # Increment the frame counter
 
         # Capture a frame from the camera
         try:
