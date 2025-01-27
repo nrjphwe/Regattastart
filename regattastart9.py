@@ -367,7 +367,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
     global recording_stopped
     confidence = 0.0  # Initial value
     class_name = ""  # Initial value
-    fpsw = 20  # Number of frames written per second
+    #fpsw = 20  # Number of frames written per second
 
     # Set duration of video1 recording
     max_duration = (video_end + (num_starts-1)*5) * 60 
@@ -383,10 +383,11 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
         cam.start()
 
     actual_fps = measure_frame_rate(cam)
+    fpsw = int(measure_frame_rate(cam))
     logger.info(f"Finish recording, Measured Frame Rate: {actual_fps:.2f} FPS")
 
     # Setup pre-detection parameters
-    pre_detection_duration = 2  # Seconds
+    pre_detection_duration = 3  # Seconds
     pre_detection_buffer = deque(maxlen=fpsw * pre_detection_duration)  # Automatically manages size
 
     # Load the pre-trained YOLOv5 model (e.g., yolov5s)
@@ -401,7 +402,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
         return
 
     # setup Post detection
-    max_post_detection_duration = 3  # Record frames during 5 sec after detection
+    max_post_detection_duration = 5  # Record frames during 3 sec after detection
     number_of_post_frames = int(fpsw * max_post_detection_duration)  # Initial setting, to record after detection
     boat_in_current_frame = False
 
@@ -420,16 +421,18 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
             logger.error(f"Failed to capture frame: {e}")
             break  # Exit the loop if the camera fails
 
+        logger.debug(f"xxxprocessed_timestamps: {processed_timestamps}")
+
         if timestamp not in processed_timestamps:
             # Add frame to buffer and record its timestamp
             pre_detection_buffer.append((frame, timestamp))
             processed_timestamps.append(timestamp)
-            logging.debug(f"xxxFrame added to buffer: Timestamp={timestamp}")
+            # logging.debug(f"xxxFrame added to buffer: Timestamp={timestamp}")
         else:
             logging.debug(f"xxxDuplicate frame detected: Timestamp={timestamp}. Skipping.")
 
         # Perform inference only on every 2nd frame
-        if frame_counter % 2 == 0:
+        if frame_counter % 4 == 0:
             try:
                 frame_resized = cv2.resize(frame, (640, 480))  # Resize for faster processing
                 results = model(frame_resized)
@@ -439,7 +442,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
 
             # Process detection results
             detections = results.pandas().xyxy[0]  # Results as a DataFrame
-            logger.debug(f"Len detections: {len(detections)}")
+            # logger.debug(f"Len detections: {len(detections)}")
 
             # Parse the detection results ????
             if len(detections) == 0:
