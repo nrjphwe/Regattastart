@@ -196,8 +196,10 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
         last_triggered_events = {}
         time_now = dt.datetime.now()
         seconds_now = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
+
         # Adjust this value based on acceptable precision
         TIME_TOLERANCE = 1
+
         while seconds_now < iteration_start_time:
             for event_time, action, log_message in time_intervals:
                 if abs(seconds_now - event_time) <= TIME_TOLERANCE and (event_time, log_message) not in last_triggered_events:
@@ -562,9 +564,11 @@ def main():
             while True:
                 now = dt.datetime.now()
                 seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
+
                 if seconds_since_midnight > t5min_warning - 2:
                     logger.info("Start of outer loop iteration. seconds_since_midnight=%d", seconds_since_midnight)
                     logger.info("start_time_sec=%d", start_time_sec)
+
                     if num_starts == 1 or num_starts == 2:
                         logger.info("Start of video0 recording")
                         start_video_recording(cam, video_path, "video0.avi", bitrate=2000000)
@@ -591,7 +595,7 @@ def main():
                     # Exit the loop after the if condition is met
                     break
 
-                time.sleep(2)  # Introduce a delay of 2 seconds
+                time.sleep(0.1)  # Introduce a delay of 2 seconds
 
     except json.JSONDecodeError as e:
         logger.error("Failed to parse JSON: %", str(e))
