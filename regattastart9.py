@@ -461,16 +461,14 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
                     cv2.putText(frame, f"{class_name} {confidence:.2f}", (x1, y1 - 10),
                                 cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1)
 
-                    # Write pre-detection frames to video
-                    while pre_detection_buffer:
-                        frame, timestamp = pre_detection_buffer.popleft()
-                        video_writer.write(frame)
-                        logger.debug(f"Pre-detection buffer len: {len(pre_detection_buffer)}")
-                        for idx, item in enumerate(pre_detection_buffer):
-                            logging.debug(f"Buffer[{idx}] - Type: {type(item)}, Length: {len(item)}")
-                    # Clear the pre-detection buffer
-                    pre_detection_buffer.clear()
-                    logging.debug("Pre-detection buffer cleared after writing frames.")
+                    if pre_detection_buffer:
+                        # Write pre-detection frames to video
+                        while pre_detection_buffer:
+                            frame, timestamp = pre_detection_buffer.popleft()
+                            video_writer.write(frame)
+                            logging.debug(f"Pre-detection frame written: Timestamp={timestamp}")
+                        pre_detection_buffer.clear() # Clear the pre-detection buffer
+                        logging.debug("Pre-detection buffer cleared after writing frames.")
 
         # Handle post-detection frames
         # Write the current frame if a boat is detected or during post-detection countdown
@@ -485,6 +483,12 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
             if not boat_in_current_frame:
                 number_of_post_frames -= 1
             logger.debug(f"Number_of_post_frames (Post-detection countdown: {number_of_post_frames}")
+
+        logger.debug(f"yyyPre-detection buffer len: {len(pre_detection_buffer)}")
+        for idx, item in enumerate(pre_detection_buffer):
+            logging.debug(f"Buffer[{idx}] - Type: {type(item)}, Length: {len(item)}")
+        # Log post-detection frames
+        logging.debug(f"yyyPost-detection countdown: {number_of_post_frames}")
 
         if frame_counter % 100 == 0:
             cleanup_processed_timestamps(processed_timestamps)
