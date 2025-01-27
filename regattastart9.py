@@ -483,8 +483,8 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
             logger.debug(f"Number_of_post_frames (Post-detection countdown: {number_of_post_frames}")
 
         logger.debug(f"Pre-detection buffer len: {len(pre_detection_buffer)}")
-        for idx, item in enumerate(pre_detection_buffer):
-            logging.debug(f"Buffer[{idx}] - Type: {type(item)}, Length: {len(item)}")
+        # for idx, item in enumerate(pre_detection_buffer):
+        #    logging.debug(f"Buffer[{idx}] - Type: {type(item)}, Length: {len(item)}")
         # Log post-detection frames
         logging.debug(f"yyyPost-detection countdown: {number_of_post_frames}")
 
