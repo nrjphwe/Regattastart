@@ -207,7 +207,11 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
                     if action:
                         action()
                         picture_name = f"{i + 1}a_start_{log_message[:5]}.jpg"
-                        capture_picture(camera, photo_path, picture_name)
+                        try:
+                            capture_picture(camera, photo_path, picture_name)
+                            logger.info(f"Captured picture: {picture_name}")
+                        except Exception as e:
+                            logger.error(f"Failed to capture picture {picture_name}: {e}")
                         # Mark the event as triggered
                     last_triggered_events[(event_time, log_message)] = True
                     # break  # Break out of the loop to avoid reprocessing this event
