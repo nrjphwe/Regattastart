@@ -195,7 +195,6 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
 
         last_triggered_events = {}
         time_now = dt.datetime.now()
-        # seconds_since_midnight = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
         seconds_now = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
 
         while seconds_now < iteration_start_time:
@@ -416,21 +415,20 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
         # Capture a frame from the camera
         try:
             frame = cam.capture_array()
-            timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")  # timestamp (with microseconds)
-            logger.debug(f"zzz_timestamp: {timestamp}")
+            capture_timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")  # timestamp (with microseconds)
+            logger.debug(f"Capture timestamp: {capture_timestamp}")
         except Exception as e:
             logger.error(f"Failed to capture frame: {e}")
             break  # Exit the loop if the camera fails
 
-        if timestamp not in processed_timestamps:
+        if capture_timestamp not in processed_timestamps:
             # Add frame to buffer and record its timestamp
-            pre_detection_buffer.append((frame, timestamp))
-            processed_timestamps.append(timestamp)
-            # logging.debug(f"xxxFrame added to buffer: Timestamp={timestamp}")
+            pre_detection_buffer.append((frame, capture_timestamp))
+            processed_timestamps.append(capture_timestamp)
         else:
-            logging.debug(f"xxxDuplicate frame detected: Timestamp={timestamp}. Skipping.")
+            logging.debug(f"Duplicate frame detected: Timestamp={capture_timestamp}. Skipping.")
 
-        # Perform inference only on every 2nd frame
+        # Perform inference only on every 4th frame
         if frame_counter % 4 == 0:
             try:
                 frame_resized = cv2.resize(frame, (640, 480))  # Resize for faster processing
@@ -439,11 +437,9 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
                 logger.error(f"YOLOv5 inference failed: {e}")
                 break  # Exit the loop or handle it appropriately
 
-            # Process detection results
             detections = results.pandas().xyxy[0]  # Results as a DataFrame
-            # logger.debug(f"Len detections: {len(detections)}")
 
-            # Parse the detection results ????
+            # Parse the detection results
             if len(detections) == 0:
                 logger.debug("No detections in the current frame.")
 
@@ -458,19 +454,20 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
                     # Draw bounding box and label on the frame
                     x1, y1, x2, y2 = int(row['xmin']), int(row['ymin']), int(row['xmax']), int(row['ymax'])
                     cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
-                    cv2.putText(frame, f"{class_name} {confidence:.2f}", (x1, y1 - 10),
-                                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1)
+                    cv2.putText(frame, f"{class_name} {confidence:.2f}, {capture_timestamp}", (x1, y1 - 10),
+                                cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
 
                     if pre_detection_buffer:
                         # Write pre-detection frames to video
                         while pre_detection_buffer:
                             frame, timestamp = pre_detection_buffer.popleft()
                             video_writer.write(frame)
-                            logging.debug(f"Pre-detection frame written: Timestamp={timestamp}")
-                        pre_detection_buffer.clear() # Clear the pre-detection buffer
+                            logging.debug(f"Pre-detection Timestamp={timestamp}")
+                            logging.debug(f"Pre-detection len pre-detection-buffer: {len(pre_detection_buffer)}")
+                        pre_detection_buffer.clear()  # Clear the pre-detection buffer
                         logging.debug("Pre-detection buffer cleared after writing frames.")
 
-        # Handle post-detection frames
+        # Handle POST-detection frames
         # Write the current frame if a boat is detected or during post-detection countdown
         if boat_in_current_frame:
             number_of_post_frames = int(max_post_detection_duration * fpsw)  # Reset countdown
@@ -478,13 +475,14 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
         if boat_in_current_frame or number_of_post_frames > 0:
             try:
                 video_writer.write(frame)
+                logging.debug(f"Post-detection frame written: Timestamp={capture_timestamp}")
             except Exception as e:
                 logger.error(f"Failed to write frame: {e}")
             if not boat_in_current_frame:
                 number_of_post_frames -= 1
             logger.debug(f"Number_of_post_frames (Post-detection countdown: {number_of_post_frames}")
 
-        logger.debug(f"yyyPre-detection buffer len: {len(pre_detection_buffer)}")
+        logger.debug(f"Pre-detection buffer len: {len(pre_detection_buffer)}")
         for idx, item in enumerate(pre_detection_buffer):
             logging.debug(f"Buffer[{idx}] - Type: {type(item)}, Length: {len(item)}")
         # Log post-detection frames
