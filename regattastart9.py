@@ -417,11 +417,10 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
         try:
             frame = cam.capture_array()
             timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")  # timestamp (with microseconds)
+            logger.debug(f"zzz_timestamp: {timestamp}")
         except Exception as e:
             logger.error(f"Failed to capture frame: {e}")
             break  # Exit the loop if the camera fails
-
-        logger.debug(f"xxxprocessed_timestamps: {processed_timestamps}")
 
         if timestamp not in processed_timestamps:
             # Add frame to buffer and record its timestamp
