@@ -367,7 +367,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
     global recording_stopped
     confidence = 0.0  # Initial value
     class_name = ""  # Initial value
-    #fpsw = 20  # Number of frames written per second
+    # fpsw = 20  # Number of frames written per second
 
     # Set duration of video1 recording
     max_duration = (video_end + (num_starts-1)*5) * 60 
