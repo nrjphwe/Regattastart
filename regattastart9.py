@@ -454,30 +454,34 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
             # Parse the detection results
             if len(detections) == 0:
                 logger.debug("No detections in the current frame.")
+            else:
+                logger.debug("Detection made")
 
-            for _, row in detections.iterrows():
-                class_name = row['name']
-                confidence = row['confidence']
+                for _, row in detections.iterrows():
+                    class_name = row['name']
+                    confidence = row['confidence']
 
-                if confidence > 0.2 and class_name == 'boat':
-                    boat_in_current_frame = True
-                    logger.debug(f"Boat detected: {class_name} ({confidence:.2f})")
+                    if confidence > 0.2 and class_name == 'boat':
+                        boat_in_current_frame = True
+                        logger.debug(f"Boat detected: {class_name} ({confidence:.2f})")
 
-                    # Draw bounding box and label on the frame
-                    x1, y1, x2, y2 = int(row['xmin']), int(row['ymin']), int(row['xmax']), int(row['ymax'])
-                    cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
-                    cv2.putText(frame, f"{class_name} {confidence:.2f}, {capture_timestamp}", (x1, y1 - 10),
-                                cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
+                        # Draw bounding box and label on the frame
+                        x1, y1, x2, y2 = int(row['xmin']), int(row['ymin']), int(row['xmax']), int(row['ymax'])
+                        cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
+                        cv2.putText(frame, f"{class_name} {confidence:.2f}", (x1, y1 - 10),
+                                    cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
 
-                    if pre_detection_buffer:
-                        # Write pre-detection frames to video
-                        while pre_detection_buffer:
-                            frame, timestamp = pre_detection_buffer.popleft()
-                            video_writer.write(frame)
-                            logging.debug(f"Pre-detection Timestamp={timestamp}")
-                            logging.debug(f"Pre-detection len pre-detection-buffer: {len(pre_detection_buffer)}")
-                        pre_detection_buffer.clear()  # Clear the pre-detection buffer
-                        logging.debug("Pre-detection buffer cleared after writing frames.")
+                        if pre_detection_buffer:
+                            # Write pre-detection frames to video
+                            while pre_detection_buffer:
+                                frame, timestamp = pre_detection_buffer.popleft()
+                                cv2.putText(frame, f"PRE {timestamp}", (15,200),
+                                    cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
+                                video_writer.write(frame)
+                                logging.debug(f" Pre-detection Timestamp={timestamp}")
+                                # logging.debug(f"Pre-detection len pre-detection-buffer: {len(pre_detection_buffer)}")
+                            pre_detection_buffer.clear()  # Clear the pre-detection buffer
+                            logging.debug("Pre-detection buffer cleared after writing frames.")
 
         # Handle POST-detection frames
         # Write the current frame if a boat is detected or during post-detection countdown
@@ -486,8 +490,10 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
 
         if boat_in_current_frame or number_of_post_frames > 0:
             try:
+                cv2.putText(frame, f"POST {timestamp}", (15,200),
+                                    cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
                 video_writer.write(frame)
-                logging.debug(f"Post-detection frame written: Timestamp={capture_timestamp}")
+                logging.debug(f"Post-detection Timestamp={capture_timestamp}")
             except Exception as e:
                 logger.error(f"Failed to write frame: {e}")
             if not boat_in_current_frame:
