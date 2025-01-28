@@ -475,7 +475,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
                             # Write pre-detection frames to video
                             while pre_detection_buffer:
                                 frame, timestamp = pre_detection_buffer.popleft()
-                                cv2.putText(frame, f"PRE {timestamp}", (15,100),
+                                cv2.putText(frame, f"PRE {timestamp}", (15,300),
                                     cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
                                 video_writer.write(frame)
                                 logging.debug(f" Pre-detection Timestamp={timestamp}")
@@ -490,7 +490,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
 
         if boat_in_current_frame or number_of_post_frames > 0:
             try:
-                cv2.putText(frame, f"POST {timestamp}", (15,400),
+                cv2.putText(frame, f"POST {timestamp}", (60,400),
                                     cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
                 video_writer.write(frame)
                 logging.debug(f"Post-detection Timestamp={capture_timestamp}")
