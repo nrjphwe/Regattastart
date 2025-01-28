@@ -109,19 +109,24 @@
         if ($num_starts == 2) {
             if (isset($dur_between_starts)) {
                 echo ", Duration between starts: $dur_between_starts min";
+
                 // Convert start time to minutes
                 list($start_hour, $start_minute) = explode(':', $start_time);
                 $start_time_minutes = $start_hour * 60 + $start_minute;
+
                 // Calculate second start time in minutes
                 $second_start_time_minutes = $start_time_minutes + $dur_between_starts;
+
                 // Convert second start time back to hours and minutes
                 $second_start_hour = floor($second_start_time_minutes / 60);
                 $second_start_minute = $second_start_time_minutes % 60;
+
                 // Format second start time
                 $second_start_time = sprintf('%02d:%02d', $second_start_hour, $second_start_minute);
                 echo ", 2nd Start at: $second_start_time";
             }
         }
+        $video_end_time = $start_time + $video_end + 2
         if (isset($video_dur)) {
             echo "<br>";
             echo " Video duration: $video_dur min,"  ;
@@ -129,7 +134,20 @@
             echo " Number of videos during finish: " . $num_video;
         }
         if (isset($video_end)) {
-            echo ", Video end duration :  $video_end + 2 minutes after start";
+            // Convert $start_time to minutes
+            list($start_hour, $start_minute) = explode(':', $start_time);
+            $start_time_minutes = $start_hour * 60 + $start_minute;
+
+            // Add video_end (duration after start) and additional 2 minutes
+            $video_end_time_minutes = $start_time_minutes + $video_end + 2;
+
+            // Convert video end time back to HH:MM format
+            $video_end_hour = floor($video_end_time_minutes / 60);
+            $video_end_minute = $video_end_time_minutes % 60;
+
+            // Format video end time
+            $video_end_time = sprintf('%02d:%02d', $video_end_hour, $video_end_minute);
+            echo ", Video end time :  $video_end_time";
         }
         // Determine the number of videos during finish if not set, 
         // regattastart9 is executing and num_video is set to 1 as a flag.
