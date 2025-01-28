@@ -249,7 +249,7 @@ def start_video_recording(cam, video_path, file_name, bitrate=2000000):
     Start video recording using H264Encoder and with timestamp.
     """
     # actual_fps = measure_frame_rate(cam)
-    # logging.debug(f"Video recording, Measured Frame Rate: {actual_fps:.2f} FPS")
+    # logger.debug(f"Video recording, Measured Frame Rate: {actual_fps:.2f} FPS")
     output_file = os.path.join(video_path, file_name)
     # Configure the pre-callback for adding the timestamp
     cam.pre_callback = apply_timestamp
@@ -365,7 +365,7 @@ def cleanup_processed_timestamps(processed_timestamps, threshold_seconds=60):
     ]
     removed_count = len(processed_timestamps) - len(filtered_timestamps)
     processed_timestamps[:] = filtered_timestamps  # Update in place
-    logging.debug(f"Cleaned up {removed_count} old timestamps.")
+    logger.debug(f"Cleaned up {removed_count} old timestamps.")
 
 
 def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
@@ -464,7 +464,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
                     if confidence > 0.2 and class_name == 'boat':
                         boat_in_current_frame = True
                         logger.debug(f"Boat detected: {class_name} ({confidence:.2f})")
-                        logger.debug(f"Detected frame with Capture_Timestamp={capture_timestamp}. Skipping.")
+                        logger.debug(f"Detected frame with capture_timestamp={capture_timestamp}")
                         detected_timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")  # timestamp (with microseconds)
                         logger.debug(f"Detected_timestamp={detected_timestamp}")
 
@@ -482,7 +482,6 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
                                             cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
                                 video_writer.write(frame)
                                 logger.debug(f" Pre-detection Timestamp={timestamp}")
-                                # logging.debug(f"Pre-detection len pre-detection-buffer: {len(pre_detection_buffer)}")
                             pre_detection_buffer.clear()  # Clear the pre-detection buffer
                             logger.debug("Pre-detection buffer cleared after writing frames.")
 
@@ -493,10 +492,10 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
 
         if boat_in_current_frame or number_of_post_frames > 0:
             try:
-                cv2.putText(frame, f"POST {timestamp}", (60,400),
-                                    cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
+                cv2.putText(frame, f"POST {capture_timestamp}", (60, 400),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
                 video_writer.write(frame)
-                logging.debug(f"Post-detection Timestamp={capture_timestamp}")
+                logger.debug(f"Post-detection Timestamp={capture_timestamp}")
             except Exception as e:
                 logger.error(f"Failed to write frame: {e}")
             if not boat_in_current_frame:
