@@ -435,8 +435,8 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
             # Limit processed timestamps to match the deque size
             if len(processed_timestamps) > pre_detection_buffer.maxlen:
                 processed_timestamps = processed_timestamps[-pre_detection_buffer.maxlen:]
-            logging.debug(f"Added frame to buffer. Buffer size: {len(pre_detection_buffer)}")
-            logging.debug(f"Processed timestamps: {processed_timestamps}")
+            logging.debug(f"Added frame to buffer. Buffer length: {len(pre_detection_buffer)}")
+            logging.debug(f"Length of processed timestamps: {len(processed_timestamps)}")
         else:
             logging.debug(f"Duplicate frame detected: Timestamp={capture_timestamp}. Skipping.")
 
@@ -475,7 +475,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
                             # Write pre-detection frames to video
                             while pre_detection_buffer:
                                 frame, timestamp = pre_detection_buffer.popleft()
-                                cv2.putText(frame, f"PRE {timestamp}", (15,200),
+                                cv2.putText(frame, f"PRE {timestamp}", (15,100),
                                     cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
                                 video_writer.write(frame)
                                 logging.debug(f" Pre-detection Timestamp={timestamp}")
@@ -490,7 +490,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
 
         if boat_in_current_frame or number_of_post_frames > 0:
             try:
-                cv2.putText(frame, f"POST {timestamp}", (15,200),
+                cv2.putText(frame, f"POST {timestamp}", (15,400),
                                     cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
                 video_writer.write(frame)
                 logging.debug(f"Post-detection Timestamp={capture_timestamp}")
@@ -501,10 +501,6 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
             logger.debug(f"Number_of_post_frames (Post-detection countdown: {number_of_post_frames}")
 
         logger.debug(f"Pre-detection buffer len: {len(pre_detection_buffer)}")
-        # for idx, item in enumerate(pre_detection_buffer):
-        #    logging.debug(f"Buffer[{idx}] - Type: {type(item)}, Length: {len(item)}")
-        # Log post-detection frames
-        logging.debug(f"yyyPost-detection countdown: {number_of_post_frames}")
 
         if frame_counter % 100 == 0:
             cleanup_processed_timestamps(processed_timestamps)
