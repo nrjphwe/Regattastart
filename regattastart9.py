@@ -422,7 +422,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
         try:
             frame = cam.capture_array()
             capture_timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")  # timestamp (with microseconds)
-            logger.debug(f"Capture timestamp: {capture_timestamp}")
+            logger.debug(f"  Capture timestamp: {capture_timestamp}")
         except Exception as e:
             logger.error(f"Failed to capture frame: {e}")
             break  # Exit the loop if the camera fails
@@ -435,10 +435,10 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
             # Limit processed timestamps to match the deque size
             if len(processed_timestamps) > pre_detection_buffer.maxlen:
                 processed_timestamps = processed_timestamps[-pre_detection_buffer.maxlen:]
-            logging.debug(f"Added frame to buffer. Buffer length: {len(pre_detection_buffer)}")
-            logging.debug(f"Length of processed timestamps: {len(processed_timestamps)}")
+            logger.debug(f"Added frame to buffer. Buffer length: {len(pre_detection_buffer)}")
+            logger.debug(f"Length of processed timestamps: {len(processed_timestamps)}")
         else:
-            logging.debug(f"Duplicate frame detected: Timestamp={capture_timestamp}. Skipping.")
+            logger.debug(f"Duplicate frame detected: Timestamp={capture_timestamp}. Skipping.")
 
         # Perform inference only on every 2nd frame
         if frame_counter % 2 == 0:
@@ -464,6 +464,9 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
                     if confidence > 0.2 and class_name == 'boat':
                         boat_in_current_frame = True
                         logger.debug(f"Boat detected: {class_name} ({confidence:.2f})")
+                        logger.debug(f"Detected frame with Capture_Timestamp={capture_timestamp}. Skipping.")
+                        detected_timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")  # timestamp (with microseconds)
+                        logger.debug(f"Detected_timestamp={detected_timestamp}")
 
                         # Draw bounding box and label on the frame
                         x1, y1, x2, y2 = int(row['xmin']), int(row['ymin']), int(row['xmax']), int(row['ymax'])
@@ -475,13 +478,13 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
                             # Write pre-detection frames to video
                             while pre_detection_buffer:
                                 frame, timestamp = pre_detection_buffer.popleft()
-                                cv2.putText(frame, f"PRE {timestamp}", (15,300),
-                                    cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
+                                cv2.putText(frame, f"PRE {timestamp}", (15, 300),
+                                            cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
                                 video_writer.write(frame)
-                                logging.debug(f" Pre-detection Timestamp={timestamp}")
+                                logger.debug(f" Pre-detection Timestamp={timestamp}")
                                 # logging.debug(f"Pre-detection len pre-detection-buffer: {len(pre_detection_buffer)}")
                             pre_detection_buffer.clear()  # Clear the pre-detection buffer
-                            logging.debug("Pre-detection buffer cleared after writing frames.")
+                            logger.debug("Pre-detection buffer cleared after writing frames.")
 
         # Handle POST-detection frames
         # Write the current frame if a boat is detected or during post-detection countdown
