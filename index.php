@@ -126,7 +126,6 @@
                 echo ", 2nd Start at: $second_start_time";
             }
         }
-        $video_end_time = $start_time + $video_end + 2
         if (isset($video_dur)) {
             echo "<br>";
             echo " Video duration: $video_dur min,"  ;
