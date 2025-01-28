@@ -357,7 +357,7 @@ def listen_for_messages(stop_event, timeout=0.1):
 
 
 # Clean up processed_timestamps to remove old entries
-def cleanup_processed_timestamps(processed_timestamps, threshold_seconds=60):
+def cleanup_processed_timestamps(processed_timestamps, threshold_seconds=30):
     current_time = datetime.now()
     filtered_timestamps = [
         ts for ts in processed_timestamps
@@ -392,7 +392,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
     logger.info(f"Finish recording, Measured Frame Rate: {actual_fps:.2f} FPS")
 
     # Setup pre-detection parameters
-    pre_detection_duration = 2  # Seconds
+    pre_detection_duration = 1  # Seconds
     pre_detection_buffer = deque(maxlen=fpsw * pre_detection_duration)  # Automatically manages size
 
     # Load the pre-trained YOLOv5 model (e.g., yolov5s)
@@ -407,7 +407,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
         return
 
     # setup Post detection
-    max_post_detection_duration = 2  # Record frames during 6 sec after detection
+    max_post_detection_duration = 1  # Record frames during 6 sec after detection
     number_of_post_frames = int(fpsw * max_post_detection_duration)  # Initial setting, to record after detection
     boat_in_current_frame = False
 
@@ -441,7 +441,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
             logger.debug(f"Duplicate frame detected: Timestamp={capture_timestamp}. Skipping.")
 
         # Perform inference only on every 2nd frame
-        if frame_counter % 2 == 0:
+        if frame_counter % 1 == 0:
             try:
                 frame_resized = cv2.resize(frame, (640, 480))  # Resize for faster processing
                 results = model(frame_resized)
