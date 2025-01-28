@@ -434,8 +434,8 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
         else:
             logging.debug(f"Duplicate frame detected: Timestamp={capture_timestamp}. Skipping.")
 
-        # Perform inference only on every 4th frame
-        if frame_counter % 4 == 0:
+        # Perform inference only on every 2nd frame
+        if frame_counter % 2 == 0:
             try:
                 frame_resized = cv2.resize(frame, (640, 480))  # Resize for faster processing
                 results = model(frame_resized)
