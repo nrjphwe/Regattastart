@@ -392,7 +392,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
     logger.info(f"Finish recording, Measured Frame Rate: {actual_fps:.2f} FPS")
 
     # Setup pre-detection parameters
-    pre_detection_duration = 6  # Seconds
+    pre_detection_duration = 2  # Seconds
     pre_detection_buffer = deque(maxlen=fpsw * pre_detection_duration)  # Automatically manages size
 
     # Load the pre-trained YOLOv5 model (e.g., yolov5s)
@@ -407,7 +407,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
         return
 
     # setup Post detection
-    max_post_detection_duration = 6  # Record frames during 6 sec after detection
+    max_post_detection_duration = 2  # Record frames during 6 sec after detection
     number_of_post_frames = int(fpsw * max_post_detection_duration)  # Initial setting, to record after detection
     boat_in_current_frame = False
 
