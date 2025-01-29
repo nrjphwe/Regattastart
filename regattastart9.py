@@ -126,7 +126,7 @@ def setup_picam2(resolution, fps):
     preview_config = picam2.create_preview_configuration(
         main={"size": resolution, "format": "RGB888"},
         controls={"FrameRate": fps},
-        transform=Transform(hflip=True, vflip=True)  # Apply horizontal and vertical flips
+        # transform=Transform(hflip=True, vflip=True)  # Apply horizontal and vertical flips
     )
     picam2.configure(preview_config)
 
