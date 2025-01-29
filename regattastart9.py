@@ -431,6 +431,8 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
             # Add frame to buffer and record its timestamp
             pre_detection_buffer.append((frame.copy(), capture_timestamp))
             processed_timestamps.append(capture_timestamp)
+            logger.debug(f"Frame skipped due to duplicate timestamp: {capture_timestamp}")
+
 
             # Limit processed timestamps to match the deque size
             if len(processed_timestamps) > pre_detection_buffer.maxlen:
