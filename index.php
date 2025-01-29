@@ -458,7 +458,7 @@
             var video = document.getElementById('video' + videoNum);
             if (video) {
                 video.pause();
-                video.currentTime += step * (1 / video.playbackRate/20); // 
+                video.currentTime += step * (1 / video.playbackRate/5); // 
             }
         }
     </script>
