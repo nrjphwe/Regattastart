@@ -361,7 +361,7 @@ def cleanup_processed_timestamps(processed_timestamps, threshold_seconds=30):
     current_time = datetime.now()
     filtered_timestamps = [
         ts for ts in processed_timestamps
-        if (current_time - datetime.strptime(ts, "%Y-%m-%d %H:%M:%S.%f")).total_seconds() <= threshold_seconds
+        if (current_time - ts).total_seconds() <= threshold_seconds
     ]
     removed_count = len(processed_timestamps) - len(filtered_timestamps)
     processed_timestamps[:] = filtered_timestamps  # Update in place
@@ -377,7 +377,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
     # Set duration of video1 recording
     max_duration = (video_end + (num_starts-1)*5) * 60
     logger.debug(f"Video1, max recording duration: {max_duration} seconds")
-
+    
     # Camera
     width = cam.preview_configuration.main.size[0]  # Get the width from preview configuration
     height = cam.preview_configuration.main.size[1]  # Get the height from preview configuration
@@ -390,12 +390,12 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
     actual_fps = measure_frame_rate(cam)
     fpsw = int(actual_fps)
     logger.info(f"Finish recording, Measured Frame Rate: {actual_fps:.2f} FPS")
-
+    
     # Setup pre-detection parameters
     pre_detection_duration = 1  # Seconds
     pre_detection_buffer = deque(maxlen=fpsw * pre_detection_duration)  # Automatically manages size
     # pre_detection_buffer = deque(maxlen=20)  # Adjust buffer size if needed
-
+    
     # Load the pre-trained YOLOv5 model (e.g., yolov5s)
     model = torch.hub.load('ultralytics/yolov5', 'yolov5s')
     model.classes = [8]  # Filter for 'boat' class (COCO ID for 'boat' is 8)
@@ -409,6 +409,10 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
 
     # setup Post detection
     max_post_detection_duration = 1  # Record frames during 6 sec after detection
+    logger.info(f"max_duration,{max_duration}", "FPS={fpsw}",
+                "pre_detection_duration = {pre_detection_duration}",
+                "max_post_detection_duration={max_post_detection_duration}")
+
     number_of_post_frames = int(fpsw * max_post_detection_duration)  # Initial setting, to record after detection
     boat_in_current_frame = False
 
