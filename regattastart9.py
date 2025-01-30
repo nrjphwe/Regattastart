@@ -359,12 +359,15 @@ def listen_for_messages(stop_event, timeout=0.1):
 # Clean up processed_timestamps to remove old entries
 def cleanup_processed_timestamps(processed_timestamps, threshold_seconds=30):
     current_time = datetime.now()
-    filtered_timestamps = [
+    filtered_timestamps = {
         ts for ts in processed_timestamps
         if (current_time - ts).total_seconds() <= threshold_seconds
-    ]
+    }
     removed_count = len(processed_timestamps) - len(filtered_timestamps)
-    processed_timestamps[:] = filtered_timestamps  # Update in place
+    
+    processed_timestamps.clear()
+    processed_timestamps.update(filtered_timestamps)  # Add the filtered timestamps
+
     logger.debug(f"Cleaned up {removed_count} old timestamps.")
 
 
