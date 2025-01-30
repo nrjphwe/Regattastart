@@ -364,7 +364,7 @@ def cleanup_processed_timestamps(processed_timestamps, threshold_seconds=30):
         if (current_time - ts).total_seconds() <= threshold_seconds
     }
     removed_count = len(processed_timestamps) - len(filtered_timestamps)
-    
+
     processed_timestamps.clear()
     processed_timestamps.update(filtered_timestamps)  # Add the filtered timestamps
 
