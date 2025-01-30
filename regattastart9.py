@@ -10,7 +10,7 @@ if venv_path not in sys.path:
 import cv2
 # Use a deque to store the most recent frames in memory
 from collections import deque
-from datetime import datetime
+from datetime import datetime, timedelta
 import datetime as dt
 import errno
 import json
@@ -380,7 +380,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
     # Set duration of video1 recording
     max_duration = (video_end + (num_starts-1)*5) * 60
     logger.debug(f"Video1, max recording duration: {max_duration} seconds")
-    
+
     # Camera
     width = cam.preview_configuration.main.size[0]  # Get the width from preview configuration
     height = cam.preview_configuration.main.size[1]  # Get the height from preview configuration
@@ -395,8 +395,8 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
     logger.info(f"Finish recording, Measured Frame Rate: {actual_fps:.2f} FPS")
 
     # Setup pre-detection parameters
-    pre_detection_duration = 1  # Seconds
-    #pre_detection_buffer = deque(maxlen=fpsw * pre_detection_duration)  # Automatically manages size
+    #  pre_detection_duration = 1  # Seconds
+    #  pre_detection_buffer = deque(maxlen=fpsw * pre_detection_duration)  # Automatically manages size
     pre_detection_buffer = deque(maxlen=20)  # Adjust buffer size if needed
 
     # Load the pre-trained YOLOv5 model (e.g., yolov5s)
@@ -432,7 +432,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
         # Capture a frame from the camera
         try:
             frame = cam.capture_array()
-            capture_timestamp = datetime.now()  # timestamp (with microseconds)
+            capture_timestamp = datetime.now() + timedelta(microseconds=frame_counter)
             logger.debug(f"  Capture timestamp: {capture_timestamp}")
 
             if previous_capture_time:
