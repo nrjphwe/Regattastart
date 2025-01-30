@@ -394,6 +394,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
     # Setup pre-detection parameters
     pre_detection_duration = 1  # Seconds
     pre_detection_buffer = deque(maxlen=fpsw * pre_detection_duration)  # Automatically manages size
+    # pre_detection_buffer = deque(maxlen=20)  # Adjust buffer size if needed
 
     # Load the pre-trained YOLOv5 model (e.g., yolov5s)
     model = torch.hub.load('ultralytics/yolov5', 'yolov5s')
@@ -411,8 +412,11 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
     number_of_post_frames = int(fpsw * max_post_detection_duration)  # Initial setting, to record after detection
     boat_in_current_frame = False
 
-    processed_timestamps = []
+    # processed_timestamps = []
+    processed_timestamps = set()  # Use a set for fast lookups
+
     frame_counter = 0  # Initialize a frame counter
+    previous_capture_time = None  # Track previous frame timestamp
 
     while not recording_stopped:
         boat_in_current_frame = False  # Reset detection flag for this frame
@@ -421,8 +425,15 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
         # Capture a frame from the camera
         try:
             frame = cam.capture_array()
-            capture_timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")  # timestamp (with microseconds)
+            capture_timestamp = datetime.now()  # timestamp (with microseconds)
             logger.debug(f"  Capture timestamp: {capture_timestamp}")
+
+            if previous_capture_time:
+                time_diff = (capture_timestamp - previous_capture_time).total_seconds()
+                logger.debug(f"QQQ  Time since last frame: {time_diff:.3f} sec")
+
+            previous_capture_time = capture_timestamp  # Update for next iteration
+
         except Exception as e:
             logger.error(f"Failed to capture frame: {e}")
             break  # Exit the loop if the camera fails
@@ -430,15 +441,13 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
         if capture_timestamp not in processed_timestamps:
             # Add frame to buffer and record its timestamp
             pre_detection_buffer.append((frame.copy(), capture_timestamp))
-            processed_timestamps.append(capture_timestamp)
-            logger.debug(f"Frame skipped due to duplicate timestamp: {capture_timestamp}")
-
-
-            # Limit processed timestamps to match the deque size
-            if len(processed_timestamps) > pre_detection_buffer.maxlen:
-                processed_timestamps = processed_timestamps[-pre_detection_buffer.maxlen:]
+            processed_timestamps.add(capture_timestamp)  # Store timestamp in set
             logger.debug(f"Added frame to buffer. Buffer length: {len(pre_detection_buffer)}")
-            logger.debug(f"Length of processed timestamps: {len(processed_timestamps)}")
+
+            # Trim set to match buffer size
+            if len(processed_timestamps) > pre_detection_buffer.maxlen:
+                processed_timestamps = set(list(processed_timestamps)[-pre_detection_buffer.maxlen:])
+
         else:
             logger.debug(f"Duplicate frame detected: Timestamp={capture_timestamp}. Skipping.")
 
