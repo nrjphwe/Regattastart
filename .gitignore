@@ -3,3 +3,4 @@
 .vscode/extensions.json
 .vscode/settings.json
 dump.php
+*.ipynb
