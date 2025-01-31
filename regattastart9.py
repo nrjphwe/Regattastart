@@ -491,8 +491,12 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
                         cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
                         cv2.putText(frame, f"{class_name} {confidence:.2f}", (x1, y1 - 10),
                                     cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
-                        video_writer.write(frame)
-                        logger.debug(" Write Detected frame !!!")
+                        try:
+                            video_writer.write(frame)
+                        except Exception as e:
+                            logger.error(f"Write the detected frame failed: {e}")
+                            break  # Exit the loop or handle it appropriately
+                        logger.debug("Detected frame written  !!!")
 
                         if pre_detection_buffer:
                             # Write pre-detection frames to video
