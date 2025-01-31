@@ -555,7 +555,7 @@ def main():
     global listening  # Declare listening as global
     logger = setup_logging()  # Initialize the logger
     # cam = setup_picam2(resolution=(640, 480), fps=5)
-    cam = setup_picam2(resolution=(2592, 1944), fps=5)
+    cam = setup_picam2(resolution=(1920, 1080), fps=5)
     if cam is None:
         logger.error("Camera setup failed, exiting.")
         exit()
