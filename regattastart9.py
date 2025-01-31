@@ -458,7 +458,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
         else:
             logger.debug(f"Duplicate frame detected: Timestamp={capture_timestamp}. Skipping.")
 
-        # Perform inference only on every 2nd frame
+        # Perform inference only on every frame
         if frame_counter % 1 == 0:
             try:
                 frame_resized = cv2.resize(frame, (640, 480))  # Resize for faster processing
@@ -491,6 +491,8 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
                         cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
                         cv2.putText(frame, f"{class_name} {confidence:.2f}", (x1, y1 - 10),
                                     cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
+                        video_writer.write(frame)
+                        logger.debug(" Write Detected frame !!!")
 
                         if pre_detection_buffer:
                             # Write pre-detection frames to video
