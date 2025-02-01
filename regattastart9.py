@@ -380,21 +380,21 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
     logger.debug(f"Video1, max recording duration: {max_duration} seconds")
 
     # Stop camera completely
-    if cam.started:
-        cam.stop()
-        logger.info("Camera fully stopped before restart.")
+    #if cam.started:
+    #    cam.stop()
+    #    logger.info("Camera fully stopped before restart.")
 
-    try:
-        cam.close()  # Ensure camera resources are released
-        logger.info("Camera resources released.")
-    except Exception as e:
-        logger.warning(f"Error while closing camera: {e}")
+    #try:
+    #    cam.close()  # Ensure camera resources are released
+    #    logger.info("Camera resources released.")
+    3except Exception as e:
+    #    logger.warning(f"Error while closing camera: {e}")
 
     # Wait a short time before reinitializing
-    time.sleep(2)  # Ensures previous instance is fully released
+    #time.sleep(2)  # Ensures previous instance is fully released
 
-    cam = setup_picam2(resolution=(1920, 1080), fps=5)
-    cam = Picamera2()  # Reinitialize camera
+    #cam = setup_picam2(resolution=(1920, 1080), fps=5)
+    #cam = Picamera2()  # Reinitialize camera
 
     # Check available resolutions before configuring
     available_resolutions = cam.available_resolutions()
