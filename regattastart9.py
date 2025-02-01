@@ -494,7 +494,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
                         try:
                             video_writer.write(frame)
                         except Exception as e:
-                            logger.error(f"Write the detected frame failed: {e}")
+                            logger.error(f"Failed tp write the detected frame: {e}")
                             break  # Exit the loop or handle it appropriately
                         logger.debug("Detected frame written  !!!")
 
@@ -504,8 +504,11 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
                                 frame, timestamp = pre_detection_buffer.popleft()
                                 cv2.putText(frame, f"PRE {timestamp}", (15, 300),
                                             cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
-                                video_writer.write(frame)
-                                logger.debug(f" Pre-detection Timestamp={timestamp}")
+                                try:
+                                    video_writer.write(frame)
+                                    logger.debug(f" Pre-detection Timestamp={timestamp}")
+                                except Exception as e:
+                                    logger.error(f"Failed to write pre-detection frame: {e}")
                             pre_detection_buffer.clear()  # Clear the pre-detection buffer
                             logger.debug("Pre-detection buffer cleared after writing frames.")
 
@@ -521,10 +524,10 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
                 video_writer.write(frame)
                 logger.debug(f"Post-detection Timestamp={capture_timestamp}")
             except Exception as e:
-                logger.error(f"Failed to write frame: {e}")
+                logger.error(f"Failed to write post frame: {e}")
             if not boat_in_current_frame:
                 number_of_post_frames -= 1
-            logger.debug(f"Number_of_post_frames (Post-detection countdown: {number_of_post_frames}")
+            logger.debug(f"Number_of_post_frames Post-detection countdown: {number_of_post_frames}")
 
         logger.debug(f"Pre-detection buffer len: {len(pre_detection_buffer)}")
 
