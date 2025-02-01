@@ -122,20 +122,35 @@ def setup_picam2(resolution, fps):
     Configures the camera using picamera2.
     Sets the desired resolution and FPS for video recordings.
     """
-    picam2 = Picamera2()
+    global picam2_instance
 
-    # Configure preview settings
-    # Apply 180-degree rotation (horizontal and vertical flip)
-    preview_config = picam2.create_preview_configuration(
-        main={"size": resolution, "format": "RGB888"},
-        controls={"FrameRate": fps},
-        # transform=Transform(hflip=True, vflip=True)  # Apply horizontal and vertical flips
+    if 'picam2_instance' in globals() and picam2_instance is not None:
+        logger.info("Reusing existing Picamera2 instance")
+        return picam2_instance 
+
+    logger.info("Initializing new Picamera2 instance")
+    picam2_instance = Picamera2()
+
+    # Select the 1920x1080 sensor mode explicitly
+    sensor_modes = picam2_instance.sensor_modes
+    selected_mode = next((mode for mode in sensor_modes if mode['size'] == resolution), None)
+
+    if selected_mode is None:
+        logger.error(f"Requested {resolution} mode not available! Falling back to {sensor_modes[0]['size']}.")
+        selected_mode = sensor_modes[0]  # Default to first available mode
+
+    # Configure camera
+    preview_config = picam2_instance.create_preview_configuration(
+        main={"size": selected_mode['size'], "format": "RGB888"},
+        controls={"FrameRate": fps}
     )
-    picam2.configure(preview_config)
 
-    picam2.start()  # Start the camera
+    picam2_instance.configure(preview_config)
+    picam2_instance.start()
+
     logger.info(f"setup_camera with resolution {resolution} and {fps} FPS.")
-    return picam2
+
+    return picam2_instance
 
 
 def measure_frame_rate(cam, duration=5):
@@ -379,21 +394,30 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
     global recording_stopped
     confidence = 0.0  # Initial value
     class_name = ""  # Initial value
-    # fpsw = 20  # Number of frames written per second
 
     # Set duration of video1 recording
     max_duration = (video_end + (num_starts-1)*5) * 60
     logger.debug(f"Video1, max recording duration: {max_duration} seconds")
 
     # Camera
-    width = cam.preview_configuration.main.size[0]  # Get the width from preview configuration
-    height = cam.preview_configuration.main.size[1]  # Get the height from preview configuration
-    frame_size = (width, height)
-    logger.info(f"Camera frame size: {frame_size}")
-    if not cam.started:  # ensure camera being started.
-        logger.error("Camera is not started. Starting it now...")
-        cam = setup_picam2(resolution=(1920, 1080), fps=5)
+    # Ensure camera is started with correct resolution
+    if not cam.started:
+        logger.warning("Camera was stopped. Restarting with correct resolution...")
+
+        # Force 1920x1080 resolution before starting
+        preview_config = cam.create_preview_configuration(
+            main={"size": (1920, 1080), "format": "RGB888"},
+            controls={"FrameRate": 5}
+        )
+        cam.configure(preview_config)
         cam.start()
+
+    # Confirm resolution
+    frame_size = cam.preview_configuration.main.size
+    logger.info(f"Camera frame size after restart: {frame_size}")
+
+    if frame_size[0] != 1920 or frame_size[1] != 1080:
+        logger.error(f"Resolution mismatch! Expected (1920, 1080) but got {frame_size}.")
 
     actual_fps = measure_frame_rate(cam)
     fpsw = int(actual_fps)
@@ -678,7 +702,7 @@ def main():
 
         finally:
             try:
-                stop_video_recording(cam) # Ensure the camera recording is stopped
+                stop_video_recording(cam)  # Ensure the camera recording is stopped
                 cam.close()           # Release the camera resources
             except Exception as e:
                 logger.error(f"Error while cleaning up camera: {e}")
