@@ -422,7 +422,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
     cam.start()
 
     # Confirm resolution
-    frame_size = cam.preview_configuration["main"]["size"]
+    frame_size = cam.preview_configuration.main.size
     logger.info(f"Camera frame size after restart: {frame_size}")
 
     if frame_size[0] != 1920 or frame_size[1] != 1080:
