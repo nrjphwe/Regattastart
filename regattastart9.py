@@ -207,7 +207,7 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
                         picture_name = f"{i + 1}a_start_{log_message[:5]}.jpg"
                         try:
                             capture_picture(camera, photo_path, picture_name)
-                            logger.info(f"Captured picture: {picture_name}")
+                            logger.info(f"Start_sequence, Captured picture: {picture_name}")
                         except Exception as e:
                             logger.error(f"Failed to capture picture {picture_name}: {e}")
                             break
