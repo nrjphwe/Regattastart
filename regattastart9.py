@@ -56,11 +56,14 @@ OFF = GPIO.HIGH
 signal = 26
 lamp1 = 20
 lamp2 = 21
-GPIO.setmode(GPIO.BCM)
-GPIO.setwarnings(True)
-GPIO.setup(signal, GPIO.OUT, initial=GPIO.HIGH)
-GPIO.setup(lamp1, GPIO.OUT, initial=GPIO.HIGH)
-GPIO.setup(lamp2, GPIO.OUT, initial=GPIO.HIGH)
+try:
+    GPIO.setmode(GPIO.BCM)
+    GPIO.setwarnings(True)
+    GPIO.setup(signal, GPIO.OUT, initial=GPIO.HIGH)
+    GPIO.setup(lamp1, GPIO.OUT, initial=GPIO.HIGH)
+    GPIO.setup(lamp2, GPIO.OUT, initial=GPIO.HIGH)
+except Exception as e:
+    logger.error(f"Failed to setup GPIO: {e}")
 
 # reset the contents of the status variable, used for flagging that
 # video1-conversion is complete.
@@ -212,9 +215,10 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
                             logger.info(f"Captured picture: {picture_name}")
                         except Exception as e:
                             logger.error(f"Failed to capture picture {picture_name}: {e}")
+                            break
+                            # break  # Break out of the loop to avoid reprocessing this event
                         # Mark the event as triggered
                     last_triggered_events[(event_time, log_message)] = True
-                    # break  # Break out of the loop to avoid reprocessing this event
 
             # Sleep until the next event time
             future_events = [t for t, _, _ in time_intervals if t > seconds_now]
