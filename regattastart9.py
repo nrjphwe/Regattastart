@@ -447,7 +447,8 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
 
         except Exception as e:
             logger.error(f"Failed to capture frame: {e}")
-            break  # Exit the loop if the camera fails
+            continue  # Skips this iteration but keeps running the loop
+            # break  # Exit the loop if the camera fails
 
         if capture_timestamp not in processed_timestamps:
             # Add frame to buffer and record its timestamp
@@ -458,7 +459,6 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
             # Trim set to match buffer size
             if len(processed_timestamps) > pre_detection_buffer.maxlen:
                 processed_timestamps = set(list(processed_timestamps)[-pre_detection_buffer.maxlen:])
-
         else:
             logger.debug(f"Duplicate frame detected: Timestamp={capture_timestamp}. Skipping.")
 
@@ -469,7 +469,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
                 results = model(frame_resized)
             except Exception as e:
                 logger.error(f"YOLOv5 inference failed: {e}")
-                break  # Exit the loop or handle it appropriately
+                continue  # Skips only the inference step, keeps recording
 
             detections = results.pandas().xyxy[0]  # Results as a DataFrame
 
@@ -499,7 +499,8 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
                             video_writer.write(frame)
                         except Exception as e:
                             logger.error(f"Failed tp write the detected frame: {e}")
-                            break  # Exit the loop or handle it appropriately
+                            continue  # Skips writing this frame but keeps recording
+                            # break  # Exit the loop or handle it appropriately
                         logger.debug("Detected frame written  !!!")
 
                         if pre_detection_buffer:
@@ -513,6 +514,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
                                     logger.debug(f" Pre-detection Timestamp={timestamp}")
                                 except Exception as e:
                                     logger.error(f"Failed to write pre-detection frame: {e}")
+                                    continue  # Skips writing this frame but keeps recording
                             pre_detection_buffer.clear()  # Clear the pre-detection buffer
                             logger.debug("Pre-detection buffer cleared after writing frames.")
 
