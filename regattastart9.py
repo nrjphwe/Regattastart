@@ -401,16 +401,23 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
 
     # Camera
     # Ensure camera is started with correct resolution
-    if not cam.started:
-        logger.warning("Camera was stopped. Restarting with correct resolution...")
+    # if not cam.started:
+    #     logger.warning("Camera was stopped. Restarting with correct resolution.")
 
-        # Force 1920x1080 resolution before starting
-        preview_config = cam.create_preview_configuration(
-            main={"size": (1920, 1080), "format": "RGB888"},
-            controls={"FrameRate": 5}
-        )
-        cam.configure(preview_config)
-        cam.start()
+    # Stop camera completely
+    if cam.started:
+        cam.stop()
+        logger.info("Camera fully stopped before restart.")
+
+    # Reinitialize camera
+    cam = Picamera2() 
+    # Force 1920x1080 resolution before starting
+    preview_config = cam.create_preview_configuration(
+        main={"size": (1920, 1080), "format": "RGB888"},
+        controls={"FrameRate": 5}
+    )
+    cam.configure(preview_config)
+    cam.start()
 
     # Confirm resolution
     frame_size = cam.preview_configuration.main.size
