@@ -399,19 +399,21 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
     max_duration = (video_end + (num_starts-1)*5) * 60
     logger.debug(f"Video1, max recording duration: {max_duration} seconds")
 
-    # Camera
-    # Ensure camera is started with correct resolution
-    # if not cam.started:
-    #     logger.warning("Camera was stopped. Restarting with correct resolution.")
-
     # Stop camera completely
     if cam.started:
         cam.stop()
         logger.info("Camera fully stopped before restart.")
 
-    # Reinitialize camera
-    cam = Picamera2() 
-    # Force 1920x1080 resolution before starting
+    try:
+        cam.close()  # Ensure camera resources are released
+        logger.info("Camera resources released.")
+    except Exception as e:
+        logger.warning(f"Error while closing camera: {e}")
+
+    # Wait a short time before reinitializing
+    time.sleep(2)  # Ensures previous instance is fully released
+
+    cam = Picamera2()  # Reinitialize camera
     preview_config = cam.create_preview_configuration(
         main={"size": (1920, 1080), "format": "RGB888"},
         controls={"FrameRate": 5}
@@ -420,7 +422,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
     cam.start()
 
     # Confirm resolution
-    frame_size = cam.preview_configuration.main.size
+    frame_size = cam.preview_configuration["main"]["size"]
     logger.info(f"Camera frame size after restart: {frame_size}")
 
     if frame_size[0] != 1920 or frame_size[1] != 1080:
@@ -432,7 +434,6 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
 
     # Setup pre-detection parameters
     pre_detection_duration = 1  # Seconds
-    #  pre_detection_buffer = deque(maxlen=fpsw * pre_detection_duration)  # Automatically manages size
     pre_detection_buffer = deque(maxlen=20)  # Adjust buffer size if needed
 
     # Load the pre-trained YOLOv5 model (e.g., yolov5s)
