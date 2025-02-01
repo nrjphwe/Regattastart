@@ -122,35 +122,15 @@ def setup_picam2(resolution, fps):
     Configures the camera using picamera2.
     Sets the desired resolution and FPS for video recordings.
     """
-    global picam2_instance
-
-    if 'picam2_instance' in globals() and picam2_instance is not None:
-        logger.info("Reusing existing Picamera2 instance")
-        return picam2_instance 
-
-    logger.info("Initializing new Picamera2 instance")
-    picam2_instance = Picamera2()
-
-    # Select the 1920x1080 sensor mode explicitly
-    sensor_modes = picam2_instance.sensor_modes
-    selected_mode = next((mode for mode in sensor_modes if mode['size'] == resolution), None)
-
-    if selected_mode is None:
-        logger.error(f"Requested {resolution} mode not available! Falling back to {sensor_modes[0]['size']}.")
-        selected_mode = sensor_modes[0]  # Default to first available mode
-
-    # Configure camera
-    preview_config = picam2_instance.create_preview_configuration(
-        main={"size": selected_mode['size'], "format": "RGB888"},
+    cam = Picamera2()
+    preview_config = cam.create_preview_configuration(
+        main={"size": resolution, "format": "RGB888"},
         controls={"FrameRate": fps}
     )
-
-    picam2_instance.configure(preview_config)
-    picam2_instance.start()
-
+    cam.configure(preview_config)
+    cam.start()
     logger.info(f"setup_camera with resolution {resolution} and {fps} FPS.")
-
-    return picam2_instance
+    return cam
 
 
 def measure_frame_rate(cam, duration=5):
@@ -413,8 +393,9 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
     # Wait a short time before reinitializing
     time.sleep(2)  # Ensures previous instance is fully released
 
+    cam = setup_picam2(resolution=(1920, 1080), fps=5)
     cam = Picamera2()  # Reinitialize camera
-    
+
     # Check available resolutions before configuring
     available_resolutions = cam.available_resolutions()
     logger.info(f"Available resolutions: {available_resolutions}")
