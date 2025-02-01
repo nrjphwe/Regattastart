@@ -396,10 +396,6 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
     #cam = setup_picam2(resolution=(1920, 1080), fps=5)
     #cam = Picamera2()  # Reinitialize camera
 
-    # Check available resolutions before configuring
-    available_resolutions = cam.available_resolutions()
-    logger.info(f"Available resolutions: {available_resolutions}")
-
     preview_config = cam.create_preview_configuration(
         main={"size": (1920, 1080), "format": "RGB888"},
         controls={"FrameRate": 5}
