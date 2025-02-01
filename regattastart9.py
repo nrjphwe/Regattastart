@@ -392,6 +392,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
     logger.info(f"Camera frame size: {frame_size}")
     if not cam.started:  # ensure camera being started.
         logger.error("Camera is not started. Starting it now...")
+        cam = setup_picam2(resolution=(1920, 1080), fps=5)
         cam.start()
 
     actual_fps = measure_frame_rate(cam)
@@ -411,8 +412,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
     fourcc = cv2.VideoWriter_fourcc(*'XVID')  # Use 'XVID' for .avi, or 'mp4v' for .mp4
     video_writer = cv2.VideoWriter(video_path + 'video1' + '.avi', fourcc, fpsw, frame_size)
     if not video_writer.isOpened():
-        logger.error("VideoWriter failed to initialize.")
-        return
+        logger.error(f"Failed to open video1.avi for writing. Selected frame_size: {frame_size}")
 
     # setup Post detection
     max_post_detection_duration = 1  # Record frames during 6 sec after detection
@@ -534,8 +534,6 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
             if not boat_in_current_frame:
                 number_of_post_frames -= 1
             logger.debug(f"Number_of_post_frames Post-detection countdown: {number_of_post_frames}")
-
-        logger.debug(f"Pre-detection buffer len: {len(pre_detection_buffer)}")
 
         if frame_counter % 100 == 0:
             cleanup_processed_timestamps(processed_timestamps)
