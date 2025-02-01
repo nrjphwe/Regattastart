@@ -387,7 +387,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
     #try:
     #    cam.close()  # Ensure camera resources are released
     #    logger.info("Camera resources released.")
-    3except Exception as e:
+    # except Exception as e:
     #    logger.warning(f"Error while closing camera: {e}")
 
     # Wait a short time before reinitializing
