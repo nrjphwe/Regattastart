@@ -437,7 +437,10 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
         # Capture a frame from the camera
         try:
             frame = cam.capture_array()
-
+            if frame is None:
+                logger.error("Captured frame is None! Skipping write.")
+                continue
+            logger.debug(f"Writing frame with shape: {frame.shape}")
             capture_timestamp = datetime.now() + timedelta(microseconds=frame_counter)
             logger.debug(f"  Capture timestamp: {capture_timestamp}")
 
