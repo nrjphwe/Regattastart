@@ -498,13 +498,13 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
                         cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
                         cv2.putText(frame, f"{class_name} {confidence:.2f}", (x1, y1 - 10),
                                     cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
+
                         if frame is not None:
                             video_writer.write(frame)
+                            logger.debug("Detected frame written  !!!")
                         else:
                             logger.error("Captured frame is None! Skipping write.")
                             continue
-                        # break  # Exit the loop or handle it appropriately
-                        logger.debug("Detected frame written  !!!")
 
                         if pre_detection_buffer:
                             # Write pre-detection frames to video
@@ -648,11 +648,11 @@ def main():
 
                     # Exit the loop after the if condition is met
                     break
-
                 time.sleep(0.1)  # Introduce a delay of 2 seconds
 
     except json.JSONDecodeError as e:
         logger.error("Failed to parse JSON: %", str(e))
+        GPIO.cleanup()
         sys.exit(1)
     finally:
         logger.info("Finally section, before listen_for_message")
