@@ -125,6 +125,10 @@ def setup_picam2(resolution=(1920, 1080), fps=5):
             controls={"FrameRate": fps}
         )
         cam.configure(config)
+
+        # Apply 180-degree rotation by flipping horizontally and vertically
+        cam.set_controls({"Transform": {"hflip": True, "vflip": True}})
+
         cam.start()
 
         logger.info(f"Camera started with resolution {resolution} and FPS {fps}.")
@@ -168,7 +172,7 @@ def capture_picture(camera, photo_path, file_name):
         # Rotate the frame by 180 degrees
         # rotated_frame = cv2.rotate(frame, cv2.ROTATE_180)
         # Save the frame to the file
-        # cv2.imwrite(os.path.join(photo_path, file_name), rotated_frame)
+        #cv2.imwrite(os.path.join(photo_path, file_name), rotated_frame)
         cv2.imwrite(os.path.join(photo_path, file_name), frame)
     request.release()
     logger.info("Captured picture = %s", file_name)
