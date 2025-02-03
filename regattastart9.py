@@ -388,6 +388,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
 
     cam = setup_picam2(resolution=(1920, 1080), fps=5)
     cam.start()
+    logger.info(f"Before Video1, Camera frame size: {cam.preview_configuration.main.size}")
 
     # Confirm resolution
     frame_size = cam.preview_configuration.main.size
@@ -654,7 +655,6 @@ def main():
 
         logger.info("Finally section, before 'Finish recording'. start_time=%s video_end=%s", start_time, video_end)
         time.sleep(2)
-        logger.info(f"Before Video1, Camera frame size: {cam.preview_configuration.main.size}")
         finish_recording(cam, video_path, num_starts, video_end, start_time_sec)
         logger.info("After finished_recording")
         try:
@@ -679,7 +679,6 @@ def main():
         finally:
             try:
                 stop_video_recording(cam)  # Ensure the camera recording is stopped
-                cam.close()           # Release the camera resources
             except Exception as e:
                 logger.error(f"Error while cleaning up camera: {e}")
 
