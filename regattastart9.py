@@ -40,7 +40,7 @@ warnings.filterwarnings(
 )
 
 picamera2_logger = logging.getLogger('picamera2')
-picamera2_logger.setLevel(logging.ERROR)  # Change to ERROR to suppress more logs
+picamera2_logger.setLevel(logging.DEBUG)  # Change to ERROR to suppress more logs
 
 # parameter data
 signal_dur = 0.9  # 0.9 sec
@@ -117,19 +117,20 @@ def remove_video_files(directory, pattern):
             os.remove(file_path)
 
 
-def setup_picam2(resolution, fps):
-    """
-    Configures the camera using picamera2.
-    Sets the desired resolution and FPS for video recordings.
-    """
-    cam = Picamera2()
-    preview_config = cam.create_preview_configuration(
-        main={"size": resolution, "format": "RGB888"},
-        controls={"FrameRate": fps}
-    )
-    cam.configure(preview_config)
-    logger.info(f"setup_camera with resolution {resolution} and {fps} FPS.")
-    return cam
+def setup_picam2(resolution=(1920, 1080), fps=5):
+    try:
+        cam = Picamera2()
+        config = cam.create_preview_configuration(
+            main={"size": resolution, "format": "RGB888"},
+            controls={"FrameRate": fps}
+        )
+        cam.configure(config)
+        cam.start()
+        logger.info(f"Camera started with resolution {resolution} and FPS {fps}.")
+        return cam  # Ensure it returns a valid camera object
+    except Exception as e:
+        logger.error(f"Failed to initialize camera: {e}")
+        return None  # Avoid using an uninitialized camera
 
 
 def measure_frame_rate(cam, duration=5):
