@@ -391,7 +391,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
     cam.start()
 
     # Confirm resolution
-    frame_size = cam.capture_metadata()["ScalerCrop"][2:4]
+    frame_size = cam.capture_metadata().get("ScalerCrop", (0, 0, 0, 0))[2:4]
     logger.info(f"Camera frame size after restart: {frame_size}")
 
     if frame_size[0] != 1920 or frame_size[1] != 1080:
@@ -399,7 +399,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
 
     actual_fps = measure_frame_rate(cam)
     fpsw = int(actual_fps)
-    logger.info(f"Finish recording, Measured Frame Rate: {actual_fps:.2f} FPS")
+    logger.info(f"function: finish_recording, Measured Frame Rate: {actual_fps:.2f} FPS")
 
     # Setup pre-detection parameters
     pre_detection_duration = 1  # Seconds
