@@ -40,7 +40,7 @@ warnings.filterwarnings(
 )
 
 picamera2_logger = logging.getLogger('picamera2')
-picamera2_logger.setLevel(logging.ERROR)  # Change to ERROR to suppress more logs
+picamera2_logger.setLevel(logging.DEBUG)  # Change to ERROR to suppress more logs
 
 # parameter data
 signal_dur = 0.9  # 0.9 sec
