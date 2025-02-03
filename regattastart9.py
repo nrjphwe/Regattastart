@@ -127,7 +127,7 @@ def setup_picam2(resolution=(1920, 1080), fps=5):
         cam.configure(config)
 
         # Apply 180-degree rotation by flipping horizontally and vertically
-        cam.set_controls({"Transform": {"hflip": True, "vflip": True}})
+        # cam.set_controls({"Transform": {"hflip": True, "vflip": True}})
 
         cam.start()
 
