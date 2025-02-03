@@ -40,7 +40,7 @@ warnings.filterwarnings(
 )
 
 picamera2_logger = logging.getLogger('picamera2')
-picamera2_logger.setLevel(logging.DEBUG)  # Change to ERROR to suppress more logs
+picamera2_logger.setLevel(logging.ERROR)  # Change to ERROR to suppress more logs
 
 # parameter data
 signal_dur = 0.9  # 0.9 sec
@@ -120,12 +120,13 @@ def remove_video_files(directory, pattern):
 def setup_picam2(resolution=(1920, 1080), fps=5):
     try:
         cam = Picamera2()
-        config = cam.create_preview_configuration(
+        config = cam.create_video_configuration(
             main={"size": resolution, "format": "RGB888"},
             controls={"FrameRate": fps}
         )
         cam.configure(config)
         cam.start()
+
         logger.info(f"Camera started with resolution {resolution} and FPS {fps}.")
         return cam  # Ensure it returns a valid camera object
     except Exception as e:
@@ -388,10 +389,9 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
 
     cam = setup_picam2(resolution=(1920, 1080), fps=5)
     cam.start()
-    logger.info(f"Before Video1, Camera frame size: {cam.preview_configuration.main.size}")
 
     # Confirm resolution
-    frame_size = cam.preview_configuration.main.size
+    frame_size = cam.capture_metadata()["ScalerCrop"][2:4]
     logger.info(f"Camera frame size after restart: {frame_size}")
 
     if frame_size[0] != 1920 or frame_size[1] != 1080:
