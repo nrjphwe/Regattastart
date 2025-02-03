@@ -411,7 +411,10 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
 
     # setup video writer
     fourcc = cv2.VideoWriter_fourcc(*'XVID')  # Use 'XVID' for .avi, or 'mp4v' for .mp4
-    video_writer = cv2.VideoWriter(video_path + 'video1' + '.avi', fourcc, fpsw, frame_size)
+    if frame is None:
+        logger.error("Captured frame is None! Skipping write.")
+    else:
+        video_writer = cv2.VideoWriter(video_path + 'video1' + '.avi', fourcc, fpsw, frame_size)
     if not video_writer.isOpened():
         logger.error(f"Failed to open video1.avi for writing. Selected frame_size: {frame_size}")
 
@@ -637,6 +640,11 @@ def main():
                             # logger.debug(f"(dt.datetime.now() - t0).seconds: {(dt.datetime.now() - t0).seconds}")
                             time.sleep(0.9)  # Small delay to reduce CPU usage
                         stop_video_recording(cam)
+                        try:
+                            video_writer.release()
+                        except Exception as e:
+                            logger.error(f"Error closing video file: {e}")
+
                         logger.debug("Stopping video0 recording after after annotate and write frames")
                         process_video(video_path, "video0.avi", "video0.mp4", frame_rate=20)
                         logger.debug("Video0 converted to mp4")
