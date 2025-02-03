@@ -128,7 +128,6 @@ def setup_picam2(resolution, fps):
         controls={"FrameRate": fps}
     )
     cam.configure(preview_config)
-    cam.start()
     logger.info(f"setup_camera with resolution {resolution} and {fps} FPS.")
     return cam
 
@@ -259,7 +258,9 @@ def start_video_recording(cam, video_path, file_name, bitrate=2000000):
 
 def stop_video_recording(cam):
     cam.stop_recording()
-    logger.info("Recording stopped.")
+    cam.stop()  # Fully stop the camera
+    cam.close()  # Release camera resources
+    logger.info("Recording stopped and camera fully released.")
 
 
 def process_video(video_path, input_file, output_file, frame_rate=None):
@@ -380,27 +381,11 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
     logger.debug(f"Video1, max recording duration: {max_duration} seconds")
 
     # Stop camera completely
-    #if cam.started:
-    #    cam.stop()
-    #    logger.info("Camera fully stopped before restart.")
+    stop_video_recording(cam)
 
-    #try:
-    #    cam.close()  # Ensure camera resources are released
-    #    logger.info("Camera resources released.")
-    # except Exception as e:
-    #    logger.warning(f"Error while closing camera: {e}")
+    time.sleep(2)  # Ensures previous instance is fully released
 
-    # Wait a short time before reinitializing
-    #time.sleep(2)  # Ensures previous instance is fully released
-
-    #cam = setup_picam2(resolution=(1920, 1080), fps=5)
-    #cam = Picamera2()  # Reinitialize camera
-
-    preview_config = cam.create_preview_configuration(
-        main={"size": (1920, 1080), "format": "RGB888"},
-        controls={"FrameRate": 5}
-    )
-    cam.configure(preview_config)
+    cam = setup_picam2(resolution=(1920, 1080), fps=5)
     cam.start()
 
     # Confirm resolution
@@ -668,7 +653,7 @@ def main():
 
         logger.info("Finally section, before 'Finish recording'. start_time=%s video_end=%s", start_time, video_end)
         time.sleep(2)
-
+        logger.info(f"Before Video1, Camera frame size: {cam.preview_configuration.main.size}")
         finish_recording(cam, video_path, num_starts, video_end, start_time_sec)
         logger.info("After finished_recording")
         try:
