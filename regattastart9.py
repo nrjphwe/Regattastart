@@ -170,10 +170,10 @@ def capture_picture(camera, photo_path, file_name):
     with MappedArray(request, "main") as m:
         frame = m.array  # Get the frame as a NumPy array
         # Rotate the frame by 180 degrees
-        # rotated_frame = cv2.rotate(frame, cv2.ROTATE_180)
+        rotated_frame = cv2.rotate(frame, cv2.ROTATE_180)
         # Save the frame to the file
-        # cv2.imwrite(os.path.join(photo_path, file_name), rotated_frame)
-        cv2.imwrite(os.path.join(photo_path, file_name), frame)
+        cv2.imwrite(os.path.join(photo_path, file_name), rotated_frame)
+        # cv2.imwrite(os.path.join(photo_path, file_name), frame)
     request.release()
     logger.info("Captured picture = %s", file_name)
 
