@@ -437,6 +437,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
         # Capture a frame from the camera
         try:
             frame = cam.capture_array()
+
             capture_timestamp = datetime.now() + timedelta(microseconds=frame_counter)
             logger.debug(f"  Capture timestamp: {capture_timestamp}")
 
@@ -490,6 +491,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
                         logger.debug(f"Detected frame with capture_timestamp={capture_timestamp}")
                         detected_timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")  # timestamp (with microseconds)
                         logger.debug(f"Detected_timestamp={detected_timestamp}")
+                        frame = frame[:, :1920]  # Crop extra width before saving/processing
 
                         # Draw bounding box and label on the frame
                         x1, y1, x2, y2 = int(row['xmin']), int(row['ymin']), int(row['xmax']), int(row['ymax'])
