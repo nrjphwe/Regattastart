@@ -122,12 +122,13 @@ def setup_picam2(resolution=(1920, 1080), fps=5):
         cam = Picamera2()
         config = cam.create_video_configuration(
             main={"size": resolution, "format": "RGB888"},
-            controls={"FrameRate": fps}
+            controls={"FrameRate": fps}, 
+            transform=Transform(hflip=True, vflip=True)  # Apply horizontal and vertical flips
         )
         cam.configure(config)
 
         # Apply 180-degree rotation by flipping horizontally and vertically
-        cam.set_controls({"Transform": {"hflip": True, "vflip": True}})
+        # cam.set_controls({"Transform": {"hflip": True, "vflip": True}})
 
         cam.start()
 
