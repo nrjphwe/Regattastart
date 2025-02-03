@@ -411,10 +411,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
 
     # setup video writer
     fourcc = cv2.VideoWriter_fourcc(*'XVID')  # Use 'XVID' for .avi, or 'mp4v' for .mp4
-    if frame is None:
-        logger.error("Captured frame is None! Skipping write.")
-    else:
-        video_writer = cv2.VideoWriter(video_path + 'video1' + '.avi', fourcc, fpsw, frame_size)
+    video_writer = cv2.VideoWriter(video_path + 'video1' + '.avi', fourcc, fpsw, frame_size)    
     if not video_writer.isOpened():
         logger.error(f"Failed to open video1.avi for writing. Selected frame_size: {frame_size}")
 
@@ -501,12 +498,12 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
                         cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
                         cv2.putText(frame, f"{class_name} {confidence:.2f}", (x1, y1 - 10),
                                     cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
-                        try:
+                        if frame is not None:
                             video_writer.write(frame)
-                        except Exception as e:
-                            logger.error(f"Failed tp write the detected frame: {e}")
-                            continue  # Skips writing this frame but keeps recording
-                            # break  # Exit the loop or handle it appropriately
+                        else:
+                            logger.error("Captured frame is None! Skipping write.")
+                            continue
+                        # break  # Exit the loop or handle it appropriately
                         logger.debug("Detected frame written  !!!")
 
                         if pre_detection_buffer:
