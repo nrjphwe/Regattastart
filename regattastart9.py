@@ -41,7 +41,7 @@ warnings.filterwarnings(
 )
 
 picamera2_logger = logging.getLogger('picamera2')
-picamera2_logger.setLevel(logging.DEBUG)  # Change to ERROR to suppress more logs
+picamera2_logger.setLevel(logging.ERROR)  # Change to ERROR to suppress more logs
 
 # parameter data
 signal_dur = 0.9  # 0.9 sec
@@ -57,7 +57,7 @@ OFF = GPIO.HIGH
 signal = 26
 lamp1 = 20
 lamp2 = 21
-try:
+try: # GPIO
     GPIO.setmode(GPIO.BCM)
     GPIO.setwarnings(True)
     GPIO.setup(signal, GPIO.OUT, initial=GPIO.HIGH)
@@ -174,7 +174,7 @@ def capture_picture(camera, photo_path, file_name):
         # Rotate the frame by 180 degrees
         # rotated_frame = cv2.rotate(frame, cv2.ROTATE_180)
         # Save the frame to the file
-        #cv2.imwrite(os.path.join(photo_path, file_name), rotated_frame)
+        # cv2.imwrite(os.path.join(photo_path, file_name), rotated_frame)
         cv2.imwrite(os.path.join(photo_path, file_name), frame)
     request.release()
     logger.info("Captured picture = %s", file_name)
@@ -475,7 +475,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
             logger.debug(f"Duplicate frame detected: Timestamp={capture_timestamp}. Skipping.")
 
         # Perform inference only on every frame
-        if frame_counter % 1 == 0:
+        if frame_counter % 2 == 0:
             try:
                 frame_resized = cv2.resize(frame, (640, 480))  # Resize for faster processing
                 results = model(frame_resized)
