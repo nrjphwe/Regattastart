@@ -414,6 +414,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
     video_writer = cv2.VideoWriter(video_path + 'video1' + '.avi', fourcc, fpsw, frame_size)    
     if not video_writer.isOpened():
         logger.error(f"Failed to open video1.avi for writing. Selected frame_size: {frame_size}")
+        exit(1)
 
     # setup Post detection
     max_post_detection_duration = 1  # Record frames during 6 sec after detection
@@ -440,7 +441,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
             if frame is None:
                 logger.error("Captured frame is None! Skipping write.")
                 continue
-            logger.debug(f"Writing frame with shape: {frame.shape}")
+            logger.debug(f"Captured frame shape: {frame.shape}, dtype: {frame.dtype}")
             capture_timestamp = datetime.now() + timedelta(microseconds=frame_counter)
             logger.debug(f"  Capture timestamp: {capture_timestamp}")
 
