@@ -403,6 +403,9 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
     if frame_size[0] != 1920 or frame_size[1] != 1080:
         logger.error(f"Resolution mismatch! Expected (1920, 1080) but got {frame_size}.")
 
+    # Set the dimensions for resizing inference frame (to 640x480)
+    inference_width, inference_height = 640, 480  # Since you resize before inference
+
     actual_fps = measure_frame_rate(cam)
     fpsw = int(actual_fps)
     logger.info(f"function: finish_recording, Measured Frame Rate: {actual_fps:.2f} FPS")
@@ -447,9 +450,10 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
             if frame is None:
                 logger.error("Captured frame is None! Skipping write.")
                 continue
-            logger.debug(f"Captured frame shape: {frame.shape}, dtype: {frame.dtype}")
             capture_timestamp = datetime.now() + timedelta(microseconds=frame_counter)
             logger.debug(f"  Capture timestamp: {capture_timestamp}")
+
+            logger.debug(f"Captured frame shape: {frame.shape}, dtype: {frame.dtype}")
 
             if previous_capture_time:
                 time_diff = (capture_timestamp - previous_capture_time).total_seconds()
@@ -457,16 +461,18 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
 
             previous_capture_time = capture_timestamp  # Update for next iteration
 
+            # Get dimensions of the full-resolution frame (1920x1080 in your case)
+            frame_height, frame_width = frame.shape[:2]  # shape = (height, width, channels)
+
         except Exception as e:
             logger.error(f"Failed to capture frame: {e}")
             continue  # Skips this iteration but keeps running the loop
-            # break  # Exit the loop if the camera fails
 
         if capture_timestamp not in processed_timestamps:
             # Add frame to buffer and record its timestamp
             pre_detection_buffer.append((frame.copy(), capture_timestamp))
             processed_timestamps.add(capture_timestamp)  # Store timestamp in set
-            logger.debug(f"Added frame to buffer. Buffer length: {len(pre_detection_buffer)}")
+            logger.debug(f"Added frame to pre-detection buffer, length: {len(pre_detection_buffer)}")
 
             # Trim set to match buffer size
             if len(processed_timestamps) > pre_detection_buffer.maxlen:
@@ -477,7 +483,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
         # Perform inference only on every frame
         if frame_counter % 2 == 0:
             try:
-                frame_resized = cv2.resize(frame, (640, 480))  # Resize for faster processing
+                frame_resized = cv2.resize(frame, (inference_width, inference_height))  # Resize for faster processing
                 results = model(frame_resized)
             except Exception as e:
                 logger.error(f"YOLOv5 inference failed: {e}")
@@ -501,10 +507,16 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
                         logger.debug(f"Detected frame with capture_timestamp={capture_timestamp}")
                         detected_timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")  # timestamp (with microseconds)
                         logger.debug(f"Detected_timestamp={detected_timestamp}")
-                        frame = frame[:, :1920]  # Crop extra width before saving/processing
+                        # frame = frame[:, :1920]  # Crop extra width before saving/processing
+
+                        # Compute scaling factors
+                        scale_x = frame_width / inference_width
+                        scale_y = frame_height / inference_height
+
+                        x1, y1 = int(row['xmin'] * scale_x), int(row['ymin'] * scale_y)
+                        x2, y2 = int(row['xmax'] * scale_x), int(row['ymax'] * scale_y)
 
                         # Draw bounding box and label on the frame
-                        x1, y1, x2, y2 = int(row['xmin']), int(row['ymin']), int(row['xmax']), int(row['ymax'])
                         cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
                         cv2.putText(frame, f"{class_name} {confidence:.2f}", (x1, y1 - 10),
                                     cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
