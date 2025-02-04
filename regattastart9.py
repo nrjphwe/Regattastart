@@ -458,7 +458,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
         thickness = max(int(base_thickness * scale_factor), 1)  # Prevent too thin lines
 
         # Perform inference only on every frame
-        if frame_counter % 2 == 0:
+        if frame_counter % 5 == 0:
             try:
                 frame_resized = cv2.resize(frame, (inference_width, inference_height))  # Resize for faster processing
                 results = model(frame_resized)
