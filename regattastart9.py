@@ -426,7 +426,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
         exit(1)
 
     # setup Post detection
-    max_post_detection_duration = 1  # Record frames during 6 sec after detection
+    max_post_detection_duration = 0.5  # Record frames during 6 sec after detection
     logger.info(f"max_duration,{max_duration}, FPS={fpsw}, "
                 f"pre_detection_duration = {pre_detection_duration}, "
                 f"max_post_detection_duration={max_post_detection_duration}")
