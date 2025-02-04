@@ -408,11 +408,11 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
 
     actual_fps = measure_frame_rate(cam)
     fpsw = int(actual_fps)
-    logger.info(f"function: finish_recording, Measured Frame Rate: {actual_fps:.2f} FPS")
+    logger.info(f"function: finish_recording, Measured Frame Rate: {actual_fps:.1f} FPS")
 
     # Setup pre-detection parameters
-    pre_detection_duration = 1  # Seconds
-    pre_detection_buffer = deque(maxlen=20)  # Adjust buffer size if needed
+    pre_detection_duration = 0.5  # Seconds
+    pre_detection_buffer = deque(maxlen=10)  # Adjust buffer size if needed
 
     # Load the pre-trained YOLOv5 model (e.g., yolov5s)
     model = torch.hub.load('ultralytics/yolov5', 'yolov5s')
@@ -501,7 +501,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
                     class_name = row['name']
                     confidence = row['confidence']
 
-                    if confidence > 0.2 and class_name == 'boat':
+                    if confidence > 0.3 and class_name == 'boat':
                         boat_in_current_frame = True
                         logger.debug(f"Boat detected: {class_name} ({confidence:.2f})")
                         logger.debug(f"Detected frame with capture_timestamp={capture_timestamp}")
