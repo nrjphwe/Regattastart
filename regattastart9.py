@@ -505,7 +505,8 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
                             # Write pre-detection frames to video
                             while pre_detection_buffer:
                                 frame, timestamp = pre_detection_buffer.popleft()
-                                cv2.putText(frame, f"PRE {timestamp}", (15, 300),
+                                frame, timestamp = pre_detection_buffer.popleft()
+                                cv2.putText(frame, f"PRE {timestamp}", (60, 1200),
                                             cv2.FONT_HERSHEY_DUPLEX, font_size, (0, 255, 0), thickness)
                                 try:
                                     video_writer.write(frame)
@@ -523,7 +524,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
 
         if boat_in_current_frame or number_of_post_frames > 0:
             try:
-                cv2.putText(frame, f"POST {capture_timestamp}", (60, 400),
+                cv2.putText(frame, f"POST {capture_timestamp}", (60, 1400),
                             cv2.FONT_HERSHEY_DUPLEX, font_size, (0, 255, 0), thickness)
                 video_writer.write(frame)
                 logger.debug(f"Post-detection Timestamp={capture_timestamp}")
@@ -532,8 +533,10 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
             if not boat_in_current_frame:
                 number_of_post_frames -= 1
             logger.debug(f"Number_of_post_frames Post-detection countdown: {number_of_post_frames}")
+        if number_of_post_frames == 1:
+            boat_in_current_frame  = False
 
-        if frame_counter % 100 == 0:
+        if frame_counter % 50 == 0:
             cleanup_processed_timestamps(processed_timestamps)
         # Check if recording should stop
         time_now = dt.datetime.now()
