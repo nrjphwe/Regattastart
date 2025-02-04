@@ -155,18 +155,6 @@ def measure_frame_rate(cam, duration=5):
     return avg_frame_rate
 
 
-def annotate_frame(frame, text):  # Not used
-    org = (15, 60)  # x = 15 from left, y = 60 from top
-    fontFace = cv2.FONT_HERSHEY_DUPLEX
-    fontScale = 0.7
-    color = (0, 255, 0)  # (B, G, R)
-    thickness = 1
-    lineType = cv2.LINE_AA
-
-    # Draw the timestamp text
-    cv2.putText(frame, text, org, fontFace, fontScale, color, thickness, lineType)
-
-
 def capture_picture(camera, photo_path, file_name):
     request = camera.capture_request()  # Capture a single request
     with MappedArray(request, "main") as m:
@@ -239,11 +227,11 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
 def apply_timestamp(request):  # Function for adding the timestamp
     timestamp = time.strftime("%Y-%m-%d %X")  # Current timestamp
     colour = (0, 255, 0)  # Green text
-    origin = (15, 50)  # Position on frame
-    # font = cv2.FONT_HERSHEY_SIMPLEX
+    # origin = (15, 50)  # Position on frame
+    origin = (50, 150)  # Position on frame
     font = cv2.FONT_HERSHEY_DUPLEX
-    fontScale = 1
-    thickness = 1
+    fontScale = 3
+    thickness = 2
 
     # Overlay the timestamp on the frame
     with MappedArray(request, "main") as m:
@@ -286,29 +274,6 @@ def process_video(video_path, input_file, output_file, frame_rate=None):
     command.append(dest)
     subprocess.run(command, check=True)
     logger.debug("Video processed: %s", output_file)
-
-
-def annotate_video_cv(frame, start_time_sec):  # Not used
-    time_now = dt.datetime.now()
-    seconds_since_midnight = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
-    # elapsed since last start until now)
-    elapsed_time = seconds_since_midnight - start_time_sec
-    label = str(dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + " Seconds since last start: " + str(elapsed_time)
-    org = (15, 60)  # x = 15 from left, y = 60 from top)
-    fontFace = cv2.FONT_HERSHEY_DUPLEX
-    fontScale = 0.7
-    color = (0, 0, 0)  # (B, G, R)
-    thickness = 1
-    lineType = cv2.LINE_AA
-    # Get text size
-    (text_width, text_height), _ = cv2.getTextSize(label, fontFace, fontScale, thickness)
-    # Define background rectangle coordinates
-    top_left = (org[0], org[1] - text_height)
-    bottom_right = (int(org[0] + text_width), int(org[1] + (text_height/2)))
-    # Draw filled rectangle as background for the text
-    cv2.rectangle(frame, top_left, bottom_right, (255, 255, 255), cv2.FILLED)
-    # Draw text on top of the background
-    cv2.putText(frame, label, org, fontFace, fontScale, color, thickness, lineType)
 
 
 def stop_recording():
@@ -527,7 +492,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
                         # Draw bounding box and label on the frame
                         cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), thickness)
                         cv2.putText(frame, f"{class_name} {confidence:.2f}", (x1, y1 - 10),
-                                    cv2.FONT_HERSHEY_SIMPLEX, font_size, (0, 255, 0), thickness)
+                                    cv2.FONT_HERSHEY_DUPLEX, font_size, (0, 255, 0), thickness)
 
                         if frame is not None:
                             video_writer.write(frame)
@@ -541,7 +506,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
                             while pre_detection_buffer:
                                 frame, timestamp = pre_detection_buffer.popleft()
                                 cv2.putText(frame, f"PRE {timestamp}", (15, 300),
-                                            cv2.FONT_HERSHEY_SIMPLEX, font_size, (0, 255, 0), thickness)
+                                            cv2.FONT_HERSHEY_DUPLEX, font_size, (0, 255, 0), thickness)
                                 try:
                                     video_writer.write(frame)
                                     logger.debug(f" Pre-detection Timestamp={timestamp}")
@@ -559,7 +524,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
         if boat_in_current_frame or number_of_post_frames > 0:
             try:
                 cv2.putText(frame, f"POST {capture_timestamp}", (60, 400),
-                            cv2.FONT_HERSHEY_SIMPLEX, font_size, (0, 255, 0), thickness)
+                            cv2.FONT_HERSHEY_DUPLEX, font_size, (0, 255, 0), thickness)
                 video_writer.write(frame)
                 logger.debug(f"Post-detection Timestamp={capture_timestamp}")
             except Exception as e:
