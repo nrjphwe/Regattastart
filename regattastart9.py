@@ -480,6 +480,18 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
         else:
             logger.debug(f"Duplicate frame detected: Timestamp={capture_timestamp}. Skipping.")
 
+        # Compute scaling factors
+        scale_x = frame_width / inference_width
+        scale_y = frame_height / inference_height
+
+        # Scale text size and thickness
+        base_font_size = 0.6  # Default font size at 640x480
+        base_thickness = 2  # Default thickness at 640x480
+        scale_factor = (scale_x + scale_y) / 2  # Average scale factor
+
+        font_size = max(base_font_size * scale_factor, 0.5)  # Prevent too small text
+        thickness = max(int(base_thickness * scale_factor), 1)  # Prevent too thin lines
+
         # Perform inference only on every frame
         if frame_counter % 2 == 0:
             try:
@@ -509,17 +521,13 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
                         logger.debug(f"Detected_timestamp={detected_timestamp}")
                         # frame = frame[:, :1920]  # Crop extra width before saving/processing
 
-                        # Compute scaling factors
-                        scale_x = frame_width / inference_width
-                        scale_y = frame_height / inference_height
-
                         x1, y1 = int(row['xmin'] * scale_x), int(row['ymin'] * scale_y)
                         x2, y2 = int(row['xmax'] * scale_x), int(row['ymax'] * scale_y)
 
                         # Draw bounding box and label on the frame
-                        cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
+                        cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), thickness)
                         cv2.putText(frame, f"{class_name} {confidence:.2f}", (x1, y1 - 10),
-                                    cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
+                                    cv2.FONT_HERSHEY_SIMPLEX, font_size, (0, 255, 0), thickness)
 
                         if frame is not None:
                             video_writer.write(frame)
@@ -533,7 +541,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
                             while pre_detection_buffer:
                                 frame, timestamp = pre_detection_buffer.popleft()
                                 cv2.putText(frame, f"PRE {timestamp}", (15, 300),
-                                            cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
+                                            cv2.FONT_HERSHEY_SIMPLEX, font_size, (0, 255, 0), thickness)
                                 try:
                                     video_writer.write(frame)
                                     logger.debug(f" Pre-detection Timestamp={timestamp}")
@@ -551,7 +559,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
         if boat_in_current_frame or number_of_post_frames > 0:
             try:
                 cv2.putText(frame, f"POST {capture_timestamp}", (60, 400),
-                            cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
+                            cv2.FONT_HERSHEY_SIMPLEX, font_size, (0, 255, 0), thickness)
                 video_writer.write(frame)
                 logger.debug(f"Post-detection Timestamp={capture_timestamp}")
             except Exception as e:
