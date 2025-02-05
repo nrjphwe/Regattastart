@@ -382,8 +382,8 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
     logger.info(f"function: finish_recording, Measured Frame Rate: {actual_fps:.1f} FPS")
 
     # Setup pre-detection parameters
-    pre_detection_duration = 0.5  # Seconds
-    pre_detection_buffer = deque(maxlen=10)  # Adjust buffer size if needed
+    pre_detection_duration = 0  # Seconds
+    pre_detection_buffer = deque(maxlen=0)  # Adjust buffer size if needed
 
     # Load the pre-trained YOLOv5 model (e.g., yolov5s)
     model = torch.hub.load('ultralytics/yolov5', 'yolov5s')
@@ -397,7 +397,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
         exit(1)
 
     # setup Post detection
-    max_post_detection_duration = 0.5  # Record frames during 6 sec after detection
+    max_post_detection_duration = 0  # Record frames during 6 sec after detection
     logger.info(f"max_duration,{max_duration}, FPS={fpsw}, "
                 f"pre_detection_duration = {pre_detection_duration}, "
                 f"max_post_detection_duration={max_post_detection_duration}")
