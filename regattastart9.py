@@ -225,15 +225,13 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
         logger.info(f"End of iteration {i + 1}")
 
 
-def apply_timestamp(request):  # Function for adding the timestamp
-    timestamp = time.strftime("%Y-%m-%d %X")  # Current timestamp
+def apply_timestamp(request):
+    timestamp = time.strftime("%Y-%m-%d %X")
     colour = (0, 255, 0)  # Green text
-    origin = (50, 1600)  # Position on frame
     font = cv2.FONT_HERSHEY_SIMPLEX
     fontScale = 3
     thickness = 2
 
-    # Debug logging
     logger.debug(f"Applying timestamp: {timestamp}")
 
     try:
@@ -243,14 +241,16 @@ def apply_timestamp(request):  # Function for adding the timestamp
                 logger.error("apply_timestamp: Frame is None or empty!")
                 return
 
-            # Debug: Check dimensions
+            height, width, _ = frame.shape
             logger.debug(f"Frame shape: {frame.shape}")
 
-            # Apply timestamp
+            # Ensure text is within the frame
+            origin = (50, max(50, height - 50))
+
             cv2.putText(frame, timestamp, origin, font, fontScale, colour, thickness)
 
             # Debug: Check if text was drawn
-            test_pixel = frame[origin[1] - 5, origin[0]]  # Read a pixel near text
+            test_pixel = frame[origin[1] - 5, origin[0]]
             logger.debug(f"Pixel near text: {test_pixel}")
 
     except Exception as e:
@@ -504,7 +504,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
                     confidence = row['confidence']
 
                     if confidence > 0.4 and class_name == 'boat':
-                        origin = (50, 1600)  # Position on frame
+                        origin = (50, 800)  # Position on frame
                         font = cv2.FONT_HERSHEY_SIMPLEX
                         # fontScale = 3
                         colour = (0, 255, 0)  # Green text
@@ -521,7 +521,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
 
                         # Draw bounding box and label on the frame
                         cv2.rectangle(frame, (x1, y1), (x2, y2), colour, thickness)
-                        cv2.putText(frame, f"{class_name} {confidence:.2f}", (x1, y2 + 30),
+                        cv2.putText(frame, f"{class_name} {confidence:.2f}", (x1, y2 + 40),
                                     font, fontScale, colour, thickness)
 
                         if frame is not None:
@@ -535,7 +535,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
                             # Write pre-detection frames to video
                             while pre_detection_buffer:
                                 frame, timestamp = pre_detection_buffer.popleft()
-                                cv2.putText(frame, f"PRE {timestamp}", (60, 1200),
+                                cv2.putText(frame, f"PRE {timestamp}", (60, 8500),
                                             cv2.FONT_HERSHEY_SIMPLEX, fontScale, colour, thickness)
                                 try:
                                     video_writer.write(frame)
@@ -553,7 +553,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
 
             if boat_in_current_frame or number_of_post_frames > 0:
                 try:
-                    cv2.putText(frame, f"POST {capture_timestamp}", (60, 1400),
+                    cv2.putText(frame, f"POST {capture_timestamp}", (60, 900),
                                 cv2.FONT_HERSHEY_SIMPLEX, fontScale, colour, thickness)
                     video_writer.write(frame)
                     logger.debug(f"Post-detection Timestamp={capture_timestamp}")
