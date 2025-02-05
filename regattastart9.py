@@ -490,8 +490,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
                         cv2.putText(frame, f"{capture_timestamp}", origin, font, fontScale, colour, thickness)
 
                         boat_in_current_frame = True
-                        logger.debug(f"Confidence {confidence:.2f}")
-                        logger.debug(f"Detected frame with capture_timestamp={capture_timestamp}")
+                        logger.info(f"Confidence {confidence:.2f}, capture_timestamp = {capture_timestamp}")
                         detected_timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")  # timestamp (with microseconds)
                         logger.debug(f"Detected_timestamp={detected_timestamp}")
 
@@ -500,7 +499,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
 
                         # Draw bounding box and label on the frame
                         cv2.rectangle(frame, (x1, y1), (x2, y2), colour, thickness)
-                        cv2.putText(frame, f"{class_name} {confidence:.2f}", (x1, y2 + 10),
+                        cv2.putText(frame, f"{class_name} {confidence:.2f}", (x1, y2 - 30),
                                     cv2.FONT_HERSHEY_DUPLEX, font_size, (0, 255, 0), thickness)
 
                         if frame is not None:
