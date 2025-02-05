@@ -545,7 +545,6 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
         if number_of_post_frames == 1:
             boat_in_current_frame = False
 
-
         # Check if recording should stop
         time_now = dt.datetime.now()
         seconds_since_midnight = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
