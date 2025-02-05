@@ -229,7 +229,7 @@ def apply_timestamp(request):  # Function for adding the timestamp
     timestamp = time.strftime("%Y-%m-%d %X")  # Current timestamp
     colour = (0, 255, 0)  # Green text
     origin = (50, 1600)  # Position on frame
-    font = cv2.FONT_HERSHEY_DUPLEX
+    font = cv2.FONT_HERSHEY_SIMPLEX
     fontScale = 3
     thickness = 2
 
