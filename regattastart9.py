@@ -396,7 +396,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
 
     # setup Post detection
     max_post_detection_duration = 0  # Record frames during 6 sec after detection
-    logger.debug(f"max_duration,{max_duration}, FPS={fpsw}, "
+    logger.debug(f"max_duration,{max_duration}, FPS={fpsw},"
                 f"pre_detection_duration = {pre_detection_duration}, "
                 f"max_post_detection_duration={max_post_detection_duration}")
 
@@ -528,22 +528,23 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
                             logger.debug("Pre-detection buffer cleared after writing frames.")
 
         # Handle POST-detection frames
-        if boat_in_current_frame:
-            number_of_post_frames = int(max_post_detection_duration * fpsw)  # Reset countdown
+        if max_post_detection_duration == 0:
+            if boat_in_current_frame:
+                number_of_post_frames = int(max_post_detection_duration * fpsw)  # Reset countdown
 
-        if boat_in_current_frame or number_of_post_frames > 0:
-            try:
-                cv2.putText(frame, f"POST {capture_timestamp}", (60, 1400),
-                            cv2.FONT_HERSHEY_DUPLEX, fontScale, colour, thickness)
-                video_writer.write(frame)
-                logger.debug(f"Post-detection Timestamp={capture_timestamp}")
-            except Exception as e:
-                logger.error(f"Failed to write post frame: {e}")
-            if not boat_in_current_frame:
-                number_of_post_frames -= 1
-            logger.debug(f"Number_of_post_frames Post-detection countdown: {number_of_post_frames}")
-        if number_of_post_frames == 1:
-            boat_in_current_frame = False
+            if boat_in_current_frame or number_of_post_frames > 0:
+                try:
+                    cv2.putText(frame, f"POST {capture_timestamp}", (60, 1400),
+                                cv2.FONT_HERSHEY_DUPLEX, fontScale, colour, thickness)
+                    video_writer.write(frame)
+                    logger.debug(f"Post-detection Timestamp={capture_timestamp}")
+                except Exception as e:
+                    logger.error(f"Failed to write post frame: {e}")
+                if not boat_in_current_frame:
+                    number_of_post_frames -= 1
+                logger.debug(f"Number_of_post_frames Post-detection countdown: {number_of_post_frames}")
+            if number_of_post_frames == 1:
+                boat_in_current_frame = False
 
         # Check if recording should stop
         time_now = dt.datetime.now()
