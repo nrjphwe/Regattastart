@@ -58,6 +58,7 @@ signal = 26
 lamp1 = 20
 lamp2 = 21
 try:  # GPIO
+    GPIO.cleanup()
     GPIO.setmode(GPIO.BCM)
     GPIO.setwarnings(True)
     GPIO.setup(signal, GPIO.OUT, initial=GPIO.HIGH)
@@ -133,7 +134,7 @@ def setup_picam2(resolution=(1920, 1080), fps=5):
 
         cam.start()
 
-        logger.info(f"Camera started with resolution {resolution} and FPS {fps}.")
+        logger.info(f"Camera started with resolution {resolution} and FPS: {fps}.")
         return cam  # Ensure it returns a valid camera object
     except Exception as e:
         logger.error(f"Failed to initialize camera: {e}")
@@ -227,8 +228,7 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
 def apply_timestamp(request):  # Function for adding the timestamp
     timestamp = time.strftime("%Y-%m-%d %X")  # Current timestamp
     colour = (0, 255, 0)  # Green text
-    # origin = (15, 50)  # Position on frame
-    origin = (50, 150)  # Position on frame
+    origin = (50, 1600)  # Position on frame
     font = cv2.FONT_HERSHEY_DUPLEX
     fontScale = 3
     thickness = 2
@@ -242,8 +242,6 @@ def start_video_recording(cam, video_path, file_name, bitrate=2000000):
     """
     Start video recording using H264Encoder and with timestamp.
     """
-    # actual_fps = measure_frame_rate(cam)
-    # logger.debug(f"Video recording, Measured Frame Rate: {actual_fps:.2f} FPS")
     output_file = os.path.join(video_path, file_name)
     # Configure the pre-callback for adding the timestamp
     cam.pre_callback = apply_timestamp
@@ -379,7 +377,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
 
     actual_fps = measure_frame_rate(cam)
     fpsw = int(actual_fps)
-    logger.info(f"function: finish_recording, Measured Frame Rate: {actual_fps:.1f} FPS")
+    # logger.info(f"function: finish_recording, Measured Frame Rate: {actual_fps:.1f} FPS")
 
     # Setup pre-detection parameters
     pre_detection_duration = 0  # Seconds
@@ -423,8 +421,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
                 continue
             capture_timestamp = datetime.now() + timedelta(microseconds=frame_counter)
             logger.debug(f"  Capture timestamp: {capture_timestamp}")
-
-            logger.debug(f"Captured frame shape: {frame.shape}, dtype: {frame.dtype}")
+            # logger.debug(f"Captured frame shape: {frame.shape}, dtype: {frame.dtype}")
 
             if previous_capture_time:
                 time_diff = (capture_timestamp - previous_capture_time).total_seconds()
@@ -484,20 +481,27 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
                     class_name = row['name']
                     confidence = row['confidence']
 
-                    if confidence > 0.3 and class_name == 'boat':
+                    if confidence > 0.4 and class_name == 'boat':
+                        colour = (0, 255, 0)  # Green text
+                        origin = (50, 1600)  # Position on frame
+                        font = cv2.FONT_HERSHEY_DUPLEX
+                        fontScale = 3
+                        # thickness = 2
+                        cv2.putText(frame, capture_timestamp, origin, font, fontScale, colour, thickness)
+
+                    
                         boat_in_current_frame = True
-                        logger.debug(f"Boat detected: {class_name} ({confidence:.2f})")
+                        logger.debug(f"Confidence {confidence:.2f}")
                         logger.debug(f"Detected frame with capture_timestamp={capture_timestamp}")
                         detected_timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")  # timestamp (with microseconds)
                         logger.debug(f"Detected_timestamp={detected_timestamp}")
-                        # frame = frame[:, :1920]  # Crop extra width before saving/processing
 
                         x1, y1 = int(row['xmin'] * scale_x), int(row['ymin'] * scale_y)
                         x2, y2 = int(row['xmax'] * scale_x), int(row['ymax'] * scale_y)
 
                         # Draw bounding box and label on the frame
-                        cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), thickness)
-                        cv2.putText(frame, f"{class_name} {confidence:.2f}", (x1, y1 - 10),
+                        cv2.rectangle(frame, (x1, y1), (x2, y2), colour, thickness)
+                        cv2.putText(frame, f"{class_name} {confidence:.2f}", (x1, y2 + 10),
                                     cv2.FONT_HERSHEY_DUPLEX, font_size, (0, 255, 0), thickness)
 
                         if frame is not None:
@@ -512,7 +516,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
                             while pre_detection_buffer:
                                 frame, timestamp = pre_detection_buffer.popleft()
                                 cv2.putText(frame, f"PRE {timestamp}", (60, 1200),
-                                            cv2.FONT_HERSHEY_DUPLEX, font_size, (0, 255, 0), thickness)
+                                            cv2.FONT_HERSHEY_DUPLEX, font_size, colour, thickness)
                                 try:
                                     video_writer.write(frame)
                                     logger.debug(f" Pre-detection Timestamp={timestamp}")
@@ -530,7 +534,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
         if boat_in_current_frame or number_of_post_frames > 0:
             try:
                 cv2.putText(frame, f"POST {capture_timestamp}", (60, 1400),
-                            cv2.FONT_HERSHEY_DUPLEX, font_size, (0, 255, 0), thickness)
+                            cv2.FONT_HERSHEY_DUPLEX, font_size, colour, thickness)
                 video_writer.write(frame)
                 logger.debug(f"Post-detection Timestamp={capture_timestamp}")
             except Exception as e:
@@ -629,22 +633,19 @@ def main():
                         # logger.debug(f"t0 = {t0}, dt.datetime.now(): {dt.datetime.now()}")
                         # logger.debug("(dt.datetime.now() - t0).seconds: %d", (dt.datetime.now() - t0).seconds)
                         while ((dt.datetime.now() - t0).seconds < 119):
-                            # logger.debug("in while loop")
                             now = dt.datetime.now()
-                            # logger.debug(f"(dt.datetime.now() - t0).seconds: {(dt.datetime.now() - t0).seconds}")
                             time.sleep(0.9)  # Small delay to reduce CPU usage
                         stop_video_recording(cam)
-                        try:
-                            video_writer.release()
-                        except Exception as e:
-                            logger.error(f"Error closing video file: {e}")
+                        # try:
+                        #    video_writer.release()
+                        # except Exception as e:
+                        #    logger.error(f"Error closing video file: {e}")
 
-                        logger.debug("Stopping video0 recording after after annotate and write frames")
+                        logger.debug("Stopping video0 recording")
                         process_video(video_path, "video0.avi", "video0.mp4", frame_rate=20)
                         logger.debug("Video0 converted to mp4")
 
-                    # Exit the loop after the if condition is met
-                    break
+                    break  # Exit the loop after the if condition is met
                 time.sleep(0.1)  # Introduce a delay of 2 seconds
 
     except json.JSONDecodeError as e:
