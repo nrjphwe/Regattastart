@@ -272,8 +272,14 @@ def process_video(video_path, input_file, output_file, frame_rate=None):
         command.extend(["-vf", f"fps={frame_rate}"])
 
     command.append(dest)
-    subprocess.run(command, check=True)
-    logger.debug("Video processed: %s", output_file)
+    try:
+        subprocess.run(command, check=True)
+        logger.debug("Video processed: %s", output_file)
+    except Exception as e:
+        logger.error(f"Failed to process video: {e}")
+        return
+        # continue  # Skips this iteration but keeps running the loop
+        # sys.exit(1)  # Exit the program
 
 
 def stop_recording():
@@ -534,7 +540,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
                 number_of_post_frames -= 1
             logger.debug(f"Number_of_post_frames Post-detection countdown: {number_of_post_frames}")
         if number_of_post_frames == 1:
-            boat_in_current_frame  = False
+            boat_in_current_frame = False
 
         if frame_counter % 50 == 0:
             cleanup_processed_timestamps(processed_timestamps)
@@ -545,13 +551,13 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
         if elapsed_time >= max_duration:
             logger.debug(f"Maximum recording time reached, elapsed _time={elapsed_time}")
             recording_stopped = True
-            break
 
-    if recording_stopped is True:
+    if recording_stopped:
         logger.info('Video1 recording stopped')
 
     stop_video_recording(cam)
-    video_writer.release()  # Release the video writer
+    if video_writer is not None:
+        video_writer.release()  # Release the video writer
     logger.info("video_writer release, exited the finish_recording module.")
 
 
@@ -566,7 +572,6 @@ def main():
     stop_event = threading.Event()
     global listening  # Declare listening as global
     logger = setup_logging()  # Initialize the logger
-    # cam = setup_picam2(resolution=(640, 480), fps=5)
     cam = setup_picam2(resolution=(1920, 1080), fps=5)
     if cam is None:
         logger.error("Camera setup failed, exiting.")
@@ -588,16 +593,12 @@ def main():
         # this is the first start
         start_time_str = str(form_data["start_time"])
         dur_between_starts = int(form_data["dur_between_starts"])
-
-        # Convert to datetime object
         start_time = datetime.strptime(start_time_str, "%H:%M").time()
         # Extract hour and minute
         start_hour = start_time.hour
         start_minute = start_time.minute
-        # Calculate start_time_sec
         start_time_sec = 60 * start_minute + 3600 * start_hour
-        # time when the start-machine should begin to execute.
-        t5min_warning = start_time_sec - 5 * 60
+        t5min_warning = start_time_sec - 5 * 60  # time to start start-machine.
         wd = dt.datetime.today().strftime("%A")
 
         remove_video_files(photo_path, "video")  # clean up
@@ -605,9 +606,8 @@ def main():
         logger.info("Weekday=%s, Start_time=%s, video_end=%s, num_starts=%s", week_day, start_time.strftime("%H:%M"), video_end, num_starts)
 
         if wd == week_day:
-            # A loop that waits until close to the 5-minute mark, a loop
-            # that continuously checks the condition without blocking
-            # the execution completely
+            # A loop that waits until close to the 5-minute mark, and continuously 
+            #  checks the condition without blocking the execution completely
             while True:
                 now = dt.datetime.now()
                 seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
