@@ -486,7 +486,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
 
                     if confidence > 0.4 and class_name == 'boat':
                         origin = (50, 1600)  # Position on frame
-                        font = cv2.FONT_HERSHEY_DUPLEX
+                        font = cv2.FONT_HERSHEY_SIMPLEX
                         # fontScale = 3
                         colour = (0, 255, 0)  # Green text
                         # thickness = 2
@@ -517,7 +517,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
                             while pre_detection_buffer:
                                 frame, timestamp = pre_detection_buffer.popleft()
                                 cv2.putText(frame, f"PRE {timestamp}", (60, 1200),
-                                            cv2.FONT_HERSHEY_DUPLEX, fontScale, colour, thickness)
+                                            cv2.FONT_HERSHEY_SIMPLEX, fontScale, colour, thickness)
                                 try:
                                     video_writer.write(frame)
                                     logger.debug(f" Pre-detection Timestamp={timestamp}")
@@ -535,7 +535,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
             if boat_in_current_frame or number_of_post_frames > 0:
                 try:
                     cv2.putText(frame, f"POST {capture_timestamp}", (60, 1400),
-                                cv2.FONT_HERSHEY_DUPLEX, fontScale, colour, thickness)
+                                cv2.FONT_HERSHEY_SIMPLEX, fontScale, colour, thickness)
                     video_writer.write(frame)
                     logger.debug(f"Post-detection Timestamp={capture_timestamp}")
                 except Exception as e:
