@@ -57,7 +57,7 @@ OFF = GPIO.HIGH
 signal = 26
 lamp1 = 20
 lamp2 = 21
-try: # GPIO
+try:  # GPIO
     GPIO.setmode(GPIO.BCM)
     GPIO.setwarnings(True)
     GPIO.setup(signal, GPIO.OUT, initial=GPIO.HIGH)
@@ -510,7 +510,6 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
                         if pre_detection_buffer:
                             # Write pre-detection frames to video
                             while pre_detection_buffer:
-                                frame, timestamp = pre_detection_buffer.popleft()
                                 frame, timestamp = pre_detection_buffer.popleft()
                                 cv2.putText(frame, f"PRE {timestamp}", (60, 1200),
                                             cv2.FONT_HERSHEY_DUPLEX, font_size, (0, 255, 0), thickness)
