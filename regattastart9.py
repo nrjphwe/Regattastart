@@ -487,7 +487,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
                         fontScale = 3
                         colour = (0, 255, 0)  # Green text
                         # thickness = 2
-                        cv2.putText(frame, f"{capture_timestamp}, origin, font, fontScale, colour, thickness)
+                        cv2.putText(frame, f"{capture_timestamp}", origin, font, fontScale, colour, thickness)
 
                         boat_in_current_frame = True
                         logger.debug(f"Confidence {confidence:.2f}")
