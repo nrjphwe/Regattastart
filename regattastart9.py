@@ -396,14 +396,13 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
 
     # setup Post detection
     max_post_detection_duration = 0  # Record frames during 6 sec after detection
-    logger.info(f"max_duration,{max_duration}, FPS={fpsw}, "
+    logger.debug(f"max_duration,{max_duration}, FPS={fpsw}, "
                 f"pre_detection_duration = {pre_detection_duration}, "
                 f"max_post_detection_duration={max_post_detection_duration}")
 
     number_of_post_frames = int(fpsw * max_post_detection_duration)  # Initial setting, to record after detection
     boat_in_current_frame = False
 
-    # processed_timestamps = []
     processed_timestamps = set()  # Use a set for fast lookups
 
     frame_counter = 0  # Initialize a frame counter
@@ -436,17 +435,21 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
             logger.error(f"Failed to capture frame: {e}")
             continue  # Skips this iteration but keeps running the loop
 
-        if capture_timestamp not in processed_timestamps:
-            # Add frame to buffer and record its timestamp
-            pre_detection_buffer.append((frame.copy(), capture_timestamp))
-            processed_timestamps.add(capture_timestamp)  # Store timestamp in set
-            logger.debug(f"Added frame to pre-detection buffer, length: {len(pre_detection_buffer)}")
+        if pre_detection_duration != 0:
+            if capture_timestamp not in processed_timestamps:
+                # Add frame to buffer and record its timestamp
+                pre_detection_buffer.append((frame.copy(), capture_timestamp))
+                processed_timestamps.add(capture_timestamp)  # Store timestamp in set
+                logger.debug(f"Added frame to pre-detection buffer, length: {len(pre_detection_buffer)}")
 
-            # Trim set to match buffer size
-            if len(processed_timestamps) > pre_detection_buffer.maxlen:
-                processed_timestamps = set(list(processed_timestamps)[-pre_detection_buffer.maxlen:])
-        else:
-            logger.debug(f"Duplicate frame detected: Timestamp={capture_timestamp}. Skipping.")
+                # Trim set to match buffer size
+                if len(processed_timestamps) > pre_detection_buffer.maxlen:
+                    processed_timestamps = set(list(processed_timestamps)[-pre_detection_buffer.maxlen:])
+            else:
+                logger.debug(f"Duplicate frame detected: Timestamp={capture_timestamp}. Skipping.")
+
+            if frame_counter % 50 == 0:
+                cleanup_processed_timestamps(processed_timestamps)
 
         # Compute scaling factors
         scale_x = frame_width / inference_width
@@ -462,8 +465,9 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
 
         # Perform inference only on every frame
         if frame_counter % 5 == 0:
-            try:
-                frame_resized = cv2.resize(frame, (inference_width, inference_height))  # Resize for faster processing
+            try:  # Resize for faster processing
+                frame_resized = cv2.resize(frame, (inference_width,
+                                                   inference_height))
                 results = model(frame_resized)
             except Exception as e:
                 logger.error(f"YOLOv5 inference failed: {e}")
@@ -476,7 +480,6 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
                 logger.debug("No detections in the current frame.")
             else:
                 logger.debug("Detection made")
-
                 for _, row in detections.iterrows():
                     class_name = row['name']
                     confidence = row['confidence']
@@ -525,7 +528,6 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
                             logger.debug("Pre-detection buffer cleared after writing frames.")
 
         # Handle POST-detection frames
-        # Write the current frame if a boat is detected or during post-detection countdown
         if boat_in_current_frame:
             number_of_post_frames = int(max_post_detection_duration * fpsw)  # Reset countdown
 
@@ -543,8 +545,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
         if number_of_post_frames == 1:
             boat_in_current_frame = False
 
-        if frame_counter % 50 == 0:
-            cleanup_processed_timestamps(processed_timestamps)
+
         # Check if recording should stop
         time_now = dt.datetime.now()
         seconds_since_midnight = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
