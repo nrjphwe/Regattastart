@@ -233,9 +233,28 @@ def apply_timestamp(request):  # Function for adding the timestamp
     fontScale = 3
     thickness = 2
 
-    # Overlay the timestamp on the frame
-    with MappedArray(request, "main") as m:
-        cv2.putText(m.array, timestamp, origin, font, fontScale, colour, thickness)
+    # Debug logging
+    logger.debug(f"Applying timestamp: {timestamp}")
+
+    try:
+        with MappedArray(request, "main") as m:
+            frame = m.array  # Get the frame
+            if frame is None or frame.shape[0] == 0:
+                logger.error("apply_timestamp: Frame is None or empty!")
+                return
+
+            # Debug: Check dimensions
+            logger.debug(f"Frame shape: {frame.shape}")
+
+            # Apply timestamp
+            cv2.putText(frame, timestamp, origin, font, fontScale, colour, thickness)
+
+            # Debug: Check if text was drawn
+            test_pixel = frame[origin[1] - 5, origin[0]]  # Read a pixel near text
+            logger.debug(f"Pixel near text: {test_pixel}")
+
+    except Exception as e:
+        logger.error(f"Error in apply_timestamp: {e}", exc_info=True)
 
 
 def start_video_recording(cam, video_path, file_name, bitrate=2000000):
