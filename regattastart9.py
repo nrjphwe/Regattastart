@@ -453,11 +453,11 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
         scale_y = frame_height / inference_height
 
         # Scale text size and thickness
-        base_font_size = 0.6  # Default font size at 640x480
+        base_fontScale = 0.6  # Default font size at 640x480
         base_thickness = 2  # Default thickness at 640x480
         scale_factor = (scale_x + scale_y) / 2  # Average scale factor
 
-        font_size = max(base_font_size * scale_factor, 0.5)  # Prevent too small text
+        fontScale = max(base_fontScale * scale_factor, 0.5)  # Prevent too small text
         thickness = max(int(base_thickness * scale_factor), 1)  # Prevent too thin lines
 
         # Perform inference only on every frame
@@ -484,7 +484,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
                     if confidence > 0.4 and class_name == 'boat':
                         origin = (50, 1600)  # Position on frame
                         font = cv2.FONT_HERSHEY_DUPLEX
-                        fontScale = 3
+                        # fontScale = 3
                         colour = (0, 255, 0)  # Green text
                         # thickness = 2
                         cv2.putText(frame, f"{capture_timestamp}", origin, font, fontScale, colour, thickness)
@@ -499,8 +499,8 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
 
                         # Draw bounding box and label on the frame
                         cv2.rectangle(frame, (x1, y1), (x2, y2), colour, thickness)
-                        cv2.putText(frame, f"{class_name} {confidence:.2f}", (x1, y2 - 30),
-                                    cv2.FONT_HERSHEY_DUPLEX, font_size, (0, 255, 0), thickness)
+                        cv2.putText(frame, f"{class_name} {confidence:.2f}", (x1, y2 + 30),
+                                    font, fontScale, colour, thickness)
 
                         if frame is not None:
                             video_writer.write(frame)
@@ -514,7 +514,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
                             while pre_detection_buffer:
                                 frame, timestamp = pre_detection_buffer.popleft()
                                 cv2.putText(frame, f"PRE {timestamp}", (60, 1200),
-                                            cv2.FONT_HERSHEY_DUPLEX, font_size, colour, thickness)
+                                            cv2.FONT_HERSHEY_DUPLEX, fontScale, colour, thickness)
                                 try:
                                     video_writer.write(frame)
                                     logger.debug(f" Pre-detection Timestamp={timestamp}")
@@ -532,7 +532,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
         if boat_in_current_frame or number_of_post_frames > 0:
             try:
                 cv2.putText(frame, f"POST {capture_timestamp}", (60, 1400),
-                            cv2.FONT_HERSHEY_DUPLEX, font_size, colour, thickness)
+                            cv2.FONT_HERSHEY_DUPLEX, fontScale, colour, thickness)
                 video_writer.write(frame)
                 logger.debug(f"Post-detection Timestamp={capture_timestamp}")
             except Exception as e:
