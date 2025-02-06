@@ -551,6 +551,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
                             logger.debug("Pre-detection buffer cleared after writing frames.")
 
         # Handle POST-detection frames
+        skip_first_post_frame = False  # Initialize the flag
         if max_post_detection_duration != 0:
             if boat_in_current_frame:
                 number_of_post_frames = int(max_post_detection_duration * fpsw)  # Reset countdown
