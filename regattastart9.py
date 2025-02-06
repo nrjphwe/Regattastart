@@ -554,18 +554,24 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
         if max_post_detection_duration != 0:
             if boat_in_current_frame:
                 number_of_post_frames = int(max_post_detection_duration * fpsw)  # Reset countdown
+                skip_first_post_frame = True  # Set flag to skip the first post-detection frame
 
             if boat_in_current_frame or number_of_post_frames > 0:
-                try:
-                    origin = (500, 900)  # Position on frame
-                    cv2.putText(frame, f"POST {capture_timestamp}", origin, font, fontScale, colour, thickness)
-                    video_writer.write(frame)
-                    logger.debug(f"Post-detection Timestamp={capture_timestamp}")
-                except Exception as e:
-                    logger.error(f"Failed to write post frame: {e}")
+                if skip_first_post_frame:
+                    skip_first_post_frame = False  # Skip this frame, process the next ones
+                else:
+                    try:
+                        origin = (500, 900)  # Position on frame
+                        cv2.putText(frame, f"POST {capture_timestamp}", origin, font, fontScale, colour, thickness)
+                        video_writer.write(frame)
+                        logger.debug(f"Post-detection Timestamp={capture_timestamp}")
+                    except Exception as e:
+                        logger.error(f"Failed to write post frame: {e}")
+
                 if not boat_in_current_frame:
                     number_of_post_frames -= 1
                 logger.debug(f"Number_of_post_frames Post-detection countdown: {number_of_post_frames}")
+
             if number_of_post_frames == 1:
                 boat_in_current_frame = False
 
