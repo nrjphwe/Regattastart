@@ -532,6 +532,10 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
                             continue
 
                         if pre_detection_buffer:
+                            # Remove the most recent frame
+                            if len(pre_detection_buffer) > 1:
+                                pre_detection_buffer.pop()  # Removes the most recent frame
+
                             # Write pre-detection frames to video
                             while pre_detection_buffer:
                                 origin = (50, 700)  # Position on frame
