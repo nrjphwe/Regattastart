@@ -228,11 +228,11 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
 def apply_timestamp(request):
     timestamp = time.strftime("%Y-%m-%d %X")
     colour = (0, 255, 0)  # Green text
-    font = cv2.FONT_HERSHEY_SIMPLEX
-    fontScale = 3
+    font = cv2.FONT_HERSHEY_DUPLEX
+    fontScale = 2
     thickness = 2
 
-    logger.debug(f"Applying timestamp: {timestamp}")
+    # logger.debug(f"Applying timestamp: {timestamp}")
 
     try:
         with MappedArray(request, "main") as m:
@@ -250,8 +250,8 @@ def apply_timestamp(request):
             cv2.putText(frame, timestamp, origin, font, fontScale, colour, thickness)
 
             # Debug: Check if text was drawn
-            test_pixel = frame[origin[1] - 5, origin[0]]
-            logger.debug(f"Pixel near text: {test_pixel}")
+            # test_pixel = frame[origin[1] - 5, origin[0]]
+            # logger.debug(f"Pixel near text: {test_pixel}")
 
     except Exception as e:
         logger.error(f"Error in apply_timestamp: {e}", exc_info=True)
@@ -399,8 +399,8 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
     # logger.info(f"function: finish_recording, Measured Frame Rate: {actual_fps:.1f} FPS")
 
     # Setup pre-detection parameters
-    pre_detection_duration = 1  # Seconds
-    pre_detection_buffer = deque(maxlen=10)  # Adjust buffer size if needed
+    pre_detection_duration = 0.2  # Seconds
+    pre_detection_buffer = deque(maxlen=2)  # Adjust buffer size if needed
 
     # Load the pre-trained YOLOv5 model (e.g., yolov5s)
     model = torch.hub.load('ultralytics/yolov5', 'yolov5s')
@@ -414,10 +414,10 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
         exit(1)
 
     # setup Post detection
-    max_post_detection_duration = 1  # Record frames during 6 sec after detection
+    max_post_detection_duration = 0.2  # Record frames during 6 sec after detection
     logger.debug(f"max_duration,{max_duration}, FPS={fpsw},"
-                f"pre_detection_duration = {pre_detection_duration}, "
-                f"max_post_detection_duration={max_post_detection_duration}")
+                 f"pre_detection_duration = {pre_detection_duration}, "
+                 f"max_post_detection_duration={max_post_detection_duration}")
 
     number_of_post_frames = int(fpsw * max_post_detection_duration)  # Initial setting, to record after detection
     boat_in_current_frame = False
@@ -467,7 +467,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
             else:
                 logger.debug(f"Duplicate frame detected: Timestamp={capture_timestamp}. Skipping.")
 
-            if frame_counter % 50 == 0:
+            if frame_counter % 20 == 0:
                 cleanup_processed_timestamps(processed_timestamps)
 
         # Compute scaling factors
@@ -505,7 +505,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
 
                     if confidence > 0.4 and class_name == 'boat':
                         origin = (50, 800)  # Position on frame
-                        font = cv2.FONT_HERSHEY_SIMPLEX
+                        font = cv2.FONT_HERSHEY_DUPLEX
                         # fontScale = 3
                         colour = (0, 255, 0)  # Green text
                         # thickness = 2
@@ -535,8 +535,9 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
                             # Write pre-detection frames to video
                             while pre_detection_buffer:
                                 frame, timestamp = pre_detection_buffer.popleft()
-                                cv2.putText(frame, f"PRE {timestamp}", (60, 8500),
-                                            cv2.FONT_HERSHEY_SIMPLEX, fontScale, colour, thickness)
+                                cv2.putText(frame, f"{timestamp}", origin, font, fontScale, colour, thickness)
+                                cv2.putText(frame, f"PRE {timestamp}", (60, 800),
+                                            cv2.FONT_HERSHEY_DUPLEX, fontScale, colour, thickness)
                                 try:
                                     video_writer.write(frame)
                                     logger.debug(f" Pre-detection Timestamp={timestamp}")
@@ -553,8 +554,9 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
 
             if boat_in_current_frame or number_of_post_frames > 0:
                 try:
+                    cv2.putText(frame, f"{capture_timestamp}", origin, font, fontScale, colour, thickness)
                     cv2.putText(frame, f"POST {capture_timestamp}", (60, 900),
-                                cv2.FONT_HERSHEY_SIMPLEX, fontScale, colour, thickness)
+                                cv2.FONT_HERSHEY_DUPLEX, fontScale, colour, thickness)
                     video_writer.write(frame)
                     logger.debug(f"Post-detection Timestamp={capture_timestamp}")
                 except Exception as e:
