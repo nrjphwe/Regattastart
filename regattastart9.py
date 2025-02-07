@@ -249,10 +249,6 @@ def apply_timestamp(request):
 
             cv2.putText(frame, timestamp, origin, font, fontScale, colour, thickness)
 
-            # Debug: Check if text was drawn
-            # test_pixel = frame[origin[1] - 5, origin[0]]
-            # logger.debug(f"Pixel near text: {test_pixel}")
-
     except Exception as e:
         logger.error(f"Error in apply_timestamp: {e}", exc_info=True)
 
@@ -725,7 +721,6 @@ def main():
 
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO)  # Set log level to WARNING
     try:
         main()
     except Exception as e:
