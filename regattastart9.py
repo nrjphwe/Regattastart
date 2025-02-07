@@ -51,6 +51,13 @@ photo_path = '/var/www/html/images/'
 listening = True  # Define the listening variable
 recording_stopped = False  # Global variable
 
+def setup_logging():
+    global logger  # Make logger variable global
+    logging.config.fileConfig('/usr/lib/cgi-bin/logging.conf')
+    logger = logging.getLogger('Start')
+    logger.info("Start logging regattastart9")
+    return logger
+
 # setup gpio()
 ON = GPIO.LOW
 OFF = GPIO.HIGH
@@ -73,12 +80,7 @@ with open('/var/www/html/status.txt', 'w') as status_file:
     status_file.write("")
 
 
-def setup_logging():
-    global logger  # Make logger variable global
-    logging.config.fileConfig('/usr/lib/cgi-bin/logging.conf')
-    logger = logging.getLogger('Start')
-    logger.info("Start logging regattastart9")
-    return logger
+
 
 
 def trigger_relay(port):
@@ -721,6 +723,7 @@ def main():
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO)  # Set log level to WARNING
     try:
         main()
     except Exception as e:
