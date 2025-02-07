@@ -59,6 +59,7 @@ def setup_logging():
     logger.info("Start logging regattastart9")
     return logger
 
+
 # setup gpio()
 ON = GPIO.LOW
 OFF = GPIO.HIGH
@@ -73,15 +74,12 @@ try:  # GPIO
     GPIO.setup(lamp1, GPIO.OUT, initial=GPIO.HIGH)
     GPIO.setup(lamp2, GPIO.OUT, initial=GPIO.HIGH)
 except Exception as e:
-    logger.error(f"Failed to setup GPIO: {e}")
+    print(f"Failed to setup GPIO: {e}")
 
 # reset the contents of the status variable, used for flagging that
 # video1-conversion is complete.
 with open('/var/www/html/status.txt', 'w') as status_file:
     status_file.write("")
-
-
-
 
 
 def trigger_relay(port):
@@ -210,8 +208,6 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
                         except Exception as e:
                             logger.error(f"Failed to capture picture {picture_name}: {e}")
                             break
-                            # break  # Break out of the loop to avoid reprocessing this event
-                        # Mark the event as triggered
                     last_triggered_events[(event_time, log_message)] = True
 
             # Sleep until the next event time
@@ -235,8 +231,6 @@ def apply_timestamp(request):
     fontScale = 2
     thickness = 2
 
-    # logger.debug(f"Applying timestamp: {timestamp}")
-
     try:
         with MappedArray(request, "main") as m:
             frame = m.array  # Get the frame
@@ -246,9 +240,7 @@ def apply_timestamp(request):
 
             height, width, _ = frame.shape
             # logger.debug(f"Frame shape: {frame.shape}")
-
-            # Ensure text is within the frame
-            origin = (50, max(50, height - 50))
+            origin = (50, max(50, height - 50))  # Ensure text is within the frame
 
             cv2.putText(frame, timestamp, origin, font, fontScale, colour, thickness)
 
@@ -480,6 +472,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
 
         fontScale = max(base_fontScale * scale_factor, 0.5)  # Prevent too small text
         thickness = max(int(base_thickness * scale_factor), 1)  # Prevent too thin lines
+        font = cv2.FONT_HERSHEY_DUPLEX
 
         # Perform inference only on every frame
         if frame_counter % 10 == 0:  # A5 -> B10
@@ -561,6 +554,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
                     skip_first_post_frame = False  # Skip this frame, process the next ones
                 else:
                     try:
+
                         origin = (500, 900)  # Position on frame
                         cv2.putText(frame, f"POST {capture_timestamp}", origin, font, fontScale, colour, thickness)
                         video_writer.write(frame)
