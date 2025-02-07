@@ -390,7 +390,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
     # logger.info(f"function: finish_recording, Measured Frame Rate: {actual_fps:.1f} FPS")
 
     # Setup pre-detection parameters
-    pre_detection_duration = 1  # Seconds A0.2, B1
+    pre_detection_duration = 0.2  # Seconds A0.2, B1, C0.2
     pre_detection_buffer = deque(maxlen=pre_detection_duration*fpsw)  # Adjust buffer size if needed
 
     # Load the pre-trained YOLOv5 model (e.g., yolov5s)
@@ -405,7 +405,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
         exit(1)
 
     # setup Post detection
-    max_post_detection_duration = 1  # A0.6 B1
+    max_post_detection_duration = 0.2  # A0.6 B1 C0.2
     logger.info(f"max_duration,{max_duration}, FPS={fpsw},"
                  f"pre_detection_duration = {pre_detection_duration}, "
                  f"max_post_detection_duration={max_post_detection_duration}")
@@ -473,9 +473,10 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
         fontScale = max(base_fontScale * scale_factor, 0.5)  # Prevent too small text
         thickness = max(int(base_thickness * scale_factor), 1)  # Prevent too thin lines
         font = cv2.FONT_HERSHEY_DUPLEX
+        colour = (0, 255, 0)  # Green text
 
         # Perform inference only on every frame
-        if frame_counter % 10 == 0:  # A5 -> B10
+        if frame_counter % 2 == 0:  # A5 -> B10 - C10
             try:  # Resize for faster processing
                 frame_resized = cv2.resize(frame, (inference_width,
                                                    inference_height))
@@ -499,7 +500,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
                         origin = (300, 800)  # Position on frame
                         font = cv2.FONT_HERSHEY_DUPLEX
                         # fontScale = 3
-                        colour = (0, 255, 0)  # Green text
+                        # colour = (0, 255, 0)  # Green text
                         # thickness = 2
                         cv2.putText(frame, f"{capture_timestamp}", origin, font, fontScale, colour, thickness)
 
@@ -545,6 +546,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
         # Handle POST-detection frames
         skip_first_post_frame = False  # Initialize the flag
         if max_post_detection_duration != 0:
+            colour = (0, 255, 0)  # Green text
             if boat_in_current_frame:
                 number_of_post_frames = int(max_post_detection_duration * fpsw)  # Reset countdown
                 skip_first_post_frame = True  # Set flag to skip the first post-detection frame
