@@ -395,7 +395,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
     # logger.info(f"function: finish_recording, Measured Frame Rate: {actual_fps:.1f} FPS")
 
     # Setup pre-detection parameters
-    pre_detection_duration = 0.2  # Seconds A0.2, B1
+    pre_detection_duration = 1  # Seconds A0.2, B1
     pre_detection_buffer = deque(maxlen=pre_detection_duration*fpsw)  # Adjust buffer size if needed
 
     # Load the pre-trained YOLOv5 model (e.g., yolov5s)
@@ -410,8 +410,8 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
         exit(1)
 
     # setup Post detection
-    max_post_detection_duration = 0.6  # A0.6 B1
-    logger.debug(f"max_duration,{max_duration}, FPS={fpsw},"
+    max_post_detection_duration = 1  # A0.6 B1
+    logger.info(f"max_duration,{max_duration}, FPS={fpsw},"
                  f"pre_detection_duration = {pre_detection_duration}, "
                  f"max_post_detection_duration={max_post_detection_duration}")
 
