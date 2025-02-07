@@ -725,7 +725,7 @@ def main():
 
 
 if __name__ == "__main__":
-    # logging.basicConfig(level=logging.WARNING)  # Set log level to WARNING
+    logging.basicConfig(level=logging.INFO)  # Set log level to WARNING
     try:
         main()
     except Exception as e:
