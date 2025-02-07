@@ -53,9 +53,9 @@ recording_stopped = False  # Global variable
 
 
 def setup_logging():
-    global logger  # Make logger variable global
+    # global logger  # Make logger variable global
     logging.config.fileConfig('/usr/lib/cgi-bin/logging.conf')
-    logger = logging.getLogger('Start')
+    logger = logging.getLogger('start')
     logger.info("Start logging regattastart9")
     return logger
 
@@ -602,7 +602,6 @@ def stop_listen_thread():
 def main():
     stop_event = threading.Event()
     global listening  # Declare listening as global
-    logger = setup_logging()  # Initialize the logger
     cam = setup_picam2(resolution=(1920, 1080), fps=5)
     if cam is None:
         logger.error("Camera setup failed, exiting.")
@@ -724,6 +723,8 @@ def main():
 
 
 if __name__ == "__main__":
+    logger = setup_logging()  # Initialize logger before using it
+
     try:
         main()
     except Exception as e:
