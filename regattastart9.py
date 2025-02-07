@@ -391,7 +391,8 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
 
     # Setup pre-detection parameters
     pre_detection_duration = 0.2  # Seconds A0.2, B1, C0.2
-    pre_detection_buffer = deque(maxlen=pre_detection_duration*fpsw)  # Adjust buffer size if needed
+
+    pre_detection_buffer = deque(maxlen=int(pre_detection_duration*fpsw))  # Adjust buffer size if needed
 
     # Load the pre-trained YOLOv5 model (e.g., yolov5s)
     model = torch.hub.load('ultralytics/yolov5', 'yolov5s')
