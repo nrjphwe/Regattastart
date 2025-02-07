@@ -51,6 +51,7 @@ photo_path = '/var/www/html/images/'
 listening = True  # Define the listening variable
 recording_stopped = False  # Global variable
 
+
 def setup_logging():
     global logger  # Make logger variable global
     logging.config.fileConfig('/usr/lib/cgi-bin/logging.conf')
@@ -723,11 +724,10 @@ def main():
 
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO)  # Set log level to WARNING
     try:
         main()
     except Exception as e:
         logger.error(f"An unhandled exception occurred: {e}", exc_info=True)
     finally:
         logger.info("Exiting program")
-        # sys.exit(0)  # Exit the program cleanly
+
