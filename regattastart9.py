@@ -382,7 +382,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
     logger.debug(f"Video1, max recording duration: {max_duration} seconds")
 
     # Restart camera
-    cam = restart_camera(cam, resolution=(1280, 720), fps=5)
+    cam = restart_camera(resolution=(1280, 720), fps=5)
 
     actual_fps = measure_frame_rate(cam)
     fpsw = int(actual_fps)
