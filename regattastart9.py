@@ -140,6 +140,22 @@ def setup_picam2(resolution=(1280, 720), fps=5):
         logger.error(f"Failed to initialize camera: {e}")
         return None  # Avoid using an uninitialized camera
 
+def restart_camera(cam, resolution=(1280, 720), fps=5):
+    stop_video_recording(cam)  # Stop and release camera
+    time.sleep(2)  # Ensure the camera is fully released
+
+    cam.stop()  # Ensure it is completely stopped
+    config = cam.create_video_configuration(
+        main={"size": resolution, "format": "RGB888"},
+        controls={"FrameRate": fps},
+        transform=Transform(hflip=True, vflip=True)  # Keep flips
+    )
+    cam.configure(config)  # Reconfigure with new settings
+    cam.start()  # Restart camera
+
+    logger.info(f"Camera restarted with resolution {resolution} and FPS: {fps}.")
+    return cam  # Return the reconfigured camera
+
 
 def measure_frame_rate(cam, duration=5):
     frame_timestamps = []
@@ -362,11 +378,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
     logger.debug(f"Video1, max recording duration: {max_duration} seconds")
 
     # Restart camera
-    stop_video_recording(cam)
-    time.sleep(2)  # Ensures previous instance is fully released
-    # cam = setup_picam2(resolution=(1920, 1080), fps=5)
-    cam = setup_picam2(resolution=(1280, 720), fps=5)
-    cam.start()
+    cam = restart_camera(cam, resolution=(1280, 720), fps=5)
 
     actual_fps = measure_frame_rate(cam)
     fpsw = int(actual_fps)
