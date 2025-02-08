@@ -121,7 +121,7 @@ def remove_video_files(directory, pattern):
 
 
 def setup_picam2(resolution=(1280, 720), fps=5):
-# def setup_picam2(resolution=(1920, 1080), fps=5):
+    # def setup_picam2(resolution=(1920, 1080), fps=5):
     try:
         cam = Picamera2()
         config = cam.create_video_configuration(
@@ -140,21 +140,25 @@ def setup_picam2(resolution=(1280, 720), fps=5):
         logger.error(f"Failed to initialize camera: {e}")
         return None  # Avoid using an uninitialized camera
 
-def restart_camera(cam, resolution=(1280, 720), fps=5):
-    stop_video_recording(cam)  # Stop and release camera
+
+def restart_camera(resolution=(1280, 720), fps=5):
     time.sleep(2)  # Ensure the camera is fully released
 
-    cam.stop()  # Ensure it is completely stopped
-    config = cam.create_video_configuration(
-        main={"size": resolution, "format": "RGB888"},
-        controls={"FrameRate": fps},
-        transform=Transform(hflip=True, vflip=True)  # Keep flips
-    )
-    cam.configure(config)  # Reconfigure with new settings
-    cam.start()  # Restart camera
+    try:
+        cam = Picamera2()  # Create a new Picamera2 instance
+        config = cam.create_video_configuration(
+            main={"size": resolution, "format": "RGB888"},
+            controls={"FrameRate": fps},
+            transform=Transform(hflip=True, vflip=True)
+        )
+        cam.configure(config)
+        cam.start()
 
-    logger.info(f"Camera restarted with resolution {resolution} and FPS: {fps}.")
-    return cam  # Return the reconfigured camera
+        logger.info(f"Camera restarted with resolution {resolution} and FPS: {fps}.")
+        return cam  # Return new camera instance
+    except Exception as e:
+        logger.error(f"Failed to restart camera: {e}")
+        return None  # Avoid using an uninitialized camera
 
 
 def measure_frame_rate(cam, duration=5):
@@ -385,7 +389,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
 
     # Confirm resolution
     frame_size = cam.capture_metadata().get("ScalerCrop", (0, 0, 0, 0))[2:4]
-    #frame_size = cam.capture_configuration()["main"]["size"]
+    # frame_size = cam.capture_configuration()["main"]["size"]
     logger.info(f"Camera frame size after restart: {frame_size}")
     # if frame_size[0] != 1920 or frame_size[1] != 1080:
     #    logger.error(f"Resolution mismatch! Expected (1920, 1080) but got {frame_size}.")
