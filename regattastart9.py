@@ -273,12 +273,9 @@ def process_video(video_path, input_file, output_file, frame_rate=None):
     if not os.path.exists(source) or os.path.getsize(source) <= 6000:
         logger.debug(f"Warning: {input_file} is empty or does not exist. Skipping conversion.")
         return
-
     command = ["ffmpeg", "-i", source, "-vcodec", "libx264", "-crf", "23", "-preset", "ultrafast"]
-
     if frame_rate:
         command.extend(["-vf", f"fps={frame_rate}"])
-
     command.append(dest)
     try:
         subprocess.run(command, check=True)
@@ -286,8 +283,6 @@ def process_video(video_path, input_file, output_file, frame_rate=None):
     except Exception as e:
         logger.error(f"Failed to process video: {e}")
         return
-        # continue  # Skips this iteration but keeps running the loop
-        # sys.exit(1)  # Exit the program
 
 
 def stop_recording():
@@ -370,7 +365,8 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
     # Restart camera
     stop_video_recording(cam)
     time.sleep(2)  # Ensures previous instance is fully released
-    cam = setup_picam2(resolution=(1920, 1080), fps=5)
+    #cam = setup_picam2(resolution=(1920, 1080), fps=5)
+    cam = setup_picam2(resolution=(1280, 720), fps=5)
     cam.start()
 
     actual_fps = measure_frame_rate(cam)
@@ -379,8 +375,10 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
     # Confirm resolution
     frame_size = cam.capture_metadata().get("ScalerCrop", (0, 0, 0, 0))[2:4]
     logger.info(f"Camera frame size after restart: {frame_size}")
-    if frame_size[0] != 1920 or frame_size[1] != 1080:
-        logger.error(f"Resolution mismatch! Expected (1920, 1080) but got {frame_size}.")
+    #if frame_size[0] != 1920 or frame_size[1] != 1080:
+    #    logger.error(f"Resolution mismatch! Expected (1920, 1080) but got {frame_size}.")
+    if frame_size[0] != 1280 or frame_size[1] != 720:
+        logger.error(f"Resolution mismatch! Expected (1280, 720) but got {frame_size}.")
 
     # Inference
     # Set the dimensions for resizing inference frame (to 640x480)
@@ -405,8 +403,8 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
     # setup Post detection
     max_post_detection_duration = 0  # A0.6 B1 C0.2
     logger.info(f"max_duration,{max_duration}, FPS={fpsw},"
-                  f"pre_detection_duration = {pre_detection_duration}, "
-                  f"max_post_detection_duration={max_post_detection_duration}")
+                f"pre_detection_duration = {pre_detection_duration}, "
+                f"max_post_detection_duration={max_post_detection_duration}")
     number_of_post_frames = int(fpsw * max_post_detection_duration)  # Initial setting, to record after detection
     boat_in_current_frame = False
 
@@ -597,7 +595,8 @@ def stop_listen_thread():
 def main():
     stop_event = threading.Event()
     global listening  # Declare listening as global
-    cam = setup_picam2(resolution=(1920, 1080), fps=5)
+    #cam = setup_picam2(resolution=(1920, 1080), fps=5)
+    cam = setup_picam2(resolution=(1280, 720), fps=5)
     if cam is None:
         logger.error("Camera setup failed, exiting.")
         exit()
