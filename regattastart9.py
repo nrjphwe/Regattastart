@@ -367,32 +367,24 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
     max_duration = (video_end + (num_starts-1)*5) * 60
     logger.debug(f"Video1, max recording duration: {max_duration} seconds")
 
-    # Stop camera completely
+    # Restart camera
     stop_video_recording(cam)
-
     time.sleep(2)  # Ensures previous instance is fully released
-
     cam = setup_picam2(resolution=(1920, 1080), fps=5)
     cam.start()
+
+    actual_fps = measure_frame_rate(cam)
+    fpsw = int(actual_fps)
 
     # Confirm resolution
     frame_size = cam.capture_metadata().get("ScalerCrop", (0, 0, 0, 0))[2:4]
     logger.info(f"Camera frame size after restart: {frame_size}")
-
     if frame_size[0] != 1920 or frame_size[1] != 1080:
         logger.error(f"Resolution mismatch! Expected (1920, 1080) but got {frame_size}.")
 
+    # Inference
     # Set the dimensions for resizing inference frame (to 640x480)
     inference_width, inference_height = 640, 480  # Since you resize before inference
-
-    actual_fps = measure_frame_rate(cam)
-    fpsw = int(actual_fps)
-    # logger.info(f"function: finish_recording, Measured Frame Rate: {actual_fps:.1f} FPS")
-
-    # Setup pre-detection parameters
-    pre_detection_duration = 0  # Seconds A0.2, B1, C0.2
-
-    pre_detection_buffer = deque(maxlen=int(pre_detection_duration*fpsw))  # Adjust buffer size if needed
 
     # Load the pre-trained YOLOv5 model (e.g., yolov5s)
     model = torch.hub.load('ultralytics/yolov5', 'yolov5s')
@@ -405,16 +397,18 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
         logger.error(f"Failed to open video1.avi for writing. Selected frame_size: {frame_size}")
         exit(1)
 
+    # Setup pre-detection parameters
+    pre_detection_duration = 0  # Seconds A0.2, B1, C0.2
+    pre_detection_buffer = deque(maxlen=int(pre_detection_duration*fpsw))  # Adjust buffer size if needed
+    processed_timestamps = set()  # Use a set for fast lookups
+
     # setup Post detection
     max_post_detection_duration = 0  # A0.6 B1 C0.2
     logger.info(f"max_duration,{max_duration}, FPS={fpsw},"
-                 f"pre_detection_duration = {pre_detection_duration}, "
-                 f"max_post_detection_duration={max_post_detection_duration}")
-
+                  f"pre_detection_duration = {pre_detection_duration}, "
+                  f"max_post_detection_duration={max_post_detection_duration}")
     number_of_post_frames = int(fpsw * max_post_detection_duration)  # Initial setting, to record after detection
     boat_in_current_frame = False
-
-    processed_timestamps = set()  # Use a set for fast lookups
 
     frame_counter = 0  # Initialize a frame counter
     previous_capture_time = None  # Track previous frame timestamp
@@ -431,7 +425,6 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
                 continue
             capture_timestamp = datetime.now() + timedelta(microseconds=frame_counter)
             logger.debug(f"  Capture timestamp: {capture_timestamp}")
-            # logger.debug(f"Captured frame shape: {frame.shape}, dtype: {frame.dtype}")
 
             if previous_capture_time:
                 time_diff = (capture_timestamp - previous_capture_time).total_seconds()
@@ -478,13 +471,18 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
 
         # Perform inference only on every frame
         if frame_counter % 2 == 0:  # A5 -> B10 - C10
-            try:  # Resize for faster processing
-                frame_resized = cv2.resize(frame, (inference_width,
-                                                   inference_height))
-                results = model(frame_resized)
-            except Exception as e:
-                logger.error(f"YOLOv5 inference failed: {e}")
-                continue  # Skips only the inference step, keeps recording
+            # Define cropping region (centered 1280x720)
+            crop_width, crop_height = 1280, 720
+            x_start = (frame_width - crop_width) // 2  # Center horizontally
+            y_start = (frame_height - crop_height) // 2  # Center vertically
+
+            # Crop the frame
+            cropped_frame = frame[y_start:y_start + crop_height, x_start:x_start + crop_width]
+            # Resize cropped frame to 640x480 for inference
+            inference_frame = cv2.resize(cropped_frame, (640, 480))
+            # frame_resized = cv2.resize(frame, (inference_width, inference_height))
+            # Use inference_frame for YOLO detection instead of full frame
+            results = model(inference_frame)
 
             detections = results.pandas().xyxy[0]  # Results as a DataFrame
 
