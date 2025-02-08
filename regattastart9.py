@@ -120,7 +120,8 @@ def remove_video_files(directory, pattern):
             os.remove(file_path)
 
 
-def setup_picam2(resolution=(1920, 1080), fps=5):
+def setup_picam2(resolution=(1280, 720), fps=5):
+# def setup_picam2(resolution=(1920, 1080), fps=5):
     try:
         cam = Picamera2()
         config = cam.create_video_configuration(
@@ -129,14 +130,11 @@ def setup_picam2(resolution=(1920, 1080), fps=5):
             transform=Transform(hflip=True, vflip=True)  # Apply horizontal and vertical flips
         )
         cam.configure(config)
-
         # Apply 180-degree rotation by flipping horizontally and vertically
         # cam.set_controls({"Transform": {"hflip": True, "vflip": True}})
-
         cam.start()
-        frame_size = cam.capture_configuration()["main"]["size"]
 
-        logger.info(f"Camera started with resolution {frame_size} and FPS: {fps}.")
+        logger.info(f"Camera started with resolution {resolution} and FPS: {fps}.")
         return cam  # Ensure it returns a valid camera object
     except Exception as e:
         logger.error(f"Failed to initialize camera: {e}")
@@ -366,7 +364,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
     # Restart camera
     stop_video_recording(cam)
     time.sleep(2)  # Ensures previous instance is fully released
-    #cam = setup_picam2(resolution=(1920, 1080), fps=5)
+    # cam = setup_picam2(resolution=(1920, 1080), fps=5)
     cam = setup_picam2(resolution=(1280, 720), fps=5)
     cam.start()
 
@@ -374,7 +372,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
     fpsw = int(actual_fps)
 
     # Confirm resolution
-    #frame_size = cam.capture_metadata().get("ScalerCrop", (0, 0, 0, 0))[2:4]
+    frame_size = cam.capture_metadata().get("ScalerCrop", (0, 0, 0, 0))[2:4]
     frame_size = cam.capture_configuration()["main"]["size"]
     logger.info(f"Camera frame size after restart: {frame_size}")
     # if frame_size[0] != 1920 or frame_size[1] != 1080:
@@ -598,7 +596,7 @@ def stop_listen_thread():
 def main():
     stop_event = threading.Event()
     global listening  # Declare listening as global
-    #cam = setup_picam2(resolution=(1920, 1080), fps=5)
+    # cam = setup_picam2(resolution=(1920, 1080), fps=5)
     cam = setup_picam2(resolution=(1280, 720), fps=5)
     if cam is None:
         logger.error("Camera setup failed, exiting.")
