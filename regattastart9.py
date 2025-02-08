@@ -384,7 +384,11 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
     # Restart camera
     cam = restart_camera(resolution=(1280, 720), fps=5)
 
-    actual_fps = measure_frame_rate(cam)
+    if cam is None:
+        logger.error("Camera restart failed, exiting.")
+        return  # Prevents crashing if camera restart fails
+
+    actual_fps = measure_frame_rate(cam)  # Only called if cam is valid
     fpsw = int(actual_fps)
 
     # Confirm resolution
