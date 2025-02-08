@@ -458,7 +458,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
         scale_y = frame_height / inference_height
 
         # Scale text size and thickness
-        base_fontScale = 0.6  # Default font size at 640x480
+        base_fontScale = 0.8  # Default font size at 640x480
         base_thickness = 2  # Default thickness at 640x480
         scale_factor = (scale_x + scale_y) / 2  # Average scale factor
 
@@ -494,7 +494,8 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
                     confidence = row['confidence']
 
                     if confidence > 0.4 and class_name == 'boat':
-                        origin = (300, 800)  # Position on frame
+                        origin = (50, max(50, frame_height - 50))
+                        # origin = (300, 800)  # Position on frame
                         font = cv2.FONT_HERSHEY_DUPLEX
                         # fontScale = 3
                         # colour = (0, 255, 0)  # Green text
@@ -528,7 +529,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
 
                             # Write pre-detection frames to video
                             while pre_detection_buffer:
-                                origin = (50, 700)  # Position on frame
+                                # origin = (50, 700)  # Position on frame
                                 frame, timestamp = pre_detection_buffer.popleft()
                                 cv2.putText(frame, f"PRE {timestamp}", origin, font, fontScale, colour, thickness)
                                 try:
@@ -553,8 +554,8 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
                     skip_first_post_frame = False  # Skip this frame, process the next ones
                 else:
                     try:
-
-                        origin = (500, 900)  # Position on frame
+                        # origin = (500, 900)  # Position on frame
+                        origin = (50, max(50, frame_height - 50))
                         cv2.putText(frame, f"POST {capture_timestamp}", origin, font, fontScale, colour, thickness)
                         video_writer.write(frame)
                         logger.debug(f"Post-detection Timestamp={capture_timestamp}")
