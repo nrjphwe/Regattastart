@@ -134,8 +134,9 @@ def setup_picam2(resolution=(1920, 1080), fps=5):
         # cam.set_controls({"Transform": {"hflip": True, "vflip": True}})
 
         cam.start()
+        frame_size = cam.capture_configuration()["main"]["size"]
 
-        logger.info(f"Camera started with resolution {resolution} and FPS: {fps}.")
+        logger.info(f"Camera started with resolution {frame_size} and FPS: {fps}.")
         return cam  # Ensure it returns a valid camera object
     except Exception as e:
         logger.error(f"Failed to initialize camera: {e}")
@@ -373,9 +374,10 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
     fpsw = int(actual_fps)
 
     # Confirm resolution
-    frame_size = cam.capture_metadata().get("ScalerCrop", (0, 0, 0, 0))[2:4]
+    #frame_size = cam.capture_metadata().get("ScalerCrop", (0, 0, 0, 0))[2:4]
+    frame_size = cam.capture_configuration()["main"]["size"]
     logger.info(f"Camera frame size after restart: {frame_size}")
-    #if frame_size[0] != 1920 or frame_size[1] != 1080:
+    # if frame_size[0] != 1920 or frame_size[1] != 1080:
     #    logger.error(f"Resolution mismatch! Expected (1920, 1080) but got {frame_size}.")
     if frame_size[0] != 1280 or frame_size[1] != 720:
         logger.error(f"Resolution mismatch! Expected (1280, 720) but got {frame_size}.")
