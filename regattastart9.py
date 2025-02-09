@@ -166,8 +166,14 @@ def measure_frame_rate(cam, duration=5):
     start_time = time.time()
 
     while time.time() - start_time < duration:
-        cam.capture_array()  # Capture a frame
-        frame_timestamps.append(time.time())  # Record the timestamp
+        try:
+            frame = cam.capture_array()
+            if frame is None:
+                frame_timestamps.append(time.time())  # Record the timestamp
+
+        except Exception as e:
+            logger.error(f"Failed to capture frame: {e}")
+            return  # Skips this iteration but keeps running the loop
 
     # Calculate frame intervals and average frame rate
     intervals = [t2 - t1 for t1, t2 in zip(frame_timestamps[:-1], frame_timestamps[1:])]
