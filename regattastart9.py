@@ -398,8 +398,8 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
     fpsw = int(actual_fps)
 
     # Confirm resolution
-    frame_size = cam.capture_metadata().get("ScalerCrop", (0, 0, 0, 0))[2:4]
-    # frame_size = cam.capture_configuration()["main"]["size"]
+    # frame_size = cam.capture_metadata().get("ScalerCrop", (0, 0, 0, 0))[2:4]
+    frame_size = cam.capture_configuration()["main"]["size"]
     logger.info(f"Camera frame size after restart: {frame_size}")
     # if frame_size[0] != 1920 or frame_size[1] != 1080:
     #    logger.error(f"Resolution mismatch! Expected (1920, 1080) but got {frame_size}.")
