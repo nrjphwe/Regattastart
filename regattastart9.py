@@ -397,12 +397,13 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
     # Set duration of video1 recording
     max_duration = (video_end + (num_starts-1)*5) * 60
     logger.debug(f"Video1, max recording duration: {max_duration} seconds")
-
+    '''
     frame = cam.capture_array()
     frame_size = (frame.shape[1], frame.shape[0]) 
     # frame_size = cam.capture_metadata().get("ScalerCrop", (0, 0, 0, 0))[2:4]
     logger.info(f"zz Camera frame size before restart: {frame_size}")
-
+    '''
+    
     # Restart camera
     # cam = restart_camera(resolution=(1280, 720), fps=5)
     cam = restart_camera(cam, resolution=(1640, 1232), fps=5)
