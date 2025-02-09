@@ -161,8 +161,7 @@ def restart_camera(cam, resolution=(1640, 1232), fps=5):
             controls={"FrameRate": fps},
             transform=Transform(hflip=True, vflip=True)
         )
-        cam.set_controls(config)
-        # cam.configure(config)
+        cam.configure(config)
         cam.start()
 
         logger.info(f"Camera restarted with resolution {best_mode['size']} and FPS: {fps}.")
@@ -403,7 +402,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
     # frame_size = cam.capture_metadata().get("ScalerCrop", (0, 0, 0, 0))[2:4]
     logger.info(f"zz Camera frame size before restart: {frame_size}")
     '''
-    
+
     # Restart camera
     # cam = restart_camera(resolution=(1280, 720), fps=5)
     cam = restart_camera(cam, resolution=(1640, 1232), fps=5)
