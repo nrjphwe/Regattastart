@@ -397,6 +397,9 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
     max_duration = (video_end + (num_starts-1)*5) * 60
     logger.debug(f"Video1, max recording duration: {max_duration} seconds")
 
+    frame_size = cam.capture_metadata().get("ScalerCrop", (0, 0, 0, 0))[2:4]
+    logger.info(f"zz Camera frame size before restart: {frame_size}")
+
     # Restart camera
     # cam = restart_camera(resolution=(1280, 720), fps=5)
     cam = restart_camera(resolution=(1640, 1232), fps=5)
@@ -411,7 +414,8 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
     # Confirm resolution
     frame_size = cam.capture_metadata().get("ScalerCrop", (0, 0, 0, 0))[2:4]
     # frame_size = cam.capture_configuration()["main"]["size"]
-    logger.info(f"Camera frame size after restart: {frame_size}")
+    logger.info(f"zz Camera frame size after restart: {frame_size}")
+
     # if frame_size[0] != 1920 or frame_size[1] != 1080:
     #    logger.error(f"Resolution mismatch! Expected (1920, 1080) but got {frame_size}.")
     # if frame_size[0] != 1280 or frame_size[1] != 720:
