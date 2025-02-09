@@ -157,14 +157,14 @@ def restart_camera(resolution=(1280, 720), fps=5):
         print(f"Using sensor mode: {best_mode}")
 
         config = cam.create_video_configuration(
-            main={"size": best_mode, "format": "RGB888"},
+            main={"size": best_mode["size"], "format": "RGB888"},
             controls={"FrameRate": fps},
             transform=Transform(hflip=True, vflip=True)
         )
         cam.configure(config)
         cam.start()
 
-        logger.info(f"Camera restarted with resolution {resolution} and FPS: {fps}.")
+        logger.info(f"Camera restarted with resolution {best_mode['size']} and FPS: {fps}.")
         return cam  # Return new camera instance
     except Exception as e:
         logger.error(f"Failed to restart camera: {e}")
