@@ -398,6 +398,9 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
     # Set duration of video1 recording
     max_duration = (video_end + (num_starts-1)*5) * 60
     logger.debug(f"Video1, max recording duration: {max_duration} seconds")
+
+    cam = restart_camera(resolution=(1640, 1232), fps=5)
+
     '''
     frame = cam.capture_array()
     frame_size = (frame.shape[1], frame.shape[0]) 
@@ -414,7 +417,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
         logger.error("Camera object is None before starting. Exiting.")
         return
 
-    cam.start()
+    # cam.start()
 
     # Confirm cam is initialized
     if cam is None:
