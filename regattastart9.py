@@ -405,7 +405,8 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
 
     # Restart camera
     # cam = restart_camera(resolution=(1280, 720), fps=5)
-    cam = restart_camera(cam, resolution=(1640, 1232), fps=5)
+    # cam = restart_camera(cam, resolution=(1640, 1232), fps=5)
+    # logger.debug(f"Camera started status after restart: {cam.started}")
 
     if cam is None:
         logger.error("Camera restart failed, exiting.")
