@@ -150,11 +150,11 @@ def restart_camera(resolution=(1640, 1232), fps=5):
         cam = Picamera2()  # Create a new Picamera2 instance
         # List available sensor modes
         sensor_modes = cam.sensor_modes
-        logger.info("Available sensor modes:", sensor_modes)
+        logger.debug(f"Available sensor modes: {sensor_modes}")
 
         # Find a sensor mode that best matches the requested resolution
         best_mode = min(sensor_modes, key=lambda m: abs(m["size"][0] - resolution[0]) + abs(m["size"][1] - resolution[1]))
-        print(f"Using sensor mode: {best_mode}")
+        logger.debug(f"Using sensor mode: {best_mode}")
 
         config = cam.create_video_configuration(
             main={"size": best_mode["size"], "format": "RGB888"},
@@ -759,7 +759,6 @@ def main():
 
 if __name__ == "__main__":
     logger = setup_logging()  # Initialize logger before using it
-
     try:
         main()
     except Exception as e:
