@@ -120,7 +120,8 @@ def remove_video_files(directory, pattern):
             os.remove(file_path)
 
 
-def setup_picam2(resolution=(1280, 720), fps=5):
+def setup_picam2(resolution=(1640, 1232), fps=5):
+    #def setup_picam2(resolution=(1280, 720), fps=5):
     # def setup_picam2(resolution=(1920, 1080), fps=5):
     try:
         cam = Picamera2()
@@ -141,7 +142,7 @@ def setup_picam2(resolution=(1280, 720), fps=5):
         return None  # Avoid using an uninitialized camera
 
 
-def restart_camera(resolution=(1280, 720), fps=5):
+def restart_camera(resolution=(1640, 1232), fps=5):
     time.sleep(2)  # Ensure the camera is fully released
 
     try:
@@ -388,7 +389,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
     logger.debug(f"Video1, max recording duration: {max_duration} seconds")
 
     # Restart camera
-    cam = restart_camera(resolution=(1280, 720), fps=5)
+    cam = restart_camera(resolution=(1640, 1232), fps=5)
 
     if cam is None:
         logger.error("Camera restart failed, exiting.")
@@ -398,13 +399,15 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
     fpsw = int(actual_fps)
 
     # Confirm resolution
-    # frame_size = cam.capture_metadata().get("ScalerCrop", (0, 0, 0, 0))[2:4]
-    frame_size = cam.capture_configuration()["main"]["size"]
+    frame_size = cam.capture_metadata().get("ScalerCrop", (0, 0, 0, 0))[2:4]
+    # frame_size = cam.capture_configuration()["main"]["size"]
     logger.info(f"Camera frame size after restart: {frame_size}")
     # if frame_size[0] != 1920 or frame_size[1] != 1080:
     #    logger.error(f"Resolution mismatch! Expected (1920, 1080) but got {frame_size}.")
-    if frame_size[0] != 1280 or frame_size[1] != 720:
-        logger.error(f"Resolution mismatch! Expected (1280, 720) but got {frame_size}.")
+    #if frame_size[0] != 1280 or frame_size[1] != 720:
+    #     logger.error(f"Resolution mismatch! Expected (1280, 720) but got {frame_size}.")
+    if frame_size[0] != 1640 or frame_size[1] != 1232:
+        logger.error(f"Resolution mismatch! Expected (1640, 1232) but got {frame_size}.")
 
     # Inference
     # Set the dimensions for resizing inference frame (to 640x480)
@@ -623,7 +626,8 @@ def main():
     stop_event = threading.Event()
     global listening  # Declare listening as global
     # cam = setup_picam2(resolution=(1920, 1080), fps=5)
-    cam = setup_picam2(resolution=(1280, 720), fps=5)
+    # cam = setup_picam2(resolution=(1280, 720), fps=5)
+    cam = setup_picam2(resolution=(1640, 1232), fps=5)
     if cam is None:
         logger.error("Camera setup failed, exiting.")
         exit()
