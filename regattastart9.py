@@ -408,26 +408,32 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
     # cam = restart_camera(cam, resolution=(1640, 1232), fps=5)
     # logger.debug(f"Camera started status after restart: {cam.started}")
 
+    # Confirm cam is initialized
     if cam is None:
         logger.error("Camera restart failed, exiting.")
         return  # Prevents crashing if camera restart fails
 
-    actual_fps = measure_frame_rate(cam)  # Only called if cam is valid
-    fpsw = int(actual_fps)
-
-    # Confirm resolution
+    # Confirm resolution before proceeding
     frame = cam.capture_array()
-    frame_size = (frame.shape[1], frame.shape[0]) 
+    if frame is None:
+        logger.error("First captured frame is None! Exiting video recording.")
+        return
+
+    frame_size = (frame.shape[1], frame.shape[0])
+    logger.info(f"Camera frame size before recording: {frame_size}")
     # frame_size = cam.capture_metadata().get("ScalerCrop", (0, 0, 0, 0))[2:4]
     # frame_size = cam.capture_configuration()["main"]["size"]
-    logger.info(f"zz Camera frame size after restart: {frame_size}")
 
     # if frame_size[0] != 1920 or frame_size[1] != 1080:
     #    logger.error(f"Resolution mismatch! Expected (1920, 1080) but got {frame_size}.")
     # if frame_size[0] != 1280 or frame_size[1] != 720:
     #    logger.error(f"Resolution mismatch! Expected (1280, 720) but got {frame_size}.")
-    if frame_size[0] != 1640 or frame_size[1] != 1232:
-        logger.error(f"Resolution mismatch! Expected (1640, 1232) but got {frame_size}.")
+    if frame_size != (1640, 1232):
+        logger.error(f"Resolution mismatch! Expected (1640, 1232) got {frame_size}.")
+
+    actual_fps = measure_frame_rate(cam)  # Only called if cam is valid
+    fpsw = int(actual_fps)
+    logger.info(f"Measured FPS: {fpsw}")
 
     # Inference
     # Set the dimensions for resizing inference frame (to 640x480)
