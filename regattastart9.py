@@ -130,6 +130,7 @@ def setup_picam2(resolution=(1640, 1232), fps=5):
             controls={"FrameRate": fps}, 
             transform=Transform(hflip=True, vflip=True)  # Apply horizontal and vertical flips
         )
+        logger.debug(f"Config before applying: {config}")
         cam.configure(config)
         # Apply 180-degree rotation by flipping horizontally and vertically
         # cam.set_controls({"Transform": {"hflip": True, "vflip": True}})
@@ -161,6 +162,7 @@ def restart_camera(cam, resolution=(1640, 1232), fps=5):
             controls={"FrameRate": fps},
             transform=Transform(hflip=True, vflip=True)
         )
+        logger.debug(f"Config before applying: {config}")
         cam.configure(config)
         cam.start()
 
@@ -410,7 +412,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
 
     if cam is None:
         logger.error("Camera object is None before starting. Exiting.")
-    return
+        return
 
     cam.start()
 
