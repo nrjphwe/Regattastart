@@ -408,6 +408,10 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
     # cam = restart_camera(cam, resolution=(1640, 1232), fps=5)
     # logger.debug(f"Camera started status after restart: {cam.started}")
 
+    if cam is None:
+        logger.error("Camera object is None before starting. Exiting.")
+    return
+
     cam.start()
 
     # Confirm cam is initialized
