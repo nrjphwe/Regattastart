@@ -408,6 +408,8 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
     # cam = restart_camera(cam, resolution=(1640, 1232), fps=5)
     # logger.debug(f"Camera started status after restart: {cam.started}")
 
+    cam.start
+
     # Confirm cam is initialized
     if cam is None:
         logger.error("Camera restart failed, exiting.")
@@ -445,7 +447,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
 
     # setup video writer
     fourcc = cv2.VideoWriter_fourcc(*'XVID')  # Use 'XVID' for .avi, or 'mp4v' for .mp4
-    video_writer = cv2.VideoWriter(video_path + 'video1' + '.avi', fourcc, fpsw, frame_size)    
+    video_writer = cv2.VideoWriter(video_path + 'video1' + '.avi', fourcc, fpsw, frame_size) 
     if not video_writer.isOpened():
         logger.error(f"Failed to open video1.avi for writing. Selected frame_size: {frame_size}")
         exit(1)
