@@ -142,12 +142,12 @@ def setup_picam2(resolution=(1640, 1232), fps=5):
         return None  # Avoid using an uninitialized camera
 
 
-def restart_camera(resolution=(1640, 1232), fps=5):
+def restart_camera(cam, resolution=(1640, 1232), fps=5):
     # def restart_camera(resolution=(1280, 720), fps=5):
     time.sleep(2)  # Ensure the camera is fully released
-
     try:
-        cam = Picamera2()  # Create a new Picamera2 instance
+        cam.stop()
+        # cam = Picamera2()  # Create a new Picamera2 instance
         # List available sensor modes
         sensor_modes = cam.sensor_modes
         logger.debug(f"Available sensor modes: {sensor_modes}")
@@ -161,7 +161,8 @@ def restart_camera(resolution=(1640, 1232), fps=5):
             controls={"FrameRate": fps},
             transform=Transform(hflip=True, vflip=True)
         )
-        cam.configure(config)
+        cam.set_controls(config)
+        # cam.configure(config)
         cam.start()
 
         logger.info(f"Camera restarted with resolution {best_mode['size']} and FPS: {fps}.")
@@ -402,7 +403,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
 
     # Restart camera
     # cam = restart_camera(resolution=(1280, 720), fps=5)
-    cam = restart_camera(resolution=(1640, 1232), fps=5)
+    cam = restart_camera(cam, resolution=(1640, 1232), fps=5)
 
     if cam is None:
         logger.error("Camera restart failed, exiting.")
