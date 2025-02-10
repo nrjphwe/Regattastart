@@ -146,11 +146,13 @@ def setup_picam2(resolution=(1640, 1232), fps=5):
 def restart_camera(cam, resolution=(1640, 1232), fps=5):
     time.sleep(2)  # Ensure the camera is fully released
     try:
-        cam = Picamera2
+        cam = Picamera2()
         logger.info("New Picamera2 instance created.")
+        time.sleep(2)
 
         # List available sensor modes
         sensor_modes = cam.sensor_modes
+        logger.debug(f"Available sensor modes: {sensor_modes}")
         if not sensor_modes:
             logger.error("No sensor modes available. Camera may not be detected!")
             return None
