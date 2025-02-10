@@ -148,7 +148,7 @@ def restart_camera(cam, resolution=(1640, 1232), fps=5):
     time.sleep(2)  # Ensure the camera is fully released
     try:
         cam.stop()
-        # cam = Picamera2()  # Create a new Picamera2 instance
+        time.sleep(2)
         # List available sensor modes
         sensor_modes = cam.sensor_modes
         logger.debug(f"Available sensor modes: {sensor_modes}")
@@ -164,6 +164,10 @@ def restart_camera(cam, resolution=(1640, 1232), fps=5):
         )
         logger.debug(f"Config before applying: {config}")
         cam.configure(config)
+
+        if cam is None:
+            logger.error("Exit if camera object is None before starting.")
+            return
         cam.start()
 
         logger.info(f"Camera restarted with resolution {best_mode['size']} and FPS: {fps}.")
@@ -399,25 +403,10 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
     max_duration = (video_end + (num_starts-1)*5) * 60
     logger.debug(f"Video1, max recording duration: {max_duration} seconds")
 
-    cam = restart_camera(resolution=(1640, 1232), fps=5)
-
-    '''
-    frame = cam.capture_array()
-    frame_size = (frame.shape[1], frame.shape[0]) 
-    # frame_size = cam.capture_metadata().get("ScalerCrop", (0, 0, 0, 0))[2:4]
-    logger.info(f"zz Camera frame size before restart: {frame_size}")
-    '''
-
-    # Restart camera
-    # cam = restart_camera(resolution=(1280, 720), fps=5)
-    # cam = restart_camera(cam, resolution=(1640, 1232), fps=5)
-    # logger.debug(f"Camera started status after restart: {cam.started}")
-
     if cam is None:
-        logger.error("Camera object is None before starting. Exiting.")
-        return
+        logger.error("Camera object is None before restarting.")
 
-    # cam.start()
+    cam = restart_camera(cam,resolution=(1640, 1232), fps=5)
 
     # Confirm cam is initialized
     if cam is None:
