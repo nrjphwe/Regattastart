@@ -120,9 +120,9 @@ def remove_video_files(directory, pattern):
             os.remove(file_path)
 
 
-def setup_picam2(resolution=(1640, 1232), fps=5):
+def setup_picam2(resolution=(1920, 1080), fps=5):
+    # def setup_picam2(resolution=(1640, 1232), fps=5):
     # def setup_picam2(resolution=(1280, 720), fps=5):c
-    # def setup_picam2(resolution=(1920, 1080), fps=5):
     try:
         cam = Picamera2()
         config = cam.create_video_configuration(
@@ -431,12 +431,12 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
     # frame_size = cam.capture_metadata().get("ScalerCrop", (0, 0, 0, 0))[2:4]
     # frame_size = cam.capture_configuration()["main"]["size"]
 
-    # if frame_size[0] != 1920 or frame_size[1] != 1080:
-    #    logger.error(f"Resolution mismatch! Expected (1920, 1080) but got {frame_size}.")
+    if frame_size[0] != 1920 or frame_size[1] != 1080:
+        logger.error(f"Resolution mismatch! Expected (1920, 1080) but got {frame_size}.")
     # if frame_size[0] != 1280 or frame_size[1] != 720:
     #    logger.error(f"Resolution mismatch! Expected (1280, 720) but got {frame_size}.")
-    if frame_size != (1640, 1232):
-        logger.error(f"Resolution mismatch! Expected (1640, 1232) got {frame_size}.")
+    # if frame_size != (1640, 1232):
+    #    logger.error(f"Resolution mismatch! Expected (1640, 1232) got {frame_size}.")
 
     # actual_fps = measure_frame_rate(cam)  # Only called if cam is valid
     # fpsw = int(actual_fps)
@@ -660,8 +660,8 @@ def main():
     stop_event = threading.Event()
     global listening  # Declare listening as global
     # cam = setup_picam2(resolution=(1280, 720), fps=5)
-    cam = setup_picam2(resolution=(1640, 1232), fps=5)
-    # cam = setup_picam2(resolution=(1920, 1080), fps=5)
+    # cam = setup_picam2(resolution=(1640, 1232), fps=5)
+    cam = setup_picam2(resolution=(1920, 1080), fps=5)
     if cam is None:
         logger.error("Camera setup failed, exiting.")
         exit()
