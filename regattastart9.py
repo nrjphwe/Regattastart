@@ -152,7 +152,6 @@ def restart_camera(cam, resolution=(1640, 1232), fps=5):
 
         # List available sensor modes
         sensor_modes = cam.sensor_modes
-        logger.debug(f"Available sensor modes: {sensor_modes}")
         if not sensor_modes:
             logger.error("No sensor modes available. Camera may not be detected!")
             return None
@@ -405,6 +404,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
     global recording_stopped
     confidence = 0.0  # Initial value
     class_name = ""  # Initial value
+    fps = 5.0
 
     # Set duration of video1 recording
     max_duration = (video_end + (num_starts-1)*5) * 60
@@ -413,7 +413,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
     if cam is None:
         logger.error("Camera object is None before restarting.")
 
-    cam = restart_camera(cam,resolution=(1640, 1232), fps=5)
+    cam = restart_camera(cam, resolution=(1640, 1232), fps=fps)
 
     # Confirm cam is initialized
     if cam is None:
@@ -438,11 +438,12 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
     if frame_size != (1640, 1232):
         logger.error(f"Resolution mismatch! Expected (1640, 1232) got {frame_size}.")
 
-    actual_fps = measure_frame_rate(cam)  # Only called if cam is valid
-    fpsw = int(actual_fps)
-    logger.info(f"Measured FPS: {fpsw}")
+    # actual_fps = measure_frame_rate(cam)  # Only called if cam is valid
+    # fpsw = int(actual_fps)
+    fpsw = fps
+    # logger.info(f"Measured FPS: {fpsw}")
 
-    # Inference
+    # Inference ##
     # Set the dimensions for resizing inference frame (to 640x480)
     inference_width, inference_height = 640, 480  # Since you resize before inference
 
