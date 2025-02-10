@@ -143,7 +143,7 @@ def setup_picam2(resolution=(1920, 1080), fps=5):
         return None  # Avoid using an uninitialized camera
 
 
-def restart_camera(cam, resolution=(1640, 1232), fps=5):
+def restart_camera(cam, resolution=(1920, 1080), fps=5):
     time.sleep(2)  # Ensure the camera is fully released
     try:
         cam = Picamera2()
@@ -413,7 +413,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
     if cam is None:
         logger.error("Camera object is None before restarting.")
 
-    cam = restart_camera(cam, resolution=(1640, 1232), fps=fps)
+    cam = restart_camera(cam, resolution=(1920, 1080), fps=fps)
 
     # Confirm cam is initialized
     if cam is None:
@@ -653,7 +653,7 @@ def stop_listen_thread():
     global listening
     listening = False
     # Log a message indicating that the listen_thread has been stopped
-    logger.info("462: stop_listening thread  listening set to False")
+    logger.info("stop_listening thread  listening set to False")
 
 
 def main():
