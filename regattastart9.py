@@ -287,7 +287,7 @@ def apply_timestamp(request):
 
             height, width, _ = frame.shape
             # logger.debug(f"Frame shape: {frame.shape}")
-            origin = (50, max(50, height - 50))  # Ensure text is within the frame
+            origin = (50, max(50, height - 100))  # Ensure text is within the frame
 
             cv2.putText(frame, timestamp, origin, font, fontScale, colour, thickness)
 
@@ -526,7 +526,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
         colour = (0, 255, 0)  # Green text
 
         # Perform inference only on every frame
-        if frame_counter % 2 == 0:  # A5 -> B10 - C10
+        if frame_counter % 1 == 0:  # every frame
             # Define cropping region (centered 1280x720)
             crop_width, crop_height = 1280, 720
             x_start = (frame_width - crop_width) // 2  # Center horizontally
@@ -551,7 +551,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
                     confidence = row['confidence']
 
                     if confidence > 0.4 and class_name == 'boat':
-                        origin = (50, max(100, frame_height - 50)) # Position on frame
+                        origin = (50, max(50, frame_height - 100)) # Position on frame
                         font = cv2.FONT_HERSHEY_DUPLEX
                         # fontScale = 3
                         # colour = (0, 255, 0)  # Green text
@@ -611,7 +611,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
                 else:
                     try:
                         # origin = (500, 900)  # Position on frame
-                        origin = (50, max(50, frame_height - 50))
+                        origin = (50, max(50, frame_height - 100))
                         cv2.putText(frame, f"POST {capture_timestamp}", origin, font, fontScale, colour, thickness)
                         video_writer.write(frame)
                         logger.debug(f"Post-detection Timestamp={capture_timestamp}")
