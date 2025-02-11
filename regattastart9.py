@@ -527,7 +527,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
 
         # Perform inference only on every 3rd frame
         if frame_counter % 2 == 0:  # every frame
-            crop_width, crop_height = 800, 600
+            crop_width, crop_height = 1640, 1232
             # crop_width, crop_height = 1280, 720
             x_start = (frame_width - crop_width) // 2  # Center horizontally
             y_start = (frame_height - crop_height) // 2  # Center vertically
