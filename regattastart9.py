@@ -444,9 +444,6 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
     # logger.info(f"Measured FPS: {fpsw}")
 
     # Inference ##
-    # Set the dimensions for resizing inference frame (to 640x480)
-    inference_width, inference_height = 640, 480  # Since you resize before inference
-
     # Load the pre-trained YOLOv5 model (e.g., yolov5s)
     model = torch.hub.load('ultralytics/yolov5', 'yolov5s')
     model.classes = [8]  # Filter for 'boat' class (COCO ID for 'boat' is 8)
@@ -516,6 +513,9 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
             if frame_counter % 20 == 0:
                 cleanup_processed_timestamps(processed_timestamps)
 
+        # Set the dimensions for resizing inference frame (to 640x480)
+        inference_width, inference_height = 640, 480  # Since you resize before inference
+
         # Compute scaling factors
         scale_x = frame_width / inference_width
         scale_y = frame_height / inference_height
@@ -540,11 +540,9 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
             # Crop the frame
             cropped_frame = frame[y_start:y_start + crop_height, x_start:x_start + crop_width]
             # Resize cropped frame to 640x480 for inference
-            # inference_frame = cv2.resize(cropped_frame, (640, 480))
-            inference_frame = cv2.resize(cropped_frame, (640, 360))
-            # frame_resized = cv2.resize(frame, (inference_width, inference_height))
-            # Use inference_frame for YOLO detection instead of full frame
-            results = model(inference_frame)
+            resized_frame = cv2.resize(cropped_frame, (inference_width, inference_height))
+            # Use resized_frame for YOLO detection instead of full frame
+            results = model(resized_frame, conf=0.25)  # Default is usually 0.25
 
             detections = results.pandas().xyxy[0]  # Results as a DataFrame
 
@@ -558,19 +556,18 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
                     confidence = row['confidence']
 
                     if confidence > 0.2 and class_name == 'boat':
-                        origin = (50, max(50, frame_height - 50))
-                        # origin = (300, 800)  # Position on frame
+                        origin = (50, max(100, frame_height - 50)) # Position on frame
                         font = cv2.FONT_HERSHEY_DUPLEX
                         # fontScale = 3
                         # colour = (0, 255, 0)  # Green text
                         # thickness = 2
                         cv2.putText(frame, f"{capture_timestamp}", origin, font, fontScale, colour, thickness)
-
                         boat_in_current_frame = True
                         logger.info(f"Confidence {confidence:.2f}, capture_timestamp = {capture_timestamp}")
                         detected_timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")  # timestamp (with microseconds)
                         logger.debug(f"Detected_timestamp={detected_timestamp}")
 
+                        # x =
                         x1, y1 = int(row['xmin'] * scale_x), int(row['ymin'] * scale_y)
                         x2, y2 = int(row['xmax'] * scale_x), int(row['ymax'] * scale_y)
 
