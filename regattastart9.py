@@ -404,7 +404,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
     global recording_stopped
     confidence = 0.0  # Initial value
     class_name = ""  # Initial value
-    fps = 5.0
+    fps = 10
 
     # Set duration of video1 recording
     max_duration = (video_end + (num_starts-1)*5) * 60
@@ -654,7 +654,7 @@ def main():
     global listening  # Declare listening as global
     # cam = setup_picam2(resolution=(1280, 720), fps=5)
     # cam = setup_picam2(resolution=(1640, 1232), fps=5)
-    cam = setup_picam2(resolution=(1920, 1080), fps=5)
+    cam = setup_picam2(resolution=(1920, 1080), fps=10)
     if cam is None:
         logger.error("Camera setup failed, exiting.")
         exit()
