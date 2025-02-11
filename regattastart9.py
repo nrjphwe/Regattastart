@@ -428,8 +428,6 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
 
     frame_size = (frame.shape[1], frame.shape[0])
     logger.info(f"Camera frame size before recording: {frame_size}")
-    # frame_size = cam.capture_metadata().get("ScalerCrop", (0, 0, 0, 0))[2:4]
-    # frame_size = cam.capture_configuration()["main"]["size"]
 
     if frame_size[0] != 1920 or frame_size[1] != 1080:
         logger.error(f"Resolution mismatch! Expected (1920, 1080) but got {frame_size}.")
@@ -438,10 +436,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
     # if frame_size != (1640, 1232):
     #    logger.error(f"Resolution mismatch! Expected (1640, 1232) got {frame_size}.")
 
-    # actual_fps = measure_frame_rate(cam)  # Only called if cam is valid
-    # fpsw = int(actual_fps)
     fpsw = fps
-    # logger.info(f"Measured FPS: {fpsw}")
 
     # Inference ##
     # Load the pre-trained YOLOv5 model (e.g., yolov5s)
@@ -542,7 +537,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
             # Resize cropped frame to 640x480 for inference
             resized_frame = cv2.resize(cropped_frame, (inference_width, inference_height))
             # Use resized_frame for YOLO detection instead of full frame
-            results = model(resized_frame, conf=0.25)  # Default is usually 0.25
+            results = model.predict(resized_frame, conf=0.25)  # Default is usually 0.25
 
             detections = results.pandas().xyxy[0]  # Results as a DataFrame
 
