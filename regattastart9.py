@@ -459,12 +459,12 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
         exit(1)
 
     # Setup pre-detection parameters
-    pre_detection_duration = 0  # Seconds A0.2, B1, C0.2
+    pre_detection_duration = 0  # Seconds
     pre_detection_buffer = deque(maxlen=int(pre_detection_duration*fpsw))  # Adjust buffer size if needed
     processed_timestamps = set()  # Use a set for fast lookups
 
     # setup Post detection
-    max_post_detection_duration = 0  # A0.6 B1 C0.2
+    max_post_detection_duration = 0  # sec
     logger.info(f"max_duration,{max_duration}, FPS={fpsw},"
                 f"pre_detection_duration = {pre_detection_duration}, "
                 f"max_post_detection_duration={max_post_detection_duration}")
@@ -540,7 +540,8 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
             # Crop the frame
             cropped_frame = frame[y_start:y_start + crop_height, x_start:x_start + crop_width]
             # Resize cropped frame to 640x480 for inference
-            inference_frame = cv2.resize(cropped_frame, (640, 480))
+            # inference_frame = cv2.resize(cropped_frame, (640, 480))
+            inference_frame = cv2.resize(cropped_frame, (640, 360))
             # frame_resized = cv2.resize(frame, (inference_width, inference_height))
             # Use inference_frame for YOLO detection instead of full frame
             results = model(inference_frame)
@@ -556,7 +557,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
                     class_name = row['name']
                     confidence = row['confidence']
 
-                    if confidence > 0.4 and class_name == 'boat':
+                    if confidence > 0.2 and class_name == 'boat':
                         origin = (50, max(50, frame_height - 50))
                         # origin = (300, 800)  # Position on frame
                         font = cv2.FONT_HERSHEY_DUPLEX
@@ -609,7 +610,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
         if max_post_detection_duration != 0:
             colour = (0, 255, 0)  # Green text
             if boat_in_current_frame:
-                number_of_post_frames = int(max_post_detection_duration * fpsw)  # Reset countdown
+                number_of_post_frames = int(max_post_detection_duration * fpsw) # Reset countdown
                 skip_first_post_frame = True  # Set flag to skip the first post-detection frame
 
             if boat_in_current_frame or number_of_post_frames > 0:
