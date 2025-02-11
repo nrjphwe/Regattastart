@@ -537,7 +537,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
             # Resize cropped frame to 640x480 for inference
             resized_frame = cv2.resize(cropped_frame, (inference_width, inference_height))
             # Use resized_frame for YOLO detection instead of full frame
-            results = model.predict(resized_frame)  # Default is usually 0.25
+            results = model(resized_frame)  # Default is usually 0.25
 
             detections = results.pandas().xyxy[0]  # Results as a DataFrame
 
