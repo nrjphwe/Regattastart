@@ -537,7 +537,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
             # Resize cropped frame to 640x480 for inference
             resized_frame = cv2.resize(cropped_frame, (inference_width, inference_height))
             # Use resized_frame for YOLO detection instead of full frame
-            results = model.predict(resized_frame, conf=0.25)  # Default is usually 0.25
+            results = model.predict(resized_frame)  # Default is usually 0.25
 
             detections = results.pandas().xyxy[0]  # Results as a DataFrame
 
@@ -550,7 +550,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
                     class_name = row['name']
                     confidence = row['confidence']
 
-                    if confidence > 0.2 and class_name == 'boat':
+                    if confidence > 0.4 and class_name == 'boat':
                         origin = (50, max(100, frame_height - 50)) # Position on frame
                         font = cv2.FONT_HERSHEY_DUPLEX
                         # fontScale = 3
