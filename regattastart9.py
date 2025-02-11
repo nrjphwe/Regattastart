@@ -525,8 +525,8 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
         font = cv2.FONT_HERSHEY_DUPLEX
         colour = (0, 255, 0)  # Green text
 
-        # Perform inference only on every frame
-        if frame_counter % 1 == 0:  # every frame
+        # Perform inference only on every 3rd frame
+        if frame_counter % 3 == 0:  # every frame
             # Define cropping region (centered 1280x720)
             crop_width, crop_height = 1280, 720
             x_start = (frame_width - crop_width) // 2  # Center horizontally
