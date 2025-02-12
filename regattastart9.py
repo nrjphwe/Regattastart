@@ -504,7 +504,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
                 cleanup_processed_timestamps(processed_timestamps)
 
         # inference_width, inference_height = 640, 480  # Since you resize before inference
-        inference_width, inference_height = 640, 640  # Since you resize before inference
+        inference_width, inference_height = 640, 480  # Since you resize before inference
 
         # Crop the original frame to maintain a square (1:1) aspect ratio
         crop_width, crop_height = 1280, 720
