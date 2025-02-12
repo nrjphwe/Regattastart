@@ -512,13 +512,17 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
         inference_width, inference_height = 640, 640  # Since you resize before inference
 
         # Crop the original frame to maintain a square (1:1) aspect ratio
-        crop_size = min(frame_width, frame_height) # 1080x1080 
-        x_start = (frame_width - crop_size) // 2
+        crop_size = min(frame_width, frame_height)  # 1080x1080
+        # x_start = (frame_width - crop_size) // 2
+        shift_offset = 200
+        x_start = max((frame_width - crop_size) // 2 + shift_offset, 0)
         y_start = (frame_height - crop_size) // 2
 
         # Compute scaling factors
-        scale_x = frame_width / inference_width
-        scale_y = frame_height / inference_height
+        # scale_x = frame_width / inference_width
+        # scale_y = frame_height / inference_height
+        scale_x = crop_size / inference_width
+        scale_y = crop_size / inference_height
 
         # Base scale text size and thickness
         base_fontScale = 0.8  # Default font size at 640x480
