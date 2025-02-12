@@ -431,15 +431,10 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
 
     if frame_size[0] != 1920 or frame_size[1] != 1080:
         logger.error(f"Resolution mismatch! Expected (1920, 1080) but got {frame_size}.")
-    # if frame_size[0] != 1280 or frame_size[1] != 720:
-    #    logger.error(f"Resolution mismatch! Expected (1280, 720) but got {frame_size}.")
-    # if frame_size != (1640, 1232):
-    #    logger.error(f"Resolution mismatch! Expected (1640, 1232) got {frame_size}.")
 
     fpsw = fps
 
-    # Inference ##
-    # Load the pre-trained YOLOv5 model (e.g., yolov5s)
+    # Inference ## Load the pre-trained YOLOv5 model (e.g., yolov5s)
     model = torch.hub.load('ultralytics/yolov5', 'yolov5s')
     model.classes = [8]  # Filter for 'boat' class (COCO ID for 'boat' is 8)
 
@@ -512,17 +507,14 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
         inference_width, inference_height = 640, 640  # Since you resize before inference
 
         # Crop the original frame to maintain a square (1:1) aspect ratio
-        crop_size = min(frame_width, frame_height)  # 1080x1080
-        # x_start = (frame_width - crop_size) // 2
-        shift_offset = 200
-        x_start = max((frame_width - crop_size) // 2 + shift_offset, 0)
-        y_start = (frame_height - crop_size) // 2
+        crop_width, crop_height = 1280, 720
+        shift_offset = 100
+        x_start = max((frame_width - crop_width) // 2 + shift_offset, 0)
+        y_start = (frame_height - crop_height) // 2
 
         # Compute scaling factors
-        # scale_x = frame_width / inference_width
-        # scale_y = frame_height / inference_height
-        scale_x = crop_size / inference_width
-        scale_y = crop_size / inference_height
+        scale_x = frame_width / inference_width
+        scale_y = frame_height / inference_height
 
         # Base scale text size and thickness
         base_fontScale = 0.8  # Default font size at 640x480
@@ -536,8 +528,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
         # Perform inference only on every 3rd frame
         if frame_counter % 2 == 0:  # every frame
             # Crop the frame
-            cropped_frame = frame[y_start:y_start + crop_size, x_start:x_start + crop_size]
-            # cropped_frame = frame[y_start:y_start + crop_height, x_start:x_start + crop_width]
+            cropped_frame = frame[y_start:y_start + crop_height, x_start:x_start + crop_width]
 
             # Resize cropped frame to 640x480 for inference
             resized_frame = cv2.resize(cropped_frame, (inference_width, inference_height))
@@ -556,7 +547,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
                     confidence = row['confidence']
 
                     if confidence > 0.4 and class_name == 'boat':
-                        origin = (50, max(50, frame_height - 100)) # Position on frame
+                        origin = (50, max(50, frame_height - 100))  # Position on frame
                         font = cv2.FONT_HERSHEY_DUPLEX
                         cv2.putText(frame, f"{capture_timestamp}", origin, font, fontScale, colour, thickness)
                         boat_in_current_frame = True
