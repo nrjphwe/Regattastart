@@ -510,17 +510,16 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
 
         # Set the dimensions for resizing inference frame (to 640x480)
         # inference_width, inference_height = 640, 480  # Since you resize before inference
-        inference_width, inference_height = 640, 480  # Since you resize before inference
+        inference_width, inference_height = 640, 640  # Since you resize before inference
 
         # Compute scaling factors
         scale_x = frame_width / inference_width
         scale_y = frame_height / inference_height
 
-        # Scale text size and thickness
+        # Base scale text size and thickness
         base_fontScale = 0.8  # Default font size at 640x480
         base_thickness = 2  # Default thickness at 640x480
         scale_factor = (scale_x + scale_y) / 2  # Average scale factor
-
         fontScale = max(base_fontScale * scale_factor, 0.5)  # Prevent too small text
         thickness = max(int(base_thickness * scale_factor), 1)  # Prevent too thin lines
         font = cv2.FONT_HERSHEY_DUPLEX
@@ -531,7 +530,8 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
             crop_width, crop_height = 960, 720
             # crop_width, crop_height = 1280, 720
             # x_start = (frame_width - crop_width) // 2  # Center horizontally
-            x_start = (frame_width - crop_width) # capture more on right side
+            # x_start = (frame_width - crop_width)  # capture more on right side
+            x_start = max(frame_width - crop_width, 0)  # capture more on right side
             y_start = (frame_height - crop_height) // 2  # Center vertically
 
             # Crop the frame
