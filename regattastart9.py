@@ -510,7 +510,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
 
         # Set the dimensions for resizing inference frame (to 640x480)
         # inference_width, inference_height = 640, 480  # Since you resize before inference
-        inference_width, inference_height = 640, 640  # Since you resize before inference
+        inference_width, inference_height = 640, 480  # Since you resize before inference
 
         # Compute scaling factors
         scale_x = frame_width / inference_width
@@ -528,15 +528,16 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
 
         # Perform inference only on every 3rd frame
         if frame_counter % 2 == 0:  # every frame
-            #crop_width, crop_height = 1640, 1232
+            crop_width, crop_height = 960, 720
             # crop_width, crop_height = 1280, 720
-            #x_start = (frame_width - crop_width) // 2  # Center horizontally
-            #y_start = (frame_height - crop_height) // 2  # Center vertically
+            # x_start = (frame_width - crop_width) // 2  # Center horizontally
+            x_start = (frame_width - crop_width) # capture more on right side
+            y_start = (frame_height - crop_height) // 2  # Center vertically
 
             # Crop the frame
-            #cropped_frame = frame[y_start:y_start + crop_height, x_start:x_start + crop_width]
+            cropped_frame = frame[y_start:y_start + crop_height, x_start:x_start + crop_width]
             # Resize cropped frame to 640x480 for inference
-            resized_frame = cv2.resize(frame, (inference_width, inference_height))
+            resized_frame = cv2.resize(cropped_frame, (inference_width, inference_height))
             # Use resized_frame for YOLO detection instead of full frame
             results = model(resized_frame)
 
