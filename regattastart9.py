@@ -513,8 +513,8 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
         y_start = max((frame_height - crop_height) // 2, 50)  # 180
 
         # Compute scaling factors
-        scale_x = frame_width / inference_width  # 3
-        scale_y = frame_height / inference_height # 2.25
+        scale_x = crop_width / inference_width  # 2
+        scale_y = crop_height / inference_height # 1.5
 
         # Base scale text size and thickness
         base_fontScale = 0.8  # Default font size at 640x480
@@ -556,11 +556,11 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
                         detected_timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")  # timestamp (with microseconds)
                         logger.debug(f"Detected_timestamp={detected_timestamp}")
 
-                        # Adjust the bounding box coordinates to reflect the original frame
-                        x1 = int(row['xmin'] * scale_x) + x_start-50
-                        y1 = int(row['ymin'] * scale_y) + y_start-50
-                        x2 = int(row['xmax'] * scale_x) + x_start-50
-                        y2 = int(row['ymax'] * scale_y) + y_start-50
+                        #  Adjust the bounding box coordinates to reflect the original frame
+                        x1 = int(row['xmin'] * scale_x) + x_start
+                        y1 = int(row['ymin'] * scale_y) + y_start
+                        x2 = int(row['xmax'] * scale_x) + x_start
+                        y2 = int(row['ymax'] * scale_y) + y_start
 
                         # Draw bounding box and label on the frame
                         cv2.rectangle(frame, (x1, y1), (x2, y2), colour, thickness)
