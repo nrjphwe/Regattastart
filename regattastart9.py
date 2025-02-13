@@ -528,7 +528,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
 
         # Perform inference only on every 3rd frame
         if frame_counter % 2 == 0:  # every frame
-            # The cropped frame will cover pixels from (520, 180) to (1800, 900) 
+            # The cropped frame will cover pixels from (520, 80) to (1800, 800)
             # of the original frame.
             cropped_frame = frame[y_start:y_start + crop_height, x_start:x_start + crop_width]
 
