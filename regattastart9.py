@@ -508,7 +508,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
 
         # Crop the original frame to maintain a square (1:1) aspect ratio
         crop_width, crop_height = 1280, 720
-        shift_offset = 200  # horisontal offset for crop -> right part
+        shift_offset = 100  # horisontal offset for crop -> right part
         x_start = max((frame_width - crop_width) // 2 + shift_offset, 50)  # 520
         y_start = max((frame_height - crop_height) // 2, 50)  # 180
 
@@ -557,10 +557,10 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
                         logger.debug(f"Detected_timestamp={detected_timestamp}")
 
                         # Adjust the bounding box coordinates to reflect the original frame
-                        x1 = int(row['xmin'] * scale_x) + x_start
-                        y1 = int(row['ymin'] * scale_y) + y_start
-                        x2 = int(row['xmax'] * scale_x) + x_start
-                        y2 = int(row['ymax'] * scale_y) + y_start
+                        x1 = int(row['xmin'] * scale_x) + x_start-50
+                        y1 = int(row['ymin'] * scale_y) + y_start-50
+                        x2 = int(row['xmax'] * scale_x) + x_start-50
+                        y2 = int(row['ymax'] * scale_y) + y_start-50
 
                         # Draw bounding box and label on the frame
                         cv2.rectangle(frame, (x1, y1), (x2, y2), colour, thickness)
