@@ -51,7 +51,6 @@ photo_path = '/var/www/html/images/'
 listening = True  # Define the listening variable
 recording_stopped = False  # Global variable
 
-
 logging.config.fileConfig('/usr/lib/cgi-bin/logging.conf')
 logger = logging.getLogger('start')
 logger.info("Start logging regattastart9")
@@ -501,8 +500,8 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
 
             # Get dimensions of the full-resolution frame (1920x1080 in your case)
             frame_height, frame_width = frame.shape[:2]  # shape = (height, width, channels)
-            x_start = max((frame_width - crop_width) // 2 + shift_offset, 50)  # 520
-            y_start = max((frame_height - crop_height) // 2 - 100, 0)  # 180
+            x_start = max((frame_width - crop_width) // 2 + shift_offset, 50)  # 420
+            y_start = max((frame_height - crop_height) // 2 - 80, 0)  # 100
             logger.info(f"shift_offset = {shift_offset}, x_start= {x_start}, y_start = {y_start}")
 
         except Exception as e:
