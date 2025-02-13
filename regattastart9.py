@@ -508,18 +508,19 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
 
         # Crop the original frame to maintain a square (1:1) aspect ratio
         crop_width, crop_height = 1280, 720
-        shift_offset = 200
-        x_start = max((frame_width - crop_width) // 2 + shift_offset, 0)
-        y_start = (frame_height - crop_height) // 2
+        shift_x_offset = 200  # horisontal offset for crop -> right part
+        shift_y_offset = -100  # Vertical offset for crop -> upper part 
+        x_start = max((frame_width - crop_width) // 2 + shift_x_offset, 50)  # 520
+        y_start = max((frame_height - crop_height) // 2 + shift_y_offset, 50)  # 80
 
         # Compute scaling factors
-        scale_x = frame_width / inference_width
-        scale_y = frame_height / inference_height
+        scale_x = frame_width / inference_width  # 3
+        scale_y = frame_height / inference_height # 2.25
 
         # Base scale text size and thickness
         base_fontScale = 0.8  # Default font size at 640x480
         base_thickness = 2  # Default thickness at 640x480
-        scale_factor = (scale_x + scale_y) / 2  # Average scale factor
+        scale_factor = (scale_x + scale_y) / 2  # Average scale factor 2.625
         fontScale = max(base_fontScale * scale_factor, 0.5)  # Prevent too small text
         thickness = max(int(base_thickness * scale_factor), 1)  # Prevent too thin lines
         font = cv2.FONT_HERSHEY_DUPLEX
@@ -527,7 +528,8 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
 
         # Perform inference only on every 3rd frame
         if frame_counter % 2 == 0:  # every frame
-            # Crop the frame
+            # The cropped frame will cover pixels from (520, 180) to (1800, 900) 
+            # of the original frame.
             cropped_frame = frame[y_start:y_start + crop_height, x_start:x_start + crop_width]
 
             # Resize cropped frame to 640x480 for inference
@@ -604,7 +606,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
                 else:
                     try:
                         # origin = (500, 900)  # Position on frame
-                        origin = (50, max(50, frame_height - 100))
+                        origin = (50, max(50, frame_height - 100))  # (50, 1820)
                         cv2.putText(frame, f"POST {capture_timestamp}", origin, font, fontScale, colour, thickness)
                         video_writer.write(frame)
                         logger.debug(f"Post-detection Timestamp={capture_timestamp}")
