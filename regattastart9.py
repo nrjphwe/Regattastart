@@ -478,7 +478,6 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
     colour = (0, 255, 0)  # Green text
     logger.info(f"inference_width, inference_height = {inference_width, inference_height}")
     logger.info(f"crop_width, crop_height = {crop_width, crop_height}")
-    logger.info(f"shift_offset = {shift_offset}, x_start= {x_start}, y_start = {y_start}")
     logger.info(f"scale_x = {scale_x}, scale_y= {scale_y}")
 
     while not recording_stopped:
@@ -504,6 +503,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
             frame_height, frame_width = frame.shape[:2]  # shape = (height, width, channels)
             x_start = max((frame_width - crop_width) // 2 + shift_offset, 50)  # 520
             y_start = max((frame_height - crop_height) // 2 - 100, 0)  # 180
+            logger.info(f"shift_offset = {shift_offset}, x_start= {x_start}, y_start = {y_start}")
 
         except Exception as e:
             logger.error(f"Failed to capture frame: {e}")
