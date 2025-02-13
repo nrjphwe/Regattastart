@@ -510,7 +510,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
         crop_width, crop_height = 1280, 720
         shift_offset = 100  # horisontal offset for crop -> right part
         x_start = max((frame_width - crop_width) // 2 + shift_offset, 50)  # 520
-        y_start = max((frame_height - crop_height) // 2, 50)  # 180
+        y_start = max((frame_height - crop_height) // 2 - 100, 0)  # 180
 
         # Compute scaling factors
         scale_x = crop_width / inference_width  # 2
@@ -527,7 +527,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
 
         # Perform inference only on every 3rd frame
         if frame_counter % 2 == 0:  # every frame
-            # The cropped frame will cover pixels from (520, 80) to (1800, 900) 
+            # The cropped frame will cover pixels from (520, 180) to (1800, 900) 
             # of the original frame.
             cropped_frame = frame[y_start:y_start + crop_height, x_start:x_start + crop_width]
 
