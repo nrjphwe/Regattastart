@@ -424,6 +424,15 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
     frame_size = (frame.shape[1], frame.shape[0])
     logger.info(f"Camera frame size before recording: {frame_size}")
 
+    # Crop the original frame to maintain a square (1:1) aspect ratio
+    crop_width, crop_height = 1280, 720
+    shift_offset = 80  # horisontal offset for crop -> right part
+    # Get dimensions of the full-resolution frame (1920x1080 in your case)
+    frame_height, frame_width = frame.shape[:2]  # shape = (height, width, channels)
+    x_start = max((frame_width - crop_width) // 2 + shift_offset, 50)
+    y_start = max((frame_height - crop_height) // 2, 0)
+    logger.info(f"shift_offset = {shift_offset}, x_start= {x_start}, y_start = {y_start}")
+
     if frame_size[0] != 1920 or frame_size[1] != 1080:
         logger.error(f"Resolution mismatch! Expected (1920, 1080) but got {frame_size}.")
 
@@ -459,19 +468,15 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
     # inference_width, inference_height = 640, 480  # Since you resize before inference
     inference_width, inference_height = 640, 480  # Since you resize before inference
 
-    # Crop the original frame to maintain a square (1:1) aspect ratio
-    crop_width, crop_height = 1280, 720
-    shift_offset = 100  # horisontal offset for crop -> right part
-
     # Compute scaling factors
     scale_x = crop_width / inference_width  
     scale_y = crop_height / inference_height 
 
     # Base scale text size and thickness
-    base_fontScale = 0.8  # Default font size at 640x480
+    base_fontScale = 0.9  # Default font size at 640x480
     base_thickness = 2  # Default thickness at 640x480
-    scale_factor = (scale_x + scale_y) / 2  # Average scale factor 2.625
-    fontScale = max(base_fontScale * scale_factor, 0.5)  # Prevent too small text
+    scale_factor = (scale_x + scale_y) / 2  # Average scale factor
+    fontScale = max(base_fontScale * scale_factor, 0.6)  # Prevent too small text
     thickness = max(int(base_thickness * scale_factor), 1)  # Prevent too thin lines
     font = cv2.FONT_HERSHEY_DUPLEX
     colour = (0, 255, 0)  # Green text
@@ -497,12 +502,6 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
                 logger.debug(f"QQQ  Time since last frame: {time_diff:.3f} sec")
 
             previous_capture_time = capture_timestamp  # Update for next iteration
-
-            # Get dimensions of the full-resolution frame (1920x1080 in your case)
-            frame_height, frame_width = frame.shape[:2]  # shape = (height, width, channels)
-            x_start = max((frame_width - crop_width) // 2 + shift_offset, 50)  # 420
-            y_start = max((frame_height - crop_height) // 2 - 80, 0)  # 100
-            logger.info(f"shift_offset = {shift_offset}, x_start= {x_start}, y_start = {y_start}")
 
         except Exception as e:
             logger.error(f"Failed to capture frame: {e}")
