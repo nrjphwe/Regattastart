@@ -463,8 +463,6 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
     # Crop the original frame to maintain a square (1:1) aspect ratio
     crop_width, crop_height = 1280, 720
     shift_offset = 100  # horisontal offset for crop -> right part
-    x_start = max((frame_width - crop_width) // 2 + shift_offset, 50)  # 520
-    y_start = max((frame_height - crop_height) // 2 - 100, 0)  # 180
 
     # Compute scaling factors
     scale_x = crop_width / inference_width  
@@ -504,6 +502,8 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
 
             # Get dimensions of the full-resolution frame (1920x1080 in your case)
             frame_height, frame_width = frame.shape[:2]  # shape = (height, width, channels)
+            x_start = max((frame_width - crop_width) // 2 + shift_offset, 50)  # 520
+            y_start = max((frame_height - crop_height) // 2 - 100, 0)  # 180
 
         except Exception as e:
             logger.error(f"Failed to capture frame: {e}")
