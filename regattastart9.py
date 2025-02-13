@@ -508,10 +508,9 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
 
         # Crop the original frame to maintain a square (1:1) aspect ratio
         crop_width, crop_height = 1280, 720
-        shift_x_offset = 200  # horisontal offset for crop -> right part
-        shift_y_offset = -100  # Vertical offset for crop -> upper part 
-        x_start = max((frame_width - crop_width) // 2 + shift_x_offset, 50)  # 520
-        y_start = max((frame_height - crop_height) // 2 + shift_y_offset, 50)  # 80
+        shift_offset = 200  # horisontal offset for crop -> right part
+        x_start = max((frame_width - crop_width) // 2 + shift_offset, 50)  # 520
+        y_start = max((frame_height - crop_height) // 2, 50)  # 180
 
         # Compute scaling factors
         scale_x = frame_width / inference_width  # 3
@@ -528,7 +527,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
 
         # Perform inference only on every 3rd frame
         if frame_counter % 2 == 0:  # every frame
-            # The cropped frame will cover pixels from (520, 80) to (1800, 800)
+            # The cropped frame will cover pixels from (520, 80) to (1800, 900) 
             # of the original frame.
             cropped_frame = frame[y_start:y_start + crop_height, x_start:x_start + crop_width]
 
@@ -557,9 +556,11 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
                         detected_timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")  # timestamp (with microseconds)
                         logger.debug(f"Detected_timestamp={detected_timestamp}")
 
-                        # x =
-                        x1, y1 = int(row['xmin'] * scale_x), int(row['ymin'] * scale_y)
-                        x2, y2 = int(row['xmax'] * scale_x), int(row['ymax'] * scale_y)
+                        # Adjust the bounding box coordinates to reflect the original frame
+                        x1 = int(row['xmin'] * scale_x) + x_start
+                        y1 = int(row['ymin'] * scale_y) + y_start
+                        x2 = int(row['xmax'] * scale_x) + x_start
+                        y2 = int(row['ymax'] * scale_y) + y_start
 
                         # Draw bounding box and label on the frame
                         cv2.rectangle(frame, (x1, y1), (x2, y2), colour, thickness)
