@@ -52,13 +52,9 @@ listening = True  # Define the listening variable
 recording_stopped = False  # Global variable
 
 
-def setup_logging():
-    # global logger  # Make logger variable global
-    logging.config.fileConfig('/usr/lib/cgi-bin/logging.conf')
-    logger = logging.getLogger('start')
-    logger.info("Start logging regattastart9")
-    return logger
-
+logging.config.fileConfig('/usr/lib/cgi-bin/logging.conf')
+logger = logging.getLogger('start')
+logger.info("Start logging regattastart9")
 
 # setup gpio()
 ON = GPIO.LOW
@@ -461,6 +457,32 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
     frame_counter = 0  # Initialize a frame counter
     previous_capture_time = None  # Track previous frame timestamp
 
+    # inference_width, inference_height = 640, 480  # Since you resize before inference
+    inference_width, inference_height = 640, 480  # Since you resize before inference
+
+    # Crop the original frame to maintain a square (1:1) aspect ratio
+    crop_width, crop_height = 1280, 720
+    shift_offset = 100  # horisontal offset for crop -> right part
+    x_start = max((frame_width - crop_width) // 2 + shift_offset, 50)  # 520
+    y_start = max((frame_height - crop_height) // 2 - 100, 0)  # 180
+
+    # Compute scaling factors
+    scale_x = crop_width / inference_width  
+    scale_y = crop_height / inference_height 
+
+    # Base scale text size and thickness
+    base_fontScale = 0.8  # Default font size at 640x480
+    base_thickness = 2  # Default thickness at 640x480
+    scale_factor = (scale_x + scale_y) / 2  # Average scale factor 2.625
+    fontScale = max(base_fontScale * scale_factor, 0.5)  # Prevent too small text
+    thickness = max(int(base_thickness * scale_factor), 1)  # Prevent too thin lines
+    font = cv2.FONT_HERSHEY_DUPLEX
+    colour = (0, 255, 0)  # Green text
+    logger.info(f"inference_width, inference_height = {inference_width, inference_height}")
+    logger.info(f"crop_width, crop_height = {crop_width, crop_height}")
+    logger.info(f"shift_offset = {shift_offset}, x_start= {x_start}, y_start = {y_start}")
+    logger.info(f"scale_x = {scale_x}, scale_y= {scale_y}")
+
     while not recording_stopped:
         boat_in_current_frame = False  # Reset detection flag for this frame
         frame_counter += 1  # Increment the frame counter
@@ -503,28 +525,6 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
             if frame_counter % 20 == 0:
                 cleanup_processed_timestamps(processed_timestamps)
 
-        # inference_width, inference_height = 640, 480  # Since you resize before inference
-        inference_width, inference_height = 640, 480  # Since you resize before inference
-
-        # Crop the original frame to maintain a square (1:1) aspect ratio
-        crop_width, crop_height = 1280, 720
-        shift_offset = 100  # horisontal offset for crop -> right part
-        x_start = max((frame_width - crop_width) // 2 + shift_offset, 50)  # 520
-        y_start = max((frame_height - crop_height) // 2 - 100, 0)  # 180
-
-        # Compute scaling factors
-        scale_x = crop_width / inference_width  # 2
-        scale_y = crop_height / inference_height # 1.5
-
-        # Base scale text size and thickness
-        base_fontScale = 0.8  # Default font size at 640x480
-        base_thickness = 2  # Default thickness at 640x480
-        scale_factor = (scale_x + scale_y) / 2  # Average scale factor 2.625
-        fontScale = max(base_fontScale * scale_factor, 0.5)  # Prevent too small text
-        thickness = max(int(base_thickness * scale_factor), 1)  # Prevent too thin lines
-        font = cv2.FONT_HERSHEY_DUPLEX
-        colour = (0, 255, 0)  # Green text
-
         # Perform inference only on every 3rd frame
         if frame_counter % 2 == 0:  # every frame
             # The cropped frame will cover pixels from (520, 180) to (1800, 900) 
@@ -552,7 +552,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
                         font = cv2.FONT_HERSHEY_DUPLEX
                         cv2.putText(frame, f"{capture_timestamp}", origin, font, fontScale, colour, thickness)
                         boat_in_current_frame = True
-                        logger.info(f"Confidence {confidence:.2f}, capture_timestamp = {capture_timestamp}")
+                        logger.debug(f"Confidence {confidence:.2f}, capture_timestamp = {capture_timestamp}")
                         detected_timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")  # timestamp (with microseconds)
                         logger.debug(f"Detected_timestamp={detected_timestamp}")
 
@@ -771,7 +771,7 @@ def main():
 
 
 if __name__ == "__main__":
-    logger = setup_logging()  # Initialize logger before using it
+    #logger = setup_logging()  # Initialize logger before using it
     try:
         main()
     except Exception as e:
