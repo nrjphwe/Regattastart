@@ -426,7 +426,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
 
     # Crop the original frame to maintain a square (1:1) aspect ratio
     crop_width, crop_height = 1280, 720
-    shift_offset = 80  # horisontal offset for crop -> right part
+    shift_offset = 100  # horisontal offset for crop -> right part
     # Get dimensions of the full-resolution frame (1920x1080 in your case)
     frame_height, frame_width = frame.shape[:2]  # shape = (height, width, channels)
     x_start = max((frame_width - crop_width) // 2 + shift_offset, 50)
@@ -683,37 +683,31 @@ def main():
 
         if wd == week_day:
             # A loop that waits until close to the 5-minute mark, and continuously 
-            #  checks the condition without blocking the execution completely
+            # checks the condition without blocking the execution completely
             while True:
                 now = dt.datetime.now()
                 seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
-
                 if seconds_since_midnight > t5min_warning - 4:
-                    logger.info("Start of outer loop iteration. seconds_since_midnight=%d", seconds_since_midnight)
-                    logger.info("start_time_sec=%d", start_time_sec)
+                    logger.debug("Start of outer loop iteration. seconds_since_midnight=%d", seconds_since_midnight)
+                    logger.debug("start_time_sec=%d", start_time_sec)
 
                     if num_starts == 1 or num_starts == 2:
-                        logger.info("Start of video0 recording")
+                        logger.debug("Start of video0 recording")
                         start_video_recording(cam, video_path, "video0.avi", bitrate=2000000)
-                        logger.info("Inner loop, entering the start sequence block.")
+                        logger.debug("Inner loop, entering the start sequence block.")
                         start_sequence(cam, start_time_sec, num_starts, dur_between_starts, photo_path)
 
                         if num_starts == 2:
                             start_time_sec = start_time_sec + (dur_between_starts * 60)
 
-                        logger.info("Wait 2 minutes then stop video0 recording")
+                        logger.debug("Wait 2 minutes then stop video0 recording")
                         t0 = dt.datetime.now()
-                        # logger.debug(f"t0 = {t0}, dt.datetime.now(): {dt.datetime.now()}")
-                        # logger.debug("(dt.datetime.now() - t0).seconds: %d", (dt.datetime.now() - t0).seconds)
+                        logger.debug(f"t0 = {t0}, dt.datetime.now(): {dt.datetime.now()}")
+                        logger.debug("(dt.datetime.now() - t0).seconds: %d", (dt.datetime.now() - t0).seconds)
                         while ((dt.datetime.now() - t0).seconds < 119):
                             now = dt.datetime.now()
-                            time.sleep(0.9)  # Small delay to reduce CPU usage
+                            time.sleep(0.2)  # Small delay to reduce CPU usage
                         stop_video_recording(cam)
-                        # try:
-                        #    video_writer.release()
-                        # except Exception as e:
-                        #    logger.error(f"Error closing video file: {e}")
-
                         logger.debug("Stopping video0 recording")
                         process_video(video_path, "video0.avi", "video0.mp4", frame_rate=30)
                         logger.debug("Video0 converted to mp4")
@@ -730,11 +724,10 @@ def main():
         # Start a thread for listening for messages with a timeout
         listen_thread = threading.Thread(target=listen_for_messages, args=(stop_event,))
         listen_thread.start()
-
         logger.info("Finally section, before 'Finish recording'. start_time=%s video_end=%s", start_time, video_end)
         time.sleep(2)
         finish_recording(cam, video_path, num_starts, video_end, start_time_sec)
-        logger.info("After finished_recording")
+        logger.info("After function finished_recording")
         try:
             stop_event.set()  # Signal the listening thread to stop
             listen_thread.join(timeout=10)
@@ -756,12 +749,12 @@ def main():
 
         finally:
             try:
-                stop_video_recording(cam)  # Ensure the camera recording is stopped
+                stop_video_recording(cam)
             except Exception as e:
                 logger.error(f"Error while cleaning up camera: {e}")
 
             GPIO.cleanup()
-            logger.info("After GPIO.cleanup, end of program")
+            logger.debug("After GPIO.cleanup, end of program")
 
             # Log the end of the program
             logger.info("Program has ended")
@@ -769,11 +762,10 @@ def main():
 
 
 if __name__ == "__main__":
-    #logger = setup_logging()  # Initialize logger before using it
+    # logger = setup_logging()  # Initialize logger before using it
     try:
         main()
     except Exception as e:
         logger.error(f"An unhandled exception occurred: {e}", exc_info=True)
     finally:
         logger.info("Exiting program")
-
