@@ -425,7 +425,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
     logger.info(f"Camera frame size before recording: {frame_size}")
 
     # Crop the original frame to maintain a square (1:1) aspect ratio
-    #crop_width, crop_height = 1280, 720
+    # crop_width, crop_height = 1280, 720
     crop_width, crop_height = 1640, 1080
     shift_offset = 100  # horisontal offset for crop -> right part
     # Get dimensions of the full-resolution frame (1920x1080 in your case)
@@ -525,7 +525,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
                 cleanup_processed_timestamps(processed_timestamps)
 
         # Perform inference only on every 3rd frame
-        if frame_counter % 2 == 0:  # every frame
+        if frame_counter % 3 == 0:  # every frame
             # The cropped frame will cover pixels from (520, 180) to (1800, 900) 
             # of the original frame.
             cropped_frame = frame[y_start:y_start + crop_height, x_start:x_start + crop_width]
