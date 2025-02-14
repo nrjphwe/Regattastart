@@ -216,7 +216,7 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
     for i in range(num_starts):
         logger.info(f"Start_sequence. Start of iteration {i+1}")
         iteration_start_time = start_time_sec + (i) * dur_between_starts * 60
-        logger.debug(f"Start_sequence. Iteration {i+1}, iteration_start time: {iteration_start_time}")
+        logger.info(f"Start_sequence. Iteration {i+1}, iteration_start time: {iteration_start_time}")
 
         # Define time intervals for each relay trigger
         time_intervals = [
@@ -646,7 +646,6 @@ def stop_listen_thread():
 def main():
     stop_event = threading.Event()
     global listening  # Declare listening as global
-    # cam = setup_picam2(resolution=(1280, 720), fps=5)
     # cam = setup_picam2(resolution=(1640, 1232), fps=5)
     cam = setup_picam2(resolution=(1920, 1080), fps=10)
     if cam is None:
