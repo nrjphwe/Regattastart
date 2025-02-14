@@ -215,7 +215,7 @@ def capture_picture(camera, photo_path, file_name):
 def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo_path):
     for i in range(num_starts):
         logger.info(f"Start_sequence. Start of iteration {i+1}")
-        iteration_start_time = start_time_sec + (i) * dur_between_starts * 60
+        iteration_start_time = start_time_sec + (i+1) * dur_between_starts * 60
         logger.info(f"Start_sequence. Iteration {i+1}, iteration_start time: {iteration_start_time}")
 
         # Define time intervals for each relay trigger
@@ -425,7 +425,8 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
     logger.info(f"Camera frame size before recording: {frame_size}")
 
     # Crop the original frame to maintain a square (1:1) aspect ratio
-    crop_width, crop_height = 1280, 720
+    #crop_width, crop_height = 1280, 720
+    crop_width, crop_height = 1640, 1080
     shift_offset = 100  # horisontal offset for crop -> right part
     # Get dimensions of the full-resolution frame (1920x1080 in your case)
     frame_height, frame_width = frame.shape[:2]  # shape = (height, width, channels)
