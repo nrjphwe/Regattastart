@@ -546,7 +546,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
                     class_name = row['name']
                     confidence = row['confidence']
 
-                    if confidence > 0.4 and class_name == 'boat':
+                    if confidence > 0.2 and class_name == 'boat':
                         origin = (50, max(50, frame_height - 100))  # Position on frame
                         font = cv2.FONT_HERSHEY_DUPLEX
                         cv2.putText(frame, f"{capture_timestamp}", origin, font, fontScale, colour, thickness)
