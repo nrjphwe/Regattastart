@@ -7,7 +7,7 @@
     // Set session lifetime to a day (86400 seconds)
     ini_set('session.gc_maxlifetime', 86400);
     ini_set('session.cookie_lifetime', 86400);
-    
+
     session_id("regattastart");
     session_start();
     ini_set('display_errors', 1);
