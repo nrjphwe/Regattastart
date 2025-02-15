@@ -51,7 +51,16 @@ photo_path = '/var/www/html/images/'
 listening = True  # Define the listening variable
 recording_stopped = False  # Global variable
 
+# Default to INFO if LOG_LEVEL is not set
+logging_level = os.getenv('LOG_LEVEL', 'INFO').upper()
+
+# Load logging configuration from the INI file
 logging.config.fileConfig('/usr/lib/cgi-bin/logging.conf')
+
+# Dynamically set the logging level
+logging.getLogger().setLevel(logging_level)
+
+# Create a logger with the "start" configuration
 logger = logging.getLogger('start')
 logger.info("Start logging regattastart9")
 
