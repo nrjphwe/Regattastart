@@ -6,5 +6,5 @@ if (!function_exists('console_log')) {
     }
 }
 // Set the logging level for Python scripts
-putenv("LOG_LEVEL=DEBUG");  // You can change to "INFO", "WARNING", or other levels as needed
+putenv("LOG_LEVEL=INFO");  // You can change to "INFO", "WARNING", or other levels as needed
 ?>
