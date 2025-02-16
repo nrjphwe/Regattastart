@@ -533,8 +533,8 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
             if frame_counter % 20 == 0:
                 cleanup_processed_timestamps(processed_timestamps)
 
-        # Perform inference only on every 2nd frame
-        if frame_counter % 2 == 0:  # every frame
+        # Perform inference only on every x frame
+        if frame_counter % 1 == 0:  # every frame
             # The cropped frame will cover pixels from (520, 180) to (1800, 900) 
             # of the original frame.
             cropped_frame = frame[y_start:y_start + crop_height, x_start:x_start + crop_width]
