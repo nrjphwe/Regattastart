@@ -224,7 +224,7 @@ def capture_picture(camera, photo_path, file_name):
 def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo_path):
     for i in range(num_starts):
         logger.info(f"Start_sequence. Start of iteration {i+1}")
-        iteration_start_time = start_time_sec + (i+1) * dur_between_starts * 60
+        iteration_start_time = start_time_sec + (i) * dur_between_starts * 60
         logger.info(f"Start_sequence. Iteration {i+1}, iteration_start time: {iteration_start_time}")
 
         # Define time intervals for each relay trigger
