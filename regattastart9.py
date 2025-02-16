@@ -44,6 +44,7 @@ picamera2_logger = logging.getLogger('picamera2')
 picamera2_logger.setLevel(logging.ERROR)  # Change to ERROR to suppress more logs
 
 # parameter data
+fps = 5
 signal_dur = 0.9  # 0.9 sec
 log_path = '/var/www/html/'
 video_path = '/var/www/html/images/'
@@ -126,8 +127,6 @@ def remove_video_files(directory, pattern):
 
 
 def setup_picam2(resolution=(1920, 1080), fps=5):
-    # def setup_picam2(resolution=(1640, 1232), fps=5):
-    # def setup_picam2(resolution=(1280, 720), fps=5):
     try:
         cam = Picamera2()
         config = cam.create_video_configuration(
@@ -405,11 +404,10 @@ def cleanup_processed_timestamps(processed_timestamps, threshold_seconds=30):
     logger.debug(f"Cleaned up {removed_count} old timestamps.")
 
 
-def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
+def finish_recording(cam, video_path, num_starts, video_end, start_time_sec,fps):
     global recording_stopped
     confidence = 0.0  # Initial value
     class_name = ""  # Initial value
-    fps = 5
 
     # Set duration of video1 recording
     max_duration = (video_end + (num_starts-1)*5) * 60
@@ -657,7 +655,7 @@ def stop_listen_thread():
 def main():
     stop_event = threading.Event()
     global listening  # Declare listening as global
-    cam = setup_picam2(resolution=(1920, 1080), fps=5)
+    cam = setup_picam2(resolution=(1920, 1080), fps=fps)
     if cam is None:
         logger.error("Camera setup failed, exiting.")
         exit()
@@ -735,7 +733,7 @@ def main():
         listen_thread.start()
         logger.info("Finally section, before 'Finish recording'. start_time=%s video_end=%s", start_time, video_end)
         time.sleep(2)
-        finish_recording(cam, video_path, num_starts, video_end, start_time_sec)
+        finish_recording(cam, video_path, num_starts, video_end, start_time_sec, fps)
         logger.info("After function finished_recording")
         try:
             stop_event.set()  # Signal the listening thread to stop
