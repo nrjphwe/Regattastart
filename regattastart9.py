@@ -51,15 +51,16 @@ photo_path = '/var/www/html/images/'
 listening = True  # Define the listening variable
 recording_stopped = False  # Global variable
 
+
+print(f"Current LOG_LEVEL: {os.getenv('LOG_LEVEL', 'NOT SET')}")
+
 # Default to INFO if LOG_LEVEL is not set
 logging_level = os.getenv('LOG_LEVEL', 'INFO').upper()
-
 # Load logging configuration from the INI file
 logging.config.fileConfig('/usr/lib/cgi-bin/logging.conf')
-
 # Dynamically set the logging level
 logging.getLogger().setLevel(logging_level)
-
+print(f"Set logging level to: {logging_level}")
 # Create a logger with the "start" configuration
 logger = logging.getLogger('start')
 logger.info("Start logging regattastart9")
@@ -126,12 +127,12 @@ def remove_video_files(directory, pattern):
 
 def setup_picam2(resolution=(1920, 1080), fps=5):
     # def setup_picam2(resolution=(1640, 1232), fps=5):
-    # def setup_picam2(resolution=(1280, 720), fps=5):c
+    # def setup_picam2(resolution=(1280, 720), fps=5):
     try:
         cam = Picamera2()
         config = cam.create_video_configuration(
             main={"size": resolution, "format": "RGB888"},
-            controls={"FrameRate": fps}, 
+            controls={"FrameRate": fps},
             transform=Transform(hflip=True, vflip=True)  # Apply horizontal and vertical flips
         )
         logger.debug(f"Config before applying: {config}")
@@ -534,7 +535,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec):
                 cleanup_processed_timestamps(processed_timestamps)
 
         # Perform inference only on every x frame
-        if frame_counter % 1 == 0:  # every frame
+        if frame_counter % 2 == 0:  # every frame
             # The cropped frame will cover pixels from (520, 180) to (1800, 900) 
             # of the original frame.
             cropped_frame = frame[y_start:y_start + crop_height, x_start:x_start + crop_width]
@@ -657,7 +658,7 @@ def main():
     stop_event = threading.Event()
     global listening  # Declare listening as global
     # cam = setup_picam2(resolution=(1640, 1232), fps=5)
-    cam = setup_picam2(resolution=(1920, 1080), fps=10)
+    cam = setup_picam2(resolution=(1920, 1080), fps=5)
     if cam is None:
         logger.error("Camera setup failed, exiting.")
         exit()
