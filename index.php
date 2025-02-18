@@ -38,10 +38,12 @@
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['stop_recording'])) 
     {
         // Handle stop recording logic here
-        console_log('The stop_recording.php was included in index.php');
+        console_log('The stop_recording.php POST received in index.php');
         $stopRecordingPressed = true;
         // Store this value in a session to persist it across requests
         $_SESSION['stopRecordingPressed'] = $stopRecordingPressed;
+    } else {
+        console_log('Stop recording POST not received');
     }
 ?>
 <!DOCTYPE html>
