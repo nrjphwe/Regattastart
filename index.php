@@ -466,22 +466,37 @@
     </script>
     <!-- java script that executes AFTER the stop_recording button on Line 340 was pushed -->
     <script>
-        var stopRecordingPressed;
+        var stopRecordingPressed = false;
 
-        function refreshPage() {
-            // Wait until after the Stop_Recording button was pressed
-            // alert("Wait a while after button was pressed!");
-            if (stopRecordingPressed) {
-                // Set the value of the hidden input field
-                document.getElementById("stopRecordingPressed").value = "1"; // Set stopRecordingPressed value to 1
-                console.log("stopRecordingPressed value:", stopRecordingPressed); // Log the value
-                document.getElementById("stopRecordingButton").style.display = "none";
-                stopRecordingPressed = true;
-                // Reload the page after 60 seconds
-                setTimeout(function() {
-                    location.reload(true);
-                }, 60000); // 60 sec
-            }
+        function stopRecording(event) {
+            event.preventDefault(); // Prevent form submission and page reload
+
+            // Capture the form data
+            const formData = new FormData(document.getElementById("stopRecordingForm"));
+
+            // Send an AJAX POST request using fetch
+            fetch('stop_recording.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (response.ok) {
+                    console.log("Stop recording message sent successfully.");
+                    stopRecordingPressed = true; // Mark button as pressed
+                    document.getElementById("stopRecordingPressed").value = "1"; // Update the hidden field
+                    document.getElementById("stopRecordingButtonDiv").style.display = "none"; // Hide the button
+
+                    // Optional: Reload the page after 60 seconds
+                    setTimeout(function() {
+                        location.reload(true);
+                    }, 60000); // 60 seconds
+                } else {
+                    console.error("Failed to send stop recording message.");
+                }
+            })
+            .catch(error => {
+                console.error("Error sending stop recording message:", error);
+            });
         }
     </script>
     <!-- JavaScript to refresh the page after the "Refresh" button was pressed -->
