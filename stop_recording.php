@@ -10,7 +10,7 @@ if ($pipeHandle === false) {
     error_log('Stop_recording.php Failed to open named pipe: ' . $lastError['message']);
     die('Failed to open named pipe.');
 } else {
-    console_log('Stop_recording.php Line 22: Opened pipe handle successfully: ' . $pipeHandle);
+    error_log('Stop_recording.php Line 22: Opened pipe handle successfully: ' . $pipeHandle);
 }
 
 $message = "stop_recording\n";
