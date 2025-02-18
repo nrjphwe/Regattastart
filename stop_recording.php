@@ -13,7 +13,7 @@ if ($pipeHandle === false) {
     console_log('Stop_recording.php Line 22: Opened pipe handle successfully: ' . $pipeHandle);
 }
 
-$message = 'stop_recording';
+$message = "stop_recording\n";
 if (fwrite($pipeHandle, $message) === false) {
     // Log error if writing to pipe fails
     console_log('Stop_recording.php Line 28: Failed to write message to named pipe.');
