@@ -3,11 +3,21 @@
     header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
     header("Access-Control-Allow-Headers: *");
     // after "git pull", "sudo cp /home/pi/Regattastart/index.php /var/www/html/"
-    define('APP_VERSION', '24.06.04'); // You can replace '1.0.0' with your desired version number
+    define('APP_VERSION', '2025.03.26'); // You can replace '1.0.0' with your desired version number
     session_id("regattastart");
     session_start();
     ini_set('display_errors', 1); 
     error_reporting(E_ALL);
+    //
+    //if (isset($_SESSION["form_data"])) {
+    //    $form_data = $_SESSION["form_data"];
+    //    echo '<pre>';
+    //    print_r($form_data);
+    //    echo '</pre>';
+    //} else {
+    //    echo "No form data found.";
+    //}
+
     include_once 'functions.php';
     // Check if video0.mp4 or video1.mp4 exists and their sizes
     $video0Exists = file_exists("images/video0.mp4") && filesize("images/video0.mp4") > 0;
@@ -17,10 +27,10 @@
 
     # initialize the status for Stop_recording button
     $stopRecordingPressed = false;
-
     // Retrieve session data
     $formData = isset($_SESSION['form_data']) && is_array($_SESSION['form_data']) ? $_SESSION['form_data'] : [];
-
+    $start_time = $formData['start_time'] ?? null;
+    $num_starts = $formData['num_starts'] ?? null;
     // Extract relevant session data
     extract($formData); // This will create variables like $start_time, $video_end, etc.
     console_log("First start time: " . $start_time);
@@ -28,10 +38,12 @@
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['stop_recording'])) 
     {
         // Handle stop recording logic here
-        console_log('The stop_recording.php was included in index.php');
+        console_log('The stop_recording.php POST received in index.php');
         $stopRecordingPressed = true;
         // Store this value in a session to persist it across requests
         $_SESSION['stopRecordingPressed'] = $stopRecordingPressed;
+    } else {
+        console_log('Stop recording POST not received');
     }
 ?>
 <!DOCTYPE html>
@@ -99,14 +111,18 @@
         if ($num_starts == 2) {
             if (isset($dur_between_starts)) {
                 echo ", Duration between starts: $dur_between_starts min";
+
                 // Convert start time to minutes
                 list($start_hour, $start_minute) = explode(':', $start_time);
                 $start_time_minutes = $start_hour * 60 + $start_minute;
+
                 // Calculate second start time in minutes
                 $second_start_time_minutes = $start_time_minutes + $dur_between_starts;
+
                 // Convert second start time back to hours and minutes
                 $second_start_hour = floor($second_start_time_minutes / 60);
                 $second_start_minute = $second_start_time_minutes % 60;
+
                 // Format second start time
                 $second_start_time = sprintf('%02d:%02d', $second_start_hour, $second_start_minute);
                 echo ", 2nd Start at: $second_start_time";
@@ -119,7 +135,20 @@
             echo " Number of videos during finish: " . $num_video;
         }
         if (isset($video_end)) {
-            echo ", Video end duration :  $video_end + 2 minutes after start";
+            // Convert $start_time to minutes
+            list($start_hour, $start_minute) = explode(':', $start_time);
+            $start_time_minutes = $start_hour * 60 + $start_minute;
+
+            // Add video_end (duration after start) and additional 2 minutes
+            $video_end_time_minutes = $start_time_minutes + $video_end + 2;
+
+            // Convert video end time back to HH:MM format
+            $video_end_hour = floor($video_end_time_minutes / 60);
+            $video_end_minute = $video_end_time_minutes % 60;
+
+            // Format video end time
+            $video_end_time = sprintf('%02d:%02d', $video_end_hour, $video_end_minute);
+            echo ", Video end time :  $video_end_time";
         }
         // Determine the number of videos during finish if not set, 
         // regattastart9 is executing and num_video is set to 1 as a flag.
@@ -129,7 +158,7 @@
     <!-- Header content -->
     <header>
         <div style="text-align: center;">
-            <div class="w3-panel w3-teal">
+            <div class="w3-panel w3-cyan">
                 <h2> Regattastart  </h2>
             </div>
         </div>
@@ -431,13 +460,13 @@
             var video = document.getElementById('video' + videoNum);
             if (video) {
                 video.pause();
-                video.currentTime += step * (1 / video.playbackRate/20); // 
+                video.currentTime += step * (1 / video.playbackRate/5); // 
             }
         }
     </script>
     <!-- java script that executes AFTER the stop_recording button on Line 340 was pushed -->
     <script>
-        var stopRecordingPressed;
+         var stopRecordingPressed;
 
         function refreshPage() {
             // Wait until after the Stop_Recording button was pressed

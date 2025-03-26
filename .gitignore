@@ -1,5 +1,6 @@
 .DS_Store
-video0.mp4
 *.mp4
 .vscode/extensions.json
+.vscode/settings.json
 dump.php
+*.ipynb

@@ -8,6 +8,7 @@ cd "$(dirname "$0")/.."
 
 echo "=> Installing regattastart files at CGI-BIN...\n"
 sudo cp -v regattastart9.py /usr/lib/cgi-bin
+sudo cp -v regattastart6.py /usr/lib/cgi-bin
 sudo cp -v select_data6.py /usr/lib/cgi-bin
 sudo cp -v logging.conf /usr/lib/cgi-bin/
 sudo chmod -R 755 /usr/lib/cgi-bin

@@ -1,15 +1,31 @@
 <?php
-    define('APP_VERSION', '24.12.17'); // You can replace '1.0.0' with your desired version number
+    header("Access-Control-Allow-Origin: *");
+    header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+    header("Access-Control-Allow-Headers: *");
+
+    define('APP_VERSION', '25.03.26'); // You can replace '1.0.0' with your desired version number
+    // Set session lifetime to a day (86400 seconds)
+    ini_set('session.gc_maxlifetime', 86400);
+    ini_set('session.cookie_lifetime', 86400);
+
     session_id("regattastart");
     session_start();
-    // Unset the session variable set in index.php
-    unset($_SESSION['stopRecordingPressed']);
     ini_set('display_errors', 1);
     error_reporting(E_ALL);
+
+    // Unset the session variable set in index.php
+    unset($_SESSION['stopRecordingPressed']);
+
+    if (isset($_SESSION["form_data"])) {
+        echo '<pre>';
+        print_r($_SESSION["form_data"]);
+        echo '</pre>';
+    }
     include_once 'functions.php';
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Process and store the form data
         $_SESSION["form_data"] = $_POST;
+
         // Execute the Python script
         $command = 'python3 /usr/lib/cgi-bin/regattastart9.py ' . escapeshellarg(json_encode($_POST)) . ' > /var/www/html/output.txt 2>&1 &';
         shell_exec($command);
@@ -68,44 +84,32 @@
 <!-- Text on top of page retrieved from index6 or index9 -->
 <div style="text-align: center;">
     <?php
-        if (isset($_SESSION['form_data']) && is_array($_SESSION['form_data'])) {
+    if (!function_exists('console_log')) {
+        function console_log($message) {
+            echo "<script>console.log(". json_encode($message) .");</script>";
+        }
+    }
 
-            if (array_key_exists('start_time', $_SESSION['form_data'])) {
-                // Retrieve the value of the 'start_time' key
-                $start_time = $_SESSION['form_data']['start_time'];
-                console_log("First start time: " . $start_time);
-            }
-            if (array_key_exists('video_end', $_SESSION['form_data'])) {
-                $video_end = $_SESSION['form_data']['video_end'];
-                console_log(", Video end duration :  $video_end + 2 minutes after start, ");
-            }
-            if (array_key_exists('num_starts', $_SESSION['form_data'])) {
-                $num_starts = $_SESSION['form_data']['num_starts'];
-                console_log( " Number of starts: $num_starts");
-            }
-            if (array_key_exists('dur_between_starts', $_SESSION['form_data'])) {
-                $dur_between_starts = $_SESSION['form_data']['dur_between_starts'];
-                console_log(", Duration between starts: $dur_between_starts");
-            }
-            if (array_key_exists('video_dur', $_SESSION['form_data'])) {
-                $video_dur = $_SESSION['form_data']['video_dur'];
-                console_log(" Video duration: $video_dur");
-            }
-            if (array_key_exists('video_delay', $_SESSION['form_data'])) {
-                $video_delay = $_SESSION['form_data']['video_delay'];
-                console_log(" Video delay after start: " . $video_delay);
-            }
-            if (array_key_exists('num_video', $_SESSION['form_data'])) {
-                $num_video = $_SESSION['form_data']['num_video'];
-                console_log(" Number of videos during finish: " . $num_video);
-            } else {
-                $num_video = 1;
-            }
-        }
-        else {
-            // 'form_data' array not set or not an array
-            console_log("Line 108: No form data found in the session.");
-        }
+    if (isset($_SESSION['form_data']) && is_array($_SESSION['form_data'])) {
+        $start_time = $_SESSION['form_data']['start_time'] ?? "Not set";
+        $video_end = $_SESSION['form_data']['video_end'] ?? "Not set";
+        $num_starts = $_SESSION['form_data']['num_starts'] ?? "Not set";
+        $dur_between_starts = $_SESSION['form_data']['dur_between_starts'] ?? "Not set";
+        $video_dur = $_SESSION['form_data']['video_dur'] ?? "Not set";
+        $video_delay = $_SESSION['form_data']['video_delay'] ?? "Not set";
+        $num_video = $_SESSION['form_data']['num_video'] ?? 1;
+
+        // Log to console
+        console_log("First start time: $start_time");
+        console_log("Video end duration: $video_end + 2 minutes after start");
+        console_log("Number of starts: $num_starts");
+        console_log("Duration between starts: $dur_between_starts");
+        console_log("Video duration: $video_dur");
+        console_log("Video delay after start: $video_delay");
+        console_log("Number of videos during finish: $num_video");
+    } else {
+        console_log("No form data found in the session.");
+    }
     ?>
 </div>
 <header>
@@ -145,15 +149,21 @@
                             <p></p>
                             <div data-tap-disabled="true">
                             <?php 
+                                // Set the correct time zone (adjust as needed)
+                                date_default_timezone_set('Europe/Stockholm'); //your time zone
+
                                 $start_time = isset($_SESSION["form_data"]["start_time"]) ? $_SESSION["form_data"]["start_time"] : "";
                                 $steps = 5; // Interval in minutes
                                 $loops = 24 * (60 / $steps); // Number of intervals in a day
-                                // Get the current time in seconds since the Unix Epoch
+
+                                // Get the current time and add 5 minutes
                                 $current = time(); 
-                                // Get the number of seconds elapsed since midnight
-                                $seconds_since_midnight = $current - strtotime('today');
+                                $adjusted_time = $current + (5 * 60);
+
                                 // Calculate the nearest time in 5-minute intervals
-                                $nearest_time = strtotime('today') + round($seconds_since_midnight / (5 * 60)) * (5 * 60);
+                                $nearest_time = strtotime('today') + ceil(($adjusted_time - strtotime('today')) / (5 * 60)) * (5 * 60);
+
+                                // Format the pre-selected option
                                 $start_time_option = date('H:i', $nearest_time);
                             ?>
                             Start Time: <select name="start_time" id="start_time">
@@ -162,8 +172,10 @@
                                     for ($i = 0; $i < $loops; $i++) {
                                         // Calculate the time for this option
                                         $time_option = date('H:i', $nearest_time + ($i * $steps * 60));
+
                                         // Check if this option should be selected
                                         $selected = ($time_option == $start_time_option) ? "selected" : ""; 
+
                                         // Output the option tag
                                         echo '<option value="' . $time_option . '" ' . $selected . '>' . $time_option . '</option>';
                                     }
@@ -188,7 +200,7 @@
                                 <option value="90" <?php if(isset($video_end) && $video_end == "90"){echo "selected=\"selected\"";} ?> value="90">90</option>
                                 <option value="120" <?php if(isset($video_end) && $video_end == "120"){echo "selected=\"selected\"";} ?> value="120">120</option>
                                 <option value="180" <?php if(isset($video_end) && $video_end == "180"){echo "selected=\"selected\"";} ?> value="180">180</option>
-                                <option value="10" <?php if(isset($video_end) && $video_end == "10"){echo "selected=\"selected\"";} ?> value="10">10</option>
+                                <option value="20" <?php if(isset($video_end) && $video_end == "20"){echo "selected=\"selected\"";} ?> value="20">20</option>
                             </select>
                             <br>
                             <p style="font-size:11px">
