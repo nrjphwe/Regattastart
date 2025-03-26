@@ -3,7 +3,7 @@
     header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
     header("Access-Control-Allow-Headers: *");
     // after "git pull", "sudo cp /home/pi/Regattastart/index.php /var/www/html/"
-    define('APP_VERSION', '24.06.04'); // You can replace '1.0.0' with your desired version number
+    define('APP_VERSION', '2025.03.26'); // You can replace '1.0.0' with your desired version number
     session_id("regattastart");
     session_start();
     ini_set('display_errors', 1); 
@@ -158,7 +158,7 @@
     <!-- Header content -->
     <header>
         <div style="text-align: center;">
-            <div class="w3-panel w3-teal">
+            <div class="w3-panel w3-cyan">
                 <h2> Regattastart  </h2>
             </div>
         </div>
