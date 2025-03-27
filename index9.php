@@ -29,7 +29,6 @@
         // Execute the Python script
         $command = 'python3 /usr/lib/cgi-bin/regattastart9.py ' . escapeshellarg(json_encode($_POST)) . ' > /var/www/html/output.txt 2>&1 &';
         shell_exec($command);
-
         echo date('h:i:s') . "<br>";
         echo "execution started";
         sleep(0.5);
