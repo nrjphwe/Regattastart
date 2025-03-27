@@ -287,25 +287,24 @@ def main():
                 seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
 
                 if seconds_since_midnight > t5min_warning - 2:
-                    logger.info(" Line 233: Start of outer loop iteration. seconds_since_midnight=%s", seconds_since_midnight)
+                    logger.info(f'Start of outer loop iteration. seconds_since_midnight= {seconds_since_midnight}')
 
                     if num_starts == 1 or num_starts == 2:
                         # Start video recording just before 5 minutes before the first start
+                        logger.debug("Start of video0 recording")
                         start_video_recording(camera, video_path, "video0.h264")
-                        logger.info(" Line 238: Inner loop, entering the start sequence block.")
-                        start_sequence(camera, signal, start_time_sec, num_starts, dur_between_starts,photo_path)
+                        logger.info("Inner loop, entering the start sequence block.")
+                        start_sequence(camera, signal, start_time_sec, num_starts, dur_between_starts, photo_path)
                         if num_starts == 2:
                             start_time_sec = start_time_sec + (dur_between_starts * 60)
-                        logger.info(" Line 242: Wait 2 minutes then stop video recording")
+                        logger.debug("Wait 2 minutes then stop video recording")
                         t0 = dt.datetime.now()
-                        logger.info(" Line 244: start_time_sec= %s, t0= %s",start_time_sec, t0)  #test
+                        logger.debug(f"t0 = {t0}, dt.datetime.now(): {dt.datetime.now()}")
+                        logger.debug("(dt.datetime.now() - t0).seconds: %d", (dt.datetime.now() - t0).seconds)
+                        logger.info("start_time_sec= %s, t0= %s", start_time_sec, t0)  # test
                         while (dt.datetime.now() - t0).seconds < (119):
                             now = dt.datetime.now()
-                            seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
-                            # logger.info("Inside inner loop. seconds_since_midnight=%s", seconds_since_midnight)
-                            annotate_video_duration(camera, start_time_sec)
-                            camera.wait_recording(0)
-
+                            time.sleep(0.2)  # Small delay to reduce CPU usage
                         stop_video_recording(camera)
                         convert_video_to_mp4(video_path, "video0.h264", "video0.mp4")
                     # Exit the loop after the condition is met
