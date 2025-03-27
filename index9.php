@@ -16,11 +16,11 @@
     // Unset the session variable set in index.php
     unset($_SESSION['stopRecordingPressed']);
 
-    if (isset($_SESSION["form_data"])) {
-        echo '<pre>';
-        print_r($_SESSION["form_data"]);
-        echo '</pre>';
-    }
+    //if (isset($_SESSION["form_data"])) {
+    //    echo '<pre>';
+    //    print_r($_SESSION["form_data"]);
+    //   echo '</pre>';
+    //}
     include_once 'functions.php';
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Process and store the form data
