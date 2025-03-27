@@ -160,7 +160,7 @@ def stop_video_recording(cam):
 def annotate_video_duration(camera, start_time_sec):
     time_now = dt.datetime.now()
     seconds_since_midnight = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
-    elapsed_time = seconds_since_midnight - start_time_sec  #elapsed since last star until now)
+    elapsed_time = seconds_since_midnight - start_time_sec  # elapsed since last star until now)
     camera.annotate_text = f"{dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Seconds since last start: {elapsed_time}"
 
 # New function to process video
@@ -249,15 +249,14 @@ def finish_recording(camera, video_path, video_delay, num_video, video_dur, star
         start_video_recording(camera, video_path, f"video{i}.h264")
         # Video running, duration at "video_dur"
         t2 = dt.datetime.now()
-        start_time = dt.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) + dt.timedelta(seconds=start_time_sec)
-
+        logger.info(f"Start of video{i} recording")
         while (dt.datetime.now() - t2).seconds < (60 * video_dur):
-            annotate_video_duration(camera, start_time_sec)
+            # annotate_video_duration(camera, start_time_sec)
             # camera.annotate_text = f"{dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Seconds since first start: {elapsed_time.seconds}"
-            camera.wait_recording(0) # was 0.5
+            camera.wait_recording(0.5)  # was 0.5
 
         stop_video_recording(camera)
-    logger.info("  Line 185: This was the last recorded video =====")
+    logger.info("This was the last recorded video =====")
 
 
 def main():
