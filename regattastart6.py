@@ -244,7 +244,7 @@ def finish_recording(camera, video_path, video_delay, num_video, video_dur, star
         logger.info(f'Start video recording for: video{i}.avi')
         video = "video" + {i} + ".avi"
         logger.info(f'video: {video}')
-        start_video_recording(camera, video_path, f"video{i}.avi")
+        start_video_recording(camera, video_path, "video1.avi")
         logger.info(f'Recording started for: video{i}.avi')
         # Video running, duration at "video_dur"
         t2 = dt.datetime.now()
