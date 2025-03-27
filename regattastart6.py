@@ -85,16 +85,16 @@ def trigger_relay(port):
         logger.info(f"Trigger signal {signal_dur} sec, then wait for 1 - {signal_dur} sec")
     elif port == 'Lamp1_on':
         GPIO.output(lamp1, ON)
-        logger.info('  Line  81: Lamp1_on')
+        logger.info('Lamp1_on')
     elif port == 'Lamp2_on':
         GPIO.output(lamp2, ON)
-        logger.info('  Line  84: Lamp2_on')
+        logger.info('Lamp2_on')
     elif port == 'Lamp1_off':
         GPIO.output(lamp1, OFF)
-        logger.info('  Line  87: Lamp1_off')
+        logger.info('Lamp1_off')
     elif port == 'Lamp2_off':
         GPIO.output(lamp2, OFF)
-        logger.info('  Line  90: Lamp2_off')
+        logger.info('Lamp2_off')
 
 
 def capture_picture(camera, photo_path, file_name):
@@ -163,7 +163,25 @@ def annotate_video_duration(camera, start_time_sec):
     elapsed_time = seconds_since_midnight - start_time_sec  #elapsed since last star until now)
     camera.annotate_text = f"{dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Seconds since last start: {elapsed_time}"
 
+# New function to process video
+def process_video(video_path, input_file, output_file, frame_rate=None):
+    source = os.path.join(video_path, input_file)
+    dest = os.path.join(video_path, output_file)
+    if not os.path.exists(source) or os.path.getsize(source) <= 5000:
+        logger.debug(f"Warning: {input_file} is empty or does not exist. Skipping conversion.")
+        return
+    command = ["ffmpeg", "-i", source, "-vcodec", "libx264", "-crf", "23", "-preset", "ultrafast"]
+    if frame_rate:
+        command.extend(["-vf", f"fps={frame_rate}"])
+    command.append(dest)
+    try:
+        subprocess.run(command, check=True)
+        logger.debug("Video processed: %s", output_file)
+    except Exception as e:
+        logger.error(f"Failed to process video: {e}")
+        return
 
+# old function to convert video
 def convert_video_to_mp4(video_path, source_file, destination_file):
     convert_video_str = "MP4Box -add {} -new {}".format(os.path.join(video_path,source_file), os.path.join(video_path,destination_file))
     subprocess.run(convert_video_str, shell=True)
@@ -247,11 +265,6 @@ def main():
     camera = None  # Initialize the camera variable
     signal = None  # Initialize the signal relay/variable
 
-    # Check if a command-line argument (JSON data) is provided
-    if len(sys.argv) < 2:
-        print("  Line 195: No JSON data provided as a command-line argument.")
-        sys.exit(1)
-
     try:
         form_data = json.loads(sys.argv[1])
         # logger.info("form_data: %s", form_data)
@@ -269,7 +282,7 @@ def main():
             sys.exit(1)
         signal, lamp1, lamp2 = setup_gpio()
         remove_video_files(photo_path, "video")  # clean up 
-        remove_picture_files(photo_path, ".jpg") # clean up
+        remove_picture_files(photo_path, ".jpg")  # clean up
         logger.info(" Line 216 Weekday=%s, Start_time=%s, video_delay=%s, num_video=%s, video_dur=%s, num_starts=%s",
                     week_day, start_time, video_delay, num_video, video_dur, num_starts)
 
@@ -292,7 +305,7 @@ def main():
                     if num_starts == 1 or num_starts == 2:
                         # Start video recording just before 5 minutes before the first start
                         logger.debug("Start of video0 recording")
-                        start_video_recording(camera, video_path, "video0.h264")
+                        start_video_recording(camera, video_path, "video0.avi")
                         logger.info("Inner loop, entering the start sequence block.")
                         start_sequence(camera, signal, start_time_sec, num_starts, dur_between_starts, photo_path)
                         if num_starts == 2:
@@ -306,7 +319,8 @@ def main():
                             now = dt.datetime.now()
                             time.sleep(0.2)  # Small delay to reduce CPU usage
                         stop_video_recording(camera)
-                        convert_video_to_mp4(video_path, "video0.h264", "video0.mp4")
+                        process_video(video_path, "video0.avi", "video0.mp4", frame_rate=30)
+                        #convert_video_to_mp4(video_path, "video0.h264", "video0.mp4")
                     # Exit the loop after the condition is met
                     break
 
@@ -319,9 +333,6 @@ def main():
             convert_video_to_mp4(video_path, f"video{i}.h264", f"video{i}.mp4")
         logger.info("This was the last converted video =====")
 
-    except json.JSONDecodeError as e:
-        logger.info(f'Failed to parse JSON: str({e})')
-        sys.exit(1)
     finally:
         logger.info("This is finally section")
         if camera is not None:
@@ -334,5 +345,10 @@ def main():
 
 
 if __name__ == "__main__":
-    # logging.basicConfig(level=logging.WARNING)  # Set log level to WARNING
-    main()
+    # logger = setup_logging()  # Initialize logger before using it
+    try:
+        main()
+    except Exception as e:
+        logger.error(f"An unhandled exception occurred: {e}", exc_info=True)
+    finally:
+        logger.info("Exiting program")
