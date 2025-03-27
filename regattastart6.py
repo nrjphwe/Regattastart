@@ -136,6 +136,7 @@ def start_video_recording(cam, video_path, file_name, bitrate=2000000):
     Start video recording using H264Encoder and with timestamp.
     """
     output_file = os.path.join(video_path, file_name)
+    logger.debug(f"started video rec. output file: {output_file}")
     cam.pre_callback = apply_timestamp
     encoder = H264Encoder(bitrate=bitrate)
     cam.start_recording(encoder, output_file)
@@ -163,7 +164,7 @@ def annotate_video_duration(camera, start_time_sec):
     elapsed_time = seconds_since_midnight - start_time_sec  # elapsed since last star until now)
     camera.annotate_text = f"{dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Seconds since last start: {elapsed_time}"
 
-# New function to process video
+
 def process_video(video_path, input_file, output_file, frame_rate=None):
     source = os.path.join(video_path, input_file)
     dest = os.path.join(video_path, output_file)
@@ -180,12 +181,6 @@ def process_video(video_path, input_file, output_file, frame_rate=None):
     except Exception as e:
         logger.error(f"Failed to process video: {e}")
         return
-
-# old function to convert video
-def convert_video_to_mp4(video_path, source_file, destination_file):
-    convert_video_str = "MP4Box -add {} -new {}".format(os.path.join(video_path,source_file), os.path.join(video_path,destination_file))
-    subprocess.run(convert_video_str, shell=True)
-    logger.info(f'Video recording {destination_file} converted')
 
 
 def start_sequence(camera, signal, start_time_sec, num_starts, dur_between_starts, photo_path):
@@ -241,12 +236,14 @@ def start_sequence(camera, signal, start_time_sec, num_starts, dur_between_start
 
 def finish_recording(camera, video_path, video_delay, num_video, video_dur, start_time_sec):
     # Wait for finish, when the next video will start (delay)
-    time.sleep((video_delay - 2) * 60)  # Convert delay (minus 2 minutes after start) to seconds 
+    time.sleep((video_delay - 2) * 60)  # Convert delay (minus 2 minutes after start) to seconds
 
-    # Result video, chopped into numeral videos with duration at "video_dur"
+    # Result video, chopped into numeral videos with each duration at "video_dur"
     stop = num_video + 1
     for i in range(1, stop):
-        start_video_recording(camera, video_path, f"video{i}.h264")
+        logger.info(f'Start video recording for: video{i}.avi')
+        start_video_recording(camera, video_path, f"video{i}.avi")
+        logger.info(f'Recording started for: video{i}.h264')
         # Video running, duration at "video_dur"
         t2 = dt.datetime.now()
         logger.info(f"Start of video{i} recording")
@@ -319,17 +316,17 @@ def main():
                             time.sleep(0.2)  # Small delay to reduce CPU usage
                         stop_video_recording(camera)
                         process_video(video_path, "video0.avi", "video0.mp4", frame_rate=30)
-                        #convert_video_to_mp4(video_path, "video0.h264", "video0.mp4")
-                    # Exit the loop after the condition is met
-                    break
+                        logger.debug("Video0 converted to mp4")
+                    break  # Exit the loop after the condition is met
+                time.sleep(1)  # Introduce a delay of 1 seconds
 
-        logger.info(f'Finish recording outside inner loop. start_time_sec: {start_time_sec}')
+        logger.info(f'Start Finish recording outside inner loop. start_time_sec: {start_time_sec}')
         finish_recording(camera, video_path, video_delay, num_video, video_dur, start_time_sec)
 
         # convert all the videos to mp4
         stop = num_video + 1
         for i in range(1, stop):
-            convert_video_to_mp4(video_path, f"video{i}.h264", f"video{i}.mp4")
+            process_video(video_path, f"video{i}.avi", f"video{i}.mp4", frame_rate=30)
         logger.info("This was the last converted video =====")
 
     finally:
