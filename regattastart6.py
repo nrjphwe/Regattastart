@@ -11,7 +11,7 @@ import logging.config
 import json
 
 import subprocess
-from picamera2 import PiCamera2, Color
+from picamera2 import Picamera2, Color
 import RPi.GPIO as GPIO
 
 # parameter data
