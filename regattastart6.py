@@ -136,11 +136,12 @@ def start_video_recording(cam, video_path, file_name, bitrate=2000000):
     Start video recording using H264Encoder and with timestamp.
     """
     output_file = os.path.join(video_path, file_name)
-    logger.debug(f"started video rec. output file: {output_file}")
-    cam.pre_callback = apply_timestamp
+    logger.debug(f"Will start video rec. output file: {output_file}")
+    #cam.pre_callback = apply_timestamp
     encoder = H264Encoder(bitrate=bitrate)
+    logger.info(f"Encoder {encoder} with bitrate {bitrate}")
     cam.start_recording(encoder, output_file)
-    logger.info(f"Started recording video: {output_file} with bitrate {bitrate}")
+    logger.info(f"Started recording video: {output_file}")
 
 """
 def start_video_recording(camera, video_path, file_name):
