@@ -11,7 +11,7 @@ import logging.config
 import json
 
 import subprocess
-from picamera2 import PiCamera, Color
+from picamera2 import PiCamera2, Color
 import RPi.GPIO as GPIO
 
 # parameter data
@@ -37,7 +37,7 @@ def setup_logging():
 
 def setup_camera():
     try:
-        camera = PiCamera()
+        camera = PiCamera2()
         camera.resolution = (1296, 730)
         camera.framerate = 5
         camera.annotate_background = Color('black')
