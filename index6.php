@@ -106,10 +106,12 @@
                                 $loops = 24 * (60 / $steps); // Define $loops here or wherever it makes sense in your code
                                 // Get the current time in seconds since the Unix Epoch
                                 $current = time(); 
-                                // Get the number of seconds elapsed since midnight
-                                $seconds_since_midnight = $current - strtotime('today');
+                                $adjusted_time = $current + (5 * 60);
+
                                 // Calculate the nearest time in 5-minute intervals
-                                $nearest_time = strtotime('today') + round($seconds_since_midnight / (5 * 60)) * (5 * 60);
+                                $nearest_time = strtotime('today') + ceil(($adjusted_time - strtotime('today')) / (5 * 60)) * (5 * 60);
+
+                                // Format the pre-selected option
                                 $start_time_option = date('H:i', $nearest_time);
                             ?>
                             Start Time: <select name="start_time" id="start_time">
