@@ -137,10 +137,9 @@ def start_video_recording(cam, video_path, file_name, bitrate=2000000):
     """
     output_file = os.path.join(video_path, file_name)
     logger.debug(f"Will start video rec. output file: {output_file}")
-    #cam.pre_callback = apply_timestamp
+    # cam.pre_callback = apply_timestamp
     encoder = H264Encoder(bitrate=bitrate)
-    logger.info(f"Encoder {encoder} with bitrate {bitrate}")
-    cam.start_recording(encoder, output_file)
+    cam.start(encoder, output_file)
     logger.info(f"Started recording video: {output_file}")
 
 """
@@ -243,8 +242,10 @@ def finish_recording(camera, video_path, video_delay, num_video, video_dur, star
     stop = num_video + 1
     for i in range(1, stop):
         logger.info(f'Start video recording for: video{i}.avi')
+        video = "video" + {i} + ".avi"
+        logger.info(f'video: {video}')
         start_video_recording(camera, video_path, f"video{i}.avi")
-        logger.info(f'Recording started for: video{i}.h264')
+        logger.info(f'Recording started for: video{i}.avi')
         # Video running, duration at "video_dur"
         t2 = dt.datetime.now()
         logger.info(f"Start of video{i} recording")
