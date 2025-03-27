@@ -157,11 +157,11 @@
     ?>
     <!-- Header content -->
     <header>
-        <div style="text-align: center;">
-            <div style="text-align: center;" class="w3-container w3-cyan">
-                <h1> Regattastart  </h1>
-            </div>
+    <div style="text-align: center;">
+        <div class="w3-container w3-cyan">
+            <h2>Regattastart  </h2>
         </div>
+    </div>
         <div style="text-align: center;">
             <?php
                 echo "     Version: " . APP_VERSION . "<br><p></p>"; 
