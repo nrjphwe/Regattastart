@@ -2,7 +2,7 @@
 # after git pull, do: sudo cp regattastart6.py /usr/lib/cgi-bin/
 import os
 import sys
-import cgitb; cgitb.enable()
+# import cgitb; cgitb.enable()
 import time
 from datetime import datetime
 import datetime as dt
@@ -40,8 +40,8 @@ def setup_camera():
         camera = Picamera2()
         camera.resolution = (1296, 730)
         camera.framerate = 5
-        camera.annotate_background = Color('black')
-        camera.annotate_foreground = Color('white')
+        # camera.annotate_background = Color('black')
+        # camera.annotate_foreground = Color('white')
         camera.rotation = (180)  # Depends on how camera is mounted
         return camera  # Add this line to return the camera object
     except Exception as e:
