@@ -89,7 +89,6 @@ with open('/var/www/html/status.txt', 'w') as status_file:
 
 
 def trigger_relay(port):
-
     if port == 'Signal':
         GPIO.output(signal, ON)
         time.sleep(signal_dur)
