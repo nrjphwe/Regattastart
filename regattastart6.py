@@ -11,7 +11,9 @@ import logging.config
 import json
 
 import subprocess
-from picamera2 import Picamera2
+import cv2
+from picamera2 import Picamera2, MappedArray
+from picamera2.encoders import H264Encoder
 import RPi.GPIO as GPIO
 
 # parameter data
@@ -100,16 +102,51 @@ def capture_picture(camera, photo_path, file_name):
     logger.info ("  Line 94:  Capture picture = %s ", file_name)
 
 
+def apply_timestamp(request):
+    timestamp = time.strftime("%Y-%m-%d %X")
+    colour = (0, 255, 0)  # Green text
+    font = cv2.FONT_HERSHEY_DUPLEX
+    fontScale = 2
+    thickness = 2
+
+    try:
+        with MappedArray(request, "main") as m:
+            frame = m.array  # Get the frame
+            if frame is None or frame.shape[0] == 0:
+                logger.error("apply_timestamp: Frame is None or empty!")
+                return
+            height, width, _ = frame.shape
+            origin = (50, max(50, height - 100))  # Ensure text is within the frame
+            cv2.putText(frame, timestamp, origin, font, fontScale, colour, thickness)
+
+    except Exception as e:
+        logger.error(f"Error in apply_timestamp: {e}", exc_info=True)
+
+
+def start_video_recording(cam, video_path, file_name, bitrate=2000000):
+    """
+    Start video recording using H264Encoder and with timestamp.
+    """
+    output_file = os.path.join(video_path, file_name)
+    cam.pre_callback = apply_timestamp
+    encoder = H264Encoder(bitrate=bitrate)
+    cam.start_recording(encoder, output_file)
+    logger.info(f"Started recording video: {output_file} with bitrate {bitrate}")
+
+"""
 def start_video_recording(camera, video_path, file_name):
     if camera.recording:
         camera.stop_recording()
     camera.start_recording(os.path.join(video_path, file_name))
     logger.info(f'Started recording of {file_name}')
+"""
 
 
-def stop_video_recording(camera):
-    camera.stop_recording()
-    logger.info("  104: Video recording stopped")
+def stop_video_recording(cam):
+    cam.stop_recording()
+    cam.stop()  # Fully stop the camera
+    cam.close()  # Release camera resources
+    logger.info("Recording stopped and camera fully released.")
 
 
 def annotate_video_duration(camera, start_time_sec):
