@@ -1,13 +1,12 @@
 #!/usr/bin/python3 -u
 # after git pull, do: sudo cp regattastart6.py /usr/lib/cgi-bin/
+from common_module import setup_camera, start_video_recording, stop_video_recording, logger
 import os
 import sys
 # import cgitb; cgitb.enable()
 import time
 from datetime import datetime
 import datetime as dt
-import logging
-import logging.config
 import json
 
 import subprocess
@@ -27,28 +26,6 @@ OFF = GPIO.HIGH
 signal = 26
 lamp1 = 20
 lamp2 = 21
-
-
-def setup_logging():
-    global logger  # Make logger variable global
-    logging.config.fileConfig('/usr/lib/cgi-bin/logging.conf')
-    logger = logging.getLogger('Start')
-    logger.info("  Line  34: Start logging regattastart6")
-    return logger
-
-
-def setup_camera():
-    try:
-        camera = Picamera2()
-        camera.resolution = (1296, 730)
-        camera.framerate = 5
-        # camera.annotate_background = Color('black')
-        # camera.annotate_foreground = Color('white')
-        camera.rotation = (180)  # Depends on how camera is mounted
-        return camera  # Add this line to return the camera object
-    except Exception as e:
-        logger.error(f"  Line  47: Failed to initialize camera: {e}")
-        return None
 
 
 def setup_gpio():
@@ -129,33 +106,6 @@ def apply_timestamp(request):
 
     except Exception as e:
         logger.error(f"Error in apply_timestamp: {e}", exc_info=True)
-
-
-def start_video_recording(cam, video_path, file_name, bitrate=2000000):
-    """
-    Start video recording using H264Encoder and with timestamp.
-    """
-    output_file = os.path.join(video_path, file_name)
-    logger.debug(f"Will start video rec. output file: {output_file}")
-    # cam.pre_callback = apply_timestamp
-    encoder = H264Encoder(bitrate=bitrate)
-    cam.start(encoder, output_file)
-    logger.info(f"Started recording video: {output_file}")
-
-"""
-def start_video_recording(camera, video_path, file_name):
-    if camera.recording:
-        camera.stop_recording()
-    camera.start_recording(os.path.join(video_path, file_name))
-    logger.info(f'Started recording of {file_name}')
-"""
-
-
-def stop_video_recording(cam):
-    cam.stop_recording()
-    cam.stop()  # Fully stop the camera
-    cam.close()  # Release camera resources
-    logger.info("Recording stopped and camera fully released.")
 
 
 def annotate_video_duration(camera, start_time_sec):
@@ -259,7 +209,6 @@ def finish_recording(camera, video_path, video_delay, num_video, video_dur, star
 
 
 def main():
-    logger = setup_logging()  # Initialize the logger
     camera = None  # Initialize the camera variable
     signal = None  # Initialize the signal relay/variable
 
@@ -276,12 +225,12 @@ def main():
 
         camera = setup_camera()
         if camera is None:
-            logger.error("Line 211 Camera initialization failed. Exiting.")
+            logger.error("Camera initialization failed. Exiting.")
             sys.exit(1)
         signal, lamp1, lamp2 = setup_gpio()
         remove_video_files(photo_path, "video")  # clean up 
         remove_picture_files(photo_path, ".jpg")  # clean up
-        logger.info(" Line 216 Weekday=%s, Start_time=%s, video_delay=%s, num_video=%s, video_dur=%s, num_starts=%s",
+        logger.info("Weekday=%s, Start_time=%s, video_delay=%s, num_video=%s, video_dur=%s, num_starts=%s",
                     week_day, start_time, video_delay, num_video, video_dur, num_starts)
 
         start_hour, start_minute = start_time.split(':')
