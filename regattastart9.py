@@ -1,7 +1,14 @@
 #!/home/pi/yolov5_env/bin/python
 # after git pull, do: sudo cp regattastart9.py /usr/lib/cgi-bin/
-from common_module import setup_camera, start_video_recording, stop_video_recording, logger
-
+from common_module import (
+    setup_camera,
+    start_video_recording,
+    stop_video_recording,
+    logger,
+    setup_gpio,
+    trigger_relay
+)
+import os
 import sys
 # Manually add the virtual environment's site-packages directory to sys.path
 venv_path = "/home/pi/yolov5_env/lib/python3.11/site-packages"
