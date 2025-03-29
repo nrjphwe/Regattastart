@@ -87,7 +87,7 @@ def start_video_recording(cam, video_path, file_name, bitrate=2000000):
     logger.debug(f"Will start video rec. output file: {output_file}")
     encoder = H264Encoder(bitrate=bitrate)
     # cam.pre_callback = apply_timestamp
-   
+
     video_config = cam.create_video_configuration(main={"size": (1296, 730)}, controls={"FrameRate": 5})
     cam.configure(video_config)  # Configure before starting recording
     cam.start_recording(encoder, output_file) 
@@ -105,49 +105,26 @@ ON = GPIO.LOW
 OFF = GPIO.HIGH
 
 # Define GPIO pins
-PINS = {
-    "signal": 26,
-    "lamp1": 20,
-    "lamp2": 21
-}
+signal = 26
+lamp1 = 20
+lamp2 = 21
 
 
 def setup_gpio():
-    global logger 
-    """Initialize GPIO pins and return them as a dictionary."""
     GPIO.setmode(GPIO.BCM)
     GPIO.setwarnings(True)
-
-    # Setup pins
-    for name, pin in PINS.items():
-        GPIO.setup(pin, GPIO.OUT, initial=OFF)
-        logger.info(f"Initialized {name} (pin {pin}) to OFF")
-
-    return PINS  # Return the dictionary of pins
+    GPIO.setup(signal, GPIO.OUT, initial=GPIO.HIGH)
+    GPIO.setup(lamp1, GPIO.OUT, initial=GPIO.HIGH)
+    GPIO.setup(lamp2, GPIO.OUT, initial=GPIO.HIGH)
+    return signal, lamp1, lamp2
 
 
-def trigger_relay(port):
-    global logger
-    """Controls relays based on the given port command."""
-    if port == "Signal":
-        GPIO.output(PINS["Signal"], ON)
-        time.sleep(signal_dur)
-        GPIO.output(PINS["Signal"], OFF)
-        time.sleep(1 - signal_dur)
-        logger.info(f"Triggered Signal: {signal_dur} sec ON, then {1 - signal_dur} sec OFF")
-
-    elif port in ["Lamp1_on", "Lamp2_on"]:
-        pin = PINS[port.replace("_on", "")]
-        GPIO.output(pin, ON)
-        logger.info(f"{port} activated")
-
-    elif port in ["Lamp1_off", "Lamp2_off"]:
-        pin = PINS[port.replace("_off", "")]
-        GPIO.output(pin, OFF)
-        logger.info(f"{port} deactivated")
-
-    else:
-        logger.warning(f"Unknown port command: {port}")
+def trigger_relay(pin, state, duration=None):
+    """Control a relay by turning it ON or OFF, optionally with a delay."""
+    GPIO.output(pin, GPIO.HIGH if state == "on" else GPIO.LOW)
+    if duration:
+        time.sleep(duration)
+        GPIO.output(pin, GPIO.LOW)  # Turn it off after the specified duration
 
 
 def cleanup_gpio():
