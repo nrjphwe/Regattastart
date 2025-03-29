@@ -1,5 +1,6 @@
 #!/home/pi/yolov5_env/bin/python
 # after git pull, do: sudo cp regattastart9.py /usr/lib/cgi-bin/
+from common_module import setup_camera, start_video_recording, stop_video_recording, logger
 
 import sys
 # Manually add the virtual environment's site-packages directory to sys.path
@@ -14,8 +15,6 @@ from datetime import datetime, timedelta
 import datetime as dt
 import errno
 import json
-import logging
-import logging.config
 import numpy as np # image recognition
 import os
 # from picamera2 import Transform
@@ -51,20 +50,6 @@ video_path = '/var/www/html/images/'
 photo_path = '/var/www/html/images/'
 listening = True  # Define the listening variable
 recording_stopped = False  # Global variable
-
-
-print(f"Current LOG_LEVEL: {os.getenv('LOG_LEVEL', 'NOT SET')}")
-
-# Default to INFO if LOG_LEVEL is not set
-logging_level = os.getenv('LOG_LEVEL', 'INFO').upper()
-# Load logging configuration from the INI file
-logging.config.fileConfig('/usr/lib/cgi-bin/logging.conf')
-# Dynamically set the logging level
-logging.getLogger().setLevel(logging_level)
-print(f"Set logging level to: {logging_level}")
-# Create a logger with the "start" configuration
-logger = logging.getLogger('start')
-logger.info("Start logging regattastart9")
 
 # setup gpio()
 ON = GPIO.LOW
@@ -698,14 +683,13 @@ def main():
                     logger.debug("start_time_sec=%d", start_time_sec)
 
                     if num_starts == 1 or num_starts == 2:
+                        # Start video recording just before 5 minutes before the first start
                         logger.debug("Start of video0 recording")
                         start_video_recording(cam, video_path, "video0.avi", bitrate=2000000)
                         logger.debug("Inner loop, entering the start sequence block.")
                         start_sequence(cam, start_time_sec, num_starts, dur_between_starts, photo_path)
-
                         if num_starts == 2:
                             start_time_sec = start_time_sec + (dur_between_starts * 60)
-
                         logger.debug("Wait 2 minutes then stop video0 recording")
                         t0 = dt.datetime.now()
                         logger.debug(f"t0 = {t0}, dt.datetime.now(): {dt.datetime.now()}")
@@ -717,7 +701,6 @@ def main():
                         logger.debug("Stopping video0 recording")
                         process_video(video_path, "video0.avi", "video0.mp4", frame_rate=30)
                         logger.debug("Video0 converted to mp4")
-
                     break  # Exit the loop after the if condition is met
                 time.sleep(0.1)  # Introduce a delay of 2 seconds
 
@@ -756,6 +739,8 @@ def main():
         finally:
             try:
                 stop_video_recording(cam)
+                cam.close()
+                logger.info("Camera closed successfully.")
             except Exception as e:
                 logger.error(f"Error while cleaning up camera: {e}")
 
