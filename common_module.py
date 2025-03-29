@@ -87,6 +87,8 @@ def start_video_recording(cam, video_path, file_name, bitrate=2000000):
     logger.debug(f"Will start video rec. output file: {output_file}")
     cam.pre_callback = apply_timestamp
     encoder = H264Encoder(bitrate=bitrate)
+    video_config = cam.create_video_configuration(main={"size": (1296, 730)}, controls={"FrameRate": 5})
+    cam.configure(video_config)  # Configure before starting recording
     cam.start(encoder, output_file)
     logger.info(f"Started recording video: {output_file}")
 
