@@ -18,6 +18,7 @@ import json
 import subprocess
 import cv2
 import RPi.GPIO as GPIO  # Import GPIO library
+from picamera2 import MappedArray
 
 # parameter data
 # signal_dur = 0.9  # 0.9 sec default
