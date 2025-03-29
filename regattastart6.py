@@ -17,7 +17,6 @@ import datetime as dt
 import json
 import subprocess
 import cv2
-from picamera2 import MappedArray
 import RPi.GPIO as GPIO  # Import GPIO library
 
 # parameter data
@@ -55,27 +54,6 @@ def capture_picture(camera, photo_path, file_name):
         cv2.imwrite(os.path.join(photo_path, file_name), frame)
     request.release()
     logger.info("Captured picture = %s", file_name)
-
-
-def apply_timestamp(request):
-    timestamp = time.strftime("%Y-%m-%d %X")
-    colour = (0, 255, 0)  # Green text
-    font = cv2.FONT_HERSHEY_DUPLEX
-    fontScale = 2
-    thickness = 2
-
-    try:
-        with MappedArray(request, "main") as m:
-            frame = m.array  # Get the frame
-            if frame is None or frame.shape[0] == 0:
-                logger.error("apply_timestamp: Frame is None or empty!")
-                return
-            height, width, _ = frame.shape
-            origin = (50, max(50, height - 100))  # Ensure text is within the frame
-            cv2.putText(frame, timestamp, origin, font, fontScale, colour, thickness)
-
-    except Exception as e:
-        logger.error(f"Error in apply_timestamp: {e}", exc_info=True)
 
 
 def annotate_video_duration(camera, start_time_sec):
