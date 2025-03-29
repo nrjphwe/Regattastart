@@ -1,20 +1,23 @@
 #!/usr/bin/python3 -u
 # after git pull, do: sudo cp regattastart6.py /usr/lib/cgi-bin/
 from common_module import (
-    setup_camera, 
+    setup_camera,
     start_video_recording,
     stop_video_recording,
     logger,
     setup_gpio,
     trigger_relay
 )
+import os
 import sys
+import time
 # import cgitb; cgitb.enable()
 from datetime import datetime
 import datetime as dt
 import json
 import subprocess
 import cv2
+import RPi.GPIO as GPIO  # Import GPIO library
 
 # parameter data
 # signal_dur = 0.9  # 0.9 sec default
@@ -193,8 +196,8 @@ def main():
         if camera is None:
             logger.error("Camera initialization failed. Exiting.")
             sys.exit(1)
-        signal, lamp1, lamp2 = setup_gpio()
-        remove_video_files(photo_path, "video")  # clean up 
+        signal, lamp1, lamp2 = pins 
+        remove_video_files(photo_path, "video")  # clean up
         remove_picture_files(photo_path, ".jpg")  # clean up
         logger.info("Weekday=%s, Start_time=%s, video_delay=%s, num_video=%s, video_dur=%s, num_starts=%s",
                     week_day, start_time, video_delay, num_video, video_dur, num_starts)
@@ -250,10 +253,12 @@ def main():
         logger.info("This is finally section")
         if camera is not None:
             camera.close()  # Release the camera resources
+        """
         if signal is not None:
             GPIO.output(signal, OFF)  # Turn off the signal output
             GPIO.output(lamp1, OFF)  # Turn off the signal output
             GPIO.output(lamp2, OFF)  # Turn off the signal output
+        """
         GPIO.cleanup()
 
 
