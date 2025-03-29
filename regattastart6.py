@@ -17,6 +17,7 @@ import datetime as dt
 import json
 import subprocess
 import cv2
+from picamera2 import MappedArray
 import RPi.GPIO as GPIO  # Import GPIO library
 
 # parameter data
