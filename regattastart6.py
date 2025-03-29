@@ -25,6 +25,7 @@ log_path = '/usr/lib/cgi-bin/'
 video_path = '/var/www/html/images/'
 photo_path = '/var/www/html/images/'
 pins = setup_gpio()
+LAMP1, LAMP2, SIGNAL = pins
 
 
 def remove_picture_files(directory, pattern):
