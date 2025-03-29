@@ -1,10 +1,15 @@
 import os
+import time
 import logging
 import logging.config
 from picamera2 import Picamera2
 from picamera2.encoders import H264Encoder
+import RPi.GPIO as GPIO
 
-logger: logging.Logger  # Explicitly declare the logger variable
+
+# Initialize global variables
+logger = None  
+signal_dur = 0.9  # Default signal duration
 
 
 def setup_logging():
@@ -18,20 +23,22 @@ def setup_logging():
     For only warnings and above: export LOG_LEVEL=WARNING
     For only errors: export LOG_LEVEL=ERROR
     """
-
+    global logger  # Ensure logger is a global variable
     log_level = os.getenv('LOG_LEVEL', 'INFO').upper()
     print(f"Current LOG_LEVEL: {os.getenv('LOG_LEVEL', 'NOT SET')}")
-    # Load logging configuration from the INI file
+
+
+    # Load configuration
     logging.config.fileConfig('/usr/lib/cgi-bin/logging.conf')
     logging.getLogger().setLevel(log_level) # Dynamically set the logging level
     print(f"Set logging level to: {log_level}")
-    # Create a logger instance with the "start" configuration
+
+    # Create a logger
     logger = logging.getLogger('start')
     logger.info("Logging initialized in common_module")
 
-    return logger
 
-
+# Initialize logging immediately when the module is imported
 setup_logging()
 
 
@@ -66,3 +73,60 @@ def stop_video_recording(cam):
     cam.stop_recording()
     cam.stop()  # Fully stop the camera
     logger.info("Recording stopped and camera fully released.")
+
+
+# Define ON/OFF states for clarity
+ON = GPIO.LOW
+OFF = GPIO.HIGH
+
+# Define GPIO pins
+PINS = {
+    "signal": 26,
+    "lamp1": 20,
+    "lamp2": 21
+}
+
+
+def setup_gpio():
+    global logger 
+    """Initialize GPIO pins and return them as a dictionary."""
+    GPIO.setmode(GPIO.BCM)
+    GPIO.setwarnings(True)
+
+    # Setup pins
+    for name, pin in PINS.items():
+        GPIO.setup(pin, GPIO.OUT, initial=OFF)
+        logger.info(f"Initialized {name} (pin {pin}) to OFF")
+
+    return PINS  # Return the dictionary of pins
+
+
+def trigger_relay(port):
+    global logger 
+    """Controls relays based on the given port command."""
+    if port == "Signal":
+        GPIO.output(PINS["Signal"], ON)
+        time.sleep(signal_dur)
+        GPIO.output(PINS["Signal"], OFF)
+        time.sleep(1 - signal_dur)
+        logger.info(f"Triggered Signal: {signal_dur} sec ON, then {1 - signal_dur} sec OFF")
+
+    elif port in ["Lamp1_on", "Lamp2_on"]:
+        pin = PINS[port.replace("_on", "")]
+        GPIO.output(pin, ON)
+        logger.info(f"{port} activated")
+
+    elif port in ["Lamp1_off", "Lamp2_off"]:
+        pin = PINS[port.replace("_off", "")]
+        GPIO.output(pin, OFF)
+        logger.info(f"{port} deactivated")
+
+    else:
+        logger.warning(f"Unknown port command: {port}")
+
+
+def cleanup_gpio():
+    global logger 
+    """Clean up GPIO on script exit."""
+    GPIO.cleanup()
+    logger.info("GPIO cleaned up")
