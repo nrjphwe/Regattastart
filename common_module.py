@@ -102,7 +102,7 @@ def setup_gpio():
 
 
 def trigger_relay(port):
-    global logger 
+    global logger
     """Controls relays based on the given port command."""
     if port == "Signal":
         GPIO.output(PINS["Signal"], ON)
@@ -126,7 +126,7 @@ def trigger_relay(port):
 
 
 def cleanup_gpio():
-    global logger 
+    global logger
     """Clean up GPIO on script exit."""
     GPIO.cleanup()
     logger.info("GPIO cleaned up")
