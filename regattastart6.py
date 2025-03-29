@@ -1,40 +1,27 @@
 #!/usr/bin/python3 -u
 # after git pull, do: sudo cp regattastart6.py /usr/lib/cgi-bin/
-from common_module import setup_camera, start_video_recording, stop_video_recording, logger
-import os
+from common_module import (
+    setup_camera, 
+    start_video_recording,
+    stop_video_recording,
+    logger,
+    setup_gpio,
+    trigger_relay
+)
 import sys
 # import cgitb; cgitb.enable()
-import time
 from datetime import datetime
 import datetime as dt
 import json
-
 import subprocess
 import cv2
-from picamera2 import Picamera2, MappedArray
-from picamera2.encoders import H264Encoder
-import RPi.GPIO as GPIO
 
 # parameter data
-signal_dur = 0.9  # 0.3 sec
+# signal_dur = 0.9  # 0.9 sec default
 log_path = '/usr/lib/cgi-bin/'
 video_path = '/var/www/html/images/'
 photo_path = '/var/www/html/images/'
-# GPIO
-ON = GPIO.LOW
-OFF = GPIO.HIGH
-signal = 26
-lamp1 = 20
-lamp2 = 21
-
-
-def setup_gpio():
-    GPIO.setmode(GPIO.BCM)
-    GPIO.setwarnings(True)
-    GPIO.setup(signal, GPIO.OUT, initial=GPIO.HIGH)
-    GPIO.setup(lamp1, GPIO.OUT, initial=GPIO.HIGH)
-    GPIO.setup(lamp2, GPIO.OUT, initial=GPIO.HIGH)
-    return signal, lamp1, lamp2
+pins = setup_gpio()
 
 
 def remove_picture_files(directory, pattern):
@@ -51,27 +38,6 @@ def remove_video_files(directory, pattern):
         if file.startswith(pattern):
             file_path = os.path.join(directory, file)
             os.remove(file_path)
-
-
-def trigger_relay(port):
-    if port == 'Signal':
-        GPIO.output(signal, ON)
-        time.sleep(signal_dur)
-        GPIO.output(signal, OFF)
-        time.sleep(1 - signal_dur)
-        logger.info(f"Trigger signal {signal_dur} sec, then wait for 1 - {signal_dur} sec")
-    elif port == 'Lamp1_on':
-        GPIO.output(lamp1, ON)
-        logger.info('Lamp1_on')
-    elif port == 'Lamp2_on':
-        GPIO.output(lamp2, ON)
-        logger.info('Lamp2_on')
-    elif port == 'Lamp1_off':
-        GPIO.output(lamp1, OFF)
-        logger.info('Lamp1_off')
-    elif port == 'Lamp2_off':
-        GPIO.output(lamp2, OFF)
-        logger.info('Lamp2_off')
 
 
 def capture_picture(camera, photo_path, file_name):
