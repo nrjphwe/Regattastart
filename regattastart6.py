@@ -143,19 +143,20 @@ def finish_recording(camera, video_path, video_delay, num_video, video_dur, star
     stop = num_video + 1
     for i in range(1, stop):
         logger.info(f'Start video recording for: video{i}.avi')
-        video = f'video{i}.avi' 
+        video = f'video{i}.avi'
         logger.info(f'video: {video}')
         start_video_recording(camera, video_path, video)
-        logger.info(f'Recording started for: video{i}.avi')
+        logger.info(f'Recording started for: {video}')
         # Video running, duration at "video_dur"
         t2 = dt.datetime.now()
-        logger.info(f"Start of video{i} recording")
+        logger.info(f"Start of {video} recording")
         while (dt.datetime.now() - t2).seconds < (60 * video_dur):
             # annotate_video_duration(camera, start_time_sec)
             # camera.annotate_text = f"{dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Seconds since first start: {elapsed_time.seconds}"
             time.sleep(0.5)  # was 0.5
 
         stop_video_recording(camera)
+        process_video(video_path, video, f"video{i}.mp4", frame_rate=30)
     logger.info("This was the last recorded video =====")
 
 
