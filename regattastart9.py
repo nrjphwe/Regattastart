@@ -290,25 +290,6 @@ def apply_timestamp(request):
         logger.error(f"Error in apply_timestamp: {e}", exc_info=True)
 
 
-def start_video_recording(cam, video_path, file_name, bitrate=2000000):
-    """
-    Start video recording using H264Encoder and with timestamp.
-    """
-    output_file = os.path.join(video_path, file_name)
-    # Configure the pre-callback for adding the timestamp
-    cam.pre_callback = apply_timestamp
-    encoder = H264Encoder(bitrate=bitrate)
-    cam.start_recording(encoder, output_file)
-    logger.info(f"Started recording video: {output_file} with bitrate {bitrate}")
-
-
-def stop_video_recording(cam):
-    cam.stop_recording()
-    cam.stop()  # Fully stop the camera
-    cam.close()  # Release camera resources
-    logger.info("Recording stopped and camera fully released.")
-
-
 def process_video(video_path, input_file, output_file, frame_rate=None):
     source = os.path.join(video_path, input_file)
     dest = os.path.join(video_path, output_file)
