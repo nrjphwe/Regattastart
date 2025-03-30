@@ -132,7 +132,7 @@ def start_sequence(camera, signal, start_time_sec, num_starts, dur_between_start
                         # Record that the event has been triggered for this time interval
                         logger.info(f'last_triggered_events = {last_triggered_events}')
                     last_triggered_events[(seconds, log_message)] = True
-        logger.info(f"  Line 164:  Start_sequence, End of iteration: {i}")
+        logger.info(f"Start_sequence, End of iteration: {i}")
 
 
 def finish_recording(camera, video_path, video_delay, num_video, video_dur, start_time_sec):
@@ -143,9 +143,9 @@ def finish_recording(camera, video_path, video_delay, num_video, video_dur, star
     stop = num_video + 1
     for i in range(1, stop):
         logger.info(f'Start video recording for: video{i}.avi')
-        video = "video" + {i} + ".avi"
+        video = f'video{i}.avi' 
         logger.info(f'video: {video}')
-        start_video_recording(camera, video_path, "video1.avi")
+        start_video_recording(camera, video_path, video)
         logger.info(f'Recording started for: video{i}.avi')
         # Video running, duration at "video_dur"
         t2 = dt.datetime.now()
