@@ -80,8 +80,8 @@ def apply_timestamp(request):
             bg_top_left = (origin[0] - 10, origin[1] - text_height - 10)  # Top-left corner of the background
             bg_bottom_right = (origin[0] + text_width + 10, origin[1] + 10)  # Bottom-right corner of the background
 
-            # Draw the background rectangle
-            cv2.rectangle(frame, bg_top_left, bg_bottom_right, bg_colour, -1)  # -1 fills the rectangle
+            # Draw the background rectangle, -1 fills the rectangle
+            cv2.rectangle(frame, bg_top_left, bg_bottom_right, bg_colour, -1)
 
             # Overlay the text on top of the background
             cv2.putText(frame, timestamp, origin, font, font_scale, text_colour, thickness)
