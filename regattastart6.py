@@ -62,7 +62,7 @@ def annotate_video_duration(camera, start_time_sec):
     time_now = dt.datetime.now()
     seconds_since_midnight = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
     elapsed_time = seconds_since_midnight - start_time_sec  # elapsed since last star until now)
-    camera.annotate_text = f"{dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Seconds since last start: {elapsed_time}"
+    #camera.annotate_text = f"{dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Seconds since last start: {elapsed_time}"
 
 
 def process_video(video_path, input_file, output_file, frame_rate=None):
@@ -114,7 +114,7 @@ def start_sequence(camera, signal, start_time_sec, num_starts, dur_between_start
                 break  # Exit the loop if the condition is met
 
             for seconds, action, log_message in time_intervals:
-                camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                # camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                 time_now = dt.datetime.now()
                 seconds_now = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
 
