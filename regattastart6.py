@@ -151,8 +151,6 @@ def finish_recording(camera, video_path, video_delay, num_video, video_dur, star
         t2 = dt.datetime.now()
         logger.info(f"Start of {video} recording")
         while (dt.datetime.now() - t2).seconds < (60 * video_dur):
-            # annotate_video_duration(camera, start_time_sec)
-            # camera.annotate_text = f"{dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Seconds since first start: {elapsed_time.seconds}"
             time.sleep(0.5)  # was 0.5
 
         stop_video_recording(camera)
