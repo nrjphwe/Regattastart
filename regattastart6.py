@@ -165,18 +165,15 @@ def finish_recording(camera, video_path, video_delay, num_video, video_dur, star
     stop = num_video + 1
     for i in range(1, stop):
         logger.info(f'Start video recording for: video{i}.avi')
-        video = f'video{i}.avi'
-        logger.info(f'video: {video}')
+        video_file = os.path.join(video_path, f"video{i}.avi")
+        logger.info(f'video: {video_file}')
 
         # Initialize OpenCV VideoWriter to save annotated frames
         fourcc = cv2.VideoWriter_fourcc(*'XVID')
         video_writer = None
 
-        #start_video_recording(camera, video_path, video)
-        #logger.info(f'Recording started for: {video}')
-   
         t2 = dt.datetime.now()
-        logger.info(f"Start of {video} recording")
+        logger.info(f"Start of {video_file} recording")
         while (dt.datetime.now() - t2).seconds < (60 * video_dur):
             # Capture and annotate the frame
             request = camera.capture_request()
@@ -210,8 +207,7 @@ def finish_recording(camera, video_path, video_delay, num_video, video_dur, star
             video_writer.release()
 
         # Convert the video to MP4 format
-        # stop_video_recording(camera)
-        process_video(video_path, video, f"video{i}.mp4", frame_rate=30)
+        process_video(video_path, f"video{i}.avi", f"video{i}.mp4", frame_rate=30)
         logger.info(f"Video{i} processed and converted to mp4")
     logger.info("This was the last recorded video =====")
 
