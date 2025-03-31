@@ -63,7 +63,7 @@ def apply_timestamp(request):
     text_colour = (0, 255, 0)  # Green text
     bg_colour = (0, 0, 0)  # Black background
     font = cv2.FONT_HERSHEY_DUPLEX
-    fontScale = 2
+    font_scale = 2
     thickness = 2
 
     try:
@@ -84,7 +84,7 @@ def apply_timestamp(request):
             cv2.rectangle(frame, bg_top_left, bg_bottom_right, bg_colour, -1)  # -1 fills the rectangle
 
             # Overlay the text on top of the background
-            cv2.putText(frame, timestamp, origin, font, fontScale, text_colour, thickness)
+            cv2.putText(frame, timestamp, origin, font, font_scale, text_colour, thickness)
 
     except Exception as e:
         logger.error(f"Error in apply_timestamp: {e}", exc_info=True)
