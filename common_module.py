@@ -72,7 +72,7 @@ def apply_timestamp(request):
             if frame is None or frame.shape[0] == 0:
                 logger.error("apply_timestamp: Frame is None or empty!")
                 return
-            
+
             # Calculate text size and position
             text_size = cv2.getTextSize(timestamp, font, font_scale, thickness)[0]
             text_width, text_height = text_size
