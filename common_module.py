@@ -60,8 +60,8 @@ def setup_camera():
 
 def apply_timestamp(request):
     timestamp = time.strftime("%Y-%m-%d %X")
-    text_colour = (0, 255, 0)  # Green text
-    bg_colour = (255, 255, 255)  #
+    text_colour = (0, 47, 255)  # Blue text
+    bg_colour = (200, 200, 200) #
     font = cv2.FONT_HERSHEY_DUPLEX
     font_scale = 2
     thickness = 2
@@ -76,7 +76,7 @@ def apply_timestamp(request):
             # Calculate text size and position
             text_size = cv2.getTextSize(timestamp, font, font_scale, thickness)[0]
             text_width, text_height = text_size
-            origin = (50, max(50, frame.shape[0] - 100))  # Bottom-left corner of the text
+            origin = (40, max(50, frame.shape[0] - 100))  # Bottom-left corner of the text
             bg_top_left = (origin[0] - 10, origin[1] - text_height - 10)  # Top-left corner of the background
             bg_bottom_right = (origin[0] + text_width + 10, origin[1] + 10)  # Bottom-right corner of the background
 
