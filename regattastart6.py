@@ -200,7 +200,7 @@ def finish_recording(camera, video_path, video_delay, num_video, video_dur, star
                 video_writer.write(frame)
 
             request.release()
-            time.sleep(0.5)  # Small delay to reduce CPU usage
+            time.sleep(0.1)  # Small delay to reduce CPU usage
 
         # Release the VideoWriter
         if video_writer is not None:
