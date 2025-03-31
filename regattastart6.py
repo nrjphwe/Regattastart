@@ -61,8 +61,30 @@ def capture_picture(camera, photo_path, file_name):
 def annotate_video_duration(camera, start_time_sec):
     time_now = dt.datetime.now()
     seconds_since_midnight = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
-    elapsed_time = seconds_since_midnight - start_time_sec  # elapsed since last star until now)
-    camera.annotate_text = f"{dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Seconds since last start: {elapsed_time}"
+    elapsed_time = seconds_since_midnight - start_time_sec  # elapsed since last start until now
+
+    # Capture a frame
+    request = camera.capture_request()
+    with MappedArray(request, "main") as m:
+        frame = m.array  # Get the frame as a NumPy array
+
+        # Add text annotation to the frame
+        annotation_text = f"{time_now.strftime('%Y-%m-%d %H:%M:%S')} Seconds since last start: {elapsed_time}"
+        font = cv2.FONT_HERSHEY_SIMPLEX
+        font_scale = 1
+        color = (255, 255, 255)  # White text
+        thickness = 2
+        position = (10, 50)  # Position of the text (x, y)
+
+        # Overlay the text on the frame
+        cv2.putText(frame, annotation_text, position, font, font_scale, color, thickness, cv2.LINE_AA)
+
+        # Optionally, display the frame (for debugging)
+        # cv2.imshow("Annotated Frame", frame)
+        # cv2.waitKey(1)
+
+    request.release()
+    logger.info("Annotated frame with text: %s", annotation_text)
 
 
 def process_video(video_path, input_file, output_file, frame_rate=None):
@@ -151,12 +173,12 @@ def finish_recording(camera, video_path, video_delay, num_video, video_dur, star
         t2 = dt.datetime.now()
         logger.info(f"Start of {video} recording")
         while (dt.datetime.now() - t2).seconds < (60 * video_dur):
-            # annotate_video_duration(camera, start_time_sec)
-            # camera.annotate_text = f"{dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Seconds since first start: {elapsed_time.seconds}"
+            annotate_video_duration(camera, start_time_sec)
             time.sleep(0.5)  # was 0.5
 
         stop_video_recording(camera)
         process_video(video_path, video, f"video{i}.mp4", frame_rate=30)
+        logger.info(f"Video{i} processed and converted to mp4")
     logger.info("This was the last recorded video =====")
 
 
