@@ -60,7 +60,8 @@ def setup_camera():
 
 def apply_timestamp(request):
     timestamp = time.strftime("%Y-%m-%d %X")
-    colour = (0, 255, 0)  # Green text
+    text_colour = (0, 255, 0)  # Green text
+    bg_colour = (0, 0, 0)  # Black background
     font = cv2.FONT_HERSHEY_DUPLEX
     fontScale = 2
     thickness = 2
@@ -71,9 +72,19 @@ def apply_timestamp(request):
             if frame is None or frame.shape[0] == 0:
                 logger.error("apply_timestamp: Frame is None or empty!")
                 return
-            height, width, _ = frame.shape
-            origin = (50, max(50, height - 100))  # Ensure text is within the frame
-            cv2.putText(frame, timestamp, origin, font, fontScale, colour, thickness)
+            
+            # Calculate text size and position
+            text_size = cv2.getTextSize(timestamp, font, font_scale, thickness)[0]
+            text_width, text_height = text_size
+            origin = (50, max(50, frame.shape[0] - 100))  # Bottom-left corner of the text
+            bg_top_left = (origin[0] - 10, origin[1] - text_height - 10)  # Top-left corner of the background
+            bg_bottom_right = (origin[0] + text_width + 10, origin[1] + 10)  # Bottom-right corner of the background
+
+            # Draw the background rectangle
+            cv2.rectangle(frame, bg_top_left, bg_bottom_right, bg_colour, -1)  # -1 fills the rectangle
+
+            # Overlay the text on top of the background
+            cv2.putText(frame, timestamp, origin, font, fontScale, text_colour, thickness)
 
     except Exception as e:
         logger.error(f"Error in apply_timestamp: {e}", exc_info=True)
