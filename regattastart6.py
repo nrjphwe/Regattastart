@@ -227,10 +227,10 @@ def main():
         finish_recording(camera, video_path, video_delay, num_video, video_dur, start_time_sec)
 
         # convert all the videos to mp4
-        stop = num_video + 1
-        for i in range(1, stop):
-            process_video(video_path, f"video{i}.avi", f"video{i}.mp4", frame_rate=30)
-        logger.info("This was the last converted video =====")
+        #stop = num_video + 1
+        #for i in range(1, stop):
+        #    process_video(video_path, f"video{i}.avi", f"video{i}.mp4", frame_rate=30)
+        #logger.info("This was the last converted video =====")
 
     finally:
         logger.info("This is finally section")
