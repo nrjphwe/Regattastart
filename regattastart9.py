@@ -6,7 +6,9 @@ from common_module import (
     stop_video_recording,
     logger,
     setup_gpio,
-    trigger_relay
+    trigger_relay,
+    text_rectangle,
+    process_video,
 )
 import os
 import sys
@@ -22,6 +24,8 @@ from datetime import datetime, timedelta
 import datetime as dt
 import errno
 import json
+#import logging
+#import logging.config
 import numpy as np # image recognition
 import os
 # from picamera2 import Transform
@@ -46,8 +50,8 @@ warnings.filterwarnings(
     module=".*ultralytics_yolov5_master.*"
 )
 
-picamera2_logger = logging.getLogger('picamera2')
-picamera2_logger.setLevel(logging.ERROR)  # Change to ERROR to suppress more logs
+#picamera2_logger = logging.getLogger('picamera2')
+#picamera2_logger.setLevel(logging.ERROR)  # Change to ERROR to suppress more logs
 
 # parameter data
 fps = 10
@@ -288,24 +292,6 @@ def apply_timestamp(request):
 
     except Exception as e:
         logger.error(f"Error in apply_timestamp: {e}", exc_info=True)
-
-
-def process_video(video_path, input_file, output_file, frame_rate=None):
-    source = os.path.join(video_path, input_file)
-    dest = os.path.join(video_path, output_file)
-    if not os.path.exists(source) or os.path.getsize(source) <= 5000:
-        logger.debug(f"Warning: {input_file} is empty or does not exist. Skipping conversion.")
-        return
-    command = ["ffmpeg", "-i", source, "-vcodec", "libx264", "-crf", "23", "-preset", "ultrafast"]
-    if frame_rate:
-        command.extend(["-vf", f"fps={frame_rate}"])
-    command.append(dest)
-    try:
-        subprocess.run(command, check=True)
-        logger.debug("Video processed: %s", output_file)
-    except Exception as e:
-        logger.error(f"Failed to process video: {e}")
-        return
 
 
 def stop_recording():
