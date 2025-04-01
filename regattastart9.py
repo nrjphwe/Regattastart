@@ -59,6 +59,8 @@ signal_dur = 0.9  # 0.9 sec
 log_path = '/var/www/html/'
 video_path = '/var/www/html/images/'
 photo_path = '/var/www/html/images/'
+pins = setup_gpio()
+LAMP1, LAMP2, SIGNAL = pins
 listening = True  # Define the listening variable
 recording_stopped = False  # Global variable
 
@@ -203,14 +205,14 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
 
         # Define time intervals for each relay trigger
         time_intervals = [
-            (iteration_start_time - 5 * 60, lambda: trigger_relay('Lamp1_on'), "5_min Lamp-1 On -- Up with Flag O"),
-            (iteration_start_time - 5 * 60 + 1, lambda: trigger_relay('Signal'), "5_min Warning signal"),
-            (iteration_start_time - 4 * 60 - 2, lambda: trigger_relay('Lamp2_on'), "4_min Lamp-2 On"),
-            (iteration_start_time - 4 * 60, lambda: trigger_relay('Signal'), "4_min Warning signal"),
-            (iteration_start_time - 1 * 60 - 2, lambda: trigger_relay('Lamp2_off'), "1_min Lamp-2 off -- Flag P down"),
-            (iteration_start_time - 1 * 60, lambda: trigger_relay('Signal'), "1_min  Warning signal"),
-            (iteration_start_time - 0 * 60 - 2, lambda: trigger_relay('Lamp1_off'), "Start Lamp1-off"),
-            (iteration_start_time - 0 * 60, lambda: trigger_relay('Signal'), "Start signal")
+            (start_time_sec - 5 * 60, lambda: trigger_relay(LAMP1, "on"), "5_min Lamp1 ON -- Flag O UP"),
+            (start_time_sec - 5 * 60 + 1, lambda: trigger_relay(SIGNAL, "on", 1), "5_min Warning Signal"),
+            (start_time_sec - 4 * 60 - 2, lambda: trigger_relay(LAMP2, "on"), "4_min Lamp2 ON"),
+            (start_time_sec - 4 * 60, lambda: trigger_relay(SIGNAL, "on", 1), "4_min Warning Signal"),
+            (start_time_sec - 1 * 60 - 2, lambda: trigger_relay(LAMP2, "off"), "1_min Lamp2 OFF -- Flag P DOWN"),
+            (start_time_sec - 1 * 60, lambda: trigger_relay(SIGNAL, "on", 1), "1_min Warning Signal"),
+            (start_time_sec - 2, lambda: trigger_relay(LAMP1, "off"), "Lamp1 OFF at Start"),
+            (start_time_sec, lambda: trigger_relay(SIGNAL, "on", 1), "Start Signal"),
         ]
 
         last_triggered_events = {}
