@@ -64,6 +64,9 @@ def text_rectangle(frame, text, origin, text_colour=(255, 255, 255), bg_colour=(
     Draw a background rectangle and overlay text on a frame.
     """
     try:
+        # Convert the frame to BGR format (OpenCV uses BGR by default)
+        frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
+
         # Calculate text size
         text_size = cv2.getTextSize(text, FONT, FONT_SCALE, THICKNESS)[0]
         text_width, text_height = text_size
@@ -84,7 +87,7 @@ def text_rectangle(frame, text, origin, text_colour=(255, 255, 255), bg_colour=(
 
 def apply_timestamp(request):
     timestamp = time.strftime("%Y-%m-%d %X")
-    # ext_colour = (0, 47, 255)  # Blue text
+    # text_colour = (0, 47, 255)  # Blue text
     text_colour = (255, 0, 0)  # Blue text in BGR
     bg_colour = (200, 200, 200)  # Light grey background
 
