@@ -6,7 +6,9 @@ from common_module import (
     stop_video_recording,
     logger,
     setup_gpio,
-    trigger_relay
+    trigger_relay,
+    text_rectangle,
+    process_video,
 )
 import os
 import sys
@@ -55,60 +57,21 @@ def capture_picture(camera, photo_path, file_name):
 
         # Apply timestamp (reuse the same logic as in apply_timestamp)
         timestamp = time.strftime("%Y-%m-%d %X")
+        origin = (40, max(50, frame.shape[0] - 50))  # Bottom-left corner of the text
         text_colour = (255, 0, 0)  # Blue text in BGR
         bg_colour = (200, 200, 200)  # Gray background
-        font = cv2.FONT_HERSHEY_DUPLEX
-        font_scale = 2
-        thickness = 2
 
-        # Calculate text size and position
-        text_size = cv2.getTextSize(timestamp, font, font_scale, thickness)[0]
-        text_width, text_height = text_size
-        origin = (40, max(50, frame.shape[0] - 100))  # Bottom-left corner of the text
-        bg_top_left = (origin[0] - 10, origin[1] - text_height - 10)  # Top-left corner of the background
-        bg_bottom_right = (origin[0] + text_width + 10, origin[1] + 10)  # Bottom-right corner of the background
-
-        # Draw the background rectangle
-        cv2.rectangle(frame, bg_top_left, bg_bottom_right, bg_colour, -1)  # -1 fills the rectangle
-
-        # Overlay the text on top of the background
-        cv2.putText(frame, timestamp, origin, font, font_scale, text_colour, thickness, cv2.LINE_AA)
+        # Use text_rectangle to draw the timestamp
+        text_rectangle(frame, timestamp, origin, text_colour, bg_colour)
 
         # Rotate the frame by 180 degrees
         # rotated_frame = cv2.rotate(frame, cv2.ROTATE_180)
-        # Save the frame to the file
         # cv2.imwrite(os.path.join(photo_path, file_name), rotated_frame)
-        
         # Save the frame to the file
         cv2.imwrite(os.path.join(photo_path, file_name), frame)
 
     request.release()
     logger.info(f'Captured picture: {file_name}')
-
-
-def annotate_video_duration(camera, start_time_sec):
-    time_now = dt.datetime.now()
-    seconds_since_midnight = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
-    elapsed_time = seconds_since_midnight - start_time_sec  # elapsed since last star until now)
-    # camera.annotate_text = f"{dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Seconds since last start: {elapsed_time}"
-
-
-def process_video(video_path, input_file, output_file, frame_rate=None):
-    source = os.path.join(video_path, input_file)
-    dest = os.path.join(video_path, output_file)
-    if not os.path.exists(source) or os.path.getsize(source) <= 5000:
-        logger.debug(f"Warning: {input_file} is empty or does not exist. Skipping conversion.")
-        return
-    command = ["ffmpeg", "-i", source, "-vcodec", "libx264", "-crf", "23", "-preset", "ultrafast"]
-    if frame_rate:
-        command.extend(["-vf", f"fps={frame_rate}"])
-    command.append(dest)
-    try:
-        subprocess.run(command, check=True)
-        logger.debug("Video processed: %s", output_file)
-    except Exception as e:
-        logger.error(f"Failed to process video: {e}")
-        return
 
 
 def start_sequence(camera, signal, start_time_sec, num_starts, dur_between_starts, photo_path):
