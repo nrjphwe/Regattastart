@@ -1,4 +1,4 @@
-import os
+import os, subprocess
 import time
 import logging
 import logging.config
@@ -59,6 +59,7 @@ def setup_camera():
         logger.error(f"Failed to initialize camera: {e}")
         return None
 
+
 def text_rectangle(frame, text, origin, text_colour=(255, 255, 255), bg_colour=(0, 0, 0), font=cv2.FONT_HERSHEY_DUPLEX, font_scale=2, thickness=2):
     """
     Draw a background rectangle and overlay text on a frame.
@@ -84,7 +85,7 @@ def text_rectangle(frame, text, origin, text_colour=(255, 255, 255), bg_colour=(
 
 def apply_timestamp(request):
     timestamp = time.strftime("%Y-%m-%d %X")
-    #text_colour = (0, 47, 255)  # Blue text
+    # ext_colour = (0, 47, 255)  # Blue text
     text_colour = (255, 0, 0)  # Blue text in BGR
     bg_colour = (200, 200, 200)  # Light grey background
 
@@ -127,6 +128,23 @@ def stop_video_recording(cam):
     cam.stop()  # Fully stop the camera
     logger.info("Recording stopped and camera fully released.")
 
+
+def process_video(video_path, input_file, output_file, frame_rate=None):
+    source = os.path.join(video_path, input_file)
+    dest = os.path.join(video_path, output_file)
+    if not os.path.exists(source) or os.path.getsize(source) <= 5000:
+        logger.debug(f"Warning: {input_file} is empty or does not exist. Skipping conversion.")
+        return
+    command = ["ffmpeg", "-i", source, "-vcodec", "libx264", "-crf", "23", "-preset", "ultrafast"]
+    if frame_rate:
+        command.extend(["-vf", f"fps={frame_rate}"])
+    command.append(dest)
+    try:
+        subprocess.run(command, check=True)
+        logger.debug("Video processed: %s", output_file)
+    except Exception as e:
+        logger.error(f"Failed to process video: {e}")
+        return
 
 # Define ON/OFF states for clarity
 ON = GPIO.LOW
