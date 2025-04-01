@@ -59,7 +59,7 @@ def setup_camera():
         return None
 
 
-def text_rectangle(frame, text, origin, text_colour=(0, 0, 255), bg_colour=(200, 200, 200), font=cv2.FONT_HERSHEY_DUPLEX, font_scale=2, thickness=2):
+def text_rectangle(frame, text, origin, text_colour=(255, 0, 0), bg_colour=(200, 200, 200), font=cv2.FONT_HERSHEY_DUPLEX, font_scale=2, thickness=2):
     """
     Draw a background rectangle and overlay text on a frame.
     """
