@@ -59,13 +59,13 @@ def setup_camera():
         return None
 
 
-def text_rectangle(frame, text, origin, text_colour=(255, 255, 255), bg_colour=(0, 0, 0), font=cv2.FONT_HERSHEY_DUPLEX, font_scale=2, thickness=2):
+def text_rectangle(frame, text, origin, text_colour=(0, 0, 255), bg_colour=(0, 0, 0), font=cv2.FONT_HERSHEY_DUPLEX, font_scale=2, thickness=2):
     """
     Draw a background rectangle and overlay text on a frame.
     """
     try:
         # Convert the frame to BGR format (OpenCV uses BGR by default)
-        #frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
+        # frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
 
         # Calculate text size
         text_size = cv2.getTextSize(text, FONT, FONT_SCALE, THICKNESS)[0]
@@ -102,7 +102,8 @@ def apply_timestamp(request):
             origin = (40, max(50, frame.shape[0] - 50))  # Bottom-left corner of the text
 
             # Use text_rectangle to draw the timestamp
-            text_rectangle(frame, timestamp, origin, text_colour, bg_colour)
+            # text_rectangle(frame, timestamp, origin, text_colour, bg_colour)
+            text_rectangle(frame, timestamp, origin, bg_colour)
 
     except Exception as e:
         logger.error(f"Error in apply_timestamp: {e}", exc_info=True)
