@@ -84,27 +84,6 @@ with open('/var/www/html/status.txt', 'w') as status_file:
     status_file.write("")
 
 
-def trigger_relay(port):
-    if port == 'Signal':
-        GPIO.output(signal, ON)
-        time.sleep(signal_dur)
-        GPIO.output(signal, OFF)
-        time.sleep(1 - signal_dur)
-        logger.info(f"Trigger signal {signal_dur} sec, then wait for {(1 - signal_dur)} sec")
-    elif port == 'Lamp1_on':
-        GPIO.output(lamp1, ON)
-        logger.info('Lamp1_on')
-    elif port == 'Lamp2_on':
-        GPIO.output(lamp2, ON)
-        logger.info('Lamp2_on')
-    elif port == 'Lamp1_off':
-        GPIO.output(lamp1, OFF)
-        logger.info('Lamp1_off')
-    elif port == 'Lamp2_off':
-        GPIO.output(lamp2, OFF)
-        logger.info('Lamp2_off')
-
-
 def remove_picture_files(directory, pattern):
     files = os.listdir(directory)
     for file in files:
@@ -613,7 +592,8 @@ def stop_listen_thread():
 def main():
     stop_event = threading.Event()
     global listening  # Declare listening as global
-    cam = setup_picam2(resolution=(1920, 1080), fps=fps)
+    # cam = setup_picam2(resolution=(1920, 1080), fps=fps)
+    cam = setup_camera()
     if cam is None:
         logger.error("Camera setup failed, exiting.")
         exit()
