@@ -60,7 +60,7 @@ def setup_camera():
 
 def apply_timestamp(request):
     timestamp = time.strftime("%Y-%m-%d %X")
-    text_colour = (255, 47, 0)  # Blue text
+    text_colour = (0, 47, 255)  # Blue text
     bg_colour = (200, 200, 200)  #
     font = cv2.FONT_HERSHEY_DUPLEX
     font_scale = 2
