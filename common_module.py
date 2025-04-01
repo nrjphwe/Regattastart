@@ -65,7 +65,7 @@ def text_rectangle(frame, text, origin, text_colour=(255, 255, 255), bg_colour=(
     """
     try:
         # Convert the frame to BGR format (OpenCV uses BGR by default)
-        frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
+        #frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
 
         # Calculate text size
         text_size = cv2.getTextSize(text, FONT, FONT_SCALE, THICKNESS)[0]
