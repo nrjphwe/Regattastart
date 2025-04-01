@@ -158,8 +158,8 @@
     <!-- Header content -->
     <header>
     <div style="text-align: center;">
-        <div class="w3-container w3-cyan">
-            <h2>Regattastart  </h2>
+        <div class="w3-container w3-blue w3-text-white">
+            <h1> Regattastart  </h1>
         </div>
     </div>
         <div style="text-align: center;">
