@@ -32,10 +32,9 @@ def setup_logging():
     log_level = os.getenv('LOG_LEVEL', 'INFO').upper()
     print(f"Current LOG_LEVEL: {os.getenv('LOG_LEVEL', 'NOT SET')}")
 
-
     # Load configuration
     logging.config.fileConfig('/usr/lib/cgi-bin/logging.conf')
-    logging.getLogger().setLevel(log_level) # Dynamically set the logging level
+    logging.getLogger().setLevel(log_level)  # Dynamically set the logging level
     print(f"Set logging level to: {log_level}")
 
     # Create a logger
