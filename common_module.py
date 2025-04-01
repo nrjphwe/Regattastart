@@ -9,8 +9,12 @@ import cv2
 
 
 # Initialize global variables
-logger = None  
+logger = None
 signal_dur = 0.9  # Default signal duration
+# Font settings for text annotations
+FONT = cv2.FONT_HERSHEY_DUPLEX
+FONT_SCALE = 2
+THICKNESS = 2
 
 
 def setup_logging():
@@ -49,22 +53,40 @@ def setup_camera():
         camera = Picamera2()
         camera.resolution = (1296, 730)
         camera.framerate = 5
-        # camera.annotate_background = Color('black')
-        # camera.annotate_foreground = Color('white')
-        camera.rotation = (180)  # Depends on how camera is mounted
+        camera.rotation = 180  # Rotate the camera output by 180 degrees
         return camera  # Add this line to return the camera object
     except Exception as e:
         logger.error(f"Failed to initialize camera: {e}")
         return None
 
+def text_rectangle(frame, text, origin, text_colour=(255, 255, 255), bg_colour=(0, 0, 0), font=cv2.FONT_HERSHEY_DUPLEX, font_scale=2, thickness=2):
+    """
+    Draw a background rectangle and overlay text on a frame.
+    """
+    try:
+        # Calculate text size
+        text_size = cv2.getTextSize(text, FONT, FONT_SCALE, THICKNESS)[0]
+        text_width, text_height = text_size
+
+        # Calculate background rectangle coordinates
+        bg_top_left = (origin[0] - 10, origin[1] - text_height - 10)  # Top-left corner
+        bg_bottom_right = (origin[0] + text_width + 10, origin[1] + 10)  # Bottom-right corner
+
+        # Draw the background rectangle
+        cv2.rectangle(frame, bg_top_left, bg_bottom_right, bg_colour, -1)  # -1 fills the rectangle
+
+        # Overlay the text on top of the background
+        cv2.putText(frame, text, origin, FONT, FONT_SCALE, text_colour, THICKNESS, cv2.LINE_AA)
+
+    except Exception as e:
+        logger.error(f"Error in text_rectangle: {e}", exc_info=True)
+
 
 def apply_timestamp(request):
     timestamp = time.strftime("%Y-%m-%d %X")
-    text_colour = (0, 47, 255)  # Blue text
-    bg_colour = (200, 200, 200)  #
-    font = cv2.FONT_HERSHEY_DUPLEX
-    font_scale = 2
-    thickness = 2
+    #text_colour = (0, 47, 255)  # Blue text
+    text_colour = (255, 0, 0)  # Blue text in BGR
+    bg_colour = (200, 200, 200)  # Light grey background
 
     try:
         with MappedArray(request, "main") as m:
@@ -73,18 +95,11 @@ def apply_timestamp(request):
                 logger.error("apply_timestamp: Frame is None or empty!")
                 return
 
-            # Calculate text size and position
-            text_size = cv2.getTextSize(timestamp, font, font_scale, thickness)[0]
-            text_width, text_height = text_size
-            origin = (40, max(50, frame.shape[0] - 100))  # Bottom-left corner of the text
-            bg_top_left = (origin[0] - 10, origin[1] - text_height - 10)  # Top-left corner of the background
-            bg_bottom_right = (origin[0] + text_width + 10, origin[1] + 10)  # Bottom-right corner of the background
+            # Define text position
+            origin = (40, max(50, frame.shape[0] - 50))  # Bottom-left corner of the text
 
-            # Draw the background rectangle, -1 fills the rectangle
-            cv2.rectangle(frame, bg_top_left, bg_bottom_right, bg_colour, -1)
-
-            # Overlay the text on top of the background
-            cv2.putText(frame, timestamp, origin, font, font_scale, text_colour, thickness)
+            # Use text_rectangle to draw the timestamp
+            text_rectangle(frame, timestamp, origin, text_colour, bg_colour)
 
     except Exception as e:
         logger.error(f"Error in apply_timestamp: {e}", exc_info=True)
