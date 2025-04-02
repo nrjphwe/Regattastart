@@ -53,7 +53,7 @@ def capture_picture(camera, photo_path, file_name):
         frame = m.array  # Get the frame as a NumPy array
 
         # Convert the frame to BGR format (OpenCV uses BGR by default)
-        frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
+        # frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
 
         # Apply timestamp (reuse the same logic as in apply_timestamp)
         timestamp = time.strftime("%Y-%m-%d %X")
@@ -74,7 +74,7 @@ def capture_picture(camera, photo_path, file_name):
     logger.info(f'Captured picture: {file_name}')
 
 
-def start_sequence(camera, signal, start_time_sec, num_starts, dur_between_starts, photo_path):
+def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo_path):
     for i in range(num_starts):
         logger.info(f"  Line 119: Start_sequence. Start of iteration {i}")
         # Adjust the start_time_sec for the second iteration
@@ -168,7 +168,6 @@ def main():
         if camera is None:
             logger.error("Camera initialization failed. Exiting.")
             sys.exit(1)
-        signal, lamp1, lamp2 = pins 
         remove_video_files(photo_path, "video")  # clean up
         remove_picture_files(photo_path, ".jpg")  # clean up
         logger.info("Weekday=%s, Start_time=%s, video_delay=%s, num_video=%s, video_dur=%s, num_starts=%s",
