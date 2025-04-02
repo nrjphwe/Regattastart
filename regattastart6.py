@@ -194,7 +194,7 @@ def main():
                         logger.debug("Start of video0 recording")
                         start_video_recording(camera, video_path, "video0.avi")
                         logger.info("Inner loop, entering the start sequence block.")
-                        start_sequence(camera, signal, start_time_sec, num_starts, dur_between_starts, photo_path)
+                        start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo_path)
                         if num_starts == 2:
                             start_time_sec = start_time_sec + (dur_between_starts * 60)
                         logger.debug("Wait 2 minutes then stop video recording")
