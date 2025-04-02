@@ -11,10 +11,23 @@ import cv2
 # Initialize global variables
 logger = None
 signal_dur = 0.9  # Default signal duration
-# Font settings for text annotations
-FONT = cv2.FONT_HERSHEY_DUPLEX
-FONT_SCALE = 2
-THICKNESS = 2
+
+FONT = cv2.FONT_HERSHEY_DUPLEX  # Font settings for text annotations
+FONT_SCALE = 2   # Font scale for text annotations
+THICKNESS = 2  # Thickness of the text annotations
+
+# text_colour = (0, 0, 255)  # Blue text in RGB
+# text_colour = (255, 0, 0)  # Blue text in BGR
+# bg_colour = (200, 200, 200)  # Light grey background
+
+# GPIO pin numbers for the relay and lamps
+signal = 26
+lamp1 = 20
+lamp2 = 21
+
+# Define ON/OFF states for clarity
+ON = GPIO.LOW
+OFF = GPIO.HIGH
 
 
 def setup_logging():
@@ -59,7 +72,7 @@ def setup_camera():
         return None
 
 
-def text_rectangle(frame, text, origin, text_colour=(255, 0, 0), bg_colour=(200, 200, 200), font=cv2.FONT_HERSHEY_DUPLEX, font_scale=2, thickness=2):
+def text_rectangle(frame, text, origin, text_colour=(255, 0, 0), bg_colour=(200, 200, 200), font=FONT, font_scale=FONT_SCALE, thickness=THICKNESS):
     """
     Draw a background rectangle and overlay text on a frame.
     """
@@ -79,7 +92,7 @@ def text_rectangle(frame, text, origin, text_colour=(255, 0, 0), bg_colour=(200,
         cv2.rectangle(frame, bg_top_left, bg_bottom_right, bg_colour, -1)  # -1 fills the rectangle
 
         # Overlay the text on top of the background
-        cv2.putText(frame, text, origin, FONT, FONT_SCALE, text_colour, THICKNESS, cv2.LINE_AA)
+        cv2.putText(frame, text, origin, font, font_scale, text_colour, thickness, cv2.LINE_AA)
 
     except Exception as e:
         logger.error(f"Error in text_rectangle: {e}", exc_info=True)
@@ -87,10 +100,6 @@ def text_rectangle(frame, text, origin, text_colour=(255, 0, 0), bg_colour=(200,
 
 def apply_timestamp(request):
     timestamp = time.strftime("%Y-%m-%d %X")
-    # text_colour = (0, 47, 255)  # Blue text
-    text_colour = (255, 0, 0)  # Blue text in BGR
-    bg_colour = (200, 200, 200)  # Light grey background
-
     try:
         with MappedArray(request, "main") as m:
             frame = m.array  # Get the frame
@@ -102,7 +111,6 @@ def apply_timestamp(request):
             origin = (40, max(50, frame.shape[0] - 50))  # Bottom-left corner of the text
 
             # Use text_rectangle to draw the timestamp
-            # text_rectangle(frame, timestamp, origin, text_colour, bg_colour)
             text_rectangle(frame, timestamp, origin)
 
     except Exception as e:
@@ -148,15 +156,6 @@ def process_video(video_path, input_file, output_file, frame_rate=None):
     except Exception as e:
         logger.error(f"Failed to process video: {e}")
         return
-
-# Define ON/OFF states for clarity
-ON = GPIO.LOW
-OFF = GPIO.HIGH
-
-# Define GPIO pins
-signal = 26
-lamp1 = 20
-lamp2 = 21
 
 
 def setup_gpio():
