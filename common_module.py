@@ -74,14 +74,16 @@ def setup_camera():
 
 def text_rectangle(frame, text, origin, text_colour=(255, 0, 0), bg_colour=(200, 200, 200), font=FONT, font_scale=FONT_SCALE, thickness=THICKNESS):
     """
-    Draw a background rectangle and overlay text on a frame.
+    Draw a background rectangle and overlay text on a frame. Om du använder OpenCV:s 
+    funktioner som cv2.putText eller cv2.rectangle utan att konvertera från RGB till BGR, 
+    kan färgerna visas felaktigt (t.ex. blå istället för röd).
     """
     try:
         # Convert the frame to BGR format (OpenCV uses BGR by default)
-        # frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
+        frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
 
         # Calculate text size
-        text_size = cv2.getTextSize(text, FONT, FONT_SCALE, THICKNESS)[0]
+        text_size = cv2.getTextSize(text, font, font_scale, thickness)[0]
         text_width, text_height = text_size
 
         # Calculate background rectangle coordinates
