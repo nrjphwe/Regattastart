@@ -79,8 +79,10 @@ def text_rectangle(frame, text, origin, text_colour=(255, 0, 0), bg_colour=(200,
     kan färgerna visas felaktigt (t.ex. blå istället för röd).
     """
     try:
-        # Convert the frame to BGR format (OpenCV uses BGR by default)
-        frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
+        logger.debug(f"Frame shape: {frame.shape}, dtype: {frame.dtype}")
+        # Check if the frame is in RGB format and convert to BGR if necessary
+        if frame.shape[-1] == 3 and frame.dtype == 'uint8':  # Assuming 3 channels for RGB
+            frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
 
         # Calculate text size
         text_size = cv2.getTextSize(text, font, font_scale, thickness)[0]
