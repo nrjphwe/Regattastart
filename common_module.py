@@ -52,16 +52,6 @@ def setup_logging():
     # Logga den aktuella nivån från logging.conf
     current_level = logging.getLevelName(logger.getEffectiveLevel())
     print(f"Current logging level from logging.conf: {current_level}")
-
-    # read environment variable LOG_LEVEL
-    log_level = os.getenv('LOG_LEVEL', 'INFO').upper()
-    print(f"LOG_LEVEL environment variable is set to: {log_level}")
-
-    print(f"Current LOG_LEVEL: {os.getenv('LOG_LEVEL', 'NOT SET')}")
-
-    logger.setLevel(log_level)  # Dynamically set the logging level
-    logger.info(f"Set logging level to: {log_level}")
-
     logger.info("Logging initialized in common_module")
 
 
