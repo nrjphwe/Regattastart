@@ -8,16 +8,14 @@
     session_start();
     ini_set('display_errors', 1); 
     error_reporting(E_ALL);
-    //
-    //if (isset($_SESSION["form_data"])) {
-    //    $form_data = $_SESSION["form_data"];
-    //    echo '<pre>';
-    //    print_r($form_data);
-    //    echo '</pre>';
-    //} else {
-    //    echo "No form data found.";
-    //}
+?>
+<?php
+    ini_set('session.gc_maxlifetime', 86400); // 24 hours
+    session_set_cookie_params(86400); // 24 hours
+    session_start();
+?>
 
+<?php
     include_once 'functions.php';
     // Check if video0.mp4 or video1.mp4 exists and their sizes
     $video0Exists = file_exists("images/video0.mp4") && filesize("images/video0.mp4") > 0;
