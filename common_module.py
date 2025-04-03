@@ -65,7 +65,9 @@ def setup_camera():
         camera = Picamera2()
         camera.resolution = (1296, 730)
         camera.framerate = 5
-        camera.rotation = 180  # Rotate the camera output by 180 degrees
+        rotation = 180  # Rotate the camera output by 180 degrees
+        camera.rotation = rotation  # Rotate the camera output by 180 degrees
+        logger.debug(f"Camera rotation set to {rotation} degrees.")
         return camera  # Add this line to return the camera object
     except Exception as e:
         logger.error(f"Failed to initialize camera: {e}")
@@ -74,17 +76,11 @@ def setup_camera():
 
 def text_rectangle(frame, text, origin, text_colour=(255, 0, 0), bg_colour=(200, 200, 200), font=FONT, font_scale=FONT_SCALE, thickness=THICKNESS):
     """
-    Draw a background rectangle and overlay text on a frame. Om du använder OpenCV:s 
-    funktioner som cv2.putText eller cv2.rectangle utan att konvertera från RGB till BGR, 
-    kan färgerna visas felaktigt (t.ex. blå istället för röd).
+    Draw a background rectangle and overlay text on a frame.
+    Default values for text_colour is Blue and for background is grey.
     """
     try:
-        # Check if the frame has 4 channels (RGBA) and convert to RGB
-        # if frame.shape[-1] == 4:  # RGBA
-        #    frame = cv2.cvtColor(frame, cv2.COLOR_RGBA2RGB)
-
-        # Convert the frame to BGR format (OpenCV uses BGR by default)
-        # frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
+        # OpenCV uses BGR by default, ensure colours are set in BGR format
 
         # Calculate text size
         text_size = cv2.getTextSize(text, font, font_scale, thickness)[0]
