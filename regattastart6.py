@@ -2,12 +2,12 @@
 # after git pull, do: sudo cp regattastart6.py /usr/lib/cgi-bin/
 from common_module import (
     setup_camera,
+    capture_picture,
     start_video_recording,
     stop_video_recording,
     logger,
     setup_gpio,
     trigger_relay,
-    text_rectangle,
     process_video,
 )
 import os
@@ -45,33 +45,6 @@ def remove_video_files(directory, pattern):
         if file.startswith(pattern):
             file_path = os.path.join(directory, file)
             os.remove(file_path)
-
-
-def capture_picture(camera, photo_path, file_name):
-    request = camera.capture_request()  # Capture a single request
-    with MappedArray(request, "main") as m:
-        frame = m.array  # Get the frame as a NumPy array
-
-        # Convert the frame to BGR format (OpenCV uses BGR by default)
-        # frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
-
-        # Apply timestamp (reuse the same logic as in apply_timestamp)
-        timestamp = time.strftime("%Y-%m-%d %X")
-        origin = (40, max(50, frame.shape[0] - 50))  # Bottom-left corner of the text
-        text_colour = (255, 0, 0)  # Blue text in BGR
-        bg_colour = (200, 200, 200)  # Gray background
-
-        # Use text_rectangle to draw the timestamp
-        text_rectangle(frame, timestamp, origin, text_colour, bg_colour)
-
-        # Rotate the frame by 180 degrees
-        # rotated_frame = cv2.rotate(frame, cv2.ROTATE_180)
-        # cv2.imwrite(os.path.join(photo_path, file_name), rotated_frame)
-        # Save the frame to the file
-        cv2.imwrite(os.path.join(photo_path, file_name), frame)
-
-    request.release()
-    logger.info(f'Captured picture: {file_name}')
 
 
 def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo_path):
