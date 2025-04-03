@@ -4,15 +4,15 @@
     header("Access-Control-Allow-Headers: *");
     // after "git pull", "sudo cp /home/pi/Regattastart/index.php /var/www/html/"
     define('APP_VERSION', '2025.03.26'); // You can replace '1.0.0' with your desired version number
+
+    ini_set('session.gc_maxlifetime', 86400); // 24 hours
+    session_set_cookie_params(86400); // 24 hours
+
+    session_start();
     session_id("regattastart");
     session_start();
     ini_set('display_errors', 1); 
     error_reporting(E_ALL);
-?>
-<?php
-    ini_set('session.gc_maxlifetime', 86400); // 24 hours
-    session_set_cookie_params(86400); // 24 hours
-    session_start();
 ?>
 
 <?php
