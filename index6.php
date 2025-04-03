@@ -10,6 +10,11 @@
     error_reporting(E_ALL);
 ?>
 <?php
+    ini_set('session.gc_maxlifetime', 86400); // 24 hours
+    session_set_cookie_params(86400); // 24 hours
+    session_start();
+?>
+<?php
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Process and store the form data
         $_SESSION["form_data"] = $_POST;
