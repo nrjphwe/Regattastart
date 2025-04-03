@@ -45,6 +45,11 @@
     $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data"]["num_starts"] : "";
 
 ?>
+<?php
+    ini_set('session.gc_maxlifetime', 86400); // 24 hours
+    session_set_cookie_params(86400); // 24 hours
+    session_start();
+?>
 <!DOCTYPE html>
 <head>
     <meta charset="UTF-8">
