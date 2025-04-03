@@ -99,10 +99,10 @@ def text_rectangle(frame, text, origin, text_colour=(255, 0, 0), bg_colour=(200,
 
         # Overlay the text on top of the background
         cv2.putText(frame, text, origin, font, font_scale, text_colour, thickness, cv2.LINE_AA)
+        logger.debug(f"text_rectangle called with text_colour: {text_colour}")
 
     except Exception as e:
         logger.error(f"Error in text_rectangle: {e}", exc_info=True)
-    logger.debug(f"Frame shape after conversion: {frame.shape}, dtype: {frame.dtype}")
 
 
 def apply_timestamp(request):
