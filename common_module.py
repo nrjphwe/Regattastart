@@ -80,11 +80,11 @@ def text_rectangle(frame, text, origin, text_colour=(255, 0, 0), bg_colour=(200,
     """
     try:
         # Check if the frame has 4 channels (RGBA) and convert to RGB
-        #if frame.shape[-1] == 4:  # RGBA
+        # if frame.shape[-1] == 4:  # RGBA
         #    frame = cv2.cvtColor(frame, cv2.COLOR_RGBA2RGB)
 
         # Convert the frame to BGR format (OpenCV uses BGR by default)
-        #frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
+        # frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
 
         # Calculate text size
         text_size = cv2.getTextSize(text, font, font_scale, thickness)[0]
