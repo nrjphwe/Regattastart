@@ -154,6 +154,7 @@
         // regattastart9 is executing and num_video is set to 1 as a flag.
         // This function checks if the variable $num_video is set
         $num_video = isset($num_video) ? $num_video : 1;
+        console_log("num_video = $num_video"); // Log the value of $num_video
     ?>
     <!-- Header content -->
     <header>
