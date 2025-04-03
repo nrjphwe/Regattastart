@@ -74,6 +74,28 @@ def setup_camera():
         return None
 
 
+def capture_picture(camera, photo_path, file_name):
+    request = camera.capture_request()  # Capture a single request
+    with MappedArray(request, "main") as m:
+        frame = m.array  # Get the frame as a NumPy array
+
+        # Apply timestamp (reuse the same logic as in apply_timestamp)
+        timestamp = time.strftime("%Y-%m-%d %X")
+        origin = (40, max(50, frame.shape[0] - 50))  # Bottom-left corner of the text
+        text_colour = (255, 0, 0)  # Blue text in BGR, RGB = (0, 0, 255)
+        bg_colour = (200, 200, 200)  # Gray background
+
+        # Use text_rectangle function in common_module to draw the timestamp
+        text_rectangle(frame, timestamp, origin, text_colour, bg_colour)
+
+        # rotated_frame = cv2.rotate(frame, cv2.ROTATE_180)
+        # cv2.imwrite(os.path.join(photo_path, file_name), rotated_frame)
+        cv2.imwrite(os.path.join(photo_path, file_name), frame)
+
+    request.release()
+    logger.info(f'Captured picture: {file_name}')
+
+
 def text_rectangle(frame, text, origin, text_colour=(255, 0, 0), bg_colour=(200, 200, 200), font=FONT, font_scale=FONT_SCALE, thickness=THICKNESS):
     """
     Draw a background rectangle and overlay text on a frame.
