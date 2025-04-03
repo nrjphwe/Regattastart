@@ -2,12 +2,12 @@
 # after git pull, do: sudo cp regattastart9.py /usr/lib/cgi-bin/
 from common_module import (
     setup_camera,
+     capture_picture,
     start_video_recording,
     stop_video_recording,
     logger,
     setup_gpio,
     trigger_relay,
-    text_rectangle,
     process_video,
 )
 import os
@@ -182,19 +182,6 @@ def measure_frame_rate(cam, duration=5):
     avg_frame_rate = 1 / (sum(intervals) / len(intervals)) if intervals else 0
 
     return avg_frame_rate
-
-
-def capture_picture(camera, photo_path, file_name):
-    request = camera.capture_request()  # Capture a single request
-    with MappedArray(request, "main") as m:
-        frame = m.array  # Get the frame as a NumPy array
-        # Rotate the frame by 180 degrees
-        # rotated_frame = cv2.rotate(frame, cv2.ROTATE_180)
-        # Save the frame to the file
-        # cv2.imwrite(os.path.join(photo_path, file_name), rotated_frame)
-        cv2.imwrite(os.path.join(photo_path, file_name), frame)
-    request.release()
-    logger.info("Captured picture = %s", file_name)
 
 
 def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo_path):
