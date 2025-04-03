@@ -116,9 +116,10 @@ def apply_timestamp(request):
 
             # Define text position
             origin = (40, max(50, frame.shape[0] - 50))  # Bottom-left corner of the text
+            text_colour = (0, 0, 255)  # Red text in BGR
 
             # Use text_rectangle to draw the timestamp
-            text_rectangle(frame, timestamp, origin)
+            text_rectangle(frame, timestamp, origin, text_colour)
 
     except Exception as e:
         logger.error(f"Error in apply_timestamp: {e}", exc_info=True)
