@@ -4,6 +4,7 @@ import logging
 import logging.config
 from picamera2 import Picamera2, MappedArray
 from picamera2.encoders import H264Encoder
+from libcamera import Transform
 import RPi.GPIO as GPIO
 import cv2
 
@@ -63,11 +64,14 @@ def setup_camera():
     global logger  # Explicitly declare logger as global
     try:
         camera = Picamera2()
-        camera.resolution = (1296, 730)
-        camera.framerate = 5
-        # rotation = 180  # Rotate the camera output by 180 degrees
-        # camera.rotation = rotation  # Rotate the camera output by 180 degrees
-        # logger.debug(f"Camera rotation set to {rotation} degrees.")
+        config = camera.create_still_configuration(
+            main={"size": (1296, 730), "format": "RGB888"},
+            transform=Transform(hflip=True, vflip=True)  # Apply 180-degree rotation
+        )
+        camera.configure(config)
+        # camera.resolution = (1296, 730)
+        # camera.framerate = 5
+        
         return camera  # Add this line to return the camera object
     except Exception as e:
         logger.error(f"Failed to initialize camera: {e}")
@@ -76,9 +80,9 @@ def setup_camera():
 
 def capture_picture(camera, photo_path, file_name):
     request = camera.capture_request()  # Capture a single request
+
     with MappedArray(request, "main") as m:
         frame = m.array  # Get the frame as a NumPy array
-
         # Apply timestamp (reuse the same logic as in apply_timestamp)
         timestamp = time.strftime("%Y-%m-%d %X")
         origin = (40, max(50, frame.shape[0] - 50))  # Bottom-left corner of the text
