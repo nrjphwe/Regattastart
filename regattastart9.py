@@ -108,7 +108,7 @@ def setup_picam2(resolution=(1920, 1080), fps=5):
         config = cam.create_video_configuration(
             main={"size": resolution, "format": "RGB888"},
             controls={"FrameRate": fps},
-            transform=Transform(hflip=True, vflip=True)  # Apply horizontal and vertical flips
+            # transform=Transform(hflip=True, vflip=True)  # Apply horizontal and vertical flips
         )
         logger.debug(f"Config before applying: {config}")
         cam.configure(config)
@@ -151,7 +151,7 @@ def restart_camera(cam, resolution=(1920, 1080), fps=5):
         config = cam.create_video_configuration(
             main={"size": best_mode["size"], "format": "RGB888"},
             controls={"FrameRate": fps},
-            transform=Transform(hflip=True, vflip=True)
+            # transform=Transform(hflip=True, vflip=True)
         )
         logger.debug(f"Config before applying: {config}")
         cam.configure(config)
