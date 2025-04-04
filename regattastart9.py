@@ -126,6 +126,12 @@ def setup_picam2(resolution=(1920, 1080), fps=5):
 def restart_camera(cam, resolution=(1920, 1080), fps=5):
     time.sleep(2)  # Ensure the camera is fully released
     try:
+        if cam is not None:
+            cam.stop()
+            cam.close()
+            logger.info("Previous camera instance stopped and closed.")
+        time.sleep(2)  # Ensure the camera is fully released
+
         cam = Picamera2()
         logger.info("New Picamera2 instance created.")
         time.sleep(2)
@@ -149,10 +155,6 @@ def restart_camera(cam, resolution=(1920, 1080), fps=5):
         )
         logger.debug(f"Config before applying: {config}")
         cam.configure(config)
-
-        if cam is None:
-            logger.error("Exit if camera object is None before starting.")
-            return
 
         cam.start()
         logger.info(f"Camera restarted with resolution {best_mode['size']} and FPS: {fps}.")
