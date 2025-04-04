@@ -66,12 +66,12 @@ def setup_camera():
         camera = Picamera2()
         config = camera.create_still_configuration(
             main={"size": (1296, 730), "format": "RGB888"},
-            transform=Transform(hflip=True, vflip=True)  # Apply 180-degree rotation
+            # transform=Transform(hflip=True, vflip=True)  # Apply 180-degree rotation
         )
         camera.configure(config)
         # camera.resolution = (1296, 730)
         # camera.framerate = 5
-        
+
         return camera  # Add this line to return the camera object
     except Exception as e:
         logger.error(f"Failed to initialize camera: {e}")
