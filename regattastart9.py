@@ -339,17 +339,17 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec, fps
     max_duration = (video_end + (num_starts-1)*5) * 60
     logger.debug(f"Video1, max recording duration: {max_duration} seconds")
 
-     # Configure the camera to match the expected resolution and frame rate
+    # Configure the camera to match the expected resolution and frame rate
     try:
         video_config = cam.create_video_configuration(main={"size": (1920, 1080)}, controls={"FrameRate": fps})
         cam.configure(video_config)
         logger.info(f"Camera configured with resolution (1920, 1080) and frame rate {fps}.")
+        time.sleep(0.5)  # Add a short delay to ensure the camera is ready
     except Exception as e:
         logger.error(f"Failed to configure camera: {e}")
         return
 
-
-    #  New
+    # New
     # camera_start_time = time.time()  # Track the start time of the recording
 
     logger.debug(f"Camera object: {cam}")
@@ -357,7 +357,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec, fps
         logger.error("Camera object is None before restarting.")
         return
 
-    # cam = restart_camera(cam, resolution=(1920, 1080), fps=fps)
+    cam = restart_camera(cam, resolution=(1920, 1080), fps=fps)
 
     # Confirm cam is initialized
     if cam is None:
