@@ -2,7 +2,7 @@
 # after git pull, do: sudo cp regattastart9.py /usr/lib/cgi-bin/
 from common_module import (
     setup_camera,
-     capture_picture,
+    capture_picture,
     start_video_recording,
     stop_video_recording,
     logger,
@@ -50,8 +50,8 @@ warnings.filterwarnings(
     module=".*ultralytics_yolov5_master.*"
 )
 
-#picamera2_logger = logging.getLogger('picamera2')
-#picamera2_logger.setLevel(logging.ERROR)  # Change to ERROR to suppress more logs
+# picamera2_logger = logging.getLogger('picamera2')
+# picamera2_logger.setLevel(logging.ERROR)  # Change to ERROR to suppress more logs
 
 # parameter data
 fps = 10
@@ -339,9 +339,20 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec, fps
     max_duration = (video_end + (num_starts-1)*5) * 60
     logger.debug(f"Video1, max recording duration: {max_duration} seconds")
 
-    ## New
-    camera_start_time = time.time()  # Track the start time of the recording
+     # Configure the camera to match the expected resolution and frame rate
+    try:
+        video_config = cam.create_video_configuration(main={"size": (1920, 1080)}, controls={"FrameRate": fps})
+        cam.configure(video_config)
+        logger.info(f"Camera configured with resolution (1920, 1080) and frame rate {fps}.")
+    except Exception as e:
+        logger.error(f"Failed to configure camera: {e}")
+        return
 
+
+    #  New
+    # camera_start_time = time.time()  # Track the start time of the recording
+
+    logger.debug(f"Camera object: {cam}")
     if cam is None:
         logger.error("Camera object is None before restarting.")
         return
@@ -424,6 +435,12 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec, fps
     logger.info(f"scale_x = {scale_x}, scale_y= {scale_y}")
 
     while not recording_stopped:
+        #elapsed_time = time.time() - camera_start_time
+        #logger.debug(f"Elapsed time: {elapsed_time:.2f} seconds, Max duration: {max_duration}")
+        #if elapsed_time >= max_duration:
+        #    logger.warning("Timeout reached, stopping recording")
+        #    recording_stopped = True
+        #    break
         boat_in_current_frame = False  # Reset detection flag for this frame
         frame_counter += 1  # Increment the frame counter
 
@@ -575,7 +592,8 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec, fps
         recording_stopped = True
     if video_writer is not None:
         video_writer.release()  # Release the video writer
-    logger.info("video_writer release, exited the finish_recording module.")
+        logger.info("Video writer released")
+    logger.info("Exited the finish_recording module.")
 
 
 def stop_listen_thread():
