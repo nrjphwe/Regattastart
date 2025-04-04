@@ -65,9 +65,9 @@ def setup_camera():
         camera = Picamera2()
         camera.resolution = (1296, 730)
         camera.framerate = 5
-        rotation = 180  # Rotate the camera output by 180 degrees
-        camera.rotation = rotation  # Rotate the camera output by 180 degrees
-        logger.debug(f"Camera rotation set to {rotation} degrees.")
+        # rotation = 180  # Rotate the camera output by 180 degrees
+        # camera.rotation = rotation  # Rotate the camera output by 180 degrees
+        # logger.debug(f"Camera rotation set to {rotation} degrees.")
         return camera  # Add this line to return the camera object
     except Exception as e:
         logger.error(f"Failed to initialize camera: {e}")
