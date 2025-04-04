@@ -330,7 +330,7 @@ def cleanup_processed_timestamps(processed_timestamps, threshold_seconds=30):
     logger.debug(f"Cleaned up {removed_count} old timestamps.")
 
 
-def finish_recording(cam, video_path, num_starts, video_end, start_time_sec,fps):
+def finish_recording(cam, video_path, num_starts, video_end, start_time_sec, fps):
     global recording_stopped
     confidence = 0.0  # Initial value
     class_name = ""  # Initial value
@@ -339,8 +339,12 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec,fps)
     max_duration = (video_end + (num_starts-1)*5) * 60
     logger.debug(f"Video1, max recording duration: {max_duration} seconds")
 
+    ## New
+    camera_start_time = time.time()  # Track the start time of the recording
+
     if cam is None:
         logger.error("Camera object is None before restarting.")
+        return
 
     # cam = restart_camera(cam, resolution=(1920, 1080), fps=fps)
 
@@ -434,7 +438,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec,fps)
 
             if previous_capture_time:
                 time_diff = (capture_timestamp - previous_capture_time).total_seconds()
-                logger.debug(f"QQQ  Time since last frame: {time_diff:.3f} sec")
+                logger.debug(f"Time since last frame: {time_diff:.3f} sec")
 
             previous_capture_time = capture_timestamp  # Update for next iteration
 
@@ -558,14 +562,17 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec,fps)
         time_now = dt.datetime.now()
         seconds_since_midnight = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
         elapsed_time = seconds_since_midnight - start_time_sec
+        logger.debug(f"Elapsed time since start: {elapsed_time} seconds")
         if elapsed_time >= max_duration:
             logger.debug(f"Maximum recording time reached, elapsed _time={elapsed_time}")
             recording_stopped = True
 
     if recording_stopped:
         logger.info('Video1 recording stopped')
-
-    stop_video_recording(cam)
+    else:
+        logger.info("Calling stop_video_recording")
+        stop_video_recording(cam)
+        recording_stopped = True
     if video_writer is not None:
         video_writer.release()  # Release the video writer
     logger.info("video_writer release, exited the finish_recording module.")
