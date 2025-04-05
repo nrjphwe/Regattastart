@@ -47,7 +47,7 @@ warnings.filterwarnings(
     "ignore",
     message="`torch.cuda.amp.autocast(args...)` is deprecated",
     category=FutureWarning,
-    module=".*ultralytics_yolov5_master.*"
+    module=".*ultralytics_yolov5_master.models.common*"
 )
 
 # picamera2_logger = logging.getLogger('picamera2')
