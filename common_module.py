@@ -95,8 +95,8 @@ def capture_picture(camera, photo_path, file_name):
         # Use text_rectangle function in common_module to draw the timestamp
         text_rectangle(frame, timestamp, origin, text_colour, bg_colour)
 
-        # rotated_frame = cv2.rotate(frame, cv2.ROTATE_180)
-        # cv2.imwrite(os.path.join(photo_path, file_name), rotated_frame)
+        rotated_frame = cv2.rotate(frame, cv2.ROTATE_180)
+        cv2.imwrite(os.path.join(photo_path, file_name), rotated_frame)
         cv2.imwrite(os.path.join(photo_path, file_name), frame)
 
     request.release()
