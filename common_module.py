@@ -149,7 +149,7 @@ def apply_timestamp(request):
         logger.error(f"Error in apply_timestamp: {e}", exc_info=True)
 
 
-def start_video_recording(cam, video_path, file_name, bitrate=2000000):
+def start_video_recording(camera, video_path, file_name, bitrate=2000000):
     """
     Start video recording using H264Encoder and with timestamp.
     """
@@ -158,11 +158,15 @@ def start_video_recording(cam, video_path, file_name, bitrate=2000000):
     encoder = H264Encoder(bitrate=bitrate)
 
     # Set the pre_callback to apply the timestamp
-    cam.pre_callback = apply_timestamp
+    setup_camera.pre_callback = apply_timestamp
 
-    video_config = cam.create_video_configuration(main={"size": (1296, 730)}, controls={"FrameRate": 5})
-    cam.configure(video_config)  # Configure before starting recording
-    cam.start_recording(encoder, output_file)
+    video_config = camera.create_video_configuration(
+        main={"size": (1296, 730), "format": "RGB888"},
+        transform=Transform(hflip=True, vflip=True)  # Apply 180-degree rotation
+        )
+    # video_config = cam.create_video_configuration(main={"size": (1296, 730)}, controls={"FrameRate": 5})
+    camera.configure(video_config)  # Configure before starting recording
+    camera.start_recording(encoder, output_file)
     logger.info(f"Started recording video: {output_file}")
 
 
