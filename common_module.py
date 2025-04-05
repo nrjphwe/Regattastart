@@ -64,9 +64,10 @@ def setup_camera():
     global logger  # Explicitly declare logger as global
     try:
         camera = Picamera2()
+        # regattastart6 needs the camera to be flipped 180 degrees   
         config = camera.create_still_configuration(
             main={"size": (1296, 730), "format": "RGB888"},
-            # transform=Transform(hflip=True, vflip=True)  # Apply 180-degree rotation
+            transform=Transform(hflip=True, vflip=True)  # Apply 180-degree rotation
         )
         camera.configure(config)
         # camera.resolution = (1296, 730)
