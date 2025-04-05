@@ -320,7 +320,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
     # Configure the camera to match the expected resolution and frame rate
     try:
         video_config = camera.create_video_configuration(
-            main={"size":(1920, 1080)}, controls={"FrameRate": fps},
+            main={"size": (1920, 1080)}, controls={"FrameRate": fps},
             transform=Transform(hflip=True, vflip=True)
         )
         camera.configure(video_config)
