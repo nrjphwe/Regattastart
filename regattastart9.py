@@ -102,42 +102,21 @@ def remove_video_files(directory, pattern):
             os.remove(file_path)
 
 
-def setup_picam2(resolution=(1920, 1080), fps=5):
-    try:
-        cam = Picamera2()
-        config = cam.create_video_configuration(
-            main={"size": resolution, "format": "RGB888"},
-            controls={"FrameRate": fps},
-            # transform=Transform(hflip=True, vflip=True)  # Apply horizontal and vertical flips
-        )
-        logger.debug(f"Config before applying: {config}")
-        cam.configure(config)
-        # Apply 180-degree rotation by flipping horizontally and vertically
-        # cam.set_controls({"Transform": {"hflip": True, "vflip": True}})
-        cam.start()
-
-        logger.info(f"Camera started with resolution {resolution} and FPS: {fps}.")
-        return cam  # Ensure it returns a valid camera object
-    except Exception as e:
-        logger.error(f"Failed to initialize camera: {e}")
-        return None  # Avoid using an uninitialized camera
-
-
-def restart_camera(cam, resolution=(1920, 1080), fps=5):
+def restart_camera(camera, resolution=(1920, 1080), fps=5):
     time.sleep(2)  # Ensure the camera is fully released
     try:
-        if cam is not None:
-            cam.stop()
-            cam.close()
+        if camera is not None:
+            camera.stop()
+            camera.close()
             logger.info("Previous camera instance stopped and closed.")
         time.sleep(2)  # Ensure the camera is fully released
 
-        cam = Picamera2()
+        camera = Picamera2()
         logger.info("New Picamera2 instance created.")
         time.sleep(2)
 
         # List available sensor modes
-        sensor_modes = cam.sensor_modes
+        sensor_modes = camera.sensor_modes
         if not sensor_modes:
             logger.error("No sensor modes available. Camera may not be detected!")
             return None
@@ -148,30 +127,30 @@ def restart_camera(cam, resolution=(1920, 1080), fps=5):
         best_mode = min(sensor_modes, key=lambda m: abs(m["size"][0] - resolution[0]) + abs(m["size"][1] - resolution[1]))
         logger.debug(f"Using sensor mode: {best_mode}")
 
-        config = cam.create_video_configuration(
+        config = camera.create_video_configuration(
             main={"size": best_mode["size"], "format": "RGB888"},
             controls={"FrameRate": fps},
-            # transform=Transform(hflip=True, vflip=True)
+            transform=Transform(hflip=True, vflip=True)
         )
         logger.debug(f"Config before applying: {config}")
-        cam.configure(config)
+        camera.configure(config)
 
-        cam.start()
+        camera.start()
         logger.info(f"Camera restarted with resolution {best_mode['size']} and FPS: {fps}.")
-        return cam  # Return new camera instance
+        return camera  # Return new camera instance
 
     except Exception as e:
         logger.error(f"Failed to restart camera: {e}")
         return None  # Avoid using an uninitialized camera
 
 
-def measure_frame_rate(cam, duration=5):
+def measure_frame_rate(camera, duration=5):
     frame_timestamps = []
     start_time = time.time()
 
     while time.time() - start_time < duration:
         try:
-            frame = cam.capture_array()
+            frame = camera.capture_array()
             if frame is None:
                 frame_timestamps.append(time.time())  # Record the timestamp
 
@@ -329,7 +308,7 @@ def cleanup_processed_timestamps(processed_timestamps, threshold_seconds=30):
     logger.debug(f"Cleaned up {removed_count} old timestamps.")
 
 
-def finish_recording(cam, video_path, num_starts, video_end, start_time_sec, fps):
+def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, fps):
     global recording_stopped
     confidence = 0.0  # Initial value
     class_name = ""  # Initial value
@@ -340,8 +319,11 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec, fps
 
     # Configure the camera to match the expected resolution and frame rate
     try:
-        video_config = cam.create_video_configuration(main={"size": (1920, 1080)}, controls={"FrameRate": fps})
-        cam.configure(video_config)
+        video_config = camera.create_video_configuration(
+            main={"size":(1920, 1080)}, controls={"FrameRate": fps},
+            transform=Transform(hflip=True, vflip=True)
+        )
+        camera.configure(video_config)
         logger.info(f"Camera configured with resolution (1920, 1080) and frame rate {fps}.")
         time.sleep(0.5)  # Add a short delay to ensure the camera is ready
     except Exception as e:
@@ -351,20 +333,20 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec, fps
     # New
     # camera_start_time = time.time()  # Track the start time of the recording
 
-    logger.debug(f"Camera object: {cam}")
-    if cam is None:
+    logger.debug(f"Camera object: {camera}")
+    if camera is None:
         logger.error("Camera object is None before restarting.")
         return
 
-    cam = restart_camera(cam, resolution=(1920, 1080), fps=fps)
+    camera = restart_camera(camera, resolution=(1920, 1080), fps=fps)
 
     # Confirm cam is initialized
-    if cam is None:
+    if camera is None:
         logger.error("Camera restart failed, exiting.")
         return  # Prevents crashing if camera restart fails
 
     # Confirm resolution before proceeding
-    frame = cam.capture_array()
+    frame = camera.capture_array()
     if frame is None:
         logger.error("First captured frame is None! Exiting video recording.")
         return
@@ -434,9 +416,9 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec, fps
     logger.info(f"scale_x = {scale_x}, scale_y= {scale_y}")
 
     while not recording_stopped:
-        #elapsed_time = time.time() - camera_start_time
-        #logger.debug(f"Elapsed time: {elapsed_time:.2f} seconds, Max duration: {max_duration}")
-        #if elapsed_time >= max_duration:
+        # elapsed_time = time.time() - camera_start_time
+        # logger.debug(f"Elapsed time: {elapsed_time:.2f} seconds, Max duration: {max_duration}")
+        # if elapsed_time >= max_duration:
         #    logger.warning("Timeout reached, stopping recording")
         #    recording_stopped = True
         #    break
@@ -445,7 +427,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec, fps
 
         # Capture a frame from the camera
         try:
-            frame = cam.capture_array()
+            frame = camera.capture_array()
             if frame is None:
                 logger.error("Captured frame is None! Skipping write.")
                 continue
@@ -587,7 +569,7 @@ def finish_recording(cam, video_path, num_starts, video_end, start_time_sec, fps
         logger.info('Video1 recording stopped')
     else:
         logger.info("Calling stop_video_recording")
-        stop_video_recording(cam)
+        stop_video_recording(camera)
         recording_stopped = True
     if video_writer is not None:
         video_writer.release()  # Release the video writer
@@ -605,9 +587,9 @@ def stop_listen_thread():
 def main():
     stop_event = threading.Event()
     global listening  # Declare listening as global
-    # cam = setup_picam2(resolution=(1920, 1080), fps=fps)
-    cam = setup_camera()
-    if cam is None:
+    # camera = setup_picam2(resolution=(1920, 1080), fps=fps)
+    camera = setup_camera()
+    if camera is None:
         logger.error("Camera setup failed, exiting.")
         exit()
     listening = True  # Initialize the global listening flag
@@ -652,9 +634,9 @@ def main():
                     if num_starts == 1 or num_starts == 2:
                         # Start video recording just before 5 minutes before the first start
                         logger.debug("Start of video0 recording")
-                        start_video_recording(cam, video_path, "video0.avi", bitrate=2000000)
+                        start_video_recording(camera, video_path, "video0.avi", bitrate=2000000)
                         logger.debug("Inner loop, entering the start sequence block.")
-                        start_sequence(cam, start_time_sec, num_starts, dur_between_starts, photo_path)
+                        start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo_path)
                         if num_starts == 2:
                             start_time_sec = start_time_sec + (dur_between_starts * 60)
                         logger.debug("Wait 2 minutes then stop video0 recording")
@@ -664,7 +646,7 @@ def main():
                         while ((dt.datetime.now() - t0).seconds < 119):
                             now = dt.datetime.now()
                             time.sleep(0.2)  # Small delay to reduce CPU usage
-                        stop_video_recording(cam)
+                        stop_video_recording(camera)
                         logger.debug("Stopping video0 recording")
                         process_video(video_path, "video0.avi", "video0.mp4", frame_rate=30)
                         logger.debug("Video0 converted to mp4")
@@ -682,7 +664,7 @@ def main():
         listen_thread.start()
         logger.info("Finally section, before 'Finish recording'. start_time=%s video_end=%s", start_time, video_end)
         time.sleep(2)
-        finish_recording(cam, video_path, num_starts, video_end, start_time_sec, fps)
+        finish_recording(camera, video_path, num_starts, video_end, start_time_sec, fps)
         logger.info("After function finished_recording")
         try:
             stop_event.set()  # Signal the listening thread to stop
@@ -705,8 +687,8 @@ def main():
 
         finally:
             try:
-                stop_video_recording(cam)
-                cam.close()
+                stop_video_recording(camera)
+                camera.close()
                 logger.info("Camera closed successfully.")
             except Exception as e:
                 logger.error(f"Error while cleaning up camera: {e}")
