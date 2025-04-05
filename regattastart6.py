@@ -56,7 +56,6 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
             logger.info(f"Start_sequence, Next start_time_sec: {start_time_sec}")
 
         # Define time intervals for each relay trigger
-
         time_intervals = [
             (start_time_sec - 5 * 60, lambda: trigger_relay(LAMP1, "on"), "5_min Lamp1 ON -- Flag O UP"),
             (start_time_sec - 5 * 60 + 1, lambda: trigger_relay(SIGNAL, "on", 1), "5_min Warning Signal"),
@@ -77,15 +76,14 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
             if seconds_since_midnight >= start_time_sec:
                 break  # Exit the loop if the condition is met
 
-            for seconds, action, log_message in time_intervals:
-                # camera.annotate_text = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            for event_time, action, log_message in time_intervals:
                 time_now = dt.datetime.now()
                 seconds_now = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
 
                 # Check if the event should be triggered based on the current time
-                if seconds_now == seconds:
+                if seconds_now == event_time:
                     # Check if the event has already been triggered for this time interval
-                    if (seconds, log_message) not in last_triggered_events:
+                    if (event_time, log_message) not in last_triggered_events:
                         logger.info(f"Start_sequence, Triggering event at seconds_now: {seconds_now}")
                         if action:
                             action()
@@ -95,7 +93,7 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
                         logger.info(f"Start_sequence, seconds_since_midnight: {seconds_since_midnight}, start_time_sec: {start_time_sec}")
                         # Record that the event has been triggered for this time interval
                         logger.info(f'last_triggered_events = {last_triggered_events}')
-                    last_triggered_events[(seconds, log_message)] = True
+                    last_triggered_events[(event_time, log_message)] = True
         logger.info(f"Start_sequence, End of iteration: {i}")
 
 
