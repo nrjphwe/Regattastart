@@ -189,8 +189,9 @@ def measure_frame_rate(cam, duration=5):
 def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo_path):
     for i in range(num_starts):
         logger.info(f"Start_sequence. Start of iteration {i+1}")
-        iteration_start_time = start_time_sec + (i) * dur_between_starts * 60
-        logger.info(f"Start_sequence. Iteration {i+1}, iteration_start time: {iteration_start_time}")
+        if i == 1:
+            start_time_sec += dur_between_starts * 60  # Add 5 or 10 minutes for the second iteration
+            logger.info(f"Start_sequence, Next start_time_sec: {start_time_sec}")
 
         # Define time intervals for each relay trigger
         time_intervals = [
@@ -205,39 +206,35 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
         ]
 
         last_triggered_events = {}
-        time_now = dt.datetime.now()
-        seconds_now = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
 
-        # Adjust this value based on acceptable precision
-        TIME_TOLERANCE = 1
-
-        while seconds_now < iteration_start_time:
-            for event_time, action, log_message in time_intervals:
-                if abs(seconds_now - event_time) <= TIME_TOLERANCE and (event_time, log_message) not in last_triggered_events:
-                    logger.info(f"Start_sequence: {log_message} at {event_time}")
-                    if action:
-                        action()
-                        picture_name = f"{i + 1}a_start_{log_message[:5]}.jpg"
-                        try:
-                            capture_picture(camera, photo_path, picture_name)
-                            logger.info(f"Start_sequence, Captured picture: {picture_name}")
-                        except Exception as e:
-                            logger.error(f"Failed to capture picture {picture_name}: {e}")
-                            break
-                    last_triggered_events[(event_time, log_message)] = True
-
-            # Sleep until the next event time
-            future_events = [t for t, _, _ in time_intervals if t > seconds_now]
-            if future_events:
-                next_event_time = min(future_events)
-                sleep_duration = max(0.1, next_event_time - seconds_now)
-                logger.debug(f"Sleeping for {sleep_duration} seconds until next event.")
-                time.sleep(sleep_duration)
-
-            # Update current time
+        while True:
             time_now = dt.datetime.now()
-            seconds_now = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
-        logger.info(f"End of iteration {i + 1}")
+            seconds_since_midnight = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
+
+            if seconds_since_midnight >= start_time_sec:
+                break  # Exit the loop if the condition is met
+
+            # Adjust this value based on acceptable precision
+            # TIME_TOLERANCE = 1
+
+            for event_time, action, log_message in time_intervals:
+                time_now = dt.datetime.now()
+                seconds_now = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
+
+                if seconds_now == event_time:
+                    # Check if the event should be triggered based on the current time
+                    if (event_time, log_message) not in last_triggered_events:
+                        logger.info(f"Start_sequence: {log_message} at {event_time}")
+                        if action:
+                            action()
+                        picture_name = f"{i + 1}a_start_{log_message[:5]}.jpg"
+                        capture_picture(camera, photo_path, picture_name)
+                        logger.info(f"Start_sequence, log_message: {log_message}")
+                        logger.info(f"Start_sequence, seconds_since_midnight: {seconds_since_midnight}, start_time_sec: {start_time_sec}")
+                        # Record that the event has been triggered for this time interval
+                        logger.info(f'last_triggered_events = {last_triggered_events}')
+                    last_triggered_events[(event_time, log_message)] = True
+        logger.info(f"Start_sequence, End of iteration: {i}")
 
 
 def apply_timestamp(request):
