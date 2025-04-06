@@ -131,11 +131,9 @@ def apply_timestamp(request):
             if frame is None or frame.shape[0] == 0:
                 logger.error("apply_timestamp: Frame is None or empty!")
                 return
-
             # Define text position
             origin = (40, max(50, frame.shape[0] - 50))  # Bottom-left corner
             text_colour = (0, 0, 255)  # Red text in BGR
-
             # Use text_rectangle to draw the timestamp
             text_rectangle(frame, timestamp, origin, text_colour)
 
@@ -155,11 +153,12 @@ def start_video_recording(camera, video_path, file_name, bitrate=2000000):
     setup_camera.pre_callback = apply_timestamp
 
     video_config = camera.create_video_configuration(
-        # main={"size": (1296, 730)},
-        main={"size": (1296, 730), "format": "RGB888"},
+        main={"size": (1296, 730)},
         transform=Transform(hflip=True, vflip=True),  # Rotate 180-degree
         controls={"FrameRate": 5}
         )
+    logger.debug(f"Video configuration: {video_config}")
+    # main={"size": (1296, 730), "format": "RGB888"},
     # video_config = cam.create_video_configuration(main={"size": (1296, 730)}, controls={"FrameRate": 5})
     camera.configure(video_config)  # Configure before starting recording
     camera.start_recording(encoder, output_file)
