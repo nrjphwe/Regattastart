@@ -5,9 +5,8 @@
 
     define('APP_VERSION', '25.03.26'); // You can replace '1.0.0' with your desired version number
     // Set session lifetime to a day (86400 seconds)
+    session_set_cookie_params(86400); // 1 day    
     ini_set('session.gc_maxlifetime', 86400);
-    ini_set('session.cookie_lifetime', 86400);
-
     session_id("regattastart");
     session_start();
     ini_set('display_errors', 1);
