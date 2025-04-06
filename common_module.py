@@ -68,12 +68,6 @@ def setup_camera():
         config = camera.create_still_configuration(
             main={"size": (1296, 730)}
         )
-        #transform=Transform(hflip=True, vflip=True)  # Apply 180-degree rotation
-
-        #config = camera.create_still_configuration(
-        #    main={"size": (1296, 730), "format": "RGB888"},
-        #    transform=Transform(hflip=True, vflip=True)  # Apply 180-degree rotation
-        #)
         camera.configure(config)
         return camera  # Add this line to return the camera object
     except Exception as e:
@@ -81,26 +75,26 @@ def setup_camera():
         return None
 
 
-def capture_picture(camera, photo_path, file_name):
-    request = camera.capture_request()  # Capture a single request
+def capture_picture(camera, photo_path, file_name, rotate=True):
+    try:
+        request = camera.capture_request()  # Capture a single request
 
-    with MappedArray(request, "main") as m:
-        frame = m.array  # Get the frame as a NumPy array
-        # Apply timestamp (reuse the same logic as in apply_timestamp)
-        timestamp = time.strftime("%Y-%m-%d %X")
-        origin = (40, max(50, frame.shape[0] - 50))  # Bottom-left corner of the text
-        text_colour = (255, 0, 0)  # Blue text in BGR, RGB = (0, 0, 255)
-        bg_colour = (200, 200, 200)  # Gray background
-
-        # Use text_rectangle function in common_module to draw the timestamp
-        text_rectangle(frame, timestamp, origin, text_colour, bg_colour)
-
-        rotated_frame = cv2.rotate(frame, cv2.ROTATE_180)
-        cv2.imwrite(os.path.join(photo_path, file_name), rotated_frame)
-        cv2.imwrite(os.path.join(photo_path, file_name), frame)
-
-    request.release()
-    logger.info(f'Captured picture: {file_name}')
+        with MappedArray(request, "main") as m:
+            frame = m.array  # Get the frame as a NumPy array
+            # Apply timestamp (reuse the same logic as in apply_timestamp)
+            timestamp = time.strftime("%Y-%m-%d %X")
+            origin = (40, max(50, frame.shape[0] - 50))  # Bottom-left corner
+            text_colour = (255, 0, 0)  # Blue text in BGR, RGB = (0, 0, 255)
+            bg_colour = (200, 200, 200)  # Gray background
+            # Use text_rectangle function in common_module to draw the timestamp
+            text_rectangle(frame, timestamp, origin, text_colour, bg_colour)
+            if rotate:
+                frame = cv2.rotate(frame, cv2.ROTATE_180)
+            cv2.imwrite(os.path.join(photo_path, file_name), frame)
+        request.release()
+        logger.info(f'Captured picture: {file_name}')
+    except Exception as e:
+        logger.error(f"Failed to capture picture: {e}", exc_info=True)
 
 
 def text_rectangle(frame, text, origin, text_colour=(255, 0, 0), bg_colour=(200, 200, 200), font=FONT, font_scale=FONT_SCALE, thickness=THICKNESS):
