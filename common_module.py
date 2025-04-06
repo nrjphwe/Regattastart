@@ -155,8 +155,8 @@ def start_video_recording(camera, video_path, file_name, bitrate=2000000):
     setup_camera.pre_callback = apply_timestamp
 
     video_config = camera.create_video_configuration(
-        main={"size": (1296, 730)},
-        # main={"size": (1296, 730), "format": "RGB888"},
+        # main={"size": (1296, 730)},
+        main={"size": (1296, 730), "format": "RGB888"},
         transform=Transform(hflip=True, vflip=True),  # Rotate 180-degree
         controls={"FrameRate": 5}
         )
