@@ -122,7 +122,6 @@ def finish_recording(camera, video_path, video_delay, num_video, video_dur, star
 
 def main():
     camera = None  # Initialize the camera variable
-    signal = None  # Initialize the signal relay/variable
 
     try:
         form_data = json.loads(sys.argv[1])
