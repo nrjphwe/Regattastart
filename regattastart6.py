@@ -49,7 +49,7 @@ def remove_video_files(directory, pattern):
 
 def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo_path):
     for i in range(num_starts):
-        logger.info(f"  Line 119: Start_sequence. Start of iteration {i}")
+        logger.info(f"Start_sequence. Start of iteration {i}")
         # Adjust the start_time_sec for the second iteration
         if i == 1:
             start_time_sec += dur_between_starts * 60  # Add 5 or 10 minutes for the second iteration
@@ -80,19 +80,16 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
                 time_now = dt.datetime.now()
                 seconds_now = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
 
-                # Check if the event should be triggered based on the current time
                 if seconds_now == event_time:
-                    # Check if the event has already been triggered for this time interval
+                    # Check if the event should be triggered based on the current time
                     if (event_time, log_message) not in last_triggered_events:
-                        logger.info(f"Start_sequence, Triggering event at seconds_now: {seconds_now}")
+                        logger.info(f"Start_sequence: {log_message} at {event_time}")
                         if action:
                             action()
                         picture_name = f"{i + 1}a_start_{log_message[:5]}.jpg"
                         capture_picture(camera, photo_path, picture_name)
                         logger.info(f"Start_sequence, log_message: {log_message}")
-                        logger.info(f"Start_sequence, seconds_since_midnight: {seconds_since_midnight}, start_time_sec: {start_time_sec}")
-                        # Record that the event has been triggered for this time interval
-                        logger.info(f'last_triggered_events = {last_triggered_events}')
+                        # logger.info(f'last_triggered_events = {last_triggered_events}')
                     last_triggered_events[(event_time, log_message)] = True
         logger.info(f"Start_sequence, End of iteration: {i}")
 
@@ -150,13 +147,14 @@ def main():
         wd = dt.datetime.today().strftime("%A")
 
         if wd == week_day:
-            # A loop that waits until close to the 5-minute mark, a loop that continuously checks the 
-            # condition without blocking the execution completely
+            # A loop that waits until close to the 5-minute mark, a loop that 
+            # continuously checks the condition without blocking the execution 
+            # completely
             while True:
                 now = dt.datetime.now()
                 seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
 
-                if seconds_since_midnight > t5min_warning - 2:
+                if seconds_since_midnight > t5min_warning - 4:
                     logger.info(f'Start of outer loop iteration. seconds_since_midnight= {seconds_since_midnight}')
 
                     if num_starts == 1 or num_starts == 2:
