@@ -133,7 +133,7 @@ def apply_timestamp(request):
                 return
 
             # Define text position
-            origin = (40, max(50, frame.shape[0] - 50))  # Bottom-left corner of the text
+            origin = (40, max(50, frame.shape[0] - 50))  # Bottom-left corner
             text_colour = (0, 0, 255)  # Red text in BGR
 
             # Use text_rectangle to draw the timestamp
@@ -155,8 +155,10 @@ def start_video_recording(camera, video_path, file_name, bitrate=2000000):
     setup_camera.pre_callback = apply_timestamp
 
     video_config = camera.create_video_configuration(
-        main={"size": (1296, 730), "format": "RGB888"},
-        transform=Transform(hflip=True, vflip=True)  # Apply 180-degree rotation
+        main={"size": (1296, 730)},
+        # main={"size": (1296, 730), "format": "RGB888"},
+        transform=Transform(hflip=True, vflip=True),  # Rotate 180-degree
+        controls={"FrameRate": 5}
         )
     # video_config = cam.create_video_configuration(main={"size": (1296, 730)}, controls={"FrameRate": 5})
     camera.configure(video_config)  # Configure before starting recording
