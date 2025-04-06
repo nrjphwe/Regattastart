@@ -144,27 +144,6 @@ def restart_camera(camera, resolution=(1920, 1080), fps=5):
         return None  # Avoid using an uninitialized camera
 
 
-def measure_frame_rate(camera, duration=5):
-    frame_timestamps = []
-    start_time = time.time()
-
-    while time.time() - start_time < duration:
-        try:
-            frame = camera.capture_array()
-            if frame is None:
-                frame_timestamps.append(time.time())  # Record the timestamp
-
-        except Exception as e:
-            logger.error(f"Failed to capture frame: {e}")
-            return  # Skips this iteration but keeps running the loop
-
-    # Calculate frame intervals and average frame rate
-    intervals = [t2 - t1 for t1, t2 in zip(frame_timestamps[:-1], frame_timestamps[1:])]
-    avg_frame_rate = 1 / (sum(intervals) / len(intervals)) if intervals else 0
-
-    return avg_frame_rate
-
-
 def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo_path):
     for i in range(num_starts):
         logger.info(f"Start_sequence. Start of iteration {i+1}")
@@ -193,9 +172,6 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
             if seconds_since_midnight >= start_time_sec:
                 break  # Exit the loop if the condition is met
 
-            # Adjust this value based on acceptable precision
-            # TIME_TOLERANCE = 1
-
             for event_time, action, log_message in time_intervals:
                 time_now = dt.datetime.now()
                 seconds_now = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
@@ -209,13 +185,11 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
                         picture_name = f"{i + 1}a_start_{log_message[:5]}.jpg"
                         capture_picture(camera, photo_path, picture_name)
                         logger.info(f"Start_sequence, log_message: {log_message}")
-                        logger.info(f"Start_sequence, seconds_since_midnight: {seconds_since_midnight}, start_time_sec: {start_time_sec}")
-                        # Record that the event has been triggered for this time interval
-                        logger.info(f'last_triggered_events = {last_triggered_events}')
+                        # logger.info(f'last_triggered_events = {last_triggered_events}')
                     last_triggered_events[(event_time, log_message)] = True
         logger.info(f"Start_sequence, End of iteration: {i}")
 
-
+'''
 def apply_timestamp(request):
     timestamp = time.strftime("%Y-%m-%d %X")
     colour = (0, 255, 0)  # Green text
@@ -238,6 +212,7 @@ def apply_timestamp(request):
 
     except Exception as e:
         logger.error(f"Error in apply_timestamp: {e}", exc_info=True)
+'''
 
 
 def stop_recording():
