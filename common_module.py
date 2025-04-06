@@ -75,7 +75,7 @@ def setup_camera():
         return None
 
 
-def capture_picture(camera, photo_path, file_name, rotate=True):
+def capture_picture(camera, photo_path, file_name, rotate=False):
     try:
         request = camera.capture_request()  # Capture a single request
 
