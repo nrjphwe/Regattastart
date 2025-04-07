@@ -90,10 +90,9 @@ def capture_picture(camera, photo_path, file_name, rotate=False):
             # Apply timestamp (reuse the same logic as in apply_timestamp)
             timestamp = time.strftime("%Y-%m-%d %X")
             origin = (40, max(50, frame.shape[0] - 50))  # Bottom-left corner
-            text_colour = (255, 0, 0)  # Blue text in BGR
-            # text_colour = (0, 0, 255)  # Blue text RGB = (0, 0, 255)
+            text_colour = (255, 0, 0)  # Blue text in BGR, Blue text RGB = (0, 0, 255)
             bg_colour = (200, 200, 200)  # Gray background
-            # Use text_rectangle function in common_module to draw the timestamp
+            # Use text_rectangle function in common_module to draw timestamp
             text_rectangle(frame, timestamp, origin, text_colour, bg_colour)
             if rotate:
                 frame = cv2.rotate(frame, cv2.ROTATE_180)
@@ -155,16 +154,18 @@ def start_video_recording(camera, video_path, file_name, bitrate=2000000):
     logger.debug(f"Will start video rec. output file: {output_file}")
     encoder = H264Encoder(bitrate=bitrate)
 
-    # Set the pre_callback to apply the timestamp
-    setup_camera.pre_callback = apply_timestamp
-
     video_config = camera.create_video_configuration(
         main={"size": (1296, 730), "format": "BGR888"},
         transform=Transform(hflip=True, vflip=True),  # Rotate 180-degree
         controls={"FrameRate": 5}
         )
-    logger.debug(f"Video configuration: {video_config}")
     camera.configure(video_config)  # Configure before starting recording
+
+    # Set the pre_callback to apply the timestamp AFTER configuration
+    logger.debug("Setting pre_callback to apply_timestamp")
+    camera.pre_callback = apply_timestamp
+
+    # Start recording
     camera.start_recording(encoder, output_file)
     logger.info(f"Started recording video: {output_file}")
 
