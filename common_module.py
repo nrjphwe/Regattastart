@@ -66,7 +66,7 @@ def setup_camera():
         camera = Picamera2()
         # regattastart6 needs the camera to be flipped 180 degrees
         config = camera.create_still_configuration(
-            main={"size": (1296, 730)}
+            main={"size": (1296, 730), "format": "BGR888"}
         )
         camera.configure(config)
         return camera  # Add this line to return the camera object
@@ -143,7 +143,6 @@ def apply_timestamp(request):
             text_colour = (0, 0, 255)  # Red text in BGR
             # Use text_rectangle to draw the timestamp
             text_rectangle(frame, timestamp, origin, text_colour)
-
     except Exception as e:
         logger.error(f"Error in apply_timestamp: {e}", exc_info=True)
 
