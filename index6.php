@@ -1,13 +1,11 @@
 <?php
     define('APP_VERSION', '24.06.04'); // You can replace '1.0.0' with your desired version number
-    session_set_cookie_params(86400); // 24 hours
     ini_set('session.gc_maxlifetime', 86400); // 24 hours
-    session_id("regattastart");
-    session_start();
-    //print_r($_SESSION);
-    //echo "<br/>";
-    //print_r($_POST);
-    //echo "<br/>";
+    session_set_cookie_params(86400); // 24 hours
+    if (session_status() === PHP_SESSION_NONE) {
+        session_id("regattastart");
+        session_start();
+    }
     ini_set('display_errors', 1);
     error_reporting(E_ALL);
 ?>
