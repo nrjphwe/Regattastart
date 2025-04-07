@@ -313,7 +313,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
         logger.error("Camera object is None before restarting.")
         return
 
-    camera = restart_camera(camera, resolution=(1920, 1080), fps=fps)
+    #camera = restart_camera(camera, resolution=(1920, 1080), fps=fps)
 
     # Confirm cam is initialized
     if camera is None:
@@ -337,7 +337,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
     frame_height, frame_width = frame.shape[:2]  # shape = (height, width, channels)
     x_start = max((frame_width - crop_width) // 2 + shift_offset, 50)
     y_start = max((frame_height - crop_height) // 2, 0)
-    logger.info(f"shift_offset = {shift_offset}, x_start= {x_start}, y_start = {y_start}")
+    # logger.info(f"shift_offset = {shift_offset}, x_start= {x_start}, y_start = {y_start}")
 
     if frame_size[0] != 1920 or frame_size[1] != 1080:
         logger.error(f"Resolution mismatch! Expected (1920, 1080) but got {frame_size}.")
@@ -602,6 +602,7 @@ def main():
             while True:
                 now = dt.datetime.now()
                 seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
+
                 if seconds_since_midnight > t5min_warning - 4:
                     logger.debug("Start of outer loop iteration. seconds_since_midnight=%d", seconds_since_midnight)
                     logger.debug("start_time_sec=%d", start_time_sec)
