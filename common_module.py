@@ -81,10 +81,18 @@ def capture_picture(camera, photo_path, file_name, rotate=False):
 
         with MappedArray(request, "main") as m:
             frame = m.array  # Get the frame as a NumPy array
+
+            # Ensure the frame is in BGR format
+            if frame.shape[-1] == 3:  # Assuming 3 channels for RGB/BGR
+                logger.debug("Converting frame from RGB to BGR")
+                frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
+
+
             # Apply timestamp (reuse the same logic as in apply_timestamp)
             timestamp = time.strftime("%Y-%m-%d %X")
             origin = (40, max(50, frame.shape[0] - 50))  # Bottom-left corner
-            text_colour = (255, 0, 0)  # Blue text in BGR, RGB = (0, 0, 255)
+            # text_colour = (255, 0, 0)  # Blue text in BGR, RGB = (0, 0, 255)
+            text_colour = (0, 0, 255)  # Blue text in BGR, RGB = (0, 0, 255)
             bg_colour = (200, 200, 200)  # Gray background
             # Use text_rectangle function in common_module to draw the timestamp
             text_rectangle(frame, timestamp, origin, text_colour, bg_colour)
