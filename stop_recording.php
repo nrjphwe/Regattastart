@@ -1,5 +1,6 @@
 <?php
 // Specify the correct path to the named pipe
+// Ensure the named pipe has the correct permissions (chmod 666)
 $pipePath = '/var/www/html/tmp/stop_recording_pipe';
 include_once 'functions.php';
 // Open the named pipe for writing
@@ -10,22 +11,22 @@ if ($pipeHandle === false) {
     error_log('Stop_recording.php Failed to open named pipe: ' . $lastError['message']);
     die('Failed to open named pipe.');
 } else {
-    error_log('Stop_recording.php Line 22: Opened pipe handle successfully: ' . $pipeHandle);
+    error_log('Stop_recording.php Opened pipe handle successfully: ' . $pipeHandle);
 }
 
 $message = "stop_recording\n";
 if (fwrite($pipeHandle, $message) === false) {
     // Log error if writing to pipe fails
-    error_log('Stop_recording.php Line 28: Failed to write message to named pipe.');
+    error_log('Stop_recording.php Failed to write message to named pipe.');
 } else {
     // Log success message
-    error_log('Stop_recording.php Line 31: Message sent to named pipe: ' . $message);
+    error_log('Stop_recording.php Message sent to named pipe: ' . $message);
 }
 
 if (fclose($pipeHandle) === false) {
-    error_log('Stop_recording.php Line 38: Failed to close pipe.');
+    error_log('Stop_recording.php Failed to close pipe.');
 } else {
     // Log success message
-    error_log('Stop_recording.php Line 38: succesfully closed the pipe:');
+    error_log('Stop_recording.php succesfully closed the pipe:');
 }
 ?>
