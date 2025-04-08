@@ -227,6 +227,7 @@ def listen_for_messages(stop_event, timeout=0.1):
     logger.info("listen_for_messages from PHP script via a named pipe")
     pipe_path = '/var/www/html/tmp/stop_recording_pipe'
     logger.info(f"pipepath = {pipe_path}")
+
     while not stop_event.is_set():
         try:
             while listening:
@@ -237,12 +238,9 @@ def listen_for_messages(stop_event, timeout=0.1):
                             raise IsADirectoryError(f"{pipe_path} is a directory.")
                         else:
                             os.unlink(pipe_path)  # Remove existing file or pipe
-                except OSError as e:
-                    if e.errno != errno.ENOENT:  # Ignore if file doesn't exist
-                        logger.error(f"os.unlink -> OS error: {e.errno}")
-                        raise
-                try:
                     os.mkfifo(pipe_path)  # Create a new named pipe
+                    os.chmod(pipe_path, 0o666)  # Set permissions to allow read/write for all users
+                    logger.info(f"Named pipe created with permissions 666: {pipe_path}")
                 except OSError as e:
                     logger.error(f"Failed to create pipe: {e}")
                     raise
