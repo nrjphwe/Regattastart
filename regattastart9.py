@@ -218,6 +218,7 @@ def apply_timestamp(request):
 def stop_recording():
     global listening
     global recording_stopped
+    logger.info("stop_recording function called. Setting flags to stop listening and recording.")
     recording_stopped = True
     listening = False  # Set flag to False to terminate the loop in listen_for_messages
 
