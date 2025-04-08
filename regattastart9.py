@@ -315,15 +315,25 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
         logger.error("Camera restart failed, exiting.")
         return  # Prevents crashing if camera restart fails
 
-    # Confirm resolution before proceeding
-    frame = camera.capture_array()
-    if frame is None:
-        logger.error("First captured frame is None! Exiting video recording.")
+    try:
+        # Attempt to capture a frame
+        logger.debug("Attempting to capture the first frame.")
+        frame = camera.capture_array()
+        if frame is None:
+            logger.error("First captured frame is None! Exiting video recording.")
+            return
+        else:
+            logger.debug(f"First frame captured successfully. Frame shape: {frame.shape}")
+    except Exception as e:
+        logger.error(f"Exception occurred while capturing the first frame: {e}", exc_info=True)
         return
-
-    frame_size = (frame.shape[1], frame.shape[0])
-    logger.info(f"Camera frame size before recording: {frame_size}")
-
+    # Confirm resolution before proceeding
+    try:
+        frame_size = (frame.shape[1], frame.shape[0])
+        logger.info(f"Camera frame size before recording: {frame_size}")
+    except Exception as e:
+        logger.error(f"Exception occurred while accessing frame size: {e}", exc_info=True)
+        return
     # Crop the original frame to maintain a square (1:1) aspect ratio
     # crop_width, crop_height = 1280, 720
     crop_width, crop_height = 1640, 1080
