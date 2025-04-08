@@ -1,4 +1,5 @@
 <?php
+error_log('stop_recording.php: Script started.');
 // Specify the correct path to the named pipe
 $pipePath = '/var/www/html/tmp/stop_recording_pipe';
 include_once 'functions.php';
