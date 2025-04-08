@@ -230,36 +230,32 @@ def listen_for_messages(stop_event, timeout=0.1):
 
     while not stop_event.is_set():
         try:
-            while listening:
-                try:
-                    if os.path.exists(pipe_path):
-                        if os.path.isdir(pipe_path):
-                            logger.error(f"{pipe_path} is a directory. Remove it or use another path.")
-                            raise IsADirectoryError(f"{pipe_path} is a directory.")
-                        else:
-                            os.unlink(pipe_path)  # Remove existing file or pipe
-                    os.mkfifo(pipe_path)  # Create a new named pipe
-                    os.chmod(pipe_path, 0o666)  # Set permissions to allow read/write for all users
-                    logger.info(f"Named pipe created with permissions 666: {pipe_path}")
-                except OSError as e:
-                    logger.error(f"Failed to create pipe: {e}")
-                    raise
-                try:
-                    with open(pipe_path, 'r') as fifo:
-                        # Use select to wait for input with a timeout
-                        rlist, _, _ = select.select([fifo], [], [], timeout)
-                        if rlist:
-                            message = fifo.readline().strip()
-                            if message == 'stop_recording':
-                                stop_recording()
-                                logger.info("Message == stop_recording")
-                                break  # Exit the loop when stop_recording received
-                    logger.info("end of with open(pipe_path, r)")
-                except OSError as e:
-                    logger.error(f"Error while opening or reading pipe: {e}")
-                    raise
-            logger.info("Listening thread terminated")
-            time.sleep(1)  # Add a small delay to prevent high CPU usage
+            if not listening:
+                logger.info("Listening flag is False. Exiting listen_for_messages.")
+                break
+
+            if os.path.exists(pipe_path):
+                if os.path.isdir(pipe_path):
+                    logger.error(f"{pipe_path} is a directory. Remove it or use another path.")
+                    raise IsADirectoryError(f"{pipe_path} is a directory.")
+                else:
+                    os.unlink(pipe_path)  # Remove existing file or pipe
+            os.mkfifo(pipe_path)  # Create a new named pipe
+            os.chmod(pipe_path, 0o666)  # Set permissions to allow read/write for all users
+            logger.info(f"Named pipe created with permissions 666: {pipe_path}")
+
+            with open(pipe_path, 'r') as fifo:
+                # Use select to wait for input with a timeout
+                rlist, _, _ = select.select([fifo], [], [], timeout)
+                if rlist:
+                    message = fifo.readline().strip()
+                    if message == 'stop_recording':
+                        stop_recording()
+                        logger.info("Message == stop_recording")
+                        break  # Exit the loop when stop_recording received
+        except OSError as e:
+            logger.error(f"Error while opening or reading pipe: {e}")
+            break
         except Exception as e:
             logger.error(f"Error in listen_for_messages: {e}", exc_info=True)
             break
