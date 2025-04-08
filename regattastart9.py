@@ -246,7 +246,7 @@ def listen_for_messages(stop_event, timeout=0.1):
             logger.info(f"Named pipe created with permissions 666: {pipe_path}")
 
             with open(pipe_path, 'r') as fifo:
-                # Use select to wait for input with a timeout
+                logger.debug("Waiting for input from the pipe...")
                 rlist, _, _ = select.select([fifo], [], [], timeout)
                 if rlist:
                     message = fifo.readline().strip()
