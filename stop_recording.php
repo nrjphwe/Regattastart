@@ -1,8 +1,20 @@
 <?php
 // Specify the correct path to the named pipe
-// Ensure the named pipe has the correct permissions (chmod 666)
 $pipePath = '/var/www/html/tmp/stop_recording_pipe';
 include_once 'functions.php';
+
+// Check if the pipe exists
+if (!file_exists($pipePath)) {
+    error_log('Stop_recording.php: Pipe does not exist.');
+    die('Pipe does not exist.');
+}
+
+// Check if the pipe is writable
+if (!is_writable($pipePath)) {
+    error_log('Stop_recording.php: Pipe is not writable.');
+    die('Pipe is not writable.');
+}
+
 // Open the named pipe for writing
 $pipeHandle = fopen($pipePath, 'w');
 if ($pipeHandle === false) {
