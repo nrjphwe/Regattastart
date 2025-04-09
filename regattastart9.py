@@ -121,14 +121,14 @@ def restart_camera(camera, resolution=(1920, 1080), fps=5):
             logger.error("No sensor modes available. Camera may not be detected!")
             return None
 
-        logger.debug(f"Available sensor modes: {sensor_modes}")
+        # logger.debug(f"Available sensor modes: {sensor_modes}")
 
         # Find a sensor mode that best matches the requested resolution
         best_mode = min(sensor_modes, key=lambda m: abs(m["size"][0] - resolution[0]) + abs(m["size"][1] - resolution[1]))
-        logger.debug(f"Using sensor mode: {best_mode}")
+        # logger.debug(f"Using sensor mode: {best_mode}")
 
         config = camera.create_video_configuration(
-            main={"size": best_mode["size"], "format": "RGB888"},
+            main={"size": best_mode["size"], "format": "BGR888"},
             controls={"FrameRate": fps},
             transform=Transform(hflip=True, vflip=True)
         )
