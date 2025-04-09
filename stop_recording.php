@@ -42,7 +42,4 @@ if (fclose($pipeHandle) === false) {
     // Log success message
     error_log('Stop_recording.php succesfully closed the pipe:');
 }
-// Redirect back to the main page
-header("Location: /index.php");
-exit();
 ?>
