@@ -357,7 +357,7 @@
                         } else {
                             echo '<div id="stopRecordingButtonDiv" style="display: block;">'; // Display the div
                             echo '
-                                <form id="stopRecordingForm" action="stop_recording.php" method="post" onsubmit="return refreshPage()">
+                                <form id="stopRecordingForm" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post" onsubmit="return refreshPage()">
                                     <input type="hidden" name="stop_recording" value="true">
                                     <input type="hidden" name="stopRecordingPressed" id="stopRecordingPressed" value="0"> 
                                     <!-- Hidden input field for stopRecordingPressed -->
