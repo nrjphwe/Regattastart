@@ -43,6 +43,10 @@
         $stopRecordingPressed = true;
         // Store this value in a session to persist it across requests
         $_SESSION['stopRecordingPressed'] = $stopRecordingPressed;
+
+        // Call the stop_recording.php logic directly
+        include 'stop_recording.php';
+
     } else {
         console_log('Stop recording POST not received');
     }
@@ -356,12 +360,12 @@
                             echo '<div id="stopRecordingButtonDiv" style="display: none;">'; // Hide the div
                         } else {
                             echo '<div id="stopRecordingButtonDiv" style="display: block;">'; // Display the div
-                            echo '
-                                <form id="stopRecordingForm" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post" onsubmit="return refreshPage()">
-                                    <input type="hidden" name="stop_recording" value="true">
-                                    <input type="hidden" name="stopRecordingPressed" id="stopRecordingPressed" value="0"> 
+                            echo "
+                                <form id=\"stopRecordingForm\" action=\"" . htmlspecialchars($_SERVER["PHP_SELF"]) . "\" method=\"post\" onsubmit=\"return refreshPage()\">
+                                    <input type=\"hidden\" name=\"stop_recording\" value=\"true\">
+                                    <input type=\"hidden\" name=\"stopRecordingPressed\" id=\"stopRecordingPressed\" value=\"0\"> 
                                     <!-- Hidden input field for stopRecordingPressed -->
-                                    <input type="submit" id="stopRecordingButton" value="Stop Recording">
+                                    <input type=\"submit\" id=\"stopRecordingButton\" value=\"Stop Recording\">
                                 </form>
                             </div>';
                             //  "Stop Recording" button not yet visible
