@@ -244,16 +244,20 @@ def listen_for_messages(stop_event, timeout=0.1):
             os.mkfifo(pipe_path)  # Create a new named pipe
             os.chmod(pipe_path, 0o666)  # Set permissions to allow read/write for all users
             logger.info(f"Named pipe created with permissions 666: {pipe_path}")
-
-            with open(pipe_path, 'r') as fifo:
-                logger.debug("Waiting for input from the pipe...")
-                rlist, _, _ = select.select([fifo], [], [], timeout)
-                if rlist:
-                    message = fifo.readline().strip()
-                    if message == 'stop_recording':
-                        stop_recording()
-                        logger.info("Message == stop_recording")
-                        break  # Exit the loop when stop_recording received
+            try:
+                with open(pipe_path, 'r') as fifo:
+                    logger.debug("Waiting for input from the pipe...")
+                    rlist, _, _ = select.select([fifo], [], [], timeout)
+                    if rlist:
+                        message = fifo.readline().strip()
+                        logger.debug(f"Message received from pipe: {message}")
+                        if message == 'stop_recording':
+                            stop_recording()
+                            logger.info("Message == stop_recording")
+                            break  # Exit the loop when stop_recording received
+            except Exception as e:
+                logger.error(f"Error while reading from pipe: {e}", exc_info=True)
+                break
         except OSError as e:
             logger.error(f"Error while opening or reading pipe: {e}")
             break
