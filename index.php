@@ -367,7 +367,7 @@
                                     <!-- Hidden input field for stopRecordingPressed -->
                                     <input type=\"submit\" id=\"stopRecordingButton\" value=\"Stop Recording\">
                                 </form>
-                            </div>';
+                            </div>";
                             //  "Stop Recording" button not yet visible
                             console_log("stopRecording button not yet pressed");
                         }
