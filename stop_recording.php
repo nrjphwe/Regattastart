@@ -34,6 +34,8 @@ if (fwrite($pipeHandle, $message) === false) {
 } else {
     // Log success message
     error_log('Stop_recording.php Message sent to named pipe: ' . $message);
+    fwrite($pipeHandle, $message);
+    fflush($pipeHandle);
 }
 
 if (fclose($pipeHandle) === false) {
