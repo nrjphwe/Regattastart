@@ -12,6 +12,12 @@ from common_module import (
 )
 import os
 import sys
+# Manually add the virtual environment's site-packages directory to sys.path
+venv_path = "/home/pi/yolov5_env/lib/python3.11/site-packages"
+if venv_path not in sys.path:
+    sys.path.insert(0, venv_path)
+
+
 # Use a deque to store the most recent frames in memory
 from collections import deque
 from datetime import datetime, timedelta
@@ -24,10 +30,7 @@ import select
 import threading
 import time
 
-# Manually add the virtual environment's site-packages directory to sys.path
-venv_path = "/home/pi/yolov5_env/lib/python3.11/site-packages"
-if venv_path not in sys.path:
-    sys.path.insert(0, venv_path)
+
 import cv2
 import torch
 import warnings
