@@ -30,6 +30,7 @@ if venv_path not in sys.path:
 import cv2
 import torch
 import warnings
+import RPi.GPIO as GPIO
 
 
 warnings.filterwarnings(
