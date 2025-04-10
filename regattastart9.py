@@ -10,9 +10,9 @@ from common_module import (
     trigger_relay,
     process_video,
 )
+import sys
 import os
 os.chdir('/home/pi/yolov5')
-import sys
 # Manually add the virtual environment's site-packages directory to sys.path
 venv_path = "/home/pi/yolov5_env/lib/python3.11/site-packages"
 if venv_path not in sys.path:
@@ -267,7 +267,7 @@ def cleanup_processed_timestamps(processed_timestamps, threshold_seconds=30):
 
 # Nested function to load the YOLOv5 model
 def load_model_with_timeout():
-    return torch.hub.load('/home/pi/yolov5', 'yolov5s', source='local')
+    return torch.hub.load('/home/pi/yolov5', 'yolov5s', source='local', force_reload=True)
 
 
 def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, fps):
