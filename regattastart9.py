@@ -229,38 +229,35 @@ def listen_for_messages(stop_event, timeout=0.1):
     pipe_path = '/var/www/html/tmp/stop_recording_pipe'
     logger.info(f"pipepath = {pipe_path}")
 
+    # Ensure the named pipe exists
+    if not os.path.exists(pipe_path):
+        try:
+            os.mkfifo(pipe_path)  # Create a new named pipe
+            os.chmod(pipe_path, 0o666)  # Set permissions to allow read/write for all users
+            logger.info(f"Named pipe created with permissions 666: {pipe_path}")
+        except Exception as e:
+            logger.error(f"Failed to create named pipe: {e}", exc_info=True)
+            return
+
+
     while not stop_event.is_set():
         try:
             if not listening:
                 logger.info("Listening flag is False. Exiting listen_for_messages.")
                 break
-
-            if os.path.exists(pipe_path):
-                if os.path.isdir(pipe_path):
-                    logger.error(f"{pipe_path} is a directory. Remove it or use another path.")
-                    raise IsADirectoryError(f"{pipe_path} is a directory.")
-                else:
-                    os.unlink(pipe_path)  # Remove existing file or pipe
-            os.mkfifo(pipe_path)  # Create a new named pipe
-            os.chmod(pipe_path, 0o666)  # Set permissions to allow read/write for all users
-            logger.info(f"Named pipe created with permissions 666: {pipe_path}")
-            try:
-                with open(pipe_path, 'r') as fifo:
-                    logger.debug("Waiting for input from the pipe...")
-                    rlist, _, _ = select.select([fifo], [], [], timeout)
-                    if rlist:
-                        message = fifo.readline().strip()
-                        logger.debug(f"Message received from pipe: {message}")
-                        if message == 'stop_recording':
-                            stop_recording()
-                            logger.info("Message == stop_recording")
-                            break  # Exit the loop when stop_recording received
-            except Exception as e:
-                logger.error(f"Error while reading from pipe: {e}", exc_info=True)
-                break
+            with open(pipe_path, 'r') as fifo:
+                logger.debug("Waiting for input from the pipe...")
+                rlist, _, _ = select.select([fifo], [], [], timeout)
+                if rlist:
+                    message = fifo.readline().strip()
+                    logger.debug(f"Message received from pipe: {message}")
+                    if message == 'stop_recording':
+                        stop_recording()
+                        logger.info("Message == stop_recording")
+                        break  # Exit the loop when stop_recording received
         except OSError as e:
-            logger.error(f"Error while opening or reading pipe: {e}")
-            break
+                logger.error(f"Error while opening or reading pipe: {e}")
+                break
         except Exception as e:
             logger.error(f"Error in listen_for_messages: {e}", exc_info=True)
             break
