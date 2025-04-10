@@ -10,6 +10,7 @@ from common_module import (
     trigger_relay,
     process_video,
 )
+import os
 import sys
 # Use a deque to store the most recent frames in memory
 from collections import deque
@@ -26,6 +27,7 @@ import time
 venv_path = "/home/pi/yolov5_env/lib/python3.11/site-packages"
 if venv_path not in sys.path:
     sys.path.insert(0, venv_path)
+import cv2
 import torch
 import warnings
 
