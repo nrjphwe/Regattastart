@@ -35,6 +35,7 @@ import cv2
 import torch
 import warnings
 import RPi.GPIO as GPIO
+import multiprocessing
 
 
 warnings.filterwarnings(
@@ -334,35 +335,27 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
 
     fpsw = fps
 
-    # To prevent the script from hanging indefinitely during the
-    # download, add a timeout:
-    class TimeoutException(Exception):
-        pass
-
-    def timeout_handler(signum, frame):
-        raise TimeoutException("YOLOv5 model loading timed out.")
-
-    # Set a timeout using threading.Timer
-    timeout = threading.Timer(60, timeout_handler)  # 60-second timeout
-    timeout.start()
-
     # Inference ## Load the pre-trained YOLOv5 model (e.g., yolov5s)
     logger.debug("Before loading YOLOv5 model from local repository.")
+
+    # Nested function to load the YOLOv5 model
+    def load_model_with_timeout():
+        return torch.hub.load('/home/pi/yolov5', 'yolov5s', source='local')
+
     try:
         logger.debug("try to load the YOLOv5 model")
-        model = torch.hub.load('/home/pi/yolov5', 'yolov5s', source='local')
-        logger.debug("YOLOv5 model loaded successfully.")
-        timeout.cancel()  # Cancel the timeout if successful
-        # model = torch.hub.load('ultralytics/yolov5', 'yolov5s', trust_repo=True)
-    except TimeoutException:
+        with multiprocessing.Pool(1) as pool:
+            result = pool.apply_async(load_model_with_timeout)
+            model = result.get(timeout=60)  # 60-second timeout
+            logger.debug("YOLOv5 model loaded successfully.")
+    except multiprocessing.TimeoutError:
         logger.error("YOLOv5 model loading timed out.")
         return
     except Exception as e:
         logger.error(f"Failed to load YOLOv5 model: {e}", exc_info=True)
         return
-    finally:
-        timeout.cancel()  # Ensure the timeout is canceled
-    logger.debug("After loading YOLOv5 model from local repository.")
+    # Continue with the rest of the `finish_recording` logic
+    logger.debug("After loading YOLOv5 model.")
     # Filter for 'boat' class (COCO ID for 'boat' is 8)
     model.classes = [8]
 
