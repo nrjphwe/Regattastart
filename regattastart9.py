@@ -292,9 +292,6 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
         logger.error(f"Failed to configure camera: {e}")
         return
 
-    # New
-    # camera_start_time = time.time()  # Track the start time of the recording
-
     logger.debug(f"Camera object: {camera}")
     if camera is None:
         logger.error("Camera object is None before restarting.")
@@ -319,6 +316,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
     except Exception as e:
         logger.error(f"Exception occurred while capturing the first frame: {e}", exc_info=True)
         return
+
     # Confirm resolution before proceeding
     try:
         frame_size = (frame.shape[1], frame.shape[0])
@@ -326,6 +324,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
     except Exception as e:
         logger.error(f"Exception occurred while accessing frame size: {e}", exc_info=True)
         return
+
     # Crop the original frame to maintain a square (1:1) aspect ratio
     # crop_width, crop_height = 1280, 720
     crop_width, crop_height = 1640, 1080
@@ -356,8 +355,10 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
     except Exception as e:
         logger.error(f"Failed to load YOLOv5 model: {e}", exc_info=True)
         return
+    
     # Continue with the rest of the `finish_recording` logic
     logger.debug("After loading YOLOv5 model.")
+
     # Filter for 'boat' class (COCO ID for 'boat' is 8)
     model.classes = [8]
 
