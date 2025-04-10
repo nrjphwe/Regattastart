@@ -267,8 +267,14 @@ def cleanup_processed_timestamps(processed_timestamps, threshold_seconds=30):
 
 # Nested function to load the YOLOv5 model
 def load_model_with_timeout():
-    return torch.hub.load('/home/pi/yolov5', 'yolov5s', source='local', force_reload=True)
-
+    #return torch.hub.load('/home/pi/yolov5', 'yolov5s', source='local', force_reload=True)
+    global model
+    try:
+        model = torch.hub.load('/home/pi/yolov5', 'yolov5s', source='local', force_reload=True)
+        logger.debug("YOLOv5 model loaded successfully.")
+    except Exception as e:
+        logger.error(f"Failed to load YOLOv5 model: {e}", exc_info=True)
+    return model
 
 def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, fps):
     global recording_stopped
@@ -345,17 +351,22 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
 
     try:
         logger.debug("try to load the YOLOv5 model")
-        with multiprocessing.Pool(1) as pool:
-            result = pool.apply_async(load_model_with_timeout)
-            model = result.get(timeout=60)  # 60-second timeout
-            logger.debug("YOLOv5 model loaded successfully.")
+        # Start the model loading in a separate thread
+        model = None
+        load_thread = threading.Thread(target=load_model_with_timeout)
+        load_thread.start()
+        load_thread.join(timeout=60)  # Wait for up to 60 seconds
+
+        if model is None:
+            logger.error("YOLOv5 model loading timed out.")
+            return
     except multiprocessing.TimeoutError:
         logger.error("YOLOv5 model loading timed out.")
         return
     except Exception as e:
         logger.error(f"Failed to load YOLOv5 model: {e}", exc_info=True)
         return
-    
+
     # Continue with the rest of the `finish_recording` logic
     logger.debug("After loading YOLOv5 model.")
 
