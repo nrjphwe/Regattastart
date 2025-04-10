@@ -224,6 +224,7 @@ def stop_recording():
 
 
 def listen_for_messages(stop_event, timeout=0.1):
+    logger.debug(f"Listening flag value: {listening}")
     global listening  # Use global flag
     logger.info("listen_for_messages from PHP script via a named pipe")
     pipe_path = '/var/www/html/tmp/stop_recording_pipe'
@@ -238,7 +239,6 @@ def listen_for_messages(stop_event, timeout=0.1):
         except Exception as e:
             logger.error(f"Failed to create named pipe: {e}", exc_info=True)
             return
-
 
     while not stop_event.is_set():
         try:
@@ -256,8 +256,8 @@ def listen_for_messages(stop_event, timeout=0.1):
                         logger.info("Message == stop_recording")
                         break  # Exit the loop when stop_recording received
         except OSError as e:
-                logger.error(f"Error while opening or reading pipe: {e}")
-                break
+            logger.error(f"Error while opening or reading pipe: {e}")
+            break
         except Exception as e:
             logger.error(f"Error in listen_for_messages: {e}", exc_info=True)
             break
@@ -351,7 +351,9 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
     fpsw = fps
 
     # Inference ## Load the pre-trained YOLOv5 model (e.g., yolov5s)
+    logger.debug("Before loading YOLOv5 model.")
     model = torch.hub.load('ultralytics/yolov5', 'yolov5s')
+    logger.debug("YOLOv5 model loaded successfully.")
     model.classes = [8]  # Filter for 'boat' class (COCO ID for 'boat' is 8)
 
     # setup video writer
@@ -360,6 +362,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
     if not video_writer.isOpened():
         logger.error(f"Failed to open video1.avi for writing. Selected frame_size: {frame_size}")
         exit(1)
+    logger.debug("Video writer initialized successfully.")
 
     # Setup pre-detection parameters
     pre_detection_duration = 0  # Seconds
