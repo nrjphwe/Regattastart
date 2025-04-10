@@ -266,15 +266,16 @@ def cleanup_processed_timestamps(processed_timestamps, threshold_seconds=30):
 
 
 # Nested function to load the YOLOv5 model
-def load_model_with_timeout():
-    #return torch.hub.load('/home/pi/yolov5', 'yolov5s', source='local', force_reload=True)
-    global model
+import queue
+def load_model_with_timeout(result_queue):
     try:
         model = torch.hub.load('/home/pi/yolov5', 'yolov5s', source='local', force_reload=True)
         logger.debug("YOLOv5 model loaded successfully.")
+        result_queue.put(model)  # Put the model in the queue
     except Exception as e:
         logger.error(f"Failed to load YOLOv5 model: {e}", exc_info=True)
-    return model
+        result_queue.put(e)  # Put the exception in the queue
+
 
 def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, fps):
     global recording_stopped
@@ -349,22 +350,25 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
     # Inference ## Load the pre-trained YOLOv5 model (e.g., yolov5s)
     logger.debug("Before loading YOLOv5 model from local repository.")
 
-    try:
-        logger.debug("try to load the YOLOv5 model")
-        # Start the model loading in a separate thread
-        model = None
-        load_thread = threading.Thread(target=load_model_with_timeout)
-        load_thread.start()
-        load_thread.join(timeout=60)  # Wait for up to 60 seconds
+    result_queue = queue.Queue()  # Create a queue to hold the result
+    load_thread = threading.Thread(target=load_model_with_timeout, args=(result_queue,))
+    load_thread.start()
+    load_thread.join(timeout=60)  # Wait for up to 60 seconds
 
-        if model is None:
-            logger.error("YOLOv5 model loading timed out.")
+    if not load_thread.is_alive():
+        try:
+            result = result_queue.get_nowait()  # Get the result from the queue
+            if isinstance(result, Exception):
+                logger.error("YOLOv5 model loading failed with an exception.")
+                return
+            model = result  # Successfully loaded model
+            logger.debug("YOLOv5 model loaded successfully.")
+        except queue.Empty:
+            logger.error("YOLOv5 model loading failed: No result returned.")
             return
-    except multiprocessing.TimeoutError:
+    else:
         logger.error("YOLOv5 model loading timed out.")
-        return
-    except Exception as e:
-        logger.error(f"Failed to load YOLOv5 model: {e}", exc_info=True)
+        load_thread.join()  # Ensure the thread is cleaned up
         return
 
     # Continue with the rest of the `finish_recording` logic
