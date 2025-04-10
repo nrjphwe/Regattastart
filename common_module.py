@@ -1,5 +1,6 @@
 #!/home/pi/yolov5_env/bin/python
 import os
+import sys
 import subprocess
 import time
 import logging
@@ -56,6 +57,28 @@ def setup_logging():
     current_level = logging.getLevelName(logger.getEffectiveLevel())
     print(f"Current logging level from logging.conf: {current_level}")
     logger.info("Logging initialized in common_module")
+
+    # Redirect stdout and stderr to the Python logger to 
+    # capture all output in your python.log file.
+    class StreamToLogger:
+        def __init__(self, logger, log_level):
+            self.logger = logger
+            self.log_level = log_level
+            self.linebuf = ''
+
+        def write(self, buf):
+            for line in buf.rstrip().splitlines():
+                self.logger.log(self.log_level, line)
+
+        def flush(self):
+            pass  # This is required for compatibility with file-like objects
+
+    # Redirect stdout and stderr to the logger
+    stdout_logger = logging.getLogger('STDOUT')
+    stderr_logger = logging.getLogger('STDERR')
+
+    sys.stdout = StreamToLogger(stdout_logger, logging.INFO)
+    sys.stderr = StreamToLogger(stderr_logger, logging.ERROR)
 
 
 # Initialize logging immediately when the module is imported
