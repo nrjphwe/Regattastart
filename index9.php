@@ -34,7 +34,7 @@
         shell_exec($command);
         echo date('h:i:s') . "<br>";
         echo "execution started";
-        sleep(0.5);
+        sleep(1);
 
         // Redirect to index.php
         header("Location: index.php");
