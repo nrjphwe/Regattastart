@@ -359,15 +359,15 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
     def timeout_handler(signum, frame):
         raise TimeoutException("YOLOv5 model loading timed out.")
 
-   # Set a timeout using threading.Timer
+    # Set a timeout using threading.Timer
     timeout = threading.Timer(60, timeout_handler)  # 60-second timeout
     timeout.start()
 
     # Inference ## Load the pre-trained YOLOv5 model (e.g., yolov5s)
+    logger.debug("Before loading YOLOv5 model from local repository.")
     try:
-        logger.debug("Before loading YOLOv5 model.")
-        model = torch.hub.load('ultralytics/yolov5', 'yolov5s', trust_repo=True)
-        signal.alarm(0)  # Cancel the timeout if successful
+        model = torch.hub.load('/home/pi/yolov5', 'yolov5s', source='local')
+        #model = torch.hub.load('ultralytics/yolov5', 'yolov5s', trust_repo=True)
         logger.debug("YOLOv5 model loaded successfully.")
     except TimeoutException:
         logger.error("YOLOv5 model loading timed out.")
@@ -401,7 +401,6 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
     frame_counter = 0  # Initialize a frame counter
     previous_capture_time = None  # Track previous frame timestamp
 
-    # inference_width, inference_height = 640, 480  # Since you resize before inference
     inference_width, inference_height = 640, 480  # Since you resize before inference
 
     # Compute scaling factors
