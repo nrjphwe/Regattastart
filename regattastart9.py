@@ -56,7 +56,7 @@ log_path = '/var/www/html/'
 video_path = '/var/www/html/images/'
 photo_path = '/var/www/html/images/'
 pins = setup_gpio()
-LAMP1, LAMP2, SIGNAL = pins
+SIGNAL, LAMP1, LAMP2 = pins
 listening = True  # Define the listening variable
 recording_stopped = False  # Global variable
 # reset the contents of the status variable, used for flagging that
