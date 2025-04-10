@@ -1,11 +1,12 @@
 #!/home/pi/yolov5_env/bin/python
-import os, subprocess
+import os
+import subprocess
 import time
 import logging
 import logging.config
+from libcamera import Transform
 from picamera2 import Picamera2, MappedArray
 from picamera2.encoders import H264Encoder
-from libcamera import Transform
 import RPi.GPIO as GPIO
 import cv2
 
@@ -23,7 +24,7 @@ THICKNESS = 2  # Thickness of the text annotations
 # bg_colour = (200, 200, 200)  # Light grey background
 
 # GPIO pin numbers for the relay and lamps
-signal = 26
+signal_pin = 26
 lamp1 = 20
 lamp2 = 21
 
@@ -198,10 +199,10 @@ def process_video(video_path, input_file, output_file, frame_rate=None):
 def setup_gpio():
     GPIO.setmode(GPIO.BCM)
     GPIO.setwarnings(True)
-    GPIO.setup(signal, GPIO.OUT, initial=GPIO.HIGH)
+    GPIO.setup(signal_pin, GPIO.OUT, initial=GPIO.HIGH)
     GPIO.setup(lamp1, GPIO.OUT, initial=GPIO.HIGH)
     GPIO.setup(lamp2, GPIO.OUT, initial=GPIO.HIGH)
-    return signal, lamp1, lamp2
+    return signal_pin, lamp1, lamp2
 
 
 def trigger_relay(pin, state, duration=None):
