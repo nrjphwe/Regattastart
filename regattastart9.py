@@ -222,6 +222,7 @@ def stop_recording():
     logger.info("stop_recording function called. Setting flags to stop listening and recording.")
     recording_stopped = True
     listening = False  # Set flag to False to terminate the loop in listen_for_messages
+    logger.debug(f"recording_stopped = {recording_stopped}, listening = {listening}")
 
 
 def listen_for_messages(stop_event, timeout=0.1):
@@ -367,7 +368,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
     logger.debug("Before loading YOLOv5 model from local repository.")
     try:
         model = torch.hub.load('/home/pi/yolov5', 'yolov5s', source='local')
-        #model = torch.hub.load('ultralytics/yolov5', 'yolov5s', trust_repo=True)
+        # model = torch.hub.load('ultralytics/yolov5', 'yolov5s', trust_repo=True)
         logger.debug("YOLOv5 model loaded successfully.")
     except TimeoutException:
         logger.error("YOLOv5 model loading timed out.")
@@ -420,6 +421,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
     logger.info(f"scale_x = {scale_x}, scale_y= {scale_y}")
 
     while not recording_stopped:
+        logger.debug(f"recording_stopped = {recording_stopped}")
         # elapsed_time = time.time() - camera_start_time
         # logger.debug(f"Elapsed time: {elapsed_time:.2f} seconds, Max duration: {max_duration}")
         # if elapsed_time >= max_duration:
