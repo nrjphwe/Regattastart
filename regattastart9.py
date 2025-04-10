@@ -209,14 +209,19 @@ def listen_for_messages(stop_event, timeout=0.1):
     logger.info(f"pipepath = {pipe_path}")
 
     # Ensure the named pipe exists
-    if not os.path.exists(pipe_path):
-        try:
-            os.mkfifo(pipe_path)  # Create a new named pipe
-            os.chmod(pipe_path, 0o666)  # Set permissions to allow read/write for all users
-            logger.info(f"Named pipe created with permissions 666: {pipe_path}")
-        except Exception as e:
-            logger.error(f"Failed to create named pipe: {e}", exc_info=True)
-            return
+    try:
+        if os.path.exists(pipe_path):
+            if os.path.isdir(pipe_path):
+                logger.error(f"{pipe_path} is a directory. Remove it or use another path.")
+                raise IsADirectoryError(f"{pipe_path} is a directory.")
+            else:
+                os.unlink(pipe_path)  # Remove existing file or pipe
+        os.mkfifo(pipe_path)  # Create a new named pipe
+        os.chmod(pipe_path, 0o666)  # Set permissions to allow read/write for all users
+        logger.info(f"Pipe created with permissions 666: {pipe_path}")
+    except Exception as e:
+        logger.error(f"Failed to create named pipe: {e}", exc_info=True)
+        return
 
     while not stop_event.is_set():
         try:
@@ -239,6 +244,7 @@ def listen_for_messages(stop_event, timeout=0.1):
         except Exception as e:
             logger.error(f"Error in listen_for_messages: {e}", exc_info=True)
             break
+        time.sleep(0.1)  # Add a small delay to prevent high CPU usage
     logger.info("Listening thread exiting")
 
 
