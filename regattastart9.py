@@ -40,6 +40,7 @@ import subprocess
 import threading
 import time
 import torch
+import signal
 import tempfile  # to check the php temp file
 import warnings
 
@@ -350,10 +351,31 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
 
     fpsw = fps
 
+   
+
+    # To prevent the script from hanging indefinitely during the 
+    # download, add a timeout:
+    class TimeoutException(Exception):
+        pass
+
+    def timeout_handler(signum, frame):
+        raise TimeoutException("YOLOv5 model loading timed out.")
+
+    signal.signal(signal.SIGALRM, timeout_handler)
+    signal.alarm(60)  # Set a 60-second timeout
+
     # Inference ## Load the pre-trained YOLOv5 model (e.g., yolov5s)
-    logger.debug("Before loading YOLOv5 model.")
-    model = torch.hub.load('ultralytics/yolov5', 'yolov5s')
-    logger.debug("YOLOv5 model loaded successfully.")
+    try:
+        logger.debug("Before loading YOLOv5 model.")
+        model = torch.hub.load('ultralytics/yolov5', 'yolov5s', trust_repo=True)
+        signal.alarm(0)  # Cancel the timeout if successful
+        logger.debug("YOLOv5 model loaded successfully.")
+    except TimeoutException:
+        logger.error("YOLOv5 model loading timed out.")
+        return
+    except Exception as e:
+        logger.error(f"Failed to load YOLOv5 model: {e}", exc_info=True)
+        return
     model.classes = [8]  # Filter for 'boat' class (COCO ID for 'boat' is 8)
 
     # setup video writer
