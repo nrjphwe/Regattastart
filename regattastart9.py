@@ -343,10 +343,11 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
     # Inference ## Load the pre-trained YOLOv5 model (e.g., yolov5s)
     logger.debug("Before loading YOLOv5 model from local repository.")
     try:
+        logger.debug("try to load the YOLOv5 model")
         model = torch.hub.load('/home/pi/yolov5', 'yolov5s', source='local')
+        logger.debug("YOLOv5 model loaded successfully.")
         timeout.cancel()  # Cancel the timeout if successful
         # model = torch.hub.load('ultralytics/yolov5', 'yolov5s', trust_repo=True)
-        logger.debug("YOLOv5 model loaded successfully.")
     except TimeoutException:
         logger.error("YOLOv5 model loading timed out.")
         return
