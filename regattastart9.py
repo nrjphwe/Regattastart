@@ -11,6 +11,7 @@ from common_module import (
     process_video,
 )
 import os
+os.chdir('/home/pi/yolov5')
 import sys
 # Manually add the virtual environment's site-packages directory to sys.path
 venv_path = "/home/pi/yolov5_env/lib/python3.11/site-packages"
