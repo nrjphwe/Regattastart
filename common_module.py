@@ -1,3 +1,4 @@
+#!/home/pi/yolov5_env/bin/python
 import os, subprocess
 import time
 import logging
