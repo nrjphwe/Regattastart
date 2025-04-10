@@ -359,8 +359,9 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
     def timeout_handler(signum, frame):
         raise TimeoutException("YOLOv5 model loading timed out.")
 
-    signal.signal(signal.SIGALRM, timeout_handler)
-    signal.alarm(60)  # Set a 60-second timeout
+   # Set a timeout using threading.Timer
+    timeout = threading.Timer(60, timeout_handler)  # 60-second timeout
+    timeout.start()
 
     # Inference ## Load the pre-trained YOLOv5 model (e.g., yolov5s)
     try:
