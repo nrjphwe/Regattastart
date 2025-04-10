@@ -10,39 +10,24 @@ from common_module import (
     trigger_relay,
     process_video,
 )
-import os
 import sys
-# Manually add the virtual environment's site-packages directory to sys.path
-venv_path = "/home/pi/yolov5_env/lib/python3.11/site-packages"
-if venv_path not in sys.path:
-    sys.path.insert(0, venv_path)
-
-import cv2
 # Use a deque to store the most recent frames in memory
 from collections import deque
 from datetime import datetime, timedelta
 import datetime as dt
-import errno
 import json
-#import logging
-#import logging.config
-import numpy as np # image recognition
-import os
+# import numpy as np # image recognition
 # from picamera2 import Transform
-from libcamera import Transform
-from picamera2.encoders import H264Encoder
-from picamera2 import Picamera2, MappedArray
-from picamera2.outputs import FileOutput
-import RPi.GPIO as GPIO
 import select
-import subprocess
-
 import threading
 import time
 import torch
-import signal
-import tempfile  # to check the php temp file
 import warnings
+
+# Manually add the virtual environment's site-packages directory to sys.path
+venv_path = "/home/pi/yolov5_env/lib/python3.11/site-packages"
+if venv_path not in sys.path:
+    sys.path.insert(0, venv_path)
 
 warnings.filterwarnings(
     "ignore",
@@ -64,23 +49,6 @@ pins = setup_gpio()
 LAMP1, LAMP2, SIGNAL = pins
 listening = True  # Define the listening variable
 recording_stopped = False  # Global variable
-
-# setup gpio()
-ON = GPIO.LOW
-OFF = GPIO.HIGH
-signal_pin = 26
-lamp1 = 20
-lamp2 = 21
-try:  # GPIO
-    GPIO.cleanup()
-    GPIO.setmode(GPIO.BCM)
-    GPIO.setwarnings(True)
-    GPIO.setup(signal_pin, GPIO.OUT, initial=GPIO.HIGH)
-    GPIO.setup(lamp1, GPIO.OUT, initial=GPIO.HIGH)
-    GPIO.setup(lamp2, GPIO.OUT, initial=GPIO.HIGH)
-except Exception as e:
-    print(f"Failed to setup GPIO: {e}")
-
 # reset the contents of the status variable, used for flagging that
 # video1-conversion is complete.
 with open('/var/www/html/status.txt', 'w') as status_file:
