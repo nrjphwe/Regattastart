@@ -381,8 +381,8 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
     inference_width, inference_height = 640, 480  # Since you resize before inference
 
     # Compute scaling factors
-    scale_x = crop_width / inference_width  
-    scale_y = crop_height / inference_height 
+    scale_x = crop_width / inference_width
+    scale_y = crop_height / inference_height
 
     # Base scale text size and thickness
     base_fontScale = 0.9  # Default font size at 640x480
