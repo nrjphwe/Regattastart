@@ -224,8 +224,8 @@ def stop_recording():
 
 
 def listen_for_messages(stop_event, timeout=0.1):
-    logger.debug(f"Listening flag value: {listening}")
     global listening  # Use global flag
+    logger.debug(f"Listening flag value: {listening}")
     logger.info("listen_for_messages from PHP script via a named pipe")
     pipe_path = '/var/www/html/tmp/stop_recording_pipe'
     logger.info(f"pipepath = {pipe_path}")
