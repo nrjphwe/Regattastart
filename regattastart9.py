@@ -264,6 +264,11 @@ def cleanup_processed_timestamps(processed_timestamps, threshold_seconds=30):
     logger.debug(f"Cleaned up {removed_count} old timestamps.")
 
 
+# Nested function to load the YOLOv5 model
+def load_model_with_timeout():
+    return torch.hub.load('/home/pi/yolov5', 'yolov5s', source='local')
+
+
 def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, fps):
     global recording_stopped
     confidence = 0.0  # Initial value
@@ -337,10 +342,6 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
 
     # Inference ## Load the pre-trained YOLOv5 model (e.g., yolov5s)
     logger.debug("Before loading YOLOv5 model from local repository.")
-
-    # Nested function to load the YOLOv5 model
-    def load_model_with_timeout():
-        return torch.hub.load('/home/pi/yolov5', 'yolov5s', source='local')
 
     try:
         logger.debug("try to load the YOLOv5 model")
