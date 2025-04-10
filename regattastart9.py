@@ -21,13 +21,14 @@ import json
 import select
 import threading
 import time
-import torch
-import warnings
 
 # Manually add the virtual environment's site-packages directory to sys.path
 venv_path = "/home/pi/yolov5_env/lib/python3.11/site-packages"
 if venv_path not in sys.path:
     sys.path.insert(0, venv_path)
+import torch
+import warnings
+
 
 warnings.filterwarnings(
     "ignore",
