@@ -341,6 +341,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
     logger.debug("Before loading YOLOv5 model from local repository.")
     try:
         model = torch.hub.load('/home/pi/yolov5', 'yolov5s', source='local')
+        timeout.cancel()  # Cancel the timeout if successful
         # model = torch.hub.load('ultralytics/yolov5', 'yolov5s', trust_repo=True)
         logger.debug("YOLOv5 model loaded successfully.")
     except TimeoutException:
@@ -349,7 +350,11 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
     except Exception as e:
         logger.error(f"Failed to load YOLOv5 model: {e}", exc_info=True)
         return
-    model.classes = [8]  # Filter for 'boat' class (COCO ID for 'boat' is 8)
+    finally:
+        timeout.cancel()  # Ensure the timeout is canceled
+    logger.debug("After loading YOLOv5 model from local repository.")
+    # Filter for 'boat' class (COCO ID for 'boat' is 8)
+    model.classes = [8]
 
     # setup video writer
     fourcc = cv2.VideoWriter_fourcc(*'XVID')  # Use 'XVID' for .avi, or 'mp4v' for .mp4
