@@ -68,14 +68,14 @@ recording_stopped = False  # Global variable
 # setup gpio()
 ON = GPIO.LOW
 OFF = GPIO.HIGH
-signal = 26
+signal_pin = 26
 lamp1 = 20
 lamp2 = 21
 try:  # GPIO
     GPIO.cleanup()
     GPIO.setmode(GPIO.BCM)
     GPIO.setwarnings(True)
-    GPIO.setup(signal, GPIO.OUT, initial=GPIO.HIGH)
+    GPIO.setup(signal_pin, GPIO.OUT, initial=GPIO.HIGH)
     GPIO.setup(lamp1, GPIO.OUT, initial=GPIO.HIGH)
     GPIO.setup(lamp2, GPIO.OUT, initial=GPIO.HIGH)
 except Exception as e:
@@ -351,9 +351,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
 
     fpsw = fps
 
-   
-
-    # To prevent the script from hanging indefinitely during the 
+    # To prevent the script from hanging indefinitely during the
     # download, add a timeout:
     class TimeoutException(Exception):
         pass
