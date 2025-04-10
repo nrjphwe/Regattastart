@@ -657,7 +657,7 @@ def main():
                         process_video(video_path, "video0.avi", "video0.mp4", frame_rate=30)
                         logger.debug("Video0 converted to mp4")
                     break  # Exit the loop after the if condition is met
-                time.sleep(0.1)  # Introduce a delay of 2 seconds
+                time.sleep(1)  # Introduce a delay of 2 seconds
 
     except json.JSONDecodeError as e:
         logger.error("Failed to parse JSON: %", str(e))
