@@ -245,10 +245,10 @@ def setup_gpio():
         lgpio.gpio_claim_output(h, 26, 1)  # Signal pin
         lgpio.gpio_claim_output(h, 20, 1)  # Lamp1
         lgpio.gpio_claim_output(h, 21, 1)  # Lamp2
-        print("GPIO setup successful")
-        return 26, 20, 21  # Return the GPIO pin numbers
+        logger.info("GPIO setup successful: Signal=26, Lamp1=20, Lamp2=21")
+        return h, 26, 20, 21  # Return the GPIO handle and pin numbers
     except Exception as e:
-        print(f"Error in setup_gpio: {e}")
+        logger.error(f"Error in setup_gpio: {e}")
         raise
 
 
