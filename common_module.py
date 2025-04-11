@@ -232,6 +232,7 @@ def old_setup_gpio():
         logger.error(f"Error in setup_gpio: {e}", exc_info=True)
         raise
 
+
 def setup_gpio():
     try:
         h = lgpio.gpiochip_open(0)  # Open GPIO chip 0
