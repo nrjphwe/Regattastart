@@ -13,11 +13,12 @@ from common_module import (
 import sys
 import os
 os.chdir('/home/pi/yolov5')
+"""
 # Manually add the virtual environment's site-packages directory to sys.path
 venv_path = "/home/pi/yolov5_env/lib/python3.11/site-packages"
 if venv_path not in sys.path:
     sys.path.insert(0, venv_path)
-
+"""
 
 # Use a deque to store the most recent frames in memory
 from collections import deque
@@ -30,13 +31,11 @@ from picamera2 import Picamera2
 import select
 import threading
 import time
-
-
 import cv2
 import torch
 import warnings
 import RPi.GPIO as GPIO
-import multiprocessing
+import queue
 
 
 warnings.filterwarnings(
@@ -266,7 +265,7 @@ def cleanup_processed_timestamps(processed_timestamps, threshold_seconds=30):
 
 
 # Nested function to load the YOLOv5 model
-import queue
+
 def load_model_with_timeout(result_queue):
     try:
         model = torch.hub.load('/home/pi/yolov5', 'yolov5s', source='local', force_reload=True)
