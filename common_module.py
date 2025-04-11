@@ -90,9 +90,7 @@ def setup_camera():
     global logger  # Explicitly declare logger as global
     try:
         camera = Picamera2()
-        if camera.is_recording:
-            logger.warning("Camera is currently recording. Stopping the camera before reconfiguring.")
-            camera.stop_recording()
+        # Stop the camera if it is running
         if camera.is_running:
             logger.warning("Camera is currently running. Stopping the camera before reconfiguring.")
             camera.stop()
