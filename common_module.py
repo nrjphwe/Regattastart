@@ -11,6 +11,7 @@ from picamera2.encoders import H264Encoder
 import RPi.GPIO as GPIO
 import cv2
 
+import lgpio
 
 # Initialize global variables
 logger = None
@@ -219,7 +220,7 @@ def process_video(video_path, input_file, output_file, frame_rate=None):
         return
 
 
-def setup_gpio():
+def old_setup_gpio():
     try:
         GPIO.setmode(GPIO.BCM)
         GPIO.setwarnings(True)
@@ -231,6 +232,17 @@ def setup_gpio():
         logger.error(f"Error in setup_gpio: {e}", exc_info=True)
         raise
 
+def setup_gpio():
+    try:
+        h = lgpio.gpiochip_open(0)  # Open GPIO chip 0
+        lgpio.gpio_claim_output(h, 26, 1)  # Signal pin
+        lgpio.gpio_claim_output(h, 20, 1)  # Lamp1
+        lgpio.gpio_claim_output(h, 21, 1)  # Lamp2
+        print("GPIO setup successful")
+        return h
+    except Exception as e:
+        print(f"Error in setup_gpio: {e}")
+        raise
 
 
 def trigger_relay(pin, state, duration=None):
