@@ -281,10 +281,10 @@ def old_cleanup_gpio():
     logger.info("GPIO cleaned up")
 
 
-def cleanup_gpio():
+def cleanup_gpio(handle):
     global logger
     try:
-        lgpio.gpiochip_close(0)  # Close GPIO chip 0
+        lgpio.gpiochip_close(handle)  # Close GPIO chip 0
         logger.debug("GPIO resources cleaned up successfully.")
     except Exception as e:
         logger.error(f"Error while cleaning up GPIO: {e}")
