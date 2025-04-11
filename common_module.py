@@ -240,7 +240,7 @@ def setup_gpio():
         lgpio.gpio_claim_output(h, 20, 1)  # Lamp1
         lgpio.gpio_claim_output(h, 21, 1)  # Lamp2
         print("GPIO setup successful")
-        return h
+        return 26, 20, 21  # Return the GPIO pin numbers
     except Exception as e:
         print(f"Error in setup_gpio: {e}")
         raise
