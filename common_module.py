@@ -228,7 +228,7 @@ def setup_gpio():
     GPIO.setup(signal_pin, GPIO.OUT, initial=GPIO.HIGH)
     GPIO.setup(lamp1, GPIO.OUT, initial=GPIO.HIGH)
     GPIO.setup(lamp2, GPIO.OUT, initial=GPIO.HIGH)
-    return signal_pin, lamp1, lamp2
+    return lamp1, lamp2, signal_pin
 
 
 def trigger_relay(pin, state, duration=None):
