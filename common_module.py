@@ -222,6 +222,9 @@ def process_video(video_path, input_file, output_file, frame_rate=None):
 def setup_gpio():
     GPIO.setmode(GPIO.BCM)
     GPIO.setwarnings(True)
+    signal_pin = 26
+    lamp1 = 20
+    lamp2 = 21
     GPIO.setup(signal_pin, GPIO.OUT, initial=GPIO.HIGH)
     GPIO.setup(lamp1, GPIO.OUT, initial=GPIO.HIGH)
     GPIO.setup(lamp2, GPIO.OUT, initial=GPIO.HIGH)
