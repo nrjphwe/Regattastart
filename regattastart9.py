@@ -719,7 +719,7 @@ def main():
             except Exception as e:
                 logger.error(f"Error while cleaning up camera: {e}")
 
-            GPIO.cleanup()
+            # GPIO.cleanup()
             logger.debug("After GPIO.cleanup, end of program")
 
             # Log the end of the program
