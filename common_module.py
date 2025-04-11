@@ -70,8 +70,11 @@ def setup_logging():
         def write(self, buf):
             for line in buf.rstrip().splitlines():
                 self.logger.log(self.log_level, line)
+            self.logger.debug("StreamToLogger.write() called")  # Debug log
+
 
         def flush(self):
+            self.logger.debug("StreamToLogger.flush() called")  # Debug log
             pass  # This is required for compatibility with file-like objects
 
     # Redirect stdout and stderr to the logger
@@ -255,6 +258,7 @@ def old_trigger_relay(pin, state, duration=None):
     if duration:
         time.sleep(duration)
         GPIO.output(pin, GPIO.LOW)  # Turn it off after the specified duration
+
 
 def trigger_relay(pin, state, duration=None):
     """Control a relay by turning it ON or OFF, optionally with a delay."""
