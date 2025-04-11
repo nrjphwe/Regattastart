@@ -42,7 +42,7 @@ import time
 import cv2
 import torch
 import warnings
-import RPi.GPIO as GPIO
+import RPi.GPIO as GPIO  # Import GPIO library
 import queue
 
 
@@ -52,9 +52,6 @@ warnings.filterwarnings(
     category=FutureWarning,
     module=".*yolov5_master.models.common*"
 )
-
-# picamera2_logger = logging.getLogger('picamera2')
-# picamera2_logger.setLevel(logging.ERROR)  # Change to ERROR to suppress more logs
 
 # parameter data
 fps = 10
