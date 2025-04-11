@@ -90,7 +90,13 @@ def setup_camera():
     global logger  # Explicitly declare logger as global
     try:
         camera = Picamera2()
-        # regattastart6 needs the camera to be flipped 180 degrees
+        if camera.is_recording:
+            logger.warning("Camera is currently recording. Stopping the camera before reconfiguring.")
+            camera.stop_recording()
+        if camera.is_running:
+            logger.warning("Camera is currently running. Stopping the camera before reconfiguring.")
+            camera.stop()
+        # Configure the camera
         config = camera.create_still_configuration(
             main={"size": (1296, 730), "format": "BGR888"}
         )
@@ -254,8 +260,17 @@ def trigger_relay(pin, state, duration=None):
         GPIO.output(pin, GPIO.LOW)  # Turn it off after the specified duration
 
 
-def cleanup_gpio():
+def old_cleanup_gpio():
     global logger
     """Clean up GPIO on script exit."""
     GPIO.cleanup()
     logger.info("GPIO cleaned up")
+
+def cleanup_gpio():
+    global logger
+    """Clean up GPIO on script exit."""
+    try:
+        lgpio.gpiochip_close(0)  # Close GPIO chip 0
+        logger.info("GPIO cleaned up successfully.")
+    except Exception as e:
+        logger.error(f"Failed to clean up GPIO: {e}", exc_info=True)
