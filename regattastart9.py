@@ -11,6 +11,11 @@ from common_module import (
     process_video,
 )
 import sys
+import sys
+print("Python executable:", sys.executable)
+print("Python version:", sys.version)
+print("sys.path:", sys.path)
+
 import os
 # The os.chdir('/home/pi/yolov5') and manual addition of venv_path to "
 # sys.path in your script may be unnecessary if the virtual environment "
