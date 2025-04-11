@@ -290,6 +290,22 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
     max_duration = (video_end + (num_starts-1)*5) * 60
     logger.debug(f"Video1, max recording duration: {max_duration} seconds")
 
+    # Ensure the camera is stopped before reconfiguring
+    try:
+        if camera is not None:
+            logger.info("Stopping the camera before reconfiguring.")
+            camera.stop()
+        video_config = camera.create_video_configuration(
+            main={"size": (1920, 1080)}, controls={"FrameRate": fps},
+            transform=Transform(hflip=True, vflip=True)
+        )
+        camera.configure(video_config)
+        logger.info(f"Camera configured with resolution (1920, 1080) and frame rate {fps}.")
+        time.sleep(0.5)  # Add a short delay to ensure the camera is ready
+    except Exception as e:
+        logger.error(f"Failed to configure camera: {e}")
+        return
+
     # Configure the camera to match the expected resolution and frame rate
     try:
         video_config = camera.create_video_configuration(
