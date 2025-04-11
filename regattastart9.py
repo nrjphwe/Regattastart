@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/home/pi/yolov5_env/bin/python
 # after git pull, do: sudo cp regattastart9.py /usr/lib/cgi-bin/
 from common_module import (
     setup_camera,
@@ -10,7 +10,6 @@ from common_module import (
     trigger_relay,
     process_video,
 )
-import sys
 import sys
 print("Python executable:", sys.executable)
 print("Python version:", sys.version)
