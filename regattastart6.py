@@ -28,6 +28,7 @@ log_path = '/usr/lib/cgi-bin/'
 video_path = '/var/www/html/images/'
 photo_path = '/var/www/html/images/'
 pins = setup_gpio()
+logger.info(f' pins: {pins}')
 LAMP1, LAMP2, SIGNAL = pins
 
 
