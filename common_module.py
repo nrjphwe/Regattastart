@@ -249,12 +249,25 @@ def setup_gpio():
         raise
 
 
-def trigger_relay(pin, state, duration=None):
+def old_trigger_relay(pin, state, duration=None):
     """Control a relay by turning it ON or OFF, optionally with a delay."""
     GPIO.output(pin, GPIO.HIGH if state == "on" else GPIO.LOW)
     if duration:
         time.sleep(duration)
         GPIO.output(pin, GPIO.LOW)  # Turn it off after the specified duration
+
+def trigger_relay(pin, state, duration=None):
+    """Control a relay by turning it ON or OFF, optionally with a delay."""
+    try:
+        logger.info(f"Triggering relay on pin {pin} to state {state}")
+        lgpio.gpio_write(0, pin, 1 if state == "on" else 0)
+        logger.debug(f"Pin {pin} set to {'HIGH' if state == 'on' else 'LOW'}")
+        if duration:
+            time.sleep(duration)
+            lgpio.gpio_write(0, pin, 0)  # Turn off after the duration
+            logger.debug(f"Pin {pin} turned OFF after {duration} seconds")
+    except Exception as e:
+        logger.error(f"Failed to trigger relay on pin {pin}: {e}")
 
 
 def old_cleanup_gpio():
