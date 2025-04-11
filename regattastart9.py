@@ -1,4 +1,4 @@
-#!/home/pi/yolov5_env/bin/python
+#!/usr/bin/python3
 # after git pull, do: sudo cp regattastart9.py /usr/lib/cgi-bin/
 from common_module import (
     setup_camera,
