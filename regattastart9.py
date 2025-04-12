@@ -350,28 +350,43 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
         logger.error(f"Exception occurred while accessing frame size: {e}", exc_info=True)
         return
 
-    # Crop the original frame to maintain a square (1:1) aspect ratio
-    # crop_width, crop_height = 1280, 720
-    crop_width, crop_height = 1640, 1080
-    shift_offset = 100  # horisontal offset for crop -> right part
-    # Get dimensions of the full-resolution frame (1920x1080 in your case)
-    frame_height, frame_width = frame.shape[:2]  # shape = (height, width, channels)
-    x_start = max((frame_width - crop_width) // 2 + shift_offset, 50)
-    y_start = max((frame_height - crop_height) // 2, 0)
-    # logger.info(f"shift_offset = {shift_offset}, x_start= {x_start}, y_start = {y_start}")
+    logger.debug("Frame size confirmed, proceeding to crop the frame.")
 
-    if frame_size[0] != 1920 or frame_size[1] != 1080:
-        logger.error(f"Resolution mismatch! Expected (1920, 1080) but got {frame_size}.")
+    try:
+        # Crop the original frame to maintain a square (1:1) aspect ratio
+        logger.debug("Attempting to crop the frame.")
+        # crop_width, crop_height = 1280, 720
+        crop_width, crop_height = 1640, 1080
+        shift_offset = 100  # horisontal offset for crop -> right part
+        # Get dimensions of the full-resolution frame (1920x1080 in your case)
+        frame_height, frame_width = frame.shape[:2]  # shape = (height, width, channels)
+        x_start = max((frame_width - crop_width) // 2 + shift_offset, 50)
+        y_start = max((frame_height - crop_height) // 2, 0)
+        # logger.info(f"shift_offset = {shift_offset}, x_start= {x_start}, y_start = {y_start}")
 
+        if frame_size[0] != 1920 or frame_size[1] != 1080:
+            logger.error(f"Resolution mismatch! Expected (1920, 1080) but got {frame_size}.")
+        else:
+            logger.debug("Resolution matches expected values.")
+
+    except Exception as e:
+        logger.error(f"Unhandled exception occurred: {e}", exc_info=True)
+        return
+    logger.debug(f"Frame cropped successfully. Crop size: {crop_width}x{crop_height}")  
+
+    # Set the camera to the desired resolution and frame rate
     fpsw = fps
+    logger.debug(f"FPS set to {fpsw}, proceeding to load YOLOv5 model.")
 
-    # Inference ## Load the pre-trained YOLOv5 model (e.g., yolov5s)
-    logger.debug("Before loading YOLOv5 model from local repository.")
-
-    result_queue = queue.Queue()  # Create a queue to hold the result
-    load_thread = threading.Thread(target=load_model_with_timeout, args=(result_queue,))
-    load_thread.start()
-    load_thread.join(timeout=60)  # Wait for up to 60 seconds
+    try:
+        # Inference ## Load the pre-trained YOLOv5 model (e.g., yolov5s)
+        result_queue = queue.Queue()  # Create a queue to hold the result
+        load_thread = threading.Thread(target=load_model_with_timeout, args=(result_queue,))
+        load_thread.start()
+        load_thread.join(timeout=60)  # Wait for up to 60 seconds
+    except Exception as e:
+        logger.error(f"Unhandled exception occurred load_thread: {e}", exc_info=True)
+        return
 
     if not load_thread.is_alive():
         try:
