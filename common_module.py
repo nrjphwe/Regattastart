@@ -58,7 +58,7 @@ def setup_logging():
     current_level = logging.getLevelName(logger.getEffectiveLevel())
     print(f"Current logging level from logging.conf: {current_level}")
     logger.info("Logging initialized in common_module")
-
+    '''
     # Redirect stdout and stderr to the Python logger to 
     # capture all output in your python.log file.
     class StreamToLogger:
@@ -84,6 +84,7 @@ def setup_logging():
 
     sys.stdout = StreamToLogger(stdout_logger, logging.INFO)
     sys.stderr = StreamToLogger(stderr_logger, logging.ERROR)
+    '''
 
 
 # Initialize logging immediately when the module is imported
