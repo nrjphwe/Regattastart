@@ -68,10 +68,11 @@ def setup_logging():
             self.linebuf = ''
 
         def write(self, buf):
+            if not buf.strip():  # Ignore empty or whitespace-only lines
+                return
             for line in buf.rstrip().splitlines():
                 self.logger.log(self.log_level, line)
             self.logger.debug("StreamToLogger.write() called")  # Debug log
-
 
         def flush(self):
             self.logger.debug("StreamToLogger.flush() called")  # Debug log
