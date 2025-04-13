@@ -267,7 +267,7 @@ def cleanup_processed_timestamps(processed_timestamps, threshold_seconds=30):
     logger.debug(f"Cleaned up {removed_count} old timestamps.")
 
 
-# Nested function to load the YOLOv5 model
+# function to load the YOLOv5 model
 
 def load_model_with_timeout(result_queue):
     try:
@@ -345,6 +345,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
     # Confirm resolution before proceeding
     try:
         frame_size = (frame.shape[1], frame.shape[0])
+        time.sleep(0.5)  # Add a short delay to ensure the camera is ready
         logger.info(f"Camera frame size before recording: {frame_size}")
     except Exception as e:
         logger.error(f"Exception occurred while accessing frame size: {e}", exc_info=True)
