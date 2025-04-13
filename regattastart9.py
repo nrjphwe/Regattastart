@@ -6,6 +6,7 @@ from common_module import (
     start_video_recording,
     stop_video_recording,
     logger,
+    text_rectangle,
     setup_gpio,
     trigger_relay,
     process_video,
@@ -169,31 +170,6 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
                         # logger.info(f'last_triggered_events = {last_triggered_events}')
                     last_triggered_events[(event_time, log_message)] = True
         logger.info(f"Start_sequence, End of iteration: {i}")
-
-'''
-def apply_timestamp(request):
-    timestamp = time.strftime("%Y-%m-%d %X")
-    colour = (0, 255, 0)  # Green text
-    font = cv2.FONT_HERSHEY_DUPLEX
-    fontScale = 2
-    thickness = 2
-
-    try:
-        with MappedArray(request, "main") as m:
-            frame = m.array  # Get the frame
-            if frame is None or frame.shape[0] == 0:
-                logger.error("apply_timestamp: Frame is None or empty!")
-                return
-
-            height, width, _ = frame.shape
-            # logger.debug(f"Frame shape: {frame.shape}")
-            origin = (50, max(50, height - 100))  # Ensure text is within the frame
-
-            cv2.putText(frame, timestamp, origin, font, fontScale, colour, thickness)
-
-    except Exception as e:
-        logger.error(f"Error in apply_timestamp: {e}", exc_info=True)
-'''
 
 
 def stop_recording():
@@ -511,7 +487,8 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
                     if confidence > 0.3 and class_name == 'boat':
                         origin = (50, max(50, frame_height - 100))  # Position on frame
                         font = cv2.FONT_HERSHEY_DUPLEX
-                        cv2.putText(frame, f"{capture_timestamp}", origin, font, fontScale, colour, thickness)
+                        text_rectangle(frame, origin, f"{capture_timestamp}")
+                        # cv2.putText(frame, f"{capture_timestamp}", origin, font, fontScale, colour, thickness)
                         boat_in_current_frame = True
                         logger.debug(f"Confidence {confidence:.2f}, capture_timestamp = {capture_timestamp}")
                         detected_timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")  # timestamp (with microseconds)
