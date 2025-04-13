@@ -304,19 +304,6 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
         logger.error(f"Failed to configure camera: {e}")
         return
 
-    # Configure the camera to match the expected resolution and frame rate
-    try:
-        video_config = camera.create_video_configuration(
-            main={"size": (1920, 1080)}, controls={"FrameRate": fps},
-            transform=Transform(hflip=True, vflip=True)
-        )
-        camera.configure(video_config)
-        logger.info(f"Camera configured with resolution (1920, 1080) and frame rate {fps}.")
-        time.sleep(0.5)  # Add a short delay to ensure the camera is ready
-    except Exception as e:
-        logger.error(f"Failed to configure camera: {e}")
-        return
-
     logger.debug(f"Camera object: {camera}")
     if camera is None:
         logger.error("Camera object is None before restarting.")
@@ -695,7 +682,7 @@ def main():
 
     except json.JSONDecodeError as e:
         logger.error("Failed to parse JSON: %", str(e))
-        GPIO.cleanup(gpio_handle)
+        # GPIO.cleanup(gpio_handle)
         sys.exit(1)
     finally:
         logger.info("Finally section, before listen_for_message")
