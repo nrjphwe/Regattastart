@@ -487,7 +487,8 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
                     if confidence > 0.3 and class_name == 'boat':
                         origin = (50, max(50, frame_height - 100))  # Position on frame
                         font = cv2.FONT_HERSHEY_DUPLEX
-                        text_rectangle(frame, f"{capture_timestamp}", origin)
+                        # text_rectangle(frame, f"{capture_timestamp}", origin)
+                        text_rectangle(frame, f"{capture_timestamp.strftime("%Y-%m-%d, %H:%M:%S")}", origin)
                         # cv2.putText(frame, f"{capture_timestamp}", origin, font, fontScale, colour, thickness)
                         boat_in_current_frame = True
                         logger.debug(f"Confidence {confidence:.2f}, capture_timestamp = {capture_timestamp}")
