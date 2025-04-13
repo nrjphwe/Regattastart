@@ -27,9 +27,7 @@ from picamera2 import MappedArray
 log_path = '/usr/lib/cgi-bin/'
 video_path = '/var/www/html/images/'
 photo_path = '/var/www/html/images/'
-pins = setup_gpio()
-logger.info(f' pins: {pins}')
-LAMP1, LAMP2, SIGNAL = pins
+gpio_handle, LAMP1, LAMP2, SIGNAL, = setup_gpio()
 
 
 def remove_picture_files(directory, pattern):
@@ -58,14 +56,14 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
 
         # Define time intervals for each relay trigger
         time_intervals = [
-            (start_time_sec - 5 * 60, lambda: trigger_relay(LAMP1, "on"), "5_min Lamp1 ON -- Flag O UP"),
-            (start_time_sec - 5 * 60 + 1, lambda: trigger_relay(SIGNAL, "on", 1), "5_min Warning Signal"),
-            (start_time_sec - 4 * 60 - 2, lambda: trigger_relay(LAMP2, "on"), "4_min Lamp2 ON"),
-            (start_time_sec - 4 * 60, lambda: trigger_relay(SIGNAL, "on", 1), "4_min Warning Signal"),
-            (start_time_sec - 1 * 60 - 2, lambda: trigger_relay(LAMP2, "off"), "1_min Lamp2 OFF -- Flag P DOWN"),
-            (start_time_sec - 1 * 60, lambda: trigger_relay(SIGNAL, "on", 1), "1_min Warning Signal"),
-            (start_time_sec - 2, lambda: trigger_relay(LAMP1, "off"), "Lamp1 OFF at Start"),
-            (start_time_sec, lambda: trigger_relay(SIGNAL, "on", 1), "Start Signal"),
+            (start_time_sec - 5 * 60, lambda: trigger_relay(gpio_handle, LAMP1, "on"), "5_min Lamp1 ON -- Flag O UP"),
+            (start_time_sec - 5 * 60 + 1, lambda: trigger_relay(gpio_handle, SIGNAL, "on", 1), "5_min Warning Signal"),
+            (start_time_sec - 4 * 60 - 2, lambda: trigger_relay(gpio_handle, LAMP2, "on"), "4_min Lamp2 ON"),
+            (start_time_sec - 4 * 60, lambda: trigger_relay(gpio_handle, SIGNAL, "on", 1), "4_min Warning Signal"),
+            (start_time_sec - 1 * 60 - 2, lambda: trigger_relay(gpio_handle, LAMP2, "off"), "1_min Lamp2 OFF -- Flag P DOWN"),
+            (start_time_sec - 1 * 60, lambda: trigger_relay(gpio_handle, SIGNAL, "on", 1), "1_min Warning Signal"),
+            (start_time_sec - 2, lambda: trigger_relay(gpio_handle, LAMP1, "off"), "Lamp1 OFF at Start"),
+            (start_time_sec, lambda: trigger_relay(gpio_handle, SIGNAL, "on", 1), "Start Signal"),
         ]
 
         last_triggered_events = {}
