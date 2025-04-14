@@ -27,7 +27,7 @@ from picamera2 import MappedArray
 log_path = '/usr/lib/cgi-bin/'
 video_path = '/var/www/html/images/'
 photo_path = '/var/www/html/images/'
-gpio_handle, LAMP1, LAMP2, SIGNAL, = setup_gpio()
+gpio_handle, LAMP1, LAMP2, SIGNAL = setup_gpio()
 
 
 def remove_picture_files(directory, pattern):
