@@ -4,6 +4,7 @@ from common_module import (
     setup_camera,
     capture_picture,
     start_video_recording,
+    start_sequence,
     stop_video_recording,
     logger,
     setup_gpio,
