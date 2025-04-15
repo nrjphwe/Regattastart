@@ -126,7 +126,7 @@ def restart_camera(camera, resolution=(1920, 1080), fps=5):
         return None  # Avoid using an uninitialized camera
 
 
-def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo_path):
+def xx_start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo_path):
     for i in range(num_starts):
         logger.info(f"Start_sequence. Start of iteration {i+1}")
         if i == 1:
@@ -626,8 +626,9 @@ def main():
         logger.info("Weekday=%s, Start_time=%s, video_end=%s, num_starts=%s", week_day, start_time.strftime("%H:%M"), video_end, num_starts)
 
         if wd == week_day:
-            # A loop that waits until close to the 5-minute mark, and continuously 
-            # checks the condition without blocking the execution completely
+            # A loop that waits until close to the 5-minute mark, and 
+            # continuously checks the condition without blocking the 
+            # execution completely
             while True:
                 now = dt.datetime.now()
                 seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
@@ -654,7 +655,7 @@ def main():
                         stop_video_recording(camera)
                         logger.debug("Stopping video0 recording")
                         process_video(video_path, "video0.avi", "video0.mp4", frame_rate=30)
-                        logger.debug("Video0 converted to mp4")
+                        logger.info("Video0 converted to mp4")
                     break  # Exit the loop after the if condition is met
                 time.sleep(1)  # Introduce a delay of 2 seconds
 
