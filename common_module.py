@@ -295,7 +295,7 @@ def cleanup_gpio(handle):
 
 def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo_path):
     gpio_handle, LAMP1, LAMP2, SIGNAL = setup_gpio()
-    for i in range(num_starts-1):
+    for i in range(num_starts):
         logger.info(f"Start_sequence. Start of iteration {i+1}")
         # Adjust the start_time_sec for the second iteration
         if i == 1:
@@ -338,4 +338,4 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
                         logger.info(f"Start_sequence, log_message: {log_message}")
                         # logger.info(f'last_triggered_events = {last_triggered_events}')
                     last_triggered_events[(event_time, log_message)] = True
-        logger.info(f"Start_sequence, End of iteration: {i}")
+        logger.info(f"Start_sequence, End of iteration: {i+1}")
