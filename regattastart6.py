@@ -46,7 +46,7 @@ def remove_video_files(directory, pattern):
             os.remove(file_path)
 
 
-def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo_path):
+def xx_start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo_path):
     for i in range(num_starts):
         logger.info(f"Start_sequence. Start of iteration {i}")
         # Adjust the start_time_sec for the second iteration
