@@ -60,7 +60,7 @@ signal_dur = 0.9  # 0.9 sec
 log_path = '/var/www/html/'
 video_path = '/var/www/html/images/'
 photo_path = '/var/www/html/images/'
-gpio_handle, LAMP1, LAMP2, SIGNAL, = setup_gpio()
+#gpio_handle, LAMP1, LAMP2, SIGNAL, = setup_gpio()
 listening = True  # Define the listening variable
 recording_stopped = False  # Global variable
 # reset the contents of the status variable, used for flagging that
@@ -130,6 +130,7 @@ def restart_camera(camera, resolution=(1920, 1080), fps=5):
 def xx_start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo_path):
     for i in range(num_starts):
         logger.info(f"Start_sequence. Start of iteration {i+1}")
+        # Adjust the start_time_sec for the second iteration
         if i == 1:
             start_time_sec += dur_between_starts * 60  # Add 5 or 10 minutes for the second iteration
             logger.info(f"Start_sequence, Next start_time_sec: {start_time_sec}")
