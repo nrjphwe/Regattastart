@@ -3,6 +3,7 @@ import os
 import sys
 import subprocess
 import time
+import datetime as dt
 import logging
 import logging.config
 from libcamera import Transform
@@ -293,7 +294,7 @@ def cleanup_gpio(handle):
 
 
 def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo_path):
-    for i in range(num_starts):
+    for i in range(num_starts-1):
         logger.info(f"Start_sequence. Start of iteration {i+1}")
         # Adjust the start_time_sec for the second iteration
         if i == 1:
