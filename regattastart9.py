@@ -479,7 +479,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
 
             # Parse the detection results
             if len(detections) == 0:
-                logger.debug("No detections in the current frame.")
+                # logger.debug("No detections in the current frame.")
             else:
                 # logger.debug("Detection made")
                 for _, row in detections.iterrows():
