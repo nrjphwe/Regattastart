@@ -60,7 +60,7 @@ signal_dur = 0.9  # 0.9 sec
 log_path = '/var/www/html/'
 video_path = '/var/www/html/images/'
 photo_path = '/var/www/html/images/'
-#gpio_handle, LAMP1, LAMP2, SIGNAL, = setup_gpio()
+# gpio_handle, LAMP1, LAMP2, SIGNAL, = setup_gpio()
 listening = True  # Define the listening variable
 recording_stopped = False  # Global variable
 # reset the contents of the status variable, used for flagging that
@@ -419,7 +419,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
     logger.info(f"scale_x = {scale_x}, scale_y= {scale_y}")
 
     while not recording_stopped:
-        logger.debug(f"recording_stopped = {recording_stopped}")
+        # logger.debug(f"recording_stopped = {recording_stopped}")
         # elapsed_time = time.time() - camera_start_time
         # logger.debug(f"Elapsed time: {elapsed_time:.2f} seconds, Max duration: {max_duration}")
         # if elapsed_time >= max_duration:
@@ -436,11 +436,11 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
                 logger.error("Captured frame is None! Skipping write.")
                 continue
             capture_timestamp = datetime.now() + timedelta(microseconds=frame_counter)
-            logger.debug(f"  Capture timestamp: {capture_timestamp}")
+            # logger.debug(f"  Capture timestamp: {capture_timestamp}")
 
             if previous_capture_time:
                 time_diff = (capture_timestamp - previous_capture_time).total_seconds()
-                logger.debug(f"Time since last frame: {time_diff:.3f} sec")
+                # logger.debug(f"Time since last frame: {time_diff:.3f} sec")
 
             previous_capture_time = capture_timestamp  # Update for next iteration
 
