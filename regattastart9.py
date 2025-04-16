@@ -663,7 +663,6 @@ def main():
 
     except json.JSONDecodeError as e:
         logger.error("Failed to parse JSON: %", str(e))
-        # GPIO.cleanup(gpio_handle)
         sys.exit(1)
     finally:
         logger.info("Finally section, before listen_for_message")
@@ -701,8 +700,8 @@ def main():
             except Exception as e:
                 logger.error(f"Error while cleaning up camera: {e}")
 
-            GPIO.cleanup(gpio_handle)
-            logger.debug("After GPIO.cleanup, end of program")
+            # GPIO.cleanup(gpio_handle)
+            # logger.debug("After GPIO.cleanup, end of program")
 
             # Log the end of the program
             logger.info("Program has ended")
