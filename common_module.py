@@ -119,7 +119,7 @@ def capture_picture(camera, photo_path, file_name, rotate=False):
 
             # Ensure the frame is in BGR format
             if frame.shape[-1] == 3:  # Assuming 3 channels for RGB/BGR
-                logger.debug("Converting frame from RGB to BGR")
+                # logger.debug("Converting frame from RGB to BGR")
                 frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
 
             # Apply timestamp (reuse the same logic as in apply_timestamp)
