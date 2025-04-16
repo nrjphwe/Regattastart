@@ -481,7 +481,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
             if len(detections) == 0:
                 logger.debug("No detections in the current frame.")
             else:
-                logger.debug("Detection made")
+                # logger.debug("Detection made")
                 for _, row in detections.iterrows():
                     class_name = row['name']
                     confidence = row['confidence']
@@ -493,9 +493,9 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
                         text_rectangle(frame, (f'{capture_timestamp.strftime("%Y-%m-%d, %H:%M:%S")}'), origin)
                         # cv2.putText(frame, f"{capture_timestamp}", origin, font, fontScale, colour, thickness)
                         boat_in_current_frame = True
-                        logger.debug(f"Confidence {confidence:.2f}, capture_timestamp = {capture_timestamp}")
+                        # logger.debug(f"Confidence {confidence:.2f}, capture_timestamp = {capture_timestamp}")
                         detected_timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")  # timestamp (with microseconds)
-                        logger.debug(f"Detected_timestamp={detected_timestamp}")
+                        # logger.debug(f"Detected_timestamp={detected_timestamp}")
 
                         #  Adjust the bounding box coordinates to reflect the original frame
                         x1 = int(row['xmin'] * scale_x) + x_start
@@ -510,7 +510,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
 
                         if frame is not None:
                             video_writer.write(frame)
-                            logger.debug("Detected frame written  !!!")
+                            # logger.debug("Detected frame written  !!!")
                         else:
                             logger.error("Captured frame is None! Skipping write.")
                             continue
@@ -566,7 +566,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
         time_now = dt.datetime.now()
         seconds_since_midnight = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
         elapsed_time = seconds_since_midnight - start_time_sec
-        logger.debug(f"Elapsed time since start: {elapsed_time} seconds")
+        # logger.debug(f"Elapsed time since start: {elapsed_time} seconds")
         if elapsed_time >= max_duration:
             logger.debug(f"Maximum recording time reached, elapsed _time={elapsed_time}")
             recording_stopped = True
