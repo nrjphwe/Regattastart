@@ -28,7 +28,6 @@ from picamera2 import MappedArray
 log_path = '/usr/lib/cgi-bin/'
 video_path = '/var/www/html/images/'
 photo_path = '/var/www/html/images/'
-#gpio_handle, LAMP1, LAMP2, SIGNAL = setup_gpio()
 
 
 def remove_picture_files(directory, pattern):
@@ -45,53 +44,6 @@ def remove_video_files(directory, pattern):
         if file.startswith(pattern):
             file_path = os.path.join(directory, file)
             os.remove(file_path)
-
-
-def xx_start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo_path):
-    for i in range(num_starts):
-        logger.info(f"Start_sequence. Start of iteration {i}")
-        # Adjust the start_time_sec for the second iteration
-        if i == 1:
-            start_time_sec += dur_between_starts * 60  # Add 5 or 10 minutes for the second iteration
-            logger.info(f"Start_sequence, Next start_time_sec: {start_time_sec}")
-
-        # Define time intervals for each relay trigger
-        time_intervals = [
-            (start_time_sec - 5 * 60, lambda: trigger_relay(gpio_handle, LAMP1, "on"), "5_min Lamp1 ON -- Flag O UP"),
-            (start_time_sec - 5 * 60 + 1, lambda: trigger_relay(gpio_handle, SIGNAL, "on", 1), "5_min Warning Signal"),
-            (start_time_sec - 4 * 60 - 2, lambda: trigger_relay(gpio_handle, LAMP2, "on"), "4_min Lamp2 ON"),
-            (start_time_sec - 4 * 60, lambda: trigger_relay(gpio_handle, SIGNAL, "on", 1), "4_min Warning Signal"),
-            (start_time_sec - 1 * 60 - 2, lambda: trigger_relay(gpio_handle, LAMP2, "off"), "1_min Lamp2 OFF -- Flag P DOWN"),
-            (start_time_sec - 1 * 60, lambda: trigger_relay(gpio_handle, SIGNAL, "on", 1), "1_min Warning Signal"),
-            (start_time_sec - 2, lambda: trigger_relay(gpio_handle, LAMP1, "off"), "Lamp1 OFF at Start"),
-            (start_time_sec, lambda: trigger_relay(gpio_handle, SIGNAL, "on", 1), "Start Signal"),
-        ]
-
-        last_triggered_events = {}
-
-        while True:
-            time_now = dt.datetime.now()
-            seconds_since_midnight = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
-
-            if seconds_since_midnight >= start_time_sec:
-                break  # Exit the loop if the condition is met
-
-            for event_time, action, log_message in time_intervals:
-                time_now = dt.datetime.now()
-                seconds_now = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
-
-                if seconds_now == event_time:
-                    # Check if the event should be triggered based on the current time
-                    if (event_time, log_message) not in last_triggered_events:
-                        logger.info(f"Start_sequence: {log_message} at {event_time}")
-                        if action:
-                            action()
-                        picture_name = f"{i + 1}a_start_{log_message[:5]}.jpg"
-                        capture_picture(camera, photo_path, picture_name)
-                        logger.info(f"Start_sequence, log_message: {log_message}")
-                        # logger.info(f'last_triggered_events = {last_triggered_events}')
-                    last_triggered_events[(event_time, log_message)] = True
-        logger.info(f"Start_sequence, End of iteration: {i}")
 
 
 def finish_recording(camera, video_path, video_delay, num_video, video_dur, start_time_sec):
