@@ -6,9 +6,11 @@
     // after "git pull", "sudo cp /home/pi/Regattastart/index.php /var/www/html/"
     define('APP_VERSION', '2025.03.26'); // You can replace '1.0.0' with your desired version number
 
-    ini_set('session.gc_maxlifetime', 86400); // 24 hours
-    session_set_cookie_params(86400); // 24 hours
-
+    if (session_status() !== PHP_SESSION_ACTIVE) {
+        // Set session parameters
+        ini_set('session.gc_maxlifetime', 86400); // 24 hours
+        session_set_cookie_params(86400); // 24 hours
+    }
     if (session_status() === PHP_SESSION_NONE) {
         session_id("regattastart");
         session_start();
