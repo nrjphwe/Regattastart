@@ -59,33 +59,6 @@ def setup_logging():
     current_level = logging.getLevelName(logger.getEffectiveLevel())
     print(f"Current logging level from logging.conf: {current_level}")
     logger.info("Logging initialized in common_module")
-    '''
-    # Redirect stdout and stderr to the Python logger to 
-    # capture all output in your python.log file.
-    class StreamToLogger:
-        def __init__(self, logger, log_level):
-            self.logger = logger
-            self.log_level = log_level
-            self.linebuf = ''
-
-        def write(self, buf):
-            if not buf.strip():  # Ignore empty or whitespace-only lines
-                return
-            for line in buf.rstrip().splitlines():
-                self.logger.log(self.log_level, line)
-            self.logger.debug("StreamToLogger.write() called")  # Debug log
-
-        def flush(self):
-            self.logger.debug("StreamToLogger.flush() called")  # Debug log
-            pass  # This is required for compatibility with file-like objects
-
-    # Redirect stdout and stderr to the logger
-    stdout_logger = logging.getLogger('STDOUT')
-    stderr_logger = logging.getLogger('STDERR')
-
-    sys.stdout = StreamToLogger(stdout_logger, logging.INFO)
-    sys.stderr = StreamToLogger(stderr_logger, logging.ERROR)
-    '''
 
 
 # Initialize logging immediately when the module is imported
@@ -229,19 +202,6 @@ def process_video(video_path, input_file, output_file, frame_rate=None):
         return
 
 
-def old_setup_gpio():
-    try:
-        GPIO.setmode(GPIO.BCM)
-        GPIO.setwarnings(True)
-        GPIO.setup(signal_pin, GPIO.OUT, initial=GPIO.HIGH)
-        GPIO.setup(lamp1, GPIO.OUT, initial=GPIO.HIGH)
-        GPIO.setup(lamp2, GPIO.OUT, initial=GPIO.HIGH)
-        return lamp1, lamp2, signal_pin
-    except Exception as e:
-        logger.error(f"Error in setup_gpio: {e}", exc_info=True)
-        raise
-
-
 def setup_gpio():
     try:
         h = lgpio.gpiochip_open(0)  # Open GPIO chip 0
@@ -253,14 +213,6 @@ def setup_gpio():
     except Exception as e:
         logger.error(f"Error in setup_gpio: {e}")
         raise
-
-
-def old_trigger_relay(pin, state, duration=None):
-    """Control a relay by turning it ON or OFF, optionally with a delay."""
-    GPIO.output(pin, GPIO.HIGH if state == "on" else GPIO.LOW)
-    if duration:
-        time.sleep(duration)
-        GPIO.output(pin, GPIO.LOW)  # Turn it off after the specified duration
 
 
 def trigger_relay(handle, pin, state, duration=None):
@@ -275,13 +227,6 @@ def trigger_relay(handle, pin, state, duration=None):
             # logger.debug(f"Pin {pin} turned OFF after {duration} seconds")
     except Exception as e:
         logger.error(f"Failed to trigger relay on pin {pin}: {e}")
-
-
-def old_cleanup_gpio():
-    global logger
-    """Clean up GPIO on script exit."""
-    GPIO.cleanup()
-    logger.info("GPIO cleaned up")
 
 
 def cleanup_gpio(handle):
