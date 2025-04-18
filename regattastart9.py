@@ -49,7 +49,7 @@ import queue
 
 warnings.filterwarnings(
     "ignore",
-    message="`torch.cuda.amp.autocast(args...)` is deprecated",
+    message="torch.cuda.amp.autocast",
     category=FutureWarning,
     module=".*yolov5_master.models.common*"
 )
@@ -418,7 +418,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
                 cleanup_processed_timestamps(processed_timestamps)
 
         # Perform inference only on every x frame
-        if frame_counter % 4 == 0:  # every frame
+        if frame_counter % 8 == 0:  # every frame from 4 to 8
             # The cropped frame will cover pixels from (520, 180) to (1800, 900) 
             # of the original frame.
             cropped_frame = frame[y_start:y_start + crop_height, x_start:x_start + crop_width]
