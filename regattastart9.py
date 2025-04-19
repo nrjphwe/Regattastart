@@ -3,6 +3,8 @@
 from common_module import (
     setup_camera,
     capture_picture,
+    remove_picture_files,
+    remove_video_files,
     start_video_recording,
     start_sequence,
     stop_video_recording,
@@ -46,13 +48,13 @@ import warnings
 import RPi.GPIO as GPIO  # Import GPIO library
 import queue
 
-
 warnings.filterwarnings(
     "ignore",
     message="torch.cuda.amp.autocast",
     category=FutureWarning,
     module=".*yolov5_master.models.common*"
 )
+
 
 # parameter data
 fps = 10
@@ -67,22 +69,6 @@ recording_stopped = False  # Global variable
 # video1-conversion is complete.
 with open('/var/www/html/status.txt', 'w') as status_file:
     status_file.write("")
-
-
-def remove_picture_files(directory, pattern):
-    files = os.listdir(directory)
-    for file in files:
-        if file.endswith(pattern):
-            file_path = os.path.join(directory, file)
-            os.remove(file_path)
-
-
-def remove_video_files(directory, pattern):
-    files = os.listdir(directory)
-    for file in files:
-        if file.startswith(pattern):
-            file_path = os.path.join(directory, file)
-            os.remove(file_path)
 
 
 def restart_camera(camera, resolution=(1920, 1080), fps=5):
