@@ -1,6 +1,8 @@
 #!/usr/bin/python3 -u
 # after git pull, do: sudo cp regattastart6.py /usr/lib/cgi-bin/
 from common_module import (
+    remove_picture_files,
+    remove_video_files,
     setup_camera,
     capture_picture,
     start_video_recording,
@@ -28,22 +30,6 @@ from picamera2 import MappedArray
 log_path = '/usr/lib/cgi-bin/'
 video_path = '/var/www/html/images/'
 photo_path = '/var/www/html/images/'
-
-
-def remove_picture_files(directory, pattern):
-    files = os.listdir(directory)
-    for file in files:
-        if file.endswith(pattern):
-            file_path = os.path.join(directory, file)
-            os.remove(file_path)
-
-
-def remove_video_files(directory, pattern):
-    files = os.listdir(directory)
-    for file in files:
-        if file.startswith(pattern):
-            file_path = os.path.join(directory, file)
-            os.remove(file_path)
 
 
 def finish_recording(camera, video_path, video_delay, num_video, video_dur, start_time_sec):
