@@ -48,6 +48,9 @@ def setup_logging():
     For only errors: export LOG_LEVEL=ERROR
     """
     global logger  # Ensure logger is a global variable
+    # remove log file
+    file_path = "/var/www/html/python.log"
+    os.remove(file_path)
 
     # Load configuration
     logging.config.fileConfig('/usr/lib/cgi-bin/logging.conf')
@@ -63,6 +66,22 @@ def setup_logging():
 
 # Initialize logging immediately when the module is imported
 setup_logging()
+
+
+def remove_picture_files(directory, pattern):
+    files = os.listdir(directory)
+    for file in files:
+        if file.endswith(pattern):
+            file_path = os.path.join(directory, file)
+            os.remove(file_path)
+
+
+def remove_video_files(directory, pattern):
+    files = os.listdir(directory)
+    for file in files:
+        if file.startswith(pattern):
+            file_path = os.path.join(directory, file)
+            os.remove(file_path)
 
 
 def setup_camera():
