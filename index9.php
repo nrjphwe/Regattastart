@@ -15,6 +15,12 @@
 
     ini_set('display_errors', 1);
     error_reporting(E_ALL);
+    
+    // Check if the session is already started
+    print_r($_SESSION);
+    echo "<br/>";
+    print_r($_POST);
+    echo "<br/>";
 
     // Unset the session variable set in index.php
     unset($_SESSION['stopRecordingPressed']);
