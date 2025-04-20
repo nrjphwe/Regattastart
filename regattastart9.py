@@ -214,6 +214,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
             main={"size": (1920, 1080)}, controls={"FPS": fps},
             transform=Transform(hflip=True, vflip=True)
         )
+        time.sleep(0.5)  # Add a short delay to ensure the camera is ready
         camera.configure(video_config)
         logger.info(f"Camera configured with resolution (1920, 1080) and FPS {fps}.")
         time.sleep(0.5)  # Add a short delay to ensure the camera is ready
