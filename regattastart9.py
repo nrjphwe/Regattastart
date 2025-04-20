@@ -211,11 +211,11 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
             logger.info("Stopping the camera before reconfiguring.")
             camera.stop()
         video_config = camera.create_video_configuration(
-            main={"size": (1920, 1080)}, controls={"FrameRate": fps},
+            main={"size": (1920, 1080)}, controls={"FPS": fps},
             transform=Transform(hflip=True, vflip=True)
         )
         camera.configure(video_config)
-        logger.info(f"Camera configured with resolution (1920, 1080) and frame rate {fps}.")
+        logger.info(f"Camera configured with resolution (1920, 1080) and FPS {fps}.")
         time.sleep(0.5)  # Add a short delay to ensure the camera is ready
     except Exception as e:
         logger.error(f"Failed to configure camera: {e}")
