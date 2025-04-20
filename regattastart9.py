@@ -99,9 +99,9 @@ def restart_camera(camera, resolution=(1920, 1080), fps=5):
 
         config = camera.create_video_configuration(
             main={"size": best_mode["size"], "format": "BGR888"},
-            controls={"FrameRate": fps},
             transform=Transform(hflip=True, vflip=True)
         )
+        camera.set_controls({"FrameRate": fps})
         logger.debug(f"Config before applying: {config}")
         camera.configure(config)
 
