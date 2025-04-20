@@ -1,5 +1,6 @@
 <?php
     define('APP_VERSION', '24.06.04'); // You can replace '1.0.0' with your desired version number
+    // Start the session
     ini_set('session.gc_maxlifetime', 86400); // 24 hours
     session_set_cookie_params(86400); // 24 hours
     if (session_status() === PHP_SESSION_NONE) {
@@ -8,6 +9,11 @@
     }
     ini_set('display_errors', 1);
     error_reporting(E_ALL);
+    // Check if the session is already started
+    print_r($_SESSION);
+    echo "<br/>";
+    print_r($_POST);
+    echo "<br/>";
 ?>
 <?php
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
