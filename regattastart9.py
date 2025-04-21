@@ -58,7 +58,7 @@ warnings.filterwarnings(
 
 
 # parameter data
-fps = 10
+fps = 5
 signal_dur = 0.9  # 0.9 sec
 log_path = '/var/www/html/'
 video_path = '/var/www/html/images/'
