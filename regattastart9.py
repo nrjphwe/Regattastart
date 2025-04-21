@@ -224,7 +224,6 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
         logger.error(f"Failed to configure camera: {e}")
         return
 
-    logger.debug(f"Camera object: {camera}")
     if camera is None:
         logger.error("Camera object is None before restarting.")
         return
