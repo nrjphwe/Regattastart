@@ -17,6 +17,9 @@
         session_start();
     }
 
+    echo "The cache limiter is now set to $cache_limiter<br />";
+    echo "The cached session pages expire after $cache_expire minutes";
+    
     ini_set('display_errors', 1); 
     error_reporting(E_ALL);
 
