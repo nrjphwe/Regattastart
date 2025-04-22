@@ -268,12 +268,12 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
 
         # Define time intervals for each relay trigger
         time_intervals = [
-            (start_time_sec - 5 * 60, lambda: trigger_relay(gpio_handle, LAMP1, "on"), "5_min Lamp1 ON -- Flag O UP"),
+            (start_time_sec - 5 * 60, lambda: trigger_relay(gpio_handle, LAMP1, "on"), "5_min Lamp1 ON -- Flag P UP"),
             (start_time_sec - 5 * 60 + 1, lambda: trigger_relay(gpio_handle, SIGNAL, "on", 2), "5_min Warning Signal"),
             (start_time_sec - 4 * 60 - 2, lambda: trigger_relay(gpio_handle, LAMP2, "on"), "4_min Lamp2 ON"),
-            (start_time_sec - 4 * 60, lambda: trigger_relay(gpio_handle, SIGNAL, "on", 2), "4_min Warning Signal"),
+            (start_time_sec - 4 * 60, lambda: trigger_relay(gpio_handle, SIGNAL, "on", 2), "4_min Preparation Signal"),
             (start_time_sec - 1 * 60 - 2, lambda: trigger_relay(gpio_handle, LAMP2, "off"), "1_min Lamp2 OFF -- Flag P DOWN"),
-            (start_time_sec - 1 * 60, lambda: trigger_relay(gpio_handle, SIGNAL, "on", 2), "1_min Warning Signal"),
+            (start_time_sec - 1 * 60, lambda: trigger_relay(gpio_handle, SIGNAL, "on", 2), "1_min Signal"),
             (start_time_sec - 2, lambda: trigger_relay(gpio_handle, LAMP1, "off"), "Lamp1 OFF at Start"),
             (start_time_sec, lambda: trigger_relay(gpio_handle, SIGNAL, "on", 1), "Start Signal"),
         ]
@@ -293,13 +293,14 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
 
                 if seconds_now == event_time:
                     # Check if the event should be triggered based on the current time
+    
                     if (event_time, log_message) not in last_triggered_events:
                         logger.info(f"Start_sequence: {log_message} at {event_time}")
-                        if action:
-                            action()
+                        # if action:
+                        action()
                         picture_name = f"{i + 1}a_start_{log_message[:5]}.jpg"
                         capture_picture(camera, photo_path, picture_name)
-                        logger.info(f"Start_sequence, log_message: {log_message}")
+                        #logger.info(f"Start_sequence, log_message: {log_message}")
                         # logger.info(f'last_triggered_events = {last_triggered_events}')
                     last_triggered_events[(event_time, log_message)] = True
         logger.info(f"Start_sequence, End of iteration: {i+1}")
