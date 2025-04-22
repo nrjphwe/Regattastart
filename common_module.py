@@ -293,14 +293,14 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
 
                 if seconds_now == event_time:
                     # Check if the event should be triggered based on the current time
-    
+
                     if (event_time, log_message) not in last_triggered_events:
                         logger.info(f"Start_sequence: {log_message} at {event_time}")
                         # if action:
                         action()
                         picture_name = f"{i + 1}a_start_{log_message[:5]}.jpg"
                         capture_picture(camera, photo_path, picture_name)
-                        #logger.info(f"Start_sequence, log_message: {log_message}")
+                        # logger.info(f"Start_sequence, log_message: {log_message}")
                         # logger.info(f'last_triggered_events = {last_triggered_events}')
                     last_triggered_events[(event_time, log_message)] = True
         logger.info(f"Start_sequence, End of iteration: {i+1}")
