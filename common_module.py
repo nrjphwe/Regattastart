@@ -298,8 +298,12 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
                         logger.info(f"Start_sequence: {log_message} at {event_time}")
                         if action:
                             action()
-                        picture_name = f"{i + 1}a_start_{log_message[:5]}.jpg"
-                        capture_picture(camera, photo_path, picture_name)
+                        if "signal" in log_message:
+                            # Capture a picture when the signal is triggered
+                            if "Start Signal" in log_message:
+                                # Capture picture for the start signal
+                                picture_name = f"{i + 1}a_start_{log_message[:5]}.jpg"
+                                capture_picture(camera, photo_path, picture_name)
                         time.sleep(0.5)
                         # logger.info(f"Start_sequence, log_message: {log_message}")
                         last_triggered_events[(event_time, log_message)] = True
