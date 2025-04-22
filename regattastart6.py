@@ -34,8 +34,8 @@ photo_path = '/var/www/html/images/'
 
 def finish_recording(camera, video_path, video_delay, num_video, video_dur, start_time_sec):
     # Wait for finish, when the next video will start (delay)
-    time.sleep((video_delay - 2) * 60)  # Convert delay (minus 2 minutes after start) to seconds
-
+    delay_time = int(video_delay - 2) * 60  # Convert delay (minus 2 seconds after start) to seconds
+    time.sleep(delay_time)  # Convert delay to seconds
     # Result video, chopped into numeral videos with each duration at "video_dur"
     stop = num_video + 1
     for i in range(1, stop):
