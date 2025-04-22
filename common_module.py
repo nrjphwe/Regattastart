@@ -288,10 +288,9 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
                 break  # Exit the loop if the condition is met
 
             for event_time, action, log_message in time_intervals:
-                # time_now = dt.datetime.now()
-                # seconds_now = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
+                time_now = dt.datetime.now()
+                seconds_now = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
 
-                '''
                 if seconds_now == event_time:
                     # Check if the event should be triggered based on the current time
 
@@ -303,16 +302,7 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
                         capture_picture(camera, photo_path, picture_name)
                         # logger.info(f"Start_sequence, log_message: {log_message}")
                         # logger.info(f'last_triggered_events = {last_triggered_events}')
-                    last_triggered_events[(event_time, log_message)] = True
-                '''
-                if (log_message) not in last_triggered_events:
-                    logger.info(f"Start_sequence: {log_message} at {event_time}")
-                    action()
-                    picture_name = f"{i + 1}a_start_{log_message[:5]}.jpg"
-                    capture_picture(camera, photo_path, picture_name)
-                    # logger.info(f"Start_sequence, log_message: {log_message}")
-                    # logger.info(f'last_triggered_events = {last_triggered_events}')
-                    last_triggered_events = log_message
+                        last_triggered_events[(event_time, log_message)] = True
 
         logger.info(f"Start_sequence, End of iteration: {i+1}")
     cleanup_gpio(gpio_handle)  # Clean up GPIO after each iteration
