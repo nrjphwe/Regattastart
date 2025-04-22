@@ -110,7 +110,7 @@ def main():
                         logger.info("start_time_sec= %s, t0= %s", start_time_sec, t0)  # test
                         while (dt.datetime.now() - t0).seconds < (119):
                             now = dt.datetime.now()
-                            time.sleep(0.2)  # Small delay to reduce CPU usage
+                            time.sleep(0.8)  # Small delay to reduce CPU usage
                         stop_video_recording(camera)
                         process_video(video_path, "video0.avi", "video0.mp4", frame_rate=30)
                         logger.debug("Video0 converted to mp4")
