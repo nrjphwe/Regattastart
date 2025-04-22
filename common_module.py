@@ -298,7 +298,7 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
                         logger.info(f"Start_sequence: {log_message} at {event_time}")
                         if action:
                             action()
-                        if "signal" in log_message:
+                        if "Signal" in log_message:
                             picture_name = f"{i + 1}a_start_{log_message[:5]}.jpg"
                             capture_picture(camera, photo_path, picture_name)
                             time.sleep(0.5)
