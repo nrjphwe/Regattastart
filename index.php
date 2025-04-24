@@ -18,17 +18,16 @@
     }
 
 
-    echo "The cached session pages expire after $cache_expire minutes";
-    echo "<br/>";
+    // echo "The cached session pages expire after $cache_expire minutes";
+    // echo "<br/>";
     ini_set('display_errors', 1);
     error_reporting(E_ALL);
 
     // Check if the session is already started
-    print_r($_SESSION);
-    echo "<br/>";
-    print_r($_POST);
-    echo "<br/>";
-
+    // print_r($_SESSION);
+    // echo "<br/>";
+    // print_r($_POST);
+    // echo "<br/>";
 ?>
 
 <?php
