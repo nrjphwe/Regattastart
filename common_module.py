@@ -223,10 +223,11 @@ def process_video(video_path, input_file, output_file, frame_rate=None):
 
 def setup_gpio():
     try:
+        # seems like initial value off corresponds to 1
         h = lgpio.gpiochip_open(0)  # Open GPIO chip 0
-        lgpio.gpio_claim_output(h, 26, 0)  # Signal pin
-        lgpio.gpio_claim_output(h, 20, 0)  # Lamp1
-        lgpio.gpio_claim_output(h, 21, 0)  # Lamp2
+        lgpio.gpio_claim_output(h, 26, 1)  # Signal pin
+        lgpio.gpio_claim_output(h, 20, 1)  # Lamp1
+        lgpio.gpio_claim_output(h, 21, 1)  # Lamp2
         logger.info("GPIO setup successful: Signal=26, Lamp1=20, Lamp2=21")
         return h, 26, 20, 21  # Return the GPIO handle and pin numbers
     except Exception as e:
@@ -238,11 +239,11 @@ def trigger_relay(handle, pin, state, duration=None):
     """Control a relay by turning it ON or OFF, optionally with a delay."""
     try:
         # logger.info(f"Triggering relay on pin {pin} to state {state}")
-        lgpio.gpio_write(handle, pin, 1 if state == "on" else 0)
+        lgpio.gpio_write(handle, pin, 0 if state == "on" else 1)
         # logger.debug(f"Pin {pin} set to {'HIGH' if state == 'on' else 'LOW'}")
         if duration:
             time.sleep(int(duration))
-            lgpio.gpio_write(handle, pin, 0)  # Turn off after the duration
+            lgpio.gpio_write(handle, pin, 1)  # Turn off after the duration
             # logger.debug(f"Pin {pin} turned OFF after {duration} seconds")
     except Exception as e:
         logger.error(f"Failed to trigger relay on pin {pin}: {e}")
