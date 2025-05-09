@@ -181,8 +181,9 @@ def start_video_recording(camera, video_path, file_name, bitrate=2000000):
     logger.debug(f"Will start video rec. output file: {output_file}")
     encoder = H264Encoder(bitrate=bitrate)
 
+    # main={"size": (1296, 730), "format": "BGR888"}
     video_config = camera.create_video_configuration(
-        main={"size": (1296, 730), "format": "BGR888"},
+        main={"size": (1920, 1080), "format": "BGR888"},
         transform=Transform(hflip=True, vflip=True),  # Rotate 180-degree
         controls={"FrameRate": 5}
         )
