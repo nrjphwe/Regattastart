@@ -225,7 +225,7 @@
                 {
                     $imagePath .= '?' . filemtime($imagePath);
                     echo "<h3> Varningssignal 5 minuter innan 1a start</h3>";
-                    echo "<img id='$filename' src='$imagePath' alt='1a_start 5 min picture' width='720' height='480'>";
+                    echo "<img id='$filename' src='$imagePath' alt='1a_start 5 min picture' width='720' height='406'>";
 
                     // Check and display the second image
                     $filename = '1a_start_4_min.jpg';
