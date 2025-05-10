@@ -125,7 +125,9 @@ def capture_picture(camera, photo_path, file_name, rotate=False):
             text_rectangle(frame, timestamp, origin, text_colour, bg_colour)
             if rotate:
                 frame = cv2.rotate(frame, cv2.ROTATE_180)
-            cv2.imwrite(os.path.join(photo_path, file_name), frame)
+            resized_image = cv2.resize(frame, (720, 480))  # Resize to 720x480
+            cv2.imwrite(os.path.join(photo_path, file_name), resized_image)
+            # cv2.imwrite(os.path.join(photo_path, file_name), frame)
         request.release()
         logger.info(f'Captured picture: {file_name}')
     except Exception as e:
