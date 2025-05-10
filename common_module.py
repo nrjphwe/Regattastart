@@ -88,9 +88,11 @@ def setup_camera():
     global logger  # Explicitly declare logger as global
     try:
         camera = Picamera2()
+
         # Stop the camera if it is running (no need to check is_running)
         logger.info("Stopping the camera before reconfiguring.")
         camera.stop()  # Stop the camera if it is running
+        logger.debug(camera.sensor_modes)
         # Configure the camera
         config = camera.create_still_configuration(
             main={"size": (1296, 730), "format": "BGR888"}
@@ -181,7 +183,6 @@ def start_video_recording(camera, video_path, file_name, bitrate=2000000):
     logger.debug(f"Will start video rec. output file: {output_file}")
     encoder = H264Encoder(bitrate=bitrate)
 
-    # main={"size": (1296, 730), "format": "BGR888"}
     video_config = camera.create_video_configuration(
         main={"size": (1296, 730), "format": "BGR888"},
         transform=Transform(hflip=True, vflip=True),  # Rotate 180-degree
