@@ -95,7 +95,7 @@ def setup_camera():
         logger.debug(camera.sensor_modes)
         # Configure the camera
         config = camera.create_still_configuration(
-            main={"size": (1296, 730), "format": "BGR888"}
+            main={"size": (1920, 1080), "format": "BGR888"}
         )
         camera.configure(config)
         return camera  # Add this line to return the camera object
@@ -184,7 +184,7 @@ def start_video_recording(camera, video_path, file_name, bitrate=2000000):
     encoder = H264Encoder(bitrate=bitrate)
 
     video_config = camera.create_video_configuration(
-        main={"size": (1296, 730), "format": "BGR888"},
+        main={"size": (1920, 1080), "format": "BGR888"},
         transform=Transform(hflip=True, vflip=True),  # Rotate 180-degree
         controls={"FrameRate": 5}
         )
