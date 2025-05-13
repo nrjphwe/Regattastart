@@ -228,7 +228,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
         logger.error("Camera object is None before restarting.")
         return
 
-    # camera = restart_camera(camera, resolution=(1920, 1080), fps=fps)
+    camera = restart_camera(camera, resolution=(1920, 1080), fps=fps)
 
     # Confirm cam is initialized
     if camera is None:
