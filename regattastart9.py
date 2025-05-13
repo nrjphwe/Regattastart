@@ -212,7 +212,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
             logger.info("Stopping the camera before reconfiguring.")
             camera.stop()
         video_config = camera.create_video_configuration(
-            main={"size": (1920, 1080)}, 
+            main={"size": (1920, 1080)},
             transform=Transform(hflip=True, vflip=True)
         )
         time.sleep(0.5)  # Add a short delay to ensure the camera is ready
@@ -228,7 +228,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
         logger.error("Camera object is None before restarting.")
         return
 
-    camera = restart_camera(camera, resolution=(1920, 1080), fps=fps)
+    # camera = restart_camera(camera, resolution=(1920, 1080), fps=fps)
 
     # Confirm cam is initialized
     if camera is None:
