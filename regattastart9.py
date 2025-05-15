@@ -280,7 +280,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
     except Exception as e:
         logger.error(f"Unhandled exception occurred: {e}", exc_info=True)
         return
-    logger.debug(f"Frame cropped successfully. Crop size: {crop_width}x{crop_height}")  
+    logger.debug(f"Frame size used to crop for inference calculated, size: {crop_width}x{crop_height}")  
 
     # Set the camera to the desired resolution and frame rate
     fpsw = fps
@@ -324,7 +324,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
     if not video_writer.isOpened():
         logger.error(f"Failed to open video1.avi for writing. Selected frame_size: {frame_size}")
         exit(1)
-    logger.debug("Video writer initialized successfully.")
+    logger.debug("Video writer initialized successfully with frame_size: {frame_size}.")
 
     # Setup pre-detection parameters
     pre_detection_duration = 0  # Seconds
@@ -347,6 +347,12 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
     # Compute scaling factors
     scale_x = crop_width / inference_width
     scale_y = crop_height / inference_height
+    aspect_crop = crop_width / crop_height
+    aspect_infer = inference_width / inference_height
+    logger.debug(f"Crop aspect: {aspect_crop:.2f}, Inference aspect: {aspect_infer:.2f}")
+    logger.debug(f"inference_width, inference_height = {inference_width, inference_height}")
+    logger.debug(f"crop_width, crop_height = {crop_width, crop_height}")
+    logger.debug(f"scale_x = {scale_x}, scale_y= {scale_y}")
 
     # Base scale text size and thickness
     base_fontScale = 0.9  # Default font size at 640x480
@@ -356,9 +362,6 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
     thickness = max(int(base_thickness * scale_factor), 1)  # Prevent too thin lines
     font = cv2.FONT_HERSHEY_DUPLEX
     colour = (0, 255, 0)  # Green text
-    logger.info(f"inference_width, inference_height = {inference_width, inference_height}")
-    logger.info(f"crop_width, crop_height = {crop_width, crop_height}")
-    logger.info(f"scale_x = {scale_x}, scale_y= {scale_y}")
 
     while not recording_stopped:
         # logger.debug(f"recording_stopped = {recording_stopped}")
@@ -411,7 +414,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
             # The cropped frame will cover pixels from (520, 180) to (1800, 900) 
             # of the original frame.
             cropped_frame = frame[y_start:y_start + crop_height, x_start:x_start + crop_width]
-
+            logger.debug(f"cropped frame shape: {cropped_frame.shape}")
             # Resize cropped frame to 640x480 for inference
             resized_frame = cv2.resize(cropped_frame, (inference_width, inference_height))
             # Use resized_frame for YOLO detection instead of full frame
@@ -447,7 +450,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
 
                         # Draw bounding box and label on the frame
                         cv2.rectangle(frame, (x1, y1), (x2, y2), colour, thickness)
-                        cv2.putText(frame, f"{confidence:.2f}", (x1, y2 + 50),
+                        cv2.putText(frame, f"{detected_timestamp:.2f}", (x1, y2 + 50),
                                     font, fontScale, colour, thickness)
 
                         if frame is not None:
