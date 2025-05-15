@@ -396,7 +396,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
             # The cropped frame will cover pixels from (520, 180) to (1800, 900) 
             # of the original frame.
             cropped_frame = frame[y_start:y_start + crop_height, x_start:x_start + crop_width]
-            logger.debug(f"cropped frame shape: {cropped_frame.shape}")
+            # logger.debug(f"cropped frame shape: {cropped_frame.shape}")
             # Resize cropped frame to 640x480 for inference
             resized_frame = cv2.resize(cropped_frame, (inference_width, inference_height))
             # Use resized_frame for YOLO detection instead of full frame
