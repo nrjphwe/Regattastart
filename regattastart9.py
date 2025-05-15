@@ -70,7 +70,7 @@ recording_stopped = False  # Global variable
 # video1-conversion is complete.
 with open('/var/www/html/status.txt', 'w') as status_file:
     status_file.write("")
-
+crop_width, crop_height = 1440, 1080 # Crop size for inference
 
 def restart_camera(camera, resolution=(1920, 1080), fps=5):
     time.sleep(2)  # Ensure the camera is fully released
@@ -91,11 +91,9 @@ def restart_camera(camera, resolution=(1920, 1080), fps=5):
             logger.error("No sensor modes available. Camera may not be detected!")
             return None
 
-        # logger.debug(f"Available sensor modes: {sensor_modes}")
-
         # Find a sensor mode that best matches the requested resolution
         best_mode = min(sensor_modes, key=lambda m: abs(m["size"][0] - resolution[0]) + abs(m["size"][1] - resolution[1]))
-        # logger.debug(f"Using sensor mode: {best_mode}")
+        logger.debug(f"Using sensor mode: {best_mode}")
 
         config = camera.create_video_configuration(
             main={"size": best_mode["size"], "format": "BGR888"},
@@ -106,7 +104,7 @@ def restart_camera(camera, resolution=(1920, 1080), fps=5):
         camera.configure(config)
 
         camera.start()
-        logger.info(f"Camera restarted with resolution {best_mode['size']} and FPS: {fps}.")
+        logger.info(f"Camera restarted with best mode resolution {best_mode['size']} and FPS: {fps}.")
         return camera  # Return new camera instance
 
     except Exception as e:
@@ -186,11 +184,9 @@ def cleanup_processed_timestamps(processed_timestamps, threshold_seconds=30):
 
 
 # function to load the YOLOv5 model
-
 def load_model_with_timeout(result_queue):
     try:
         model = torch.hub.load('/home/pi/yolov5', 'yolov5s', source='local', force_reload=True)
-        logger.debug("YOLOv5 model loaded successfully.")
         result_queue.put(model)  # Put the model in the queue
     except Exception as e:
         logger.error(f"Failed to load YOLOv5 model: {e}", exc_info=True)
@@ -257,20 +253,14 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
         logger.error(f"Exception occurred while accessing frame size: {e}", exc_info=True)
         return
 
-    logger.debug("Frame size confirmed, proceeding to crop the frame.")
-
     try:
-        # Crop the original frame to maintain a square (1:1) aspect ratio
+        # Define crop data to maintain the square (1:1) aspect ratio
         logger.debug("Attempting to crop the frame.")
-        # crop_width, crop_height = 1280, 720
-        # crop_width, crop_height = 1640, 1080
-        crop_width, crop_height = 1440, 1080
         shift_offset = 100  # horisontal offset for crop -> right part
         # Get dimensions of the full-resolution frame (1920x1080 in your case)
         frame_height, frame_width = frame.shape[:2]  # shape = (height, width, channels)
         x_start = max((frame_width - crop_width) // 2 + shift_offset, 50)
         y_start = max((frame_height - crop_height) // 2, 0)
-        # logger.info(f"shift_offset = {shift_offset}, x_start= {x_start}, y_start = {y_start}")
 
         if frame_size[0] != 1920 or frame_size[1] != 1080:
             logger.error(f"Resolution mismatch! Expected (1920, 1080) but got {frame_size}.")
@@ -342,9 +332,8 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
     frame_counter = 0  # Initialize a frame counter
     previous_capture_time = None  # Track previous frame timestamp
 
-    inference_width, inference_height = 640, 480  # Since you resize before inference
-
     # Compute scaling factors
+    inference_width, inference_height = 640, 480  # Since you resize before inference
     scale_x = crop_width / inference_width
     scale_y = crop_height / inference_height
     aspect_crop = crop_width / crop_height
@@ -364,13 +353,6 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
     colour = (0, 255, 0)  # Green text
 
     while not recording_stopped:
-        # logger.debug(f"recording_stopped = {recording_stopped}")
-        # elapsed_time = time.time() - camera_start_time
-        # logger.debug(f"Elapsed time: {elapsed_time:.2f} seconds, Max duration: {max_duration}")
-        # if elapsed_time >= max_duration:
-        #    logger.warning("Timeout reached, stopping recording")
-        #    recording_stopped = True
-        #    break
         boat_in_current_frame = False  # Reset detection flag for this frame
         frame_counter += 1  # Increment the frame counter
 
@@ -410,7 +392,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
                 cleanup_processed_timestamps(processed_timestamps)
 
         # Perform inference only on every x frame
-        if frame_counter % 8 == 0:  # every frame from 4 to 8
+        if frame_counter % 4 == 0:  # every frame from 4 to 8
             # The cropped frame will cover pixels from (520, 180) to (1800, 900) 
             # of the original frame.
             cropped_frame = frame[y_start:y_start + crop_height, x_start:x_start + crop_width]
@@ -423,61 +405,55 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
             detections = results.pandas().xyxy[0]  # Results as a DataFrame
 
             # Parse the detection results
-            if len(detections) == 0:
-                logger.debug("No detections in the current frame.")
-            else:
-                # logger.debug("Detection made")
-                for _, row in detections.iterrows():
-                    class_name = row['name']
-                    confidence = row['confidence']
+            for _, row in detections.iterrows():
+                class_name = row['name']
+                confidence = row['confidence']
 
-                    if confidence > 0.3 and class_name == 'boat':
-                        origin = (50, max(50, frame_height - 100))  # Position on frame
-                        font = cv2.FONT_HERSHEY_DUPLEX
-                        # text_rectangle(frame, f"{capture_timestamp}", origin)
-                        text_rectangle(frame, (f'{capture_timestamp.strftime("%Y-%m-%d, %H:%M:%S")}'), origin)
-                        # cv2.putText(frame, f"{capture_timestamp}", origin, font, fontScale, colour, thickness)
-                        boat_in_current_frame = True
-                        # logger.debug(f"Confidence {confidence:.2f}, capture_timestamp = {capture_timestamp}")
-                        detected_timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")  # timestamp (with microseconds)
-                        # logger.debug(f"Detected_timestamp={detected_timestamp}")
+                if confidence > 0.3 and class_name == 'boat':
+                    origin = (50, max(50, frame_height - 100))  # Position on frame
+                    font = cv2.FONT_HERSHEY_DUPLEX
+                    text_rectangle(frame, (f'{capture_timestamp.strftime("%Y-%m-%d, %H:%M:%S")}'), origin)
+                    boat_in_current_frame = True
+                    # logger.debug(f"Confidence {confidence:.2f}, capture_timestamp = {capture_timestamp}")
+                    detected_timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")  # timestamp (with microseconds)
+                    # logger.debug(f"Detected_timestamp={detected_timestamp}")
 
-                        #  Adjust the bounding box coordinates to reflect the original frame
-                        x1 = int(row['xmin'] * scale_x) + x_start
-                        y1 = int(row['ymin'] * scale_y) + y_start
-                        x2 = int(row['xmax'] * scale_x) + x_start
-                        y2 = int(row['ymax'] * scale_y) + y_start
+                    #  Adjust the bounding box coordinates to reflect the original frame
+                    x1 = int(row['xmin'] * scale_x) + x_start
+                    y1 = int(row['ymin'] * scale_y) + y_start
+                    x2 = int(row['xmax'] * scale_x) + x_start
+                    y2 = int(row['ymax'] * scale_y) + y_start
 
-                        # Draw bounding box and label on the frame
-                        cv2.rectangle(frame, (x1, y1), (x2, y2), colour, thickness)
-                        cv2.putText(frame, f"{detected_timestamp:.2f}", (x1, y2 + 50),
-                                    font, fontScale, colour, thickness)
+                    # Draw bounding box and label on the frame
+                    cv2.rectangle(frame, (x1, y1), (x2, y2), colour, thickness)
+                    cv2.putText(frame, f"{detected_timestamp:.2f}", (x1, y2 + 50),
+                                font, fontScale, colour, thickness)
 
-                        if frame is not None:
-                            video_writer.write(frame)
-                            # logger.debug("Detected frame written  !!!")
-                        else:
-                            logger.error("Captured frame is None! Skipping write.")
-                            continue
+                    if frame is not None:
+                        video_writer.write(frame)
+                        # logger.debug("Detected frame written  !!!")
+                    else:
+                        logger.error("Captured frame is None! Skipping write.")
+                        continue
 
-                        if pre_detection_buffer:
-                            # Remove the most recent frame
-                            if len(pre_detection_buffer) >= 1:
-                                pre_detection_buffer.pop()  # Removes the most recent frame
+                    if pre_detection_buffer:
+                        # Remove the most recent frame
+                        if len(pre_detection_buffer) >= 1:
+                            pre_detection_buffer.pop()  # Removes the most recent frame
 
-                            # Write pre-detection frames to video
-                            while pre_detection_buffer:
-                                # origin = (50, 700)  # Position on frame
-                                frame, timestamp = pre_detection_buffer.popleft()
-                                cv2.putText(frame, f"PRE {timestamp}", origin, font, fontScale, colour, thickness)
-                                try:
-                                    video_writer.write(frame)
-                                    logger.debug(f"Pre-detection Timestamp={timestamp}")
-                                except Exception as e:
-                                    logger.error(f"Failed to write pre-detection frame: {e}")
-                                    continue  # Skips writing this frame but keeps recording
-                            pre_detection_buffer.clear()  # Clear the pre-detection buffer
-                            logger.debug("Pre-detection buffer cleared after writing frames.")
+                        # Write pre-detection frames to video
+                        while pre_detection_buffer:
+                            # origin = (50, 700)  # Position on frame
+                            frame, timestamp = pre_detection_buffer.popleft()
+                            cv2.putText(frame, f"PRE {timestamp}", origin, font, fontScale, colour, thickness)
+                            try:
+                                video_writer.write(frame)
+                                logger.debug(f"Pre-detection Timestamp={timestamp}")
+                            except Exception as e:
+                                logger.error(f"Failed to write pre-detection frame: {e}")
+                                continue  # Skips writing this frame but keeps recording
+                        pre_detection_buffer.clear()  # Clear the pre-detection buffer
+                        logger.debug("Pre-detection buffer cleared after writing frames.")
 
         # Handle POST-detection frames
         skip_first_post_frame = False  # Initialize the flag
