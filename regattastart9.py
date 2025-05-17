@@ -426,7 +426,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
 
                     # Draw bounding box and label on the frame
                     cv2.rectangle(frame, (x1, y1), (x2, y2), colour, thickness)
-                    cv2.putText(frame, f"{detected_timestamp:.2f}", (x1, y2 + 50),
+                    cv2.putText(frame, detected_timestamp, (x1, y2 + 50),
                                 font, fontScale, colour, thickness)
 
                     if frame is not None:
