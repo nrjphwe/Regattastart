@@ -311,7 +311,7 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
             (start_time_sec - 1 * 60 - 2, lambda: trigger_relay(gpio_handle, LAMP2, "off"), "1_min Lamp2 OFF -- Flag P DOWN"),
             (start_time_sec - 1 * 60, lambda: trigger_relay(gpio_handle, SIGNAL, "on", 2), "1_min Signal"),
             (start_time_sec - 2, lambda: trigger_relay(gpio_handle, LAMP1, "off"), "Lamp1 OFF at Start"),
-            (start_time_sec - 0, lambda: trigger_relay(gpio_handle, SIGNAL, "on", 1), "Start Signal"),
+            (start_time_sec, lambda: trigger_relay(gpio_handle, SIGNAL, "on", 1), "Start Signal"),
         ]
 
         last_triggered_events = {}
@@ -337,8 +337,8 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
                         if "Signal" in log_message:
                             picture_name = f"{i + 1}a_start_{log_message[:5]}.jpg"
                             capture_picture(camera, photo_path, picture_name)
-                            time.sleep(0.5)
-                        # logger.info(f"Start_sequence, log_message: {log_message}")
+                            time.sleep(0.1)
+                        logger.info(f"Start_sequence, log_message: {log_message}")
                         last_triggered_events[(event_time, log_message)] = True
                         logger.info(f'event_time: {event_time}, log_message: {log_message}')
 
