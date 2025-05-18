@@ -603,7 +603,7 @@ def main():
                 logger.info("listen_thread finished")
 
             time.sleep(2)
-            process_video(video_path, "video1.h264", "video1.mp4")
+            process_video(video_path, "video1.avi", "video1.mp4")
 
             # After video conversion is complete
             with open('/var/www/html/status.txt', 'w') as status_file:
