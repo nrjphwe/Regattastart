@@ -98,6 +98,7 @@ def setup_camera():
             main={"size": (1920, 1080), "format": "BGR888"}
         )
         camera.configure(config)
+        logger.debug(f"size: 1920,1080")
         return camera  # Add this line to return the camera object
     except Exception as e:
         logger.error(f"Failed to initialize camera: {e}")
@@ -110,7 +111,7 @@ def capture_picture(camera, photo_path, file_name, rotate=False):
 
         with MappedArray(request, "main") as m:
             frame = m.array  # Get the frame as a NumPy array
-
+            logger.debug(f"frame shape: {frame.shape} dtype: {frame.dtype}")
             # Ensure the frame is in BGR format
             if frame.shape[-1] == 3:  # Assuming 3 channels for RGB/BGR
                 # logger.debug("Converting frame from RGB to BGR")
@@ -125,7 +126,7 @@ def capture_picture(camera, photo_path, file_name, rotate=False):
             text_rectangle(frame, timestamp, origin, text_colour, bg_colour)
             if rotate:
                 frame = cv2.rotate(frame, cv2.ROTATE_180)
-            resized_image = cv2.resize(frame, (720, 480))  # Resize to 720x480
+            resized_image = cv2.resize(frame, (640, 360))  # Resize to 720x480
             cv2.imwrite(os.path.join(photo_path, file_name), resized_image)
             # cv2.imwrite(os.path.join(photo_path, file_name), frame)
         request.release()
@@ -214,9 +215,12 @@ def process_video(video_path, input_file, output_file, frame_rate=None):
         logger.debug(f"Warning: {input_file} is empty or does not exist. Skipping conversion.")
         return
     command = ["ffmpeg", "-i", source, "-vcodec", "libx264", "-crf", "23", "-preset", "ultrafast"]
+    vf_filters = ["scale=640:360"]
     if frame_rate:
-        command.extend(["-vf", f"fps={frame_rate}"])
+        vf_filters.append(f"fps={frame_rate}")
+    command.extend(["-vf", ",".join(vf_filters)])
     command.append(dest)
+
     try:
         subprocess.run(command, check=True)
         logger.debug("Video processed: %s", output_file)
