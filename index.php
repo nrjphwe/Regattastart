@@ -415,15 +415,15 @@
                                         <button onclick="stepFrame(' . $x . ', 1)">Next Frame</button>
                                     </div>';
                             } else {
-                                // Placeholder when no valid video
-                                echo '<div style="width:640px;height:360px;display:flex;align-items:center;justify-content:center;background:#eee;border:1px solid #ccc;">
-                                    <p style="font-size:20px;color:#555;">No boat detected</p>
-                                    </div>';
                                 // Log an error if the video file doesn't exist
                                 console_log("video $x does not exist");
                             }
                         }
                     } else {
+                        // Placeholder when no valid video
+                            echo '<div style="width:640px;height:360px;display:flex;align-items:center;justify-content:center;background:#eee;border:1px solid #ccc;">
+                                <p style="font-size:20px;color:#555;">No boat detected</p>
+                                </div>';
                         console_log("Video1 do not exist");
                     }
                 }
