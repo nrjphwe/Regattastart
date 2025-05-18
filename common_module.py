@@ -107,15 +107,26 @@ def setup_camera():
 
 def letterbox(image, target_size=(640, 360)):
     ih, iw = image.shape[:2]
-    w, h = target_size
+    w, h = target_size  # (width, height)
+
     scale = min(w / iw, h / ih)
     nw, nh = int(iw * scale), int(ih * scale)
-    image_resized = cv2.resize(image, (nw, nh))
+
+    logger.debug(f"Original: {iw}x{ih}, Target: {w}x{h}, New: {nw}x{nh}")
+
+    image_resized = cv2.resize(image, (nw, nh), interpolation=cv2.INTER_LINEAR)
+
     top = (h - nh) // 2
     bottom = h - nh - top
     left = (w - nw) // 2
     right = w - nw - left
-    return cv2.copyMakeBorder(image_resized, top, bottom, left, right, cv2.BORDER_CONSTANT, value=(0, 0, 0))
+
+    logger.debug(f"Padding: top={top}, bottom={bottom}, left={left}, right={right}")
+
+    return cv2.copyMakeBorder(
+        image_resized, top, bottom, left, right,
+        cv2.BORDER_CONSTANT, value=(0, 0, 0)
+    )
 
 
 def capture_picture(camera, photo_path, file_name, rotate=False):
