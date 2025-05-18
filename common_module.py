@@ -126,7 +126,7 @@ def capture_picture(camera, photo_path, file_name, rotate=False):
             text_rectangle(frame, timestamp, origin, text_colour, bg_colour)
             if rotate:
                 frame = cv2.rotate(frame, cv2.ROTATE_180)
-            resized_image = cv2.resize(frame, (640, 360), interpolation= cv2.INTER_LINEAR)  # Resize to 640x360
+            resized_image = cv2.resize(frame, (640, 360), interpolation=cv2.INTER_LINEAR)  # Resize to 640x360
             cv2.imwrite(os.path.join(photo_path, file_name), resized_image)
             logger.debug(f"Saved image size: {resized_image.shape}")
             # cv2.imwrite(os.path.join(photo_path, file_name), frame)
