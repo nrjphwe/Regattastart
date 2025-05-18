@@ -255,7 +255,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
 
     try:
         # Define crop data to maintain the square (1:1) aspect ratio
-        logger.debug("Attempting to crop the frame.")
+        logger.debug("calculate crop data for the frame.")
         shift_offset = 100  # horisontal offset for crop -> right part
         # Get dimensions of the full-resolution frame (1920x1080 in your case)
         frame_height, frame_width = frame.shape[:2]  # shape = (height, width, channels)
@@ -310,11 +310,11 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
 
     # setup video writer
     fourcc = cv2.VideoWriter_fourcc(*'XVID')  # Use 'XVID' for .avi, or 'mp4v' for .mp4
-    video_writer = cv2.VideoWriter(video_path + 'video1' + '.avi', fourcc, fpsw, frame_size) 
+    video_writer = cv2.VideoWriter(video_path + 'video1' + '.avi', fourcc, fpsw, frame_size)
     if not video_writer.isOpened():
         logger.error(f"Failed to open video1.avi for writing. Selected frame_size: {frame_size}")
         exit(1)
-    logger.debug("Video writer initialized successfully with frame_size: {frame_size}.")
+    logger.debug(f"Video writer initialized successfully, frame_size: {frame_size}")
 
     # Setup pre-detection parameters
     pre_detection_duration = 0  # Seconds
@@ -563,7 +563,7 @@ def main():
                     if num_starts == 1 or num_starts == 2:
                         # Start video recording just before 5 minutes before the first start
                         logger.debug("Start of video0 recording")
-                        start_video_recording(camera, video_path, "video0.avi", bitrate=2000000)
+                        start_video_recording(camera, video_path, "video0.h264", bitrate=2000000)
                         logger.debug("Inner loop, entering the start sequence block.")
                         start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo_path)
                         if num_starts == 2:
@@ -603,7 +603,7 @@ def main():
                 logger.info("listen_thread finished")
 
             time.sleep(2)
-            process_video(video_path, "video1.avi", "video1.mp4")
+            process_video(video_path, "video1.h264", "video1.mp4")
 
             # After video conversion is complete
             with open('/var/www/html/status.txt', 'w') as status_file:
