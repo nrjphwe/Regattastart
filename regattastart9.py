@@ -577,7 +577,7 @@ def main():
                             time.sleep(0.2)  # Small delay to reduce CPU usage
                         stop_video_recording(camera)
                         logger.debug("Stopping video0 recording")
-                        process_video(video_path, "video0.avi", "video0.mp4", frame_rate=30)
+                        process_video(video_path, "video0.h264", "video0.mp4", frame_rate=30)
                         logger.info("Video0 converted to mp4")
                     break  # Exit the loop after the if condition is met
                 time.sleep(1)  # Introduce a delay of 2 seconds
