@@ -72,7 +72,7 @@ with open('/var/www/html/status.txt', 'w') as status_file:
     status_file.write("")
 crop_width, crop_height = 1440, 1080 # Crop size for inference
 
-def restart_camera(camera, resolution=(1920, 1080), fps=5):
+def restart_camera(camera, resolution=(1640, 1232), fps=5):
     time.sleep(2)  # Ensure the camera is fully released
     try:
         if camera is not None:
@@ -224,7 +224,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
         logger.error("Camera object is None before restarting.")
         return
 
-    camera = restart_camera(camera, resolution=(1920, 1080), fps=fps)
+    camera = restart_camera(camera, resolution=(1640, 1222), fps=fps)
 
     # Confirm cam is initialized
     if camera is None:
