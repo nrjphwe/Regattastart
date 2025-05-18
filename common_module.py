@@ -314,7 +314,8 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
             (start_time_sec, lambda: trigger_relay(gpio_handle, SIGNAL, "on", 1), "Start Signal"),
         ]
 
-        last_triggered_events = {}
+        # last_triggered_events = {}
+        last_triggered_events = set()
 
         while True:
             time_now = dt.datetime.now()
@@ -331,7 +332,7 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
                 # time_now = dt.datetime.now()
                 seconds_now = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
 
-                if abs(seconds_now - event_time) < 1 and (event_time, log_message) not in last_triggered_events:
+                if event_time <= seconds_now < event_time + 2and (event_time, log_message) not in last_triggered_events:
                     # if seconds_now == event_time:
 
                     if (event_time, log_message) not in last_triggered_events:
@@ -343,7 +344,7 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
                             capture_picture(camera, photo_path, picture_name)
                             time.sleep(0.1)
                         logger.info(f"Start_sequence, log_message: {log_message}")
-                        last_triggered_events[(event_time, log_message)] = True
+                        last_triggered_events.add((event_time, log_message))
                         logger.info(f'event_time: {event_time}, log_message: {log_message}')
 
         logger.info(f"Start_sequence, End of iteration: {i+1}")
