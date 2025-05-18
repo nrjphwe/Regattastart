@@ -320,8 +320,12 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
             time_now = dt.datetime.now()
             seconds_since_midnight = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
 
-            if seconds_since_midnight >= start_time_sec:
-                break  # Exit the loop if the condition is met
+            # if seconds_since_midnight >= start_time_sec:
+                # break  # Exit the loop if the condition is met
+
+            all_triggered = all((event_time, log_message) in last_triggered_events for event_time, _, log_message in time_intervals)
+            if all_triggered:
+                break
 
             for event_time, action, log_message in time_intervals:
                 # time_now = dt.datetime.now()
