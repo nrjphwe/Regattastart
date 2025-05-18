@@ -105,6 +105,19 @@ def setup_camera():
         return None
 
 
+def letterbox(image, target_size=(640, 360)):
+    ih, iw = image.shape[:2]
+    h, w = target_size
+    scale = min(w / iw, h / ih)
+    nw, nh = int(iw * scale), int(ih * scale)
+    image_resized = cv2.resize(image, (nw, nh))
+    top = (h - nh) // 2
+    bottom = h - nh - top
+    left = (w - nw) // 2
+    right = w - nw - left
+    return cv2.copyMakeBorder(image_resized, top, bottom, left, right, cv2.BORDER_CONSTANT, value=(0, 0, 0))
+
+
 def capture_picture(camera, photo_path, file_name, rotate=False):
     try:
         request = camera.capture_request()  # Capture a single request
@@ -126,16 +139,11 @@ def capture_picture(camera, photo_path, file_name, rotate=False):
             text_rectangle(frame, timestamp, origin, text_colour, bg_colour)
             if rotate:
                 frame = cv2.rotate(frame, cv2.ROTATE_180)
-            if frame is None:
-                logger.debug("Frame is None before resize")
-            elif frame.shape[0] == 0 or frame.shape[1] == 0:
-                logger.debug("Frame has zero dimensions: %s", frame.shape)
-            else:
-                logger.debug(f"Resizing frame from {frame.shape} to (640, 360)")
-                resized_image = cv2.resize(frame, (640, 360), interpolation=cv2.INTER_LINEAR)
-                logger.debug(f"Saved image size: {resized_image.shape}")
-                cv2.imwrite(os.path.join(photo_path, file_name), resized_image)
-            logger.debug(f"Saved image size: {resized_image.shape}")
+
+            # Use this version for display and saved images
+            resized_for_display = letterbox(frame, (640, 360))
+            cv2.imwrite(os.path.join(photo_path, file_name), resized_for_display)
+            logger.debug(f"Saved resized_for_display size: {resized_for_display.shape}")
             # cv2.imwrite(os.path.join(photo_path, file_name), frame)
         request.release()
         logger.info(f'Captured picture: {file_name}')
