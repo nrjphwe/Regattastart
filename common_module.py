@@ -22,6 +22,8 @@ FONT = cv2.FONT_HERSHEY_DUPLEX  # Font settings for text annotations
 FONT_SCALE = 2   # Font scale for text annotations
 THICKNESS = 2  # Thickness of the text annotations
 
+sensor_size = 1640, 1232 # sensors aspect ratio
+
 # text_colour = (0, 0, 255)  # Blue text in RGB
 # text_colour = (255, 0, 0)  # Blue text in BGR
 # bg_colour = (200, 200, 200)  # Light grey background
@@ -88,24 +90,22 @@ def setup_camera():
     global logger  # Explicitly declare logger as global
     try:
         camera = Picamera2()
-
         # Stop the camera if it is running (no need to check is_running)
         logger.info("Stopping the camera before reconfiguring.")
         camera.stop()  # Stop the camera if it is running
-        logger.debug(camera.sensor_modes)
         # Configure the camera
         config = camera.create_still_configuration(
-            main={"size": (1920, 1080), "format": "BGR888"}
+            main={"size": (sensor_size), "format": "BGR888"}
         )
         camera.configure(config)
-        logger.debug(f"size: 1920,1080")
+        logger.debug(f"size: {sensor_size}, format: BGR888")
         return camera  # Add this line to return the camera object
     except Exception as e:
         logger.error(f"Failed to initialize camera: {e}")
         return None
 
 
-def letterbox(image, target_size=(640, 360)):
+def letterbox(image, target_size=(640, 480)):
     ih, iw = image.shape[:2]
     w, h = target_size  # (width, height)
 
@@ -152,7 +152,7 @@ def capture_picture(camera, photo_path, file_name, rotate=False):
                 frame = cv2.rotate(frame, cv2.ROTATE_180)
 
             # Use this version for display and saved images
-            resized_for_display = letterbox(frame, (640, 360))
+            resized_for_display = letterbox(frame, (640, 480))
             cv2.imwrite(os.path.join(photo_path, file_name), resized_for_display)
             logger.debug(f"Saved resized_for_display size: {resized_for_display.shape}")
             # cv2.imwrite(os.path.join(photo_path, file_name), frame)
@@ -214,7 +214,7 @@ def start_video_recording(camera, video_path, file_name, bitrate=2000000):
     encoder = H264Encoder(bitrate=bitrate)
 
     video_config = camera.create_video_configuration(
-        main={"size": (1920, 1080), "format": "BGR888"},
+        main={"size": (1640, 1232), "format": "BGR888"},
         transform=Transform(hflip=True, vflip=True),  # Rotate 180-degree
         controls={"FrameRate": 5}
         )
@@ -242,7 +242,7 @@ def process_video(video_path, input_file, output_file, frame_rate=None):
         logger.debug(f"Warning: {input_file} is empty or does not exist. Skipping conversion.")
         return
     command = ["ffmpeg", "-i", source, "-vcodec", "libx264", "-crf", "23", "-preset", "ultrafast", dest, "-y"]
-    vf_filters = ["scale=640:360"]
+    vf_filters = ["scale=640:480"]
     if frame_rate:
         vf_filters.append(f"fps={frame_rate}")
     command.extend(["-vf", ",".join(vf_filters)])
