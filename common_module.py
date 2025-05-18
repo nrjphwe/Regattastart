@@ -324,11 +324,11 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
                 break  # Exit the loop if the condition is met
 
             for event_time, action, log_message in time_intervals:
-                time_now = dt.datetime.now()
+                # time_now = dt.datetime.now()
                 seconds_now = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
 
-                if seconds_now == event_time:
-                    # Check if the event should be triggered based on the current time
+                if abs(seconds_now - event_time) < 1 and (event_time, log_message) not in last_triggered_events:
+                    # if seconds_now == event_time:
 
                     if (event_time, log_message) not in last_triggered_events:
                         logger.info(f"Start_sequence: {log_message} at {event_time}")
