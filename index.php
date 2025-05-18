@@ -225,7 +225,7 @@
                 {
                     $imagePath .= '?' . filemtime($imagePath);
                     echo "<h3> Varningssignal 5 minuter innan 1a start</h3>";
-                    echo "<img id='$filename' src='$imagePath' alt='1a_start 5 min picture' width='720' height='406'>";
+                    echo "<img id='$filename' src='$imagePath' alt='1a_start 5 min picture' width='640' height='406'>";
 
                     // Check and display the second image
                     $filename = '1a_start_4_min.jpg';
@@ -234,7 +234,7 @@
                     {
                         $imagePath .= '?' . filemtime($imagePath);
                         echo "<h3> Signal 4 minuter innan 1a start </h3>";
-                        echo "<img id='$filename' src='$imagePath' alt='1a_start 4 min picture' width='720' height='480'>";
+                        echo "<img id='$filename' src='$imagePath' alt='1a_start 4 min picture' width='640' height='480'>";
 
                         // Check and display the third image
                         $filename = '1a_start_1_min.jpg';
@@ -243,7 +243,7 @@
                         {
                             $imagePath .= '?' . filemtime($imagePath);
                             echo "<h3> Signal 1 minuter innan 1a start </h3>";
-                            echo "<img id='$filename' src='$imagePath' alt='1a_start 1 min picture' width='720' height='480'>";
+                            echo "<img id='$filename' src='$imagePath' alt='1a_start 1 min picture' width='640' height='480'>";
 
                             // Check and display the start image
                             $filename = '1a_start_Start.jpg';
@@ -252,7 +252,7 @@
                             {
                                 $imagePath .= '?' . filemtime($imagePath);
                                 echo "<h3> Foto vid 1a start $start_time </h3>";
-                                echo "<img id='$filename' src='$imagePath' alt='1a start picture' width='720' height='480'>";
+                                echo "<img id='$filename' src='$imagePath' alt='1a start picture' width='640' height='480'>";
                             } else {
                                 console_log('picture for the start do not exists');
                             }
@@ -284,7 +284,7 @@
                             echo "<h3> Bilder tagna vid varje signal innan 2a start  </h3> ";
                             echo "<br> ------------------------------------------------- <p></p> ";
                             echo "<h3> Varningssignal 5 minuter innan 2a start</h3>";
-                            echo "<img id='$filename' src='$imagePath' alt='2a_start 5 min picture' width='720' height=480'>";
+                            echo "<img id='$filename' src='$imagePath' alt='2a_start 5 min picture' width='640' height=480'>";
 
                             // Check and display the second image
                             $filename = '2a_start_4_min.jpg';
@@ -292,7 +292,7 @@
                             if (file_exists($imagePath)) {
                                 $imagePath .= '?' . filemtime($imagePath);
                                 echo "<h3> Signal 4 minuter innan 2a start </h3>";
-                                echo "<img id='$filename' src='$imagePath' alt='2a_start 4 min picture' width='720' height='480'>";
+                                echo "<img id='$filename' src='$imagePath' alt='2a_start 4 min picture' width='640' height='480'>";
 
                                 // Check and display the third image
                                 $filename = '2a_start_1_min.jpg';
@@ -300,7 +300,7 @@
                                 if (file_exists($imagePath)) {
                                     $imagePath .= '?' . filemtime($imagePath);
                                     echo "<h3> Signal 1 minuter innan 2a start </h3>";
-                                    echo "<img id='$filename' src='$imagePath' alt='2a_start 1 min picture' width='720' height='480'>";
+                                    echo "<img id='$filename' src='$imagePath' alt='2a_start 1 min picture' width='640' height='480'>";
 
                                     // Check and display the start image
                                     $filename = '2a_start_Start.jpg';
@@ -308,7 +308,7 @@
                                     if (file_exists($imagePath)) {
                                         $imagePath .= '?' . filemtime($imagePath);
                                         echo "<h3> Foto vid 2a start $second_start_time </h3>";
-                                        echo "<img id='$filename' src='$imagePath' alt='2a start picture' width='720' height='480'>";
+                                        echo "<img id='$filename' src='$imagePath' alt='2a start picture' width='640' height='480'>";
                                     } else {
                                         console_log('picture start 2nd start do not exists');
                                     }
@@ -337,7 +337,7 @@
                         $video_name = 'images/video0.mp4';
                         if (file_exists($video_name)) {
                             echo "<h4> Video från 5 min före start och 2 min efter sista start</h4>";
-                            echo '<video id="video0" width = "720" height="480" controls><source src= ' . $video_name . ' type="video/mp4"></video><p>';
+                            echo '<video id="video0" width = "640" height="480" controls><source src= ' . $video_name . ' type="video/mp4"></video><p>';
                         } else {
                             console_log("$video_name do not exists");
                         }
@@ -350,7 +350,7 @@
                         if (file_exists($video_name)) {
                             //console_log("$video_name "is available");
                             echo "<h4> Video från 5 min före start och 2 min efter start</h4>";
-                            echo '<video id="video0" width = "720" height="480" controls><source src= ' . $video_name . ' type="video/mp4"></video><p>';
+                            echo '<video id="video0" width = "640" height="480" controls><source src= ' . $video_name . ' type="video/mp4"></video><p>';
                         } else {
                             console_log("$video_name do not exists");
                         }
@@ -408,7 +408,7 @@
                             {
                                 // Display the video
                                 echo "<h3> Finish video, this is video $x for the finish</h3>";
-                                echo '<video id="video' . $x . '" width="720" height="480" controls>
+                                echo '<video id="video' . $x . '" width="640" height="480" controls>
                                 <source src="' . $video_name . '" type="video/mp4"></video><p>
                                     <div>
                                         <button onclick="stepFrame(' . $x . ', -1)">Previous Frame</button>
@@ -421,7 +421,7 @@
                         }
                     } else {
                         // Placeholder when no valid video
-                            echo '<div style="width:640px;height:360px;display:flex;align-items:center;justify-content:center;background:#eee;border:1px solid #ccc;">
+                            echo '<div style="width:640px;height:480px;display:flex;align-items:center;justify-content:center;background:#eee;border:1px solid #ccc;">
                                 <p style="font-size:20px;color:#555;">No boat detected</p>
                                 </div>';
                         console_log("Video1 do not exist");
