@@ -107,7 +107,7 @@ def setup_camera():
 
 def letterbox(image, target_size=(640, 360)):
     ih, iw = image.shape[:2]
-    h, w = target_size
+    w, h = target_size
     scale = min(w / iw, h / ih)
     nw, nh = int(iw * scale), int(ih * scale)
     image_resized = cv2.resize(image, (nw, nh))
