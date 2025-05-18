@@ -311,7 +311,7 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
             (start_time_sec - 1 * 60 - 2, lambda: trigger_relay(gpio_handle, LAMP2, "off"), "1_min Lamp2 OFF -- Flag P DOWN"),
             (start_time_sec - 1 * 60, lambda: trigger_relay(gpio_handle, SIGNAL, "on", 2), "1_min Signal"),
             (start_time_sec - 2, lambda: trigger_relay(gpio_handle, LAMP1, "off"), "Lamp1 OFF at Start"),
-            (start_time_sec, lambda: trigger_relay(gpio_handle, SIGNAL, "on", 1), "Start Signal"),
+            (start_time_sec - 0, lambda: trigger_relay(gpio_handle, SIGNAL, "on", 1), "Start Signal"),
         ]
 
         last_triggered_events = {}
