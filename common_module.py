@@ -68,7 +68,9 @@ def setup_logging():
 
 # Initialize logging immediately when the module is imported
 setup_logging()
-
+logger.info("="*40)
+logger.info(f"Starting new regattastart9.py session at {dt.datetime.now()}")
+logger.info("="*40)
 
 def remove_picture_files(directory, pattern):
     files = os.listdir(directory)
