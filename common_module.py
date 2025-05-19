@@ -97,7 +97,7 @@ def setup_camera():
         # Configure the camera
         config = camera.create_still_configuration(
             main={"size": (sensor_size), "format": "BGR888"},
-            colour_space=ColorSpace.Sycc()  # OR ColorSpace.Srgb()
+            colour_space=ColorSpace.Srgb()  # OR ColorSpace.Sycc()
         )
         camera.configure(config)
         logger.debug(f"size: {sensor_size}, format: BGR888")
