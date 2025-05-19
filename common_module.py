@@ -242,16 +242,16 @@ def process_video(video_path, input_file, output_file, frame_rate=None):
         logger.debug(f"Warning: {input_file} is empty or does not exist. Skipping conversion.")
         return
     command = ["ffmpeg", "-i", source, "-vcodec", "libx264", "-crf", "23", "-preset", "ultrafast"]
-    
+
     vf_filters = ["scale=640:480"]
     if frame_rate:
         vf_filters.append(f"fps={frame_rate}")
     command.extend(["-vf", ",".join(vf_filters)])
 
-     # Add pixel format for consistent output
+    #  Add pixel format for consistent output
     command.extend(["-pix_fmt", "yuv420p"])
 
-    command.append(["-y", dest])  # Add output destination
+    command.extend(["-y", dest])  # Add output destination
 
     try:
         subprocess.run(command, check=True)
