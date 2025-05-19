@@ -95,7 +95,7 @@ def restart_camera(camera, resolution=(1640, 1232), fps=5):
         config = camera.create_video_configuration(
             main={"size": best_mode["size"], "format": "BGR888"},
             transform=Transform(hflip=True, vflip=True),
-            colour_space=ColorSpace.Sycc()  # OR ColorSpace.Srgb()
+            colour_space=ColorSpace.Srgb()  # OR ColorSpace.Sycc()
         )
         camera.set_controls({"FrameRate": fps})
         logger.debug(f"Config before applying: {config}")
