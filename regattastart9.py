@@ -211,15 +211,9 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
         if camera is not None:
             logger.info("Stopping the camera before reconfiguring.")
             camera.stop()
-        video_config = camera.create_video_configuration(
-            main={"size": (1920, 1080)},
-            transform=Transform(hflip=True, vflip=True)
-        )
-        time.sleep(0.5)  # Add a short delay to ensure the camera is ready
-        camera.set_controls({"FrameRate": fps})
-        camera.configure(video_config)
-        logger.info(f"Camera configured with resolution (1920, 1080) and FPS {fps}.")
-        time.sleep(0.5)  # Add a short delay to ensure the camera is ready
+        else:
+            logger.warning("Camera was already None before restart.")
+
     except Exception as e:
         logger.error(f"Failed to configure camera: {e}")
         return
