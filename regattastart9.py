@@ -1,8 +1,8 @@
 #!/home/pi/yolov5_env/bin/python
 # after git pull, do: sudo cp regattastart9.py /usr/lib/cgi-bin/
+import os
 from common_module import (
     setup_camera,
-    capture_picture,
     remove_picture_files,
     remove_video_files,
     start_video_recording,
@@ -10,16 +10,10 @@ from common_module import (
     stop_video_recording,
     logger,
     text_rectangle,
-    setup_gpio,
-    trigger_relay,
     process_video,
 )
 import sys
-print("Python executable:", sys.executable)
-print("Python version:", sys.version)
-print("sys.path:", sys.path)
 
-import os
 # The os.chdir('/home/pi/yolov5') and manual addition of venv_path to "
 # sys.path in your script may be unnecessary if the virtual environment "
 # is correctly set up."
@@ -46,7 +40,6 @@ import time
 import cv2
 import torch
 import warnings
-import RPi.GPIO as GPIO  # Import GPIO library
 import queue
 
 warnings.filterwarnings(
@@ -391,7 +384,6 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
             # of the original frame.
             cropped_frame = frame[y_start:y_start + crop_height, x_start:x_start + crop_width]
             # logger.debug(f"cropped frame shape: {cropped_frame.shape}")
-            # Resize cropped frame to 640x480 for inference
             resized_frame = cv2.resize(cropped_frame, (inference_width, inference_height))
             # Use resized_frame for YOLO detection instead of full frame
             results = model(resized_frame)
@@ -409,7 +401,8 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
                     text_rectangle(frame, (f'{capture_timestamp.strftime("%Y-%m-%d, %H:%M:%S")}'), origin)
                     boat_in_current_frame = True
                     # logger.debug(f"Confidence {confidence:.2f}, capture_timestamp = {capture_timestamp}")
-                    detected_timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")  # timestamp (with microseconds)
+                    detected_timestamp = datetime.now().strftime("%H:%M:%S")
+                    # detected_timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")  # timestamp (with microseconds)
                     # logger.debug(f"Detected_timestamp={detected_timestamp}")
 
                     #  Adjust the bounding box coordinates to reflect the original frame
