@@ -55,22 +55,26 @@ warnings.filterwarnings(
     category=FutureWarning,
     module=".*yolov5_master.models.common*"
 )
-
-
 # parameter data
 fps = 5
 signal_dur = 0.9  # 0.9 sec
 log_path = '/var/www/html/'
 video_path = '/var/www/html/images/'
 photo_path = '/var/www/html/images/'
+crop_width, crop_height = 1440, 1080 # Crop size for inference
 # gpio_handle, LAMP1, LAMP2, SIGNAL, = setup_gpio()
 listening = True  # Define the listening variable
 recording_stopped = False  # Global variable
+
+logger.info("="*40)
+logger.info(f"Starting new regattastart9.py session at {dt.datetime.now()}")
+logger.info("="*40)
+
 # reset the contents of the status variable, used for flagging that
 # video1-conversion is complete.
 with open('/var/www/html/status.txt', 'w') as status_file:
     status_file.write("")
-crop_width, crop_height = 1440, 1080 # Crop size for inference
+
 
 def restart_camera(camera, resolution=(1640, 1232), fps=5):
     time.sleep(2)  # Ensure the camera is fully released
