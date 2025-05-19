@@ -394,7 +394,7 @@
             ?>
         </div>
         <!-- PHP script to display remaining videos -->
-        <div style="text-align: center;" class="w3-panel w3-pale-red">
+        <div style="text-align: center;" class="w3-panel w3-pale-red", style="display: inline-block; padding: 20px;">
             <?php
                 if ($video0Exists)
                 {
