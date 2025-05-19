@@ -215,11 +215,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
             logger.warning("Camera was already None before restart.")
 
     except Exception as e:
-        logger.error(f"Failed to configure camera: {e}")
-        return
-
-    if camera is None:
-        logger.error("Camera object is None before restarting.")
+        logger.error(f"Error while stopping camera: {e}")
         return
 
     camera = restart_camera(camera, resolution=(1640, 1222), fps=fps)
@@ -237,7 +233,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
             logger.error("First captured frame is None! Exiting video recording.")
             return
         else:
-            logger.debug(f"First frame captured successfully. Frame shape: {frame.shape}")
+            logger.debug(f"First frame captured successfully. Frame shape: {frame.shape}, dtype={frame.dtype}")
     except Exception as e:
         logger.error(f"Exception occurred while capturing the first frame: {e}", exc_info=True)
         return
