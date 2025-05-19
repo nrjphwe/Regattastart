@@ -93,7 +93,8 @@ def restart_camera(camera, resolution=(1640, 1232), fps=5):
         logger.debug(f"Using sensor mode: {best_mode}")
 
         config = camera.create_video_configuration(
-            main={"size": best_mode["size"], "format": "BGR888"},
+            # main={"size": best_mode["size"], "format": "BGR888"},
+            main={"size": best_mode["size"], "format": "RGB888"},
             transform=Transform(hflip=True, vflip=True),
             colour_space=ColorSpace.Srgb()  # OR ColorSpace.Sycc()
         )
