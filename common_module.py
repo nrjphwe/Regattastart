@@ -7,6 +7,7 @@ import datetime as dt
 import logging
 import logging.config
 from libcamera import Transform
+from libcamera import ColorSpace
 from picamera2 import Picamera2, MappedArray
 from picamera2.encoders import H264Encoder
 import RPi.GPIO as GPIO
@@ -95,7 +96,8 @@ def setup_camera():
         camera.stop()  # Stop the camera if it is running
         # Configure the camera
         config = camera.create_still_configuration(
-            main={"size": (sensor_size), "format": "BGR888"}
+            main={"size": (sensor_size), "format": "BGR888"},
+            colour_space=ColorSpace.Sycc()  # OR ColorSpace.Srgb()
         )
         camera.configure(config)
         logger.debug(f"size: {sensor_size}, format: BGR888")
