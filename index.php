@@ -420,7 +420,8 @@
                         }
                     } elseif (file_exists($video_avi) && filesize($video_avi) > 5500) {
                     // AVI exists but MP4 is not done or still 0 KB → still recording/detecting
-                    echo '<div style="width:640px;height:480px;display:flex;align-items:center;justify-content:center;background:#eee;border:1px solid #ccc;">
+                    # echo '<div style="width:640px;height:480px;display:flex;align-items:center;justify-content:center;background:#eee;border:1px solid #ccc;">
+                    echo '<div style="display:flex;align-items:center;justify-content:center;background:#eee;border:1px solid #ccc;">
                             <p style="font-size:20px;color:#555;">Video being created...</p>
                         </div>';
                     } else {
