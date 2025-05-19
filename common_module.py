@@ -22,7 +22,7 @@ FONT = cv2.FONT_HERSHEY_DUPLEX  # Font settings for text annotations
 FONT_SCALE = 2   # Font scale for text annotations
 THICKNESS = 2  # Thickness of the text annotations
 
-sensor_size = 1640, 1232 # sensors aspect ratio
+sensor_size = 1640, 1232  # sensors aspect ratio
 
 # text_colour = (0, 0, 255)  # Blue text in RGB
 # text_colour = (255, 0, 0)  # Blue text in BGR
@@ -241,12 +241,17 @@ def process_video(video_path, input_file, output_file, frame_rate=None):
     if not os.path.exists(source) or os.path.getsize(source) <= 5000:
         logger.debug(f"Warning: {input_file} is empty or does not exist. Skipping conversion.")
         return
-    command = ["ffmpeg", "-i", source, "-vcodec", "libx264", "-crf", "23", "-preset", "ultrafast", dest, "-y"]
+    command = ["ffmpeg", "-i", source, "-vcodec", "libx264", "-crf", "23", "-preset", "ultrafast"]
+    
     vf_filters = ["scale=640:480"]
     if frame_rate:
         vf_filters.append(f"fps={frame_rate}")
     command.extend(["-vf", ",".join(vf_filters)])
-    command.append(dest)
+
+     # Add pixel format for consistent output
+    command.extend(["-pix_fmt", "yuv420p"])
+
+    command.append(["-y", dest])  # Add output destination
 
     try:
         subprocess.run(command, check=True)
