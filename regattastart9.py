@@ -244,7 +244,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
         # Define crop data to maintain the square (1:1) aspect ratio
         logger.debug("calculate crop data for the frame.")
         shift_offset = 100  # horisontal offset for crop -> right part
-        # Get dimensions of the full-resolution frame (1920x1080 in your case)
+        # Get dimensions of the full-resolution frame (1640x1232 in your case)
         frame_height, frame_width = frame.shape[:2]  # shape = (height, width, channels)
         x_start = max((frame_width - crop_width) // 2 + shift_offset, 50)
         y_start = max((frame_height - crop_height) // 2, 0)
