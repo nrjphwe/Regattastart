@@ -32,7 +32,7 @@ import datetime as dt
 import json
 # import numpy as np # image recognition
 from libcamera import Transform
-
+from libcamera import ColorSpace
 from picamera2 import Picamera2
 import select
 import threading
@@ -94,7 +94,8 @@ def restart_camera(camera, resolution=(1640, 1232), fps=5):
 
         config = camera.create_video_configuration(
             main={"size": best_mode["size"], "format": "BGR888"},
-            transform=Transform(hflip=True, vflip=True)
+            transform=Transform(hflip=True, vflip=True),
+            colour_space=ColorSpace.Sycc()  # OR ColorSpace.Srgb()
         )
         camera.set_controls({"FrameRate": fps})
         logger.debug(f"Config before applying: {config}")
