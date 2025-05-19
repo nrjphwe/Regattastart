@@ -211,7 +211,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
         logger.error(f"Error while stopping camera: {e}")
         return
 
-    camera = restart_camera(camera, resolution=(1640, 1222), fps=fps)
+    camera = restart_camera(camera, resolution=(1640, 1232), fps=fps)
 
     # Confirm cam is initialized
     if camera is None:
