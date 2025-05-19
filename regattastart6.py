@@ -28,6 +28,10 @@ log_path = '/usr/lib/cgi-bin/'
 video_path = '/var/www/html/images/'
 photo_path = '/var/www/html/images/'
 
+logger.info("="*40)
+logger.info(f"Starting new regattastart6.py session at {dt.datetime.now()}")
+logger.info("="*40)
+
 
 def finish_recording(camera, video_path, video_delay, num_video, video_dur, start_time_sec):
     # Wait for finish, when the next video will start (delay)
