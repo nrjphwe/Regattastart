@@ -337,7 +337,7 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
                 # time_now = dt.datetime.now()
                 seconds_now = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
 
-                if event_time <= seconds_now < event_time + 2and (event_time, log_message) not in last_triggered_events:
+                if event_time <= seconds_now < event_time + 2 and (event_time, log_message) not in last_triggered_events:
                     # if seconds_now == event_time:
 
                     if (event_time, log_message) not in last_triggered_events:
