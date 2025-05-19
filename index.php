@@ -396,6 +396,8 @@
         <!-- PHP script to display remaining videos -->
         <div style="text-align: center;" class="w3-panel w3-pale-red", style="display: inline-block; padding: 20px;">
             <?php
+                $video_avi = 'images/video1.avi';
+                $video_mp4 = 'images/video1.mp4';
                 if ($video0Exists)
                 {
                     // wait with check until after the stop-recording button was pressed
@@ -414,16 +416,18 @@
                                         <button onclick="stepFrame(' . $x . ', -1)">Previous Frame</button>
                                         <button onclick="stepFrame(' . $x . ', 1)">Next Frame</button>
                                     </div>';
-                            } else {
-                                // Log an error if the video file doesn't exist
-                                console_log("video $x does not exist");
                             }
                         }
+                    } elseif (file_exists($video_avi) && filesize($video_avi) > 5500) {
+                    // AVI exists but MP4 is not done or still 0 KB → still recording/detecting
+                    echo '<div style="width:640px;height:480px;display:flex;align-items:center;justify-content:center;background:#eee;border:1px solid #ccc;">
+                            <p style="font-size:20px;color:#555;">Video being created...</p>
+                        </div>';
                     } else {
-                        // Placeholder when no valid video
-                            echo '<div style="width:640px;height:480px;display:flex;align-items:center;justify-content:center;background:#eee;border:1px solid #ccc;">
+                        // Neither usable .mp4 nor active .avi → nothing detected
+                        echo '<div style="width:640px;height:480px;display:flex;align-items:center;justify-content:center;background:#eee;border:1px solid #ccc;">
                                 <p style="font-size:20px;color:#555;">No boat detected</p>
-                                </div>';
+                            </div>';
                         console_log("Video1 do not exist");
                     }
                 }
