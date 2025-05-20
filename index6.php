@@ -1,5 +1,5 @@
 <?php
-    define('APP_VERSION', '24.06.04'); // You can replace '1.0.0' with your desired version number
+    define('APP_VERSION', '2025.05.20'); // You can replace '1.0.0' with your desired version number
     // Start the session
     ini_set('session.gc_maxlifetime', 86400); // 24 hours
     session_set_cookie_params(86400); // 24 hours
