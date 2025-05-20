@@ -426,7 +426,7 @@
                             console_log("Video1.avi exist and filesize > 10000 = video beeing created");
                     } else {
                         // Neither usable .mp4 nor active .avi → nothing detected
-                        echo '<div style="width:640px;height:480px;display:flex;align-items:center;justify-content:center;background:#eee;border:1px solid #ccc;">
+                        echo '<div style="display:flex;align-items:center;justify-content:center;background:#eee;border:1px solid #ccc;">
                                 <p style="font-size:20px;color:#555;">No boat detected</p>
                             </div>';
                         console_log("Video1 do not exist, no boat detected");
