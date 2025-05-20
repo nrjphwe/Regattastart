@@ -4,7 +4,7 @@
     header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
     header("Access-Control-Allow-Headers: *");
     // after "git pull", "sudo cp /home/pi/Regattastart/index.php /var/www/html/"
-    define('APP_VERSION', '2025.03.26'); // You can replace '1.0.0' with your desired version number
+    define('APP_VERSION', '2025.05.20'); // You can replace '1.0.0' with your desired version number
 
     if (session_status() !== PHP_SESSION_ACTIVE) {
         // Set session parameters
