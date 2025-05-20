@@ -71,7 +71,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <!-- <meta http-equiv="refresh" content="200" -->
     <title>Regattastart</title>
-    <link rel="icon" type="image/x-icon" href="/sailing-icon.ico">
+    <link rel="icon" type="image/x-icon" href="/sailing-icon.jpeg">
     <!-- JavaScript to dynamically add a placeholder text or an image to the page when -->
     <!-- there are no pictures available yet. -->
     <script> // JavaScript function showPlaceholder 
