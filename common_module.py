@@ -1,6 +1,5 @@
 #!/home/pi/yolov5_env/bin/python
 import os
-import sys
 import subprocess
 import time
 import datetime as dt
