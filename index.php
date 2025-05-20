@@ -1,23 +1,35 @@
 <?php
+    // /var/log/php_error.log
     header("Access-Control-Allow-Origin: *");
     header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
     header("Access-Control-Allow-Headers: *");
     // after "git pull", "sudo cp /home/pi/Regattastart/index.php /var/www/html/"
-    define('APP_VERSION', '2025.03.26'); // You can replace '1.0.0' with your desired version number
-    session_id("regattastart");
-    session_start();
-    ini_set('display_errors', 1); 
-    error_reporting(E_ALL);
-    //
-    //if (isset($_SESSION["form_data"])) {
-    //    $form_data = $_SESSION["form_data"];
-    //    echo '<pre>';
-    //    print_r($form_data);
-    //    echo '</pre>';
-    //} else {
-    //    echo "No form data found.";
-    //}
+    define('APP_VERSION', '2025.05.20'); // You can replace '1.0.0' with your desired version number
 
+    if (session_status() !== PHP_SESSION_ACTIVE) {
+        // Set session parameters
+        ini_set('session.gc_maxlifetime', 86400); // 24 hours
+        session_set_cookie_params(86400); // 24 hours
+        ini_set('session.cookie_lifetime', 86400);
+    }
+    if (session_status() === PHP_SESSION_NONE) {
+        session_id("regattastart");
+        session_start();
+    }
+
+    // echo "The cached session pages expire after $cache_expire minutes";
+    // echo "<br/>";
+    ini_set('display_errors', 1);
+    error_reporting(E_ALL);
+
+    // Check if the session is already started
+    // print_r($_SESSION);
+    // echo "<br/>";
+    // print_r($_POST);
+    // echo "<br/>";
+?>
+
+<?php
     include_once 'functions.php';
     // Check if video0.mp4 or video1.mp4 exists and their sizes
     $video0Exists = file_exists("images/video0.mp4") && filesize("images/video0.mp4") > 0;
@@ -42,6 +54,10 @@
         $stopRecordingPressed = true;
         // Store this value in a session to persist it across requests
         $_SESSION['stopRecordingPressed'] = $stopRecordingPressed;
+
+        // Call the stop_recording.php logic directly
+        include 'stop_recording.php';
+
     } else {
         console_log('Stop recording POST not received');
     }
@@ -154,14 +170,15 @@
         // regattastart9 is executing and num_video is set to 1 as a flag.
         // This function checks if the variable $num_video is set
         $num_video = isset($num_video) ? $num_video : 1;
+        console_log("num_video = $num_video"); // Log the value of $num_video
     ?>
     <!-- Header content -->
     <header>
-        <div style="text-align: center;">
-            <div class="w3-panel w3-cyan">
-                <h2> Regattastart  </h2>
-            </div>
+    <div style="text-align: center;">
+        <div class="w3-container w3-blue w3-text-white">
+            <h1> Regattastart  </h1>
         </div>
+    </div>
         <div style="text-align: center;">
             <?php
                 echo "     Version: " . APP_VERSION . "<br><p></p>"; 
@@ -207,7 +224,7 @@
                 {
                     $imagePath .= '?' . filemtime($imagePath);
                     echo "<h3> Varningssignal 5 minuter innan 1a start</h3>";
-                    echo "<img id='$filename' src='$imagePath' alt='1a_start 5 min picture' width='720' height='480'>";
+                    echo "<img id='$filename' src='$imagePath' alt='1a_start 5 min picture' width='640' height='406'>";
 
                     // Check and display the second image
                     $filename = '1a_start_4_min.jpg';
@@ -216,7 +233,7 @@
                     {
                         $imagePath .= '?' . filemtime($imagePath);
                         echo "<h3> Signal 4 minuter innan 1a start </h3>";
-                        echo "<img id='$filename' src='$imagePath' alt='1a_start 4 min picture' width='720' height='480'>";
+                        echo "<img id='$filename' src='$imagePath' alt='1a_start 4 min picture' width='640' height='480'>";
 
                         // Check and display the third image
                         $filename = '1a_start_1_min.jpg';
@@ -225,7 +242,7 @@
                         {
                             $imagePath .= '?' . filemtime($imagePath);
                             echo "<h3> Signal 1 minuter innan 1a start </h3>";
-                            echo "<img id='$filename' src='$imagePath' alt='1a_start 1 min picture' width='720' height='480'>";
+                            echo "<img id='$filename' src='$imagePath' alt='1a_start 1 min picture' width='640' height='480'>";
 
                             // Check and display the start image
                             $filename = '1a_start_Start.jpg';
@@ -234,7 +251,7 @@
                             {
                                 $imagePath .= '?' . filemtime($imagePath);
                                 echo "<h3> Foto vid 1a start $start_time </h3>";
-                                echo "<img id='$filename' src='$imagePath' alt='1a start picture' width='720' height='480'>";
+                                echo "<img id='$filename' src='$imagePath' alt='1a start picture' width='640' height='480'>";
                             } else {
                                 console_log('picture for the start do not exists');
                             }
@@ -266,7 +283,7 @@
                             echo "<h3> Bilder tagna vid varje signal innan 2a start  </h3> ";
                             echo "<br> ------------------------------------------------- <p></p> ";
                             echo "<h3> Varningssignal 5 minuter innan 2a start</h3>";
-                            echo "<img id='$filename' src='$imagePath' alt='2a_start 5 min picture' width='720' height=480'>";
+                            echo "<img id='$filename' src='$imagePath' alt='2a_start 5 min picture' width='640' height=480'>";
 
                             // Check and display the second image
                             $filename = '2a_start_4_min.jpg';
@@ -274,7 +291,7 @@
                             if (file_exists($imagePath)) {
                                 $imagePath .= '?' . filemtime($imagePath);
                                 echo "<h3> Signal 4 minuter innan 2a start </h3>";
-                                echo "<img id='$filename' src='$imagePath' alt='2a_start 4 min picture' width='720' height='480'>";
+                                echo "<img id='$filename' src='$imagePath' alt='2a_start 4 min picture' width='640' height='480'>";
 
                                 // Check and display the third image
                                 $filename = '2a_start_1_min.jpg';
@@ -282,7 +299,7 @@
                                 if (file_exists($imagePath)) {
                                     $imagePath .= '?' . filemtime($imagePath);
                                     echo "<h3> Signal 1 minuter innan 2a start </h3>";
-                                    echo "<img id='$filename' src='$imagePath' alt='2a_start 1 min picture' width='720' height='480'>";
+                                    echo "<img id='$filename' src='$imagePath' alt='2a_start 1 min picture' width='640' height='480'>";
 
                                     // Check and display the start image
                                     $filename = '2a_start_Start.jpg';
@@ -290,7 +307,7 @@
                                     if (file_exists($imagePath)) {
                                         $imagePath .= '?' . filemtime($imagePath);
                                         echo "<h3> Foto vid 2a start $second_start_time </h3>";
-                                        echo "<img id='$filename' src='$imagePath' alt='2a start picture' width='720' height='480'>";
+                                        echo "<img id='$filename' src='$imagePath' alt='2a start picture' width='640' height='480'>";
                                     } else {
                                         console_log('picture start 2nd start do not exists');
                                     }
@@ -319,7 +336,7 @@
                         $video_name = 'images/video0.mp4';
                         if (file_exists($video_name)) {
                             echo "<h4> Video från 5 min före start och 2 min efter sista start</h4>";
-                            echo '<video id="video0" width = "720" height="480" controls><source src= ' . $video_name . ' type="video/mp4"></video><p>';
+                            echo '<video id="video0" width = "640" height="480" controls><source src= ' . $video_name . ' type="video/mp4"></video><p>';
                         } else {
                             console_log("$video_name do not exists");
                         }
@@ -332,7 +349,7 @@
                         if (file_exists($video_name)) {
                             //console_log("$video_name "is available");
                             echo "<h4> Video från 5 min före start och 2 min efter start</h4>";
-                            echo '<video id="video0" width = "720" height="480" controls><source src= ' . $video_name . ' type="video/mp4"></video><p>';
+                            echo '<video id="video0" width = "640" height="480" controls><source src= ' . $video_name . ' type="video/mp4"></video><p>';
                         } else {
                             console_log("$video_name do not exists");
                         }
@@ -354,14 +371,14 @@
                             echo '<div id="stopRecordingButtonDiv" style="display: none;">'; // Hide the div
                         } else {
                             echo '<div id="stopRecordingButtonDiv" style="display: block;">'; // Display the div
-                            echo '
-                                <form id="stopRecordingForm" action="' . htmlspecialchars($_SERVER["PHP_SELF"]) . '" method="post" onsubmit="return refreshPage()">
-                                    <input type="hidden" name="stop_recording" value="true">
-                                    <input type="hidden" name="stopRecordingPressed" id="stopRecordingPressed" value="0"> 
+                            echo "
+                                <form id=\"stopRecordingForm\" action=\"" . htmlspecialchars($_SERVER["PHP_SELF"]) . "\" method=\"post\" onsubmit=\"return refreshPage()\">
+                                    <input type=\"hidden\" name=\"stop_recording\" value=\"true\">
+                                    <input type=\"hidden\" name=\"stopRecordingPressed\" id=\"stopRecordingPressed\" value=\"0\"> 
                                     <!-- Hidden input field for stopRecordingPressed -->
-                                    <input type="submit" id="stopRecordingButton" value="Stop Recording">
+                                    <input type=\"submit\" id=\"stopRecordingButton\" value=\"Stop Recording\">
                                 </form>
-                            </div>';
+                            </div>";
                             //  "Stop Recording" button not yet visible
                             console_log("stopRecording button not yet pressed");
                         }
@@ -376,8 +393,10 @@
             ?>
         </div>
         <!-- PHP script to display remaining videos -->
-        <div style="text-align: center;" class="w3-panel w3-pale-red">
+        <div style="text-align: center;" class="w3-panel w3-pale-red", style="display: inline-block; padding: 20px;">
             <?php
+                $video_avi = 'images/video1.avi';
+                $video_mp4 = 'images/video1.mp4';
                 if ($video0Exists)
                 {
                     // wait with check until after the stop-recording button was pressed
@@ -386,23 +405,31 @@
                         {
                             $video_name = 'images/video' . $x . '.mp4';
                             // console_log("Loop to display video = $video_name");
-                            if (file_exists($video_name)) 
+                            if (file_exists($video_name) && filesize($video_name) > 1000)
                             {
                                 // Display the video
                                 echo "<h3> Finish video, this is video $x for the finish</h3>";
-                                echo '<video id="video' . $x . '" width="720" height="480" controls>
+                                echo '<video id="video' . $x . '" width="640" height="480" controls>
                                 <source src="' . $video_name . '" type="video/mp4"></video><p>
                                     <div>
                                         <button onclick="stepFrame(' . $x . ', -1)">Previous Frame</button>
                                         <button onclick="stepFrame(' . $x . ', 1)">Next Frame</button>
                                     </div>';
-                            } else {
-                                // Log an error if the video file doesn't exist
-                                console_log("video $x does not exist");
                             }
                         }
+                    } elseif (file_exists($video_avi) && filesize($video_avi) > 10000) {
+                        // AVI exists but MP4 is not done or still 0 KB → still recording/detecting
+                        # echo '<div style="width:640px;height:480px;display:flex;align-items:center;justify-content:center;background:#eee;border:1px solid #ccc;">
+                        echo '<div style="display:flex;align-items:center;justify-content:center;background:#eee;border:1px solid #ccc;">
+                            <p style="font-size:20px;color:#555;">Video being created...</p>
+                            </div>';
+                            console_log("Video1.avi exist and filesize > 10000 = video beeing created");
                     } else {
-                        console_log("Video1 do not exist");
+                        // Neither usable .mp4 nor active .avi → nothing detected
+                        echo '<div style="display:flex;align-items:center;justify-content:center;background:#eee;border:1px solid #ccc;">
+                                <p style="font-size:20px;color:#555;">No boat detected</p>
+                            </div>';
+                        console_log("Video1 do not exist, no boat detected");
                     }
                 }
             ?>

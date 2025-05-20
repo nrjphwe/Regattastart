@@ -3,36 +3,46 @@
     header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
     header("Access-Control-Allow-Headers: *");
 
-    define('APP_VERSION', '25.03.26'); // You can replace '1.0.0' with your desired version number
-    // Set session lifetime to a day (86400 seconds)
-    ini_set('session.gc_maxlifetime', 86400);
-    ini_set('session.cookie_lifetime', 86400);
+    define('APP_VERSION', '25.05.20'); // You can replace '1.0.0' with your desired version number
 
-    session_id("regattastart");
-    session_start();
+    // Set session lifetime to a day (86400 seconds)
+    ini_set('session.gc_maxlifetime', 86400); // 24 hours
+    session_set_cookie_params(86400); // 24 hours
+    if (session_status() === PHP_SESSION_NONE) {
+        session_id("regattastart");
+        session_start();
+    }
+
     ini_set('display_errors', 1);
     error_reporting(E_ALL);
+    
+    // Check if the session is already started
+    print_r($_SESSION);
+    echo "<br/>";
+    print_r($_POST);
+    echo "<br/>";
 
     // Unset the session variable set in index.php
     unset($_SESSION['stopRecordingPressed']);
 
-    if (isset($_SESSION["form_data"])) {
-        echo '<pre>';
-        print_r($_SESSION["form_data"]);
-        echo '</pre>';
-    }
+    //if (isset($_SESSION["form_data"])) {
+    //    echo '<pre>';
+    //    print_r($_SESSION["form_data"]);
+    //   echo '</pre>';
+    //}
     include_once 'functions.php';
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Process and store the form data
         $_SESSION["form_data"] = $_POST;
 
         // Execute the Python script
-        $command = 'python3 /usr/lib/cgi-bin/regattastart9.py ' . escapeshellarg(json_encode($_POST)) . ' > /var/www/html/output.txt 2>&1 &';
-        shell_exec($command);
+        #$command = 'python3 /usr/lib/cgi-bin/regattastart9.py ' . escapeshellarg(json_encode($_POST)) . ' > /var/www/html/output.txt 2>&1 &';
+        $command = '/home/pi/yolov5_env/bin/python /usr/lib/cgi-bin/regattastart9.py ' . escapeshellarg(json_encode($_POST)) . ' > /var/www/html/output.txt 2>&1 &';
 
+        shell_exec($command);
         echo date('h:i:s') . "<br>";
         echo "execution started";
-        sleep(0.5);
+        sleep(1);
 
         // Redirect to index.php
         header("Location: index.php");
