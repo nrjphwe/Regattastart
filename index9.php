@@ -3,7 +3,7 @@
     header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
     header("Access-Control-Allow-Headers: *");
 
-    define('APP_VERSION', '25.03.26'); // You can replace '1.0.0' with your desired version number
+    define('APP_VERSION', '25.05.20'); // You can replace '1.0.0' with your desired version number
 
     // Set session lifetime to a day (86400 seconds)
     ini_set('session.gc_maxlifetime', 86400); // 24 hours
