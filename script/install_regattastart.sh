@@ -13,6 +13,11 @@ sudo cp -v logging.conf /usr/lib/cgi-bin
 sudo chmod -R 755 /usr/lib/cgi-bin
 sudo chown -R www-data:www-data /usr/lib/cgi-bin
 
+sudo apt update
+sudo apt install apache2 -y
+sudo systemctl restart apache2.service
+
+
 echo "=> Installing regattastart php files at /var/www/html/...\n"
 sudo mkdir -v -p /var/www/html/images
 sudo cp -v /var/www/html/index.html /var/www/html/index0.html
@@ -47,6 +52,4 @@ echo 'KERNEL=="gpiomem", GROUP="gpio", MODE="0660"' | sudo tee -a /etc/udev/rule
 
 echo "=> setup for video encoding...\n"
 sudo apt install -y gpac
-sudo apt update
-sudo apt install apache2 -y
-sudo systemctl restart apache2.service
+
