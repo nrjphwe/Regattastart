@@ -47,4 +47,6 @@ echo 'KERNEL=="gpiomem", GROUP="gpio", MODE="0660"' | sudo tee -a /etc/udev/rule
 
 echo "=> setup for video encoding...\n"
 sudo apt install -y gpac
+sudo apt update
+sudo apt install apache2 -y
 sudo systemctl restart apache2.service
