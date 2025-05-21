@@ -17,6 +17,8 @@ sudo apt update
 sudo apt install apache2 -y
 sudo systemctl restart apache2.service
 
+sudo apt install php libapache2-mod-php -y
+
 
 echo "=> Installing regattastart php files at /var/www/html/...\n"
 sudo mkdir -v -p /var/www/html/images
