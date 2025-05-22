@@ -206,6 +206,11 @@
                     Regattastart9 -- with image detection
                 </a>
             </button>
+            <button class="w3-button w3-border w3-small w3-round-large w3-hover-grey w3-red">
+                <a href="/index9.php" title="Setup page Regattastart10" style="text-decoration: none; color: white;">
+                    Regattastart10 with image & number detection
+                </a>
+            </button>
         </div>
         <!-- header text -->
         <div style="text-align: center;" class="w3-panel w3-pale-blue">
