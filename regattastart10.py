@@ -13,6 +13,10 @@ from common_module import (
     process_video,
 )
 import sys
+import pytesseract
+import cv2
+from PIL import Image
+import numpy as np
 
 # The os.chdir('/home/pi/yolov5') and manual addition of venv_path to "
 # sys.path in your script may be unnecessary if the virtual environment "
@@ -37,7 +41,6 @@ from picamera2 import Picamera2
 import select
 import threading
 import time
-import cv2
 import torch
 import warnings
 import queue
@@ -54,7 +57,7 @@ signal_dur = 0.9  # 0.9 sec
 log_path = '/var/www/html/'
 video_path = '/var/www/html/images/'
 photo_path = '/var/www/html/images/'
-crop_width, crop_height = 1440, 1080 # Crop size for inference
+crop_width, crop_height = 1440, 1080  # Crop size for inference
 # gpio_handle, LAMP1, LAMP2, SIGNAL, = setup_gpio()
 listening = True  # Define the listening variable
 recording_stopped = False  # Global variable
@@ -190,6 +193,25 @@ def load_model_with_timeout(result_queue):
     except Exception as e:
         logger.error(f"Failed to load YOLOv5 model: {e}", exc_info=True)
         result_queue.put(e)  # Put the exception in the queue
+
+
+def extract_sail_number(frame, box):
+    x1, y1, x2, y2 = map(int, box)  # YOLO returns float
+    # Try to crop the upper part of the boat box where the sail number might be
+    h = y2 - y1
+    sail_crop = frame[max(0, y1 - h):y1, x1:x2]  # Region above the boat
+
+    # Preprocess the cropped image for better OCR
+    gray = cv2.cvtColor(sail_crop, cv2.COLOR_BGR2GRAY)
+    _, thresh = cv2.threshold(gray, 150, 255, cv2.THRESH_BINARY)
+
+    # Run OCR
+    custom_config = r'--oem 3 --psm 6'
+    text = pytesseract.image_to_string(thresh, config=custom_config)
+
+    if "SWE" in text:
+        print(f"Sail number detected: {text.strip()}")
+    return text.strip()
 
 
 def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, fps):
@@ -417,6 +439,13 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
                     cv2.rectangle(frame, (x1, y1), (x2, y2), colour, thickness)
                     cv2.putText(frame, detected_timestamp, (x1, y2 + 50),
                                 font, fontScale, colour, thickness)
+
+                    # Extract the sail number
+                    for det in results.xyxy[0]:  # For each detection
+                        cls = int(det[5])
+                        if model.names[cls] == 'boat':  # class for boats
+                            sail_number = extract_sail_number(frame, det[:4])
+                        logger.info(f"sailnumber: {sail_number} time: {detected_timestamp}")
 
                     if frame is not None:
                         video_writer.write(frame)
