@@ -59,7 +59,7 @@
 <!DOCTYPE html>
 <head>
     <meta charset="UTF-8">
-    <title> Regattastart9 image detection </title>
+    <title> Under Dev. Regattastart10 image & number detection</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="/w3.css">
     <!-- set styles -->
