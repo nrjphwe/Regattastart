@@ -206,8 +206,9 @@
                     Regattastart9 -- with image detection
                 </a>
             </button>
+             <!-- Link to index10 -->
             <button class="w3-button w3-border w3-small w3-round-large w3-hover-grey w3-red">
-                <a href="/index9.php" title="Setup page Regattastart10" style="text-decoration: none; color: white;">
+                <a href="/index10.php" title="Setup page Regattastart10 " style="text-decoration: none; color: white;">
                     Regattastart10 with image & number detection
                 </a>
             </button>
