@@ -53,6 +53,11 @@ echo 'KERNEL=="mem", MODE="0660"' | sudo tee -a /etc/udev/rules.d/99-mem.rules
 sudo mkdir -v -p /etc/udev/rules.d/99-gpioomem.rules
 echo 'KERNEL=="gpiomem", GROUP="gpio", MODE="0660"' | sudo tee -a /etc/udev/rules.d/99-gpiomem.rules
 
-echo "=> setup for video encoding...\n"
-sudo apt install -y gpac
+echo "=> setup for camera...\n"
+python3 -m venv yolov5_env
+python3 -m venv --system-site-packages yolov5_env
+source /home/pi/yolov5_env/bin/activate
+pip install opencv-contrib-python
+python3 -m pip install opencv-python
+deactivate
 
