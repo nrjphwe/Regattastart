@@ -138,7 +138,7 @@
 <div class="w3-container" style="text-align: center;">
     <!-- Content Wrapper with center alignment -->
     <div class="w3-margin w3-padding-large content-wrapper">
-        <form action="index9.php" method="POST">
+        <form action="index10.php" method="POST">
             <div class="w3-row-padding">
                 <!-- Left side content -->
                 <div class="w3-half">
@@ -273,8 +273,8 @@
 <footer>
     <div style="text-align: center;" class="w3-panel w3-grey">
         <?php
-            // output when index9.php was last modified.
-            $filename = 'index9.php';
+            // output when index10.php was last modified.
+            $filename = 'index10.php';
             if (file_exists($filename)) {
                 console_log( "This web-page: $filename was last modified: " . date ("Y-m-d H:i:s.", filemtime($filename)));
             }
