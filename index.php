@@ -71,7 +71,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <!-- <meta http-equiv="refresh" content="200" -->
     <title>Regattastart</title>
-    <link rel="icon" type="image/x-icon" href="/sailing-icon.ico">
+    <link rel="icon" type="image/x-icon" href="/sailing-icon.jpeg">
     <!-- JavaScript to dynamically add a placeholder text or an image to the page when -->
     <!-- there are no pictures available yet. -->
     <script> // JavaScript function showPlaceholder 
@@ -400,7 +400,8 @@
                 if ($video0Exists)
                 {
                     // wait with check until after the stop-recording button was pressed
-                    if ($video1Exists){
+                    if ($video1Exists)
+                    {
                         for ($x = 1; $x <= $num_video; $x++) 
                         {
                             $video_name = 'images/video' . $x . '.mp4';
@@ -417,13 +418,14 @@
                                     </div>';
                             }
                         }
-                    } elseif (file_exists($video_avi) && filesize($video_avi) > 10000) {
+                    } elseif (file_exists($video_avi) && filesize($video_avi) == 0 ) 
+                    {
                         // AVI exists but MP4 is not done or still 0 KB → still recording/detecting
                         # echo '<div style="width:640px;height:480px;display:flex;align-items:center;justify-content:center;background:#eee;border:1px solid #ccc;">
                         echo '<div style="display:flex;align-items:center;justify-content:center;background:#eee;border:1px solid #ccc;">
                             <p style="font-size:20px;color:#555;">Video being created...</p>
                             </div>';
-                            console_log("Video1.avi exist and filesize > 10000 = video beeing created");
+                            console_log("Video1.avi exist and filesize = 0, video beeing created");
                     } else {
                         // Neither usable .mp4 nor active .avi → nothing detected
                         echo '<div style="display:flex;align-items:center;justify-content:center;background:#eee;border:1px solid #ccc;">
