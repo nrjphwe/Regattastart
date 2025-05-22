@@ -124,8 +124,8 @@
 </div>
 <header>
     <div style="text-align: center;">
-        <div class="w3-container w3-green">
-            <h2>Regattastart9 with image detection </h2>
+        <div class="w3-container w3-red">
+            <h2>Regattastart10 with image & Number detection </h2>
         </div>
     </div>
     <div style="text-align: center;">
