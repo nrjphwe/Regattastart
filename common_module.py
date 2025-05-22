@@ -153,7 +153,8 @@ def capture_picture(camera, photo_path, file_name, rotate=False):
                 frame = cv2.rotate(frame, cv2.ROTATE_180)
 
             # Use this version for display and saved images
-            resized_for_display = letterbox(frame, (640, 480))
+            #resized_for_display = letterbox(frame, (640, 480))
+            resized_for_display = letterbox(frame, (1280, 960))
             cv2.imwrite(os.path.join(photo_path, file_name), resized_for_display)
             logger.debug(f"Saved resized_for_display size: {resized_for_display.shape}")
             # cv2.imwrite(os.path.join(photo_path, file_name), frame)
@@ -244,7 +245,8 @@ def process_video(video_path, input_file, output_file, frame_rate=None):
         return
     command = ["ffmpeg", "-i", source, "-vcodec", "libx264", "-crf", "23", "-preset", "ultrafast"]
 
-    vf_filters = ["scale=640:480"]
+    #vf_filters = ["scale=640:480"]
+    vf_filters = ["scale=1640:1232"]
     if frame_rate:
         vf_filters.append(f"fps={frame_rate}")
     command.extend(["-vf", ",".join(vf_filters)])
