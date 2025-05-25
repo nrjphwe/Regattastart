@@ -197,34 +197,37 @@ def load_model_with_timeout(result_queue):
 
 def extract_sail_number(frame, box):
     x1, y1, x2, y2 = map(int, box)  # YOLO returns float
-    # Try to crop the upper part of the boat box where the sail number might be
-    # h = y2 - y1
-
-    # sail_crop = frame[max(0, y1 - h):y1, x1:x2]  # Region above the boat
     w = x2 - x1
     h = y2 - y1
     # Focus on the upper 40% of the bounding box (main sail usually here)
     crop_y1 = max(0, y1 - int(0.2 * h))  # Allow some area above the box
     crop_y2 = y1 + int(0.4 * h)
 
-     # Focus on the central 60% horizontally
+    # Focus on the central 60% horizontally
     crop_x1 = x1 + int(0.2 * w)
     crop_x2 = x2 - int(0.2 * w)
+
+    # Ensure coordinates are within bounds
+    crop_y2 = min(crop_y2, frame.shape[0])
+    crop_x2 = min(crop_x2, frame.shape[1])
 
     # Crop and return
     sail_crop = frame[crop_y1:crop_y2, crop_x1:crop_x2]
 
     # Preprocess the cropped image for better OCR
     gray = cv2.cvtColor(sail_crop, cv2.COLOR_BGR2GRAY)
-    _, thresh = cv2.threshold(gray, 150, 255, cv2.THRESH_BINARY)
+    resized = cv2.resize(gray, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
+    blurred = cv2.GaussianBlur(resized, (3, 3), 0)
+    _, thresh = cv2.threshold(blurred, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
 
     # Run OCR
-    custom_config = r'--oem 3 --psm 6'
+    custom_config = r'--oem 3 --psm 6 -c tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
     text = pytesseract.image_to_string(thresh, config=custom_config)
 
     if "SWE" in text:
         logger.input(f"Sail number detected: {text.strip()}")
     return text.strip()
+    # return sail_number
 
 
 def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, fps):
@@ -458,7 +461,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
                         cls = int(det[5])
                         if model.names[cls] == 'boat':  # class for boats
                             sail_number = extract_sail_number(frame, det[:4])
-                        logger.info(f"sailnumber: {sail_number} time: {detected_timestamp}")
+                            logger.info(f"sailnumber: {sail_number} time: {detected_timestamp}")
 
                     if frame is not None:
                         video_writer.write(frame)
