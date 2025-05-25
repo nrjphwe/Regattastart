@@ -198,8 +198,21 @@ def load_model_with_timeout(result_queue):
 def extract_sail_number(frame, box):
     x1, y1, x2, y2 = map(int, box)  # YOLO returns float
     # Try to crop the upper part of the boat box where the sail number might be
+    # h = y2 - y1
+
+    # sail_crop = frame[max(0, y1 - h):y1, x1:x2]  # Region above the boat
+    w = x2 - x1
     h = y2 - y1
-    sail_crop = frame[max(0, y1 - h):y1, x1:x2]  # Region above the boat
+    # Focus on the upper 40% of the bounding box (main sail usually here)
+    crop_y1 = max(0, y1 - int(0.2 * h))  # Allow some area above the box
+    crop_y2 = y1 + int(0.4 * h)
+
+     # Focus on the central 60% horizontally
+    crop_x1 = x1 + int(0.2 * w)
+    crop_x2 = x2 - int(0.2 * w)
+
+    # Crop and return
+    sail_crop = frame[crop_y1:crop_y2, crop_x1:crop_x2]
 
     # Preprocess the cropped image for better OCR
     gray = cv2.cvtColor(sail_crop, cv2.COLOR_BGR2GRAY)
@@ -210,7 +223,7 @@ def extract_sail_number(frame, box):
     text = pytesseract.image_to_string(thresh, config=custom_config)
 
     if "SWE" in text:
-        print(f"Sail number detected: {text.strip()}")
+        logger.input(f"Sail number detected: {text.strip()}")
     return text.strip()
 
 
