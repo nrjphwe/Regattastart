@@ -503,7 +503,8 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
                         cls = int(det[5])
                         if model.names[cls] == 'boat':  # class for boats
                             sail_number = extract_sail_number(frame, det[:4])
-                            logger.info(f"sailnumber: {sail_number} time: {detected_timestamp}")
+                            if sail_number is not None:
+                                logger.info(f"sailnumber: {sail_number} time: {detected_timestamp}")
 
                     if frame is not None:
                         video_writer.write(frame)
