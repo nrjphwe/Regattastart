@@ -13,7 +13,6 @@ from common_module import (
     process_video,
 )
 import sys
-import pytesseract
 import cv2
 from PIL import Image
 import numpy as np
@@ -195,10 +194,32 @@ def load_model_with_timeout(result_queue):
         result_queue.put(e)  # Put the exception in the queue
 
 
+def correct_ocr_digits(text):
+    corrections = {
+        "I": "1",
+        "l": "1",   # lowercase L
+        "O": "0",
+        "Q": "0",
+        "S": "5",   # depending on font, this can be optional
+        "Z": "2",
+        "B": "8",
+        "G": "6",   # sometimes 'G' looks like '6' in OCR
+        "E": "3",   # if needed
+    }
+
+    corrected = ""
+    for char in text:
+        corrected += corrections.get(char, char)
+    return corrected
+
+
 def extract_sail_number(frame, box):
+    import pytesseract
+    import re
     x1, y1, x2, y2 = map(int, box)  # YOLO returns float
     w = x2 - x1
     h = y2 - y1
+
     # Focus on the upper 40% of the bounding box (main sail usually here)
     crop_y1 = max(0, y1 - int(0.2 * h))  # Allow some area above the box
     crop_y2 = y1 + int(0.4 * h)
@@ -211,7 +232,7 @@ def extract_sail_number(frame, box):
     crop_y2 = min(crop_y2, frame.shape[0])
     crop_x2 = min(crop_x2, frame.shape[1])
 
-    # Crop and return
+    # Crop region
     sail_crop = frame[crop_y1:crop_y2, crop_x1:crop_x2]
 
     # Preprocess the cropped image for better OCR
@@ -220,14 +241,35 @@ def extract_sail_number(frame, box):
     blurred = cv2.GaussianBlur(resized, (3, 3), 0)
     _, thresh = cv2.threshold(blurred, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
 
-    # Run OCR
+    # OCR with whitelist
     custom_config = r'--oem 3 --psm 6 -c tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
     text = pytesseract.image_to_string(thresh, config=custom_config)
 
-    if "SWE" in text:
-        logger.input(f"Sail number detected: {text.strip()}")
-    return text.strip()
-    # return sail_number
+    # Try structured detection: "SWE" on one line, number below
+    lines = text.splitlines()
+    sail_number = ""
+    for i, line in enumerate(lines):
+        line_upper = line.strip().upper()
+        if "SWE" in line_upper:
+            # Search next 1–2 lines for a likely number
+            for j in range(1, 3):
+                if i + j < len(lines):
+                    candidate = lines[i + j].strip()
+                    candidate = correct_ocr_digits(candidate)
+                    combined = f"{line_upper} {candidate}"
+                    match = re.search(r'SWE\s*\d{1,4}', combined)
+                    if match:
+                        sail_number = match.group(0).strip()
+                        break
+        if sail_number:
+            break
+
+    if not sail_number and "SWE" in text:
+        sail_number = "SWE"
+
+    if sail_number:
+        logger.info(f"Detected sail number: {sail_number}")
+        return sail_number   
 
 
 def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, fps):
