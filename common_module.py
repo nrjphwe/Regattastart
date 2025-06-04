@@ -99,7 +99,7 @@ def setup_camera():
             colour_space=ColorSpace.Srgb()  # OR ColorSpace.Sycc()
         )
         camera.configure(config)
-        logger.debug(f"size: {sensor_size}, format: BGR888")
+        logger.info(f"size: {sensor_size}, format: BGR888")
         return camera  # Add this line to return the camera object
     except Exception as e:
         logger.error(f"Failed to initialize camera: {e}")
