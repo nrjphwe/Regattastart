@@ -71,7 +71,7 @@ with open('/var/www/html/status.txt', 'w') as status_file:
     status_file.write("")
 
 
-def restart_camera(camera, resolution=(1640, 1232), fps=5):
+def restart_camera(camera, resolution=(1920, 1089), fps=5):
     time.sleep(2)  # Ensure the camera is fully released
     try:
         if camera is not None:
@@ -293,7 +293,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
         logger.error(f"Error while stopping camera: {e}")
         return
 
-    camera = restart_camera(camera, resolution=(1640, 1232), fps=fps)
+    camera = restart_camera(camera, resolution=(1920, 1080), fps=fps)
 
     # Confirm cam is initialized
     if camera is None:
@@ -331,8 +331,8 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
         x_start = max((frame_width - crop_width) // 2 + shift_offset, 50)
         y_start = max((frame_height - crop_height) // 2, 0)
 
-        if frame_size[0] != 1640 or frame_size[1] != 1232:
-            logger.error(f"Resolution mismatch! Expected (1640, 1232) but got {frame_size}.")
+        if frame_size[0] != 1920 or frame_size[1] != 1080:
+            logger.error(f"Resolution mismatch! Expected (1920, 1080) but got {frame_size}.")
         else:
             logger.debug("Resolution matches expected values.")
 
