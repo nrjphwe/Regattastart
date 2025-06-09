@@ -1,4 +1,4 @@
-#!/usr/bin/python3 -u
+#!/home/pi/yolov5_env/bin/python
 # after git pull, do: sudo cp regattastart6.py /usr/lib/cgi-bin/
 from common_module import (
     remove_picture_files,
@@ -27,16 +27,6 @@ photo_path = '/var/www/html/images/'
 logger.info("="*40)
 logger.info(f"Starting new regattastart6.py session at {dt.datetime.now()}")
 logger.info("="*40)
-
-# The os.chdir('/home/pi/yolov5') and manual addition of venv_path to "
-# sys.path in your script may be unnecessary if the virtual environment "
-# is correctly set up."
-# os.chdir('/home/pi/yolov5')
-
-# Manually add the virtual environment's site-packages directory to sys.path
-venv_path = "/home/pi/yolov5_env/lib/python3.11/site-packages"
-if venv_path not in sys.path:
-    sys.path.insert(0, venv_path)
 
 
 def finish_recording(camera, video_path, video_delay, num_video, video_dur, start_time_sec):
