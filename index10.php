@@ -36,8 +36,8 @@
         $_SESSION["form_data"] = $_POST;
 
         // Execute the Python script
-        #$command = 'python3 /usr/lib/cgi-bin/regattastart10.py ' . escapeshellarg(json_encode($_POST)) . ' > /var/www/html/output.txt 2>&1 &';
-        $command = '/home/pi/yolov5_env/bin/python /usr/lib/cgi-bin/regattastart10.py ' . escapeshellarg(json_encode($_POST)) . ' > /var/www/html/output.txt 2>&1 &';
+        $command = 'python3 /usr/lib/cgi-bin/regattastart10.py ' . escapeshellarg(json_encode($_POST)) . ' > /var/www/html/output.txt 2>&1 &';
+        #$command = '/home/pi/yolov5_env/bin/python /usr/lib/cgi-bin/regattastart10.py ' . escapeshellarg(json_encode($_POST)) . ' > /var/www/html/output.txt 2>&1 &';
 
         shell_exec($command);
         echo date('h:i:s') . "<br>";
