@@ -1,6 +1,6 @@
 #!/home/pi/yolov5_env/bin/python
 # after git pull, do: sudo cp regattastart6.py /usr/lib/cgi-bin/
-# Import necessary modules from the common_module
+
 from common_module import (
     remove_picture_files,
     remove_video_files,
