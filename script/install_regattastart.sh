@@ -60,5 +60,3 @@ source /home/pi/yolov5_env/bin/activate
 pip install opencv-contrib-python
 python3 -m pip install opencv-python
 deactivate
-
-sudo chown -R pi:www-data /home/pi/yolov5_env/bin/python
