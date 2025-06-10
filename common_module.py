@@ -245,7 +245,7 @@ def process_video(video_path, input_file, output_file, frame_rate=None):
         return
     command = ["ffmpeg", "-i", source, "-vcodec", "libx264", "-crf", "23", "-preset", "ultrafast"]
 
-    #vf_filters = ["scale=640:480"]
+    # vf_filters = ["scale=640:480"]
     vf_filters = ["scale=1640:1232"]
     if frame_rate:
         vf_filters.append(f"fps={frame_rate}")
