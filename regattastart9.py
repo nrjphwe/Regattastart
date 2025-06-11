@@ -13,17 +13,7 @@ from common_module import (
     process_video,
 )
 import sys
-
-# The os.chdir('/home/pi/yolov5') and manual addition of venv_path to "
-# sys.path in your script may be unnecessary if the virtual environment "
-# is correctly set up."
-# os.chdir('/home/pi/yolov5')
-"""
-# Manually add the virtual environment's site-packages directory to sys.path
-venv_path = "/home/pi/yolov5_env/lib/python3.11/site-packages"
-if venv_path not in sys.path:
-    sys.path.insert(0, venv_path)
-"""
+logger.info(f"Running with Python: {sys.executable}")
 
 # Use a deque to store the most recent frames in memory
 from collections import deque
@@ -54,7 +44,7 @@ signal_dur = 0.9  # 0.9 sec
 log_path = '/var/www/html/'
 video_path = '/var/www/html/images/'
 photo_path = '/var/www/html/images/'
-crop_width, crop_height = 1440, 1080 # Crop size for inference
+crop_width, crop_height = 1440, 1080  # Crop size for inference
 # gpio_handle, LAMP1, LAMP2, SIGNAL, = setup_gpio()
 listening = True  # Define the listening variable
 recording_stopped = False  # Global variable
