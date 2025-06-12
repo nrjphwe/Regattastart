@@ -207,7 +207,7 @@ def apply_timestamp(request):
         logger.error(f"Error in apply_timestamp: {e}", exc_info=True)
 
 
-def start_video_recording(camera, video_path, file_name, bitrate=2000000):
+def start_video_recording(camera, video_path, file_name, resolution = (1640, 1232), bitrate=2000000):
     """
     Start video recording using H264Encoder and with timestamp.
     """
@@ -216,7 +216,7 @@ def start_video_recording(camera, video_path, file_name, bitrate=2000000):
     encoder = H264Encoder(bitrate=bitrate)
 
     video_config = camera.create_video_configuration(
-        main={"size": (1640, 1232), "format": "BGR888"},
+        main={"size": resolution, "format": "BGR888"},
         transform=Transform(hflip=True, vflip=True),  # Rotate 180-degree
         controls={"FrameRate": 5}
         )
