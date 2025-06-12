@@ -86,7 +86,7 @@ def remove_video_files(directory, pattern):
             os.remove(file_path)
 
 
-def setup_camera():
+def setup_camera(resolution=(1640, 1232)):
     global logger  # Explicitly declare logger as global
     try:
         camera = Picamera2()
@@ -95,11 +95,11 @@ def setup_camera():
         camera.stop()  # Stop the camera if it is running
         # Configure the camera
         config = camera.create_still_configuration(
-            main={"size": (sensor_size), "format": "BGR888"},
+            main={"size": (resolution), "format": "BGR888"},
             colour_space=ColorSpace.Srgb()  # OR ColorSpace.Sycc()
         )
         camera.configure(config)
-        logger.info(f"size: {sensor_size}, format: BGR888")
+        logger.info(f"size: {resolution}, format: BGR888")
         return camera  # Add this line to return the camera object
     except Exception as e:
         logger.error(f"Failed to initialize camera: {e}")
