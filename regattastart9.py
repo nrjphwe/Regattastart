@@ -33,6 +33,7 @@ import cv2
 import torch
 import warnings
 import queue
+import pandas
 
 warnings.filterwarnings(
     "ignore",
