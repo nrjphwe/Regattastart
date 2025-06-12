@@ -495,7 +495,7 @@ def stop_listen_thread():
 def main():
     stop_event = threading.Event()
     global listening  # Declare listening as global
-    camera = setup_camera(1920, 1080)  # Initialize camera with specified resolution
+    camera = setup_camera((1920, 1080))  # Initialize camera with specified resolution
     if camera is None:
         logger.error("Camera setup failed, exiting.")
         exit()
