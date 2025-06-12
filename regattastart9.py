@@ -495,7 +495,7 @@ def stop_listen_thread():
 def main():
     stop_event = threading.Event()
     global listening  # Declare listening as global
-    camera = setup_camera((1920, 1080))  # Initialize camera with specified resolution
+    camera = setup_camera(1920, 1080)  # Initialize camera with specified resolution
     if camera is None:
         logger.error("Camera setup failed, exiting.")
         exit()
@@ -543,7 +543,7 @@ def main():
                     if num_starts == 1 or num_starts == 2:
                         # Start video recording just before 5 minutes before the first start
                         logger.debug("Start of video0 recording")
-                        start_video_recording(camera, video_path, "video0.h264", bitrate=2000000)
+                        start_video_recording(camera, video_path, resolution=(1920,1080), "video0.h264", bitrate=2000000)
                         logger.debug("Inner loop, entering the start sequence block.")
                         start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo_path)
                         if num_starts == 2:
