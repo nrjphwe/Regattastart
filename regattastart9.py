@@ -33,6 +33,7 @@ import queue
 import pandas
 import site
 import gc
+import atexit
 import sys
 sys.path.append('/home/pi/yolov5')  # Adjust as needed
 logger.info(f"Running with Python: {sys.executable}")
@@ -537,6 +538,9 @@ def stop_listen_thread():
     # Log a message indicating that the listen_thread has been stopped
     logger.info("stop_listening thread  listening set to False")
 
+def clean_exit():
+    logger.info("Forced exit with os._exit(0)")
+    os._exit(0)
 
 def main():
     stop_event = threading.Event()
@@ -647,9 +651,6 @@ def main():
             except Exception as e:
                 logger.error(f"Error while cleaning up camera: {e}")
 
-            # GPIO.cleanup(gpio_handle)
-            # logger.debug("After GPIO.cleanup, end of program")
-
             # clean up threads
             for thread in threading.enumerate():
                 if thread is not threading.current_thread():
@@ -658,7 +659,6 @@ def main():
             # force GC and exit
             gc.collect()
             logger.info("Exiting cleanly")
-            sys.exit(0)
 
             # Log the end of the program
             logger.info("Program has ended")
@@ -673,3 +673,5 @@ if __name__ == "__main__":
         logger.error(f"An unhandled exception occurred: {e}", exc_info=True)
     finally:
         logger.info("Exiting program")
+        atexit.register(clean_exit)
+        sys.exit(0)  # Now clean_exit() is guaranteed to run after this
