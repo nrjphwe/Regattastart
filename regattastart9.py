@@ -427,13 +427,6 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
             results = model(input_tensor)  # Inference
             detections = non_max_suppression(results, conf_thres=0.25, iou_thres=0.45)[0]
 
-            # detections = results.pandas().xyxy[0]  # Results as a DataFrame
-
-            # Parse the detection results
-            # for _, row in detections.iterrows():
-            #    class_name = row['name']
-            #    confidence = row['confidence']
-
             if detections is not None and len(detections):
                 for *xyxy, conf, cls in detections:
                     x1, y1, x2, y2 = map(int, xyxy)
@@ -540,14 +533,25 @@ def stop_listen_thread():
     # Log a message indicating that the listen_thread has been stopped
     logger.info("stop_listening thread  listening set to False")
 
+
 def clean_exit():
     logger.info("Forced exit with os._exit(0)")
     os._exit(0)
 
+
 def main():
     stop_event = threading.Event()
     global listening  # Declare listening as global
-    camera = setup_camera((1920, 1080))  # Initialize camera with specified resolution
+    try:
+        if cpu_model and "Raspberry Pi 3" in cpu_model:
+            camera = setup_camera((1280, 720))  # Initialize camera
+        elif cpu_model and "Raspberry Pi 5" in cpu_model:
+            camera = setup_camera((1920, 1080))  # Initialize camera
+        else:
+            camera = setup_camera((1640, 1232))  # Initialize camera
+    except Exception as e:
+        logger.error(f"Failed to fins CPU model: {e}", exc_info=True)
+
     if camera is None:
         logger.error("Camera setup failed, exiting.")
         exit()
