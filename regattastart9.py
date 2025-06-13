@@ -25,7 +25,7 @@ from collections import deque
 from datetime import datetime, timedelta
 import datetime as dt
 import json
-# import numpy as np # image recognition
+import numpy as np # image recognition
 from libcamera import Transform
 from libcamera import ColorSpace
 from picamera2 import Picamera2
