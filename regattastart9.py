@@ -48,7 +48,6 @@ warnings.filterwarnings(
 fps = 5
 cpu_model = get_cpu_model()
 
-print(f"Detected: {cpu_model}, using {yolov_model} with interval {inference_interval}")
 signal_dur = 0.9  # 0.9 sec
 log_path = '/var/www/html/'
 video_path = '/var/www/html/images/'
@@ -61,7 +60,6 @@ recording_stopped = False  # Global variable
 logger.info("="*40)
 logger.info(f"Starting new regattastart9.py session at {dt.datetime.now()}")
 logger.info("="*40)
-
 # reset the contents of the status variable, used for flagging that
 # video1-conversion is complete.
 with open('/var/www/html/status.txt', 'w') as status_file:
@@ -188,10 +186,10 @@ def load_model_with_timeout(result_queue):
             # inference_interval = 2.0  # seconds between inferences
             yolov_model = "yolov5n"   # lighter model
         elif "Raspberry Pi 5" in cpu_model:
-            #inference_interval = 0.5  # more frequent
+            # inference_interval = 0.5  # more frequent
             yolov_model = "yolov5s"
         else:
-            inference_interval = 1.0
+            # inference_interval = 1.0
             yolov_model = "yolov5s"
 
         from models.common import DetectMultiBackend
