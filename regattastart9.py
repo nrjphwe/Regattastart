@@ -11,8 +11,11 @@ from common_module import (
     logger,
     text_rectangle,
     process_video,
+    get_cpu_model,
 )
 import sys
+sys.path.append('/home/pi/yolov5')  # Adjust as needed
+
 logger.info(f"Running with Python: {sys.executable}")
 import site
 site.ENABLE_USER_SITE = False
@@ -43,6 +46,9 @@ warnings.filterwarnings(
 )
 # parameter data
 fps = 5
+cpu_model = get_cpu_model()
+
+print(f"Detected: {cpu_model}, using {yolov_model} with interval {inference_interval}")
 signal_dur = 0.9  # 0.9 sec
 log_path = '/var/www/html/'
 video_path = '/var/www/html/images/'
@@ -178,8 +184,19 @@ def cleanup_processed_timestamps(processed_timestamps, threshold_seconds=30):
 # function to load the YOLOv5 model
 def load_model_with_timeout(result_queue):
     try:
+        if "Raspberry Pi 4" in cpu_model:
+            # inference_interval = 2.0  # seconds between inferences
+            yolov_model = "yolov5n"   # lighter model
+        elif "Raspberry Pi 5" in cpu_model:
+            #inference_interval = 0.5  # more frequent
+            yolov_model = "yolov5s"
+        else:
+            inference_interval = 1.0
+            yolov_model = "yolov5s"
+
         from models.common import DetectMultiBackend
-        model_path = "/var/www/html/yolov5s.pt"
+        model_path = "/var/www/html/" + yolov_model + ".pt"  # Path to the YOLOv5 model file
+        logger.info(f"Loading YOLOv5 model from {model_path} for {cpu_model} with model {yolov_model}")
         device = 'cpu'
         model = DetectMultiBackend(model_path, device=device)
         # model = torch.hub.load('/home/pi/yolov5', 'yolov5s', source='local', force_reload=True)
