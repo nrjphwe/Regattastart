@@ -182,7 +182,7 @@ def cleanup_processed_timestamps(processed_timestamps, threshold_seconds=30):
 # function to load the YOLOv5 model
 def load_model_with_timeout(result_queue):
     try:
-        if cpu_model and "Raspberry Pi 4" in cpu_model:
+        if cpu_model and "Raspberry Pi 3" in cpu_model:
             # inference_interval = 2.0  # seconds between inferences
             yolov_model = "yolov5n"   # lighter model
         elif cpu_model and "Raspberry Pi 5" in cpu_model:
