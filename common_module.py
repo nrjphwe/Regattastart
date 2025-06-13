@@ -345,31 +345,27 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
             time_now = dt.datetime.now()
             seconds_since_midnight = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
 
-            # if seconds_since_midnight >= start_time_sec:
-                # break  # Exit the loop if the condition is met
-
             all_triggered = all((event_time, log_message) in last_triggered_events for event_time, _, log_message in time_intervals)
             if all_triggered:
+                logger.info("All events triggered, exiting loop.")
                 break
-
-            for event_time, action, log_message in time_intervals:
+            
+            for idx, (event_time, action, log_message) in enumerate(time_intervals):
+            # for event_time, action, log_message in time_intervals:
                 # time_now = dt.datetime.now()
-                seconds_now = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
-
-                if event_time <= seconds_now < event_time + 2 and (event_time, log_message) not in last_triggered_events:
-                    # if seconds_now == event_time:
-
-                    if (event_time, log_message) not in last_triggered_events:
-                        logger.info(f"Start_sequence: {log_message} at {event_time}")
-                        if action:
-                            action()
-                        if "Signal" in log_message:
-                            picture_name = f"{i + 1}a_start_{log_message[:5]}.jpg"
-                            capture_picture(camera, photo_path, picture_name)
-                            time.sleep(0.1)
-                        logger.info(f"Start_sequence, log_message: {log_message}")
-                        last_triggered_events.add((event_time, log_message))
-                        logger.info(f'event_time: {event_time}, log_message: {log_message}')
+                # seconds_now = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
+                if event_time <= seconds_since_midnight < event_time + 2 and (event_time, log_message) not in last_triggered_events:
+                    logger.info(f"Start_sequence: {log_message} at {event_time}")
+                    if action:
+                        action()
+                    if "Signal" in log_message:
+                        picture_name = f"{idx + 1}a_start_{log_message[:5]}.jpg"
+                        capture_picture(camera, photo_path, picture_name)
+                        time.sleep(0.1)
+                    logger.info(f"Start_sequence, log_message: {log_message}")
+                    last_triggered_events.add((event_time, log_message))
+                    logger.info(f'event_time: {event_time}, log_message: {log_message}')
+                time.sleep(0.1)  # avoid busy loop
 
         logger.info(f"Start_sequence, End of iteration: {i+1}")
     cleanup_gpio(gpio_handle)  # Clean up GPIO after each iteration
