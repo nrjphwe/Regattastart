@@ -205,12 +205,21 @@ def load_model_with_timeout(result_queue):
         result_queue.put(e)  # Put the exception in the queue
 
 
-def prepare_input(img):
+def prepare_input(img, device='cpu'):
+    """
+    Prepares an image for YOLOv5 inference.
+    Assumes input is a NumPy image in BGR format (from OpenCV).
+    """
     if isinstance(img, np.ndarray):
-        img = torch.from_numpy(img).permute(2, 0, 1).float() / 255.0  # (3, H, W)
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)  # Convert to RGB
+        img = np.ascontiguousarray(img)             # Ensure it's contiguous
+        img = torch.from_numpy(img).permute(2, 0, 1).float()  # (3, H, W)
+        img /= 255.0                                 # Normalize to [0, 1]
+
     if img.ndim == 3:
         img = img.unsqueeze(0)  # (1, 3, H, W)
-    return img
+
+    return img.to(device)
 
 
 def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, fps):
@@ -406,13 +415,12 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
             # The cropped frame will cover pixels from (520, 180) to (1800, 900) 
             # of the original frame.
             cropped_frame = frame[y_start:y_start + crop_height, x_start:x_start + crop_width]
-            # logger.debug(f"cropped frame shape: {cropped_frame.shape}")
+            # Resize the cropped frame to the inference size
             resized_frame = cv2.resize(cropped_frame, (inference_width, inference_height))
-            # before calling the model
-            input_tensor = prepare_input(resized_frame)
-            results = model(input_tensor)
-            # Use resized_frame for YOLO detection instead of full frame
-            # results = model(resized_frame)
+    
+            input_tensor = prepare_input(resized_frame, device='cpu')
+            # logger.debug(f"Input tensor shape: {input_tensor.shape}, dtype: {input_tensor.dtype}")
+            results = model(input_tensor)  # Inference
 
             detections = results.pandas().xyxy[0]  # Results as a DataFrame
 
