@@ -11,11 +11,7 @@ from picamera2 import Picamera2, MappedArray
 from picamera2.encoders import H264Encoder
 import RPi.GPIO as GPIO
 import cv2
-
 import lgpio
-import platform
-
-
 
 # Initialize global variables
 logger = None
