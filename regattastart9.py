@@ -178,8 +178,12 @@ def cleanup_processed_timestamps(processed_timestamps, threshold_seconds=30):
 # function to load the YOLOv5 model
 def load_model_with_timeout(result_queue):
     try:
+        from models.common import DetectMultiBackend
+        model_path = "/var/www/html/yolov5s.pt"
+        device = 'cpu'
+        model = DetectMultiBackend(model_path, device=device)
         # model = torch.hub.load('/home/pi/yolov5', 'yolov5s', source='local', force_reload=True)
-        model = torch.hub.load('/home/pi/yolov5', 'custom', path='/var/www/html/yolov5s.pt', source='local')
+        # model = torch.hub.load('/home/pi/yolov5', 'custom', path='/var/www/html/yolov5s.pt', source='local')
         result_queue.put(model)  # Put the model in the queue
     except Exception as e:
         logger.error(f"Failed to load YOLOv5 model: {e}", exc_info=True)
