@@ -423,33 +423,38 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
             # logger.debug(f"Input tensor shape: {input_tensor.shape}, dtype: {input_tensor.dtype}")
             results = model(input_tensor)  # Inference
             detections = non_max_suppression(results, conf_thres=0.25, iou_thres=0.45)[0]
+
             # detections = results.pandas().xyxy[0]  # Results as a DataFrame
 
             # Parse the detection results
-            for _, row in detections.iterrows():
-                class_name = row['name']
-                confidence = row['confidence']
+            # for _, row in detections.iterrows():
+            #    class_name = row['name']
+            #    confidence = row['confidence']
 
-                if confidence > 0.3 and class_name == 'boat':
-                    origin = (50, max(50, frame_height - 100))  # Position on frame
-                    font = cv2.FONT_HERSHEY_DUPLEX
-                    text_rectangle(frame, (f'{capture_timestamp.strftime("%Y-%m-%d, %H:%M:%S")}'), origin)
-                    boat_in_current_frame = True
-                    # logger.debug(f"Confidence {confidence:.2f}, capture_timestamp = {capture_timestamp}")
-                    detected_timestamp = datetime.now().strftime("%H:%M:%S")
-                    # detected_timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")  # timestamp (with microseconds)
-                    # logger.debug(f"Detected_timestamp={detected_timestamp}")
+            if detections is not None and len(detections):
+                for *xyxy, conf, cls in detections:
+                    x1, y1, x2, y2 = map(int, xyxy)
+                    confidence = float(conf)
+                    class_id = int(cls)
+                    class_name = model.names[class_id] if hasattr(model, 'names') else str(class_id)
+                    label = f"{class_name} {confidence:.2f}"
 
-                    #  Adjust the bounding box coordinates to reflect the original frame
-                    x1 = int(row['xmin'] * scale_x) + x_start
-                    y1 = int(row['ymin'] * scale_y) + y_start
-                    x2 = int(row['xmax'] * scale_x) + x_start
-                    y2 = int(row['ymax'] * scale_y) + y_start
+                    if confidence > 0.3 and class_name == 'boat':
+                        origin = (50, max(50, frame_height - 100))  # Position on frame
+                        font = cv2.FONT_HERSHEY_DUPLEX
+                        text_rectangle(frame, (f'{capture_timestamp.strftime("%Y-%m-%d, %H:%M:%S")}'), origin)
+                        boat_in_current_frame = True
+                        detected_timestamp = datetime.now().strftime("%H:%M:%S")
 
-                    # Draw bounding box and label on the frame
-                    cv2.rectangle(frame, (x1, y1), (x2, y2), colour, thickness)
-                    cv2.putText(frame, detected_timestamp, (x1, y2 + 50),
-                                font, fontScale, colour, thickness)
+                        # Adjust the bounding box coordinates to the original frame
+                        x1_orig = int(x1 * scale_x) + x_start
+                        y1_orig = int(y1 * scale_y) + y_start
+                        x2_orig = int(x2 * scale_x) + x_start
+                        y2_orig = int(y2 * scale_y) + y_start
+
+                        # Draw bounding box and timestamp label on frame
+                        cv2.rectangle(frame, (x1_orig, y1_orig), (x2_orig, y2_orig), colour, thickness)
+                        cv2.putText(frame, detected_timestamp, (x1_orig, y2_orig + 50), font, fontScale, colour, thickness)
 
                     if frame is not None:
                         video_writer.write(frame)
