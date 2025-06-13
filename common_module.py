@@ -72,11 +72,17 @@ setup_logging()
 def get_cpu_model():
     try:
         with open("/proc/cpuinfo", "r") as f:
-            for line in f:
-                if "Model" in line or "model name" in line or "Hardware" in line:
-                    # Return the first matching line
+            lines = f.readlines()
+            for line in lines:
+                if any(key in line for key in ("Model", "model name", "Hardware")) and ":" in line:
                     return line.strip().split(":")[1].strip()
-    except Exception:
+            # Fallback if no match
+            logger.warning("No matching CPU model line found. Dumping /proc/cpuinfo:")
+            for line in lines:
+                logger.warning(line.strip())
+            return "Unknown"
+    except Exception as e:
+        logger.error(f"Exception while reading /proc/cpuinfo: {e}")
         return "Unknown"
 
 
