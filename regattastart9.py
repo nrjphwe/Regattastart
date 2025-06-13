@@ -223,6 +223,7 @@ def prepare_input(img, device='cpu'):
 
 
 def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, fps):
+    from utils.general import non_max_suppression
     global recording_stopped
     confidence = 0.0  # Initial value
     class_name = ""  # Initial value
@@ -417,12 +418,12 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
             cropped_frame = frame[y_start:y_start + crop_height, x_start:x_start + crop_width]
             # Resize the cropped frame to the inference size
             resized_frame = cv2.resize(cropped_frame, (inference_width, inference_height))
-    
+
             input_tensor = prepare_input(resized_frame, device='cpu')
             # logger.debug(f"Input tensor shape: {input_tensor.shape}, dtype: {input_tensor.dtype}")
             results = model(input_tensor)  # Inference
-
-            detections = results.pandas().xyxy[0]  # Results as a DataFrame
+            detections = non_max_suppression(results, conf_thres=0.25, iou_thres=0.45)[0]
+            # detections = results.pandas().xyxy[0]  # Results as a DataFrame
 
             # Parse the detection results
             for _, row in detections.iterrows():
