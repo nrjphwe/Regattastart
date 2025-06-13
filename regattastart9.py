@@ -48,6 +48,7 @@ warnings.filterwarnings(
 # parameter data
 fps = 5
 cpu_model = get_cpu_model()
+logger.info(f"Detected CPU model string: '{cpu_model}'")
 
 signal_dur = 0.9  # 0.9 sec
 log_path = '/var/www/html/'
