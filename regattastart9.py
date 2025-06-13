@@ -185,7 +185,7 @@ def load_model_with_timeout(result_queue):
         if cpu_model and "Raspberry Pi 4" in cpu_model:
             # inference_interval = 2.0  # seconds between inferences
             yolov_model = "yolov5n"   # lighter model
-        elif "Raspberry Pi 5" in cpu_model:
+        elif cpu_model and "Raspberry Pi 5" in cpu_model:
             # inference_interval = 0.5  # more frequent
             yolov_model = "yolov5s"
         else:
