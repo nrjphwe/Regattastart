@@ -13,19 +13,13 @@ from common_module import (
     process_video,
     get_cpu_model,
 )
-import sys
-sys.path.append('/home/pi/yolov5')  # Adjust as needed
-
-logger.info(f"Running with Python: {sys.executable}")
-import site
-site.ENABLE_USER_SITE = False
 
 # Use a deque to store the most recent frames in memory
 from collections import deque
 from datetime import datetime, timedelta
 import datetime as dt
 import json
-import numpy as np # image recognition
+import numpy as np  # image recognition
 from libcamera import Transform
 from libcamera import ColorSpace
 from picamera2 import Picamera2
@@ -37,6 +31,12 @@ import torch
 import warnings
 import queue
 import pandas
+import site
+import gc
+import sys
+sys.path.append('/home/pi/yolov5')  # Adjust as needed
+logger.info(f"Running with Python: {sys.executable}")
+site.ENABLE_USER_SITE = False
 
 warnings.filterwarnings(
     "ignore",
@@ -635,6 +635,16 @@ def main():
 
             # GPIO.cleanup(gpio_handle)
             # logger.debug("After GPIO.cleanup, end of program")
+
+            # clean up threads
+            for thread in threading.enumerate():
+                if thread is not threading.current_thread():
+                    thread.join(timeout=1)
+
+            # force GC and exit
+            gc.collect()
+            logger.info("Exiting cleanly")
+            sys.exit(0)
 
             # Log the end of the program
             logger.info("Program has ended")
