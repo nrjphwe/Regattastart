@@ -73,7 +73,8 @@ def get_cpu_model():
     try:
         with open("/proc/cpuinfo", "r") as f:
             for line in f:
-                if "model name" in line:
+                if "Model" in line or "model name" in line or "Hardware" in line:
+                    # Return the first matching line
                     return line.strip().split(":")[1].strip()
     except Exception:
         return "Unknown"
