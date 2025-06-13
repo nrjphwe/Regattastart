@@ -13,6 +13,9 @@ import RPi.GPIO as GPIO
 import cv2
 
 import lgpio
+import platform
+
+
 
 # Initialize global variables
 logger = None
@@ -68,6 +71,16 @@ def setup_logging():
 
 # Initialize logging immediately when the module is imported
 setup_logging()
+
+
+def get_cpu_model():
+    try:
+        with open("/proc/cpuinfo", "r") as f:
+            for line in f:
+                if "model name" in line:
+                    return line.strip().split(":")[1].strip()
+    except Exception:
+        return "Unknown"
 
 
 def remove_picture_files(directory, pattern):
