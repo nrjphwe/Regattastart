@@ -205,6 +205,14 @@ def load_model_with_timeout(result_queue):
         result_queue.put(e)  # Put the exception in the queue
 
 
+def prepare_input(img):
+    if isinstance(img, np.ndarray):
+        img = torch.from_numpy(img).permute(2, 0, 1).float() / 255.0  # (3, H, W)
+    if img.ndim == 3:
+        img = img.unsqueeze(0)  # (1, 3, H, W)
+    return img
+
+
 def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, fps):
     global recording_stopped
     confidence = 0.0  # Initial value
@@ -264,7 +272,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
         x_start = max((frame_width - crop_width) // 2 + shift_offset, 50)
         y_start = max((frame_height - crop_height) // 2, 0)
 
-        if frame_size != (1920,1080):
+        if frame_size != (1920, 1080):
             logger.error(f"Resolution mismatch! Expected (1920, 1080) but got {frame_size}.")
         else:
             logger.debug("Resolution matches expected values.")
@@ -400,8 +408,11 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
             cropped_frame = frame[y_start:y_start + crop_height, x_start:x_start + crop_width]
             # logger.debug(f"cropped frame shape: {cropped_frame.shape}")
             resized_frame = cv2.resize(cropped_frame, (inference_width, inference_height))
+            # before calling the model
+            input_tensor = prepare_input(resized_frame)
+            results = model(input_tensor)
             # Use resized_frame for YOLO detection instead of full frame
-            results = model(resized_frame)
+            # results = model(resized_frame)
 
             detections = results.pandas().xyxy[0]  # Results as a DataFrame
 
