@@ -364,7 +364,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
     logger.debug(f"Crop aspect: {aspect_crop:.2f}, Inference aspect: {aspect_infer:.2f}")
     logger.debug(f"inference_width, inference_height = {inference_width, inference_height}")
     logger.debug(f"crop_width, crop_height = {crop_width, crop_height}")
-    logger.debug(f"scale_x = {scale_x}, scale_y= {scale_y}")
+    logger.debug(f"scale_x = {scale_x}, scale_y = {scale_y}")
 
     # Base scale text size and thickness
     base_fontScale = 0.9  # Default font size at 640x480
@@ -390,7 +390,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
 
             if previous_capture_time:
                 time_diff = (capture_timestamp - previous_capture_time).total_seconds()
-                # logger.debug(f"Time since last frame: {time_diff:.3f} sec")
+                logger.debug(f"Time since last frame: {time_diff:.3f} sec")
 
             previous_capture_time = capture_timestamp  # Update for next iteration
 
