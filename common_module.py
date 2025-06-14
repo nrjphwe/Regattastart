@@ -358,11 +358,12 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
                     logger.info(f"Start_sequence: {log_message} at {event_time}")
                     if action:
                         action()
-                    if "Signal" in log_message:
-                        picture_number = i * len(time_intervals) + idx + 1
-                        picture_name = f"{picture_number}a_start_{log_message[:5]}.jpg"
+                    if any(key in log_message for key in ["5_min", "4_min", "1_min", "Start"]):
+                        trigger_label = log_message.split()[0]  # This extracts "5_min", "4_min", "1_min", or "Start"
+                        picture_name = f"{i + 1}a_start_{trigger_label}.jpg"
                         capture_picture(camera, photo_path, picture_name)
                         time.sleep(0.1)  # Avoid busy loop
+                    # Capture a picture if the log message contains "Signal"p
                     logger.info(f"Start_sequence, log_message: {log_message}")
                     last_triggered_events.add((event_time, log_message))
                     logger.info(f'event_time: {event_time}, log_message: {log_message}')
