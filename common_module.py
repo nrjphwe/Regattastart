@@ -317,27 +317,25 @@ def cleanup_gpio(handle):
         logger.error(f"Error while cleaning up GPIO: {e}")
 
 
-def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo_path):
+def start_sequence(camera, this_start , num_starts, dur_between_starts, photo_path):
     gpio_handle, SIGNAL, LAMP1, LAMP2 = setup_gpio()
+
     for i in range(num_starts):
         logger.info(f"Start_sequence. Start of iteration {i+1}")
-        this_start = start_time_sec + i * dur_between_starts * 60
 
-        # Adjust the start_time_sec for the second iteration
-        # if i == 1:
-        #    start_time_sec += dur_between_starts * 60  # Add 5 or 10 minutes for the second iteration
-        #    logger.info(f"Start_sequence, Next start_time_sec: {start_time_sec}")
+        this_start = this_start  + i * dur_between_starts * 60
+        logger.info(f"Start_sequence, this_this_start : {this_start}")
 
         # Define time intervals for each relay trigger
         time_intervals = [
-            (start_time_sec - 5 * 60, lambda: trigger_relay(gpio_handle, LAMP1, "on"), "5_min Lamp1 ON -- Flag P UP"),
-            (start_time_sec - 5 * 60 + 1, lambda: trigger_relay(gpio_handle, SIGNAL, "on", 2), "5_min Warning Signal"),
-            (start_time_sec - 4 * 60 - 2, lambda: trigger_relay(gpio_handle, LAMP2, "on"), "4_min Lamp2 ON"),
-            (start_time_sec - 4 * 60, lambda: trigger_relay(gpio_handle, SIGNAL, "on", 2), "4_min Preparation Signal"),
-            (start_time_sec - 1 * 60 - 2, lambda: trigger_relay(gpio_handle, LAMP2, "off"), "1_min Lamp2 OFF -- Flag P DOWN"),
-            (start_time_sec - 1 * 60, lambda: trigger_relay(gpio_handle, SIGNAL, "on", 2), "1_min Signal"),
-            (start_time_sec - 2, lambda: trigger_relay(gpio_handle, LAMP1, "off"), "Lamp1 OFF at Start"),
-            (start_time_sec, lambda: trigger_relay(gpio_handle, SIGNAL, "on", 1), "Start Signal"),
+            (this_start  - 5 * 60, lambda: trigger_relay(gpio_handle, LAMP1, "on"), "5_min Lamp1 ON -- Flag P UP"),
+            (this_start  - 5 * 60 + 1, lambda: trigger_relay(gpio_handle, SIGNAL, "on", 2), "5_min Warning Signal"),
+            (this_start  - 4 * 60 - 2, lambda: trigger_relay(gpio_handle, LAMP2, "on"), "4_min Lamp2 ON"),
+            (this_start  - 4 * 60, lambda: trigger_relay(gpio_handle, SIGNAL, "on", 2), "4_min Preparation Signal"),
+            (this_start  - 1 * 60 - 2, lambda: trigger_relay(gpio_handle, LAMP2, "off"), "1_min Lamp2 OFF -- Flag P DOWN"),
+            (this_start  - 1 * 60, lambda: trigger_relay(gpio_handle, SIGNAL, "on", 2), "1_min Signal"),
+            (this_start  - 2, lambda: trigger_relay(gpio_handle, LAMP1, "off"), "Lamp1 OFF at Start"),
+            (this_start , lambda: trigger_relay(gpio_handle, SIGNAL, "on", 1), "Start Signal"),
         ]
 
         last_triggered = set()
@@ -360,8 +358,9 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
                 if abs(seconds_now - event_time) <= 1 and (event_time, label) not in last_triggered:
                     logger.info(f"Triggering: {label} at {event_time}")
                     action()
-                    if label in ["5_min", "4_min", "1_min", "Start"]:
-                        image_name = f"{i+1}a_start_{label}.jpg"
+                    if any(k in label for k in ["5_min", "4_min", "1_min", "Start"]):
+                        trigger_label = label.split()[0]  # "5_min", "4_min", etc.
+                        image_name = f"{i+1}a_start_{trigger_label}.jpg"
                         capture_picture(camera, photo_path, image_name)
                         time.sleep(0.1)
                     last_triggered.add((event_time, label))
@@ -369,4 +368,5 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
             time.sleep(0.1)
 
         logger.info(f"Start_sequence, End of iteration: {i+1}")
+        
     cleanup_gpio(gpio_handle)  # Clean up GPIO after each iteration
