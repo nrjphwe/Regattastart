@@ -321,10 +321,12 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
     gpio_handle, SIGNAL, LAMP1, LAMP2 = setup_gpio()
     for i in range(num_starts):
         logger.info(f"Start_sequence. Start of iteration {i+1}")
+        this_start = start_time_sec + i * dur_between_starts * 60
+
         # Adjust the start_time_sec for the second iteration
-        if i == 1:
-            start_time_sec += dur_between_starts * 60  # Add 5 or 10 minutes for the second iteration
-            logger.info(f"Start_sequence, Next start_time_sec: {start_time_sec}")
+        # if i == 1:
+        #    start_time_sec += dur_between_starts * 60  # Add 5 or 10 minutes for the second iteration
+        #    logger.info(f"Start_sequence, Next start_time_sec: {start_time_sec}")
 
         # Define time intervals for each relay trigger
         time_intervals = [
@@ -338,36 +340,33 @@ def start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo
             (start_time_sec, lambda: trigger_relay(gpio_handle, SIGNAL, "on", 1), "Start Signal"),
         ]
 
-        # last_triggered_events = {}
-        last_triggered_events = set()
+        last_triggered = set()
+        timeout_seconds = this_start + 30  # fail-safe timeout
 
         while True:
-            time_now = dt.datetime.now()
-            seconds_since_midnight = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
+            now = dt.datetime.now()
+            seconds_now = now.hour * 3600 + now.minute * 60 + now.second
 
-            all_triggered = all((event_time, log_message) in last_triggered_events for event_time, _, log_message in time_intervals)
-            if all_triggered:
-                logger.info("All events triggered, exiting loop.")
+            if seconds_now > timeout_seconds:
+                logger.warning(f"Start_sequence: Timeout reached for iteration {i+1}")
                 break
 
-            for idx, (event_time, action, log_message) in enumerate(time_intervals):
-                # for event_time, action, log_message in time_intervals:
-                # time_now = dt.datetime.now()
-                # seconds_now = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
-                if event_time <= seconds_since_midnight < event_time + 2 and (event_time, log_message) not in last_triggered_events:
-                    logger.info(f"Start_sequence: {log_message} at {event_time}")
-                    if action:
-                        action()
-                    if any(key in log_message for key in ["5_min", "4_min", "1_min", "Start"]):
-                        trigger_label = log_message.split()[0]  # This extracts "5_min", "4_min", "1_min", or "Start"
-                        picture_name = f"{i + 1}a_start_{trigger_label}.jpg"
-                        capture_picture(camera, photo_path, picture_name)
-                        time.sleep(0.1)  # Avoid busy loop
-                    # Capture a picture if the log message contains "Signal"p
-                    logger.info(f"Start_sequence, log_message: {log_message}")
-                    last_triggered_events.add((event_time, log_message))
-                    logger.info(f'event_time: {event_time}, log_message: {log_message}')
-                time.sleep(0.1)  # avoid busy loop
+            all_done = all((t, l) in last_triggered for t, _, l in time_intervals)
+            if all_done:
+                logger.info(f"Start_sequence: All events triggered for iteration {i+1}")
+                break
+
+            for event_time, action, label in time_intervals:
+                if abs(seconds_now - event_time) <= 1 and (event_time, label) not in last_triggered:
+                    logger.info(f"Triggering: {label} at {event_time}")
+                    action()
+                    if label in ["5_min", "4_min", "1_min", "Start"]:
+                        image_name = f"{i+1}a_start_{label}.jpg"
+                        capture_picture(camera, photo_path, image_name)
+                        time.sleep(0.1)
+                    last_triggered.add((event_time, label))
+
+            time.sleep(0.1)
 
         logger.info(f"Start_sequence, End of iteration: {i+1}")
     cleanup_gpio(gpio_handle)  # Clean up GPIO after each iteration
