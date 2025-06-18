@@ -301,10 +301,10 @@
     });
 
     function toggleSecondOption(numStarts, containerElement) {
-        if (numStarts == 2) {
-            containerElement.style.display = 'block';
-        } else {
+        if (numStarts == 1) {
             containerElement.style.display = 'none';
+        } else {
+            containerElement.style.display = 'block';
         }
     }
 </script>
