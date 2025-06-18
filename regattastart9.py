@@ -602,8 +602,8 @@ def main():
                         start_video_recording(camera, video_path, "video0.h264", resolution=(1920,1080),  bitrate=2000000)
                         logger.debug("Inner loop, entering the start sequence block.")
                         start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo_path)
-                        if num_starts == 2:
-                            start_time_sec = start_time_sec + (dur_between_starts * 60)
+                        if num_starts != 1:
+                            start_time_sec = start_time_sec + (dur_between_starts * 60) * num_starts
                         logger.debug("Wait 2 minutes then stop video0 recording")
                         t0 = dt.datetime.now()
                         logger.debug(f"t0 = {t0}, dt.datetime.now(): {dt.datetime.now()}")
