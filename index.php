@@ -157,10 +157,9 @@
         if (isset($video_end)) {
             // Convert $start_time to minutes
             list($start_hour, $start_minute) = explode(':', $start_time);
-            $start_time_minutes = $start_hour * 60 + $start_minute;
-
+    
             // Add video_end (duration after start) and additional 2 minutes
-            $video_end_time_minutes = $start_time_minutes + $video_end + 2;
+            $video_end_time_minutes = $start_time_minutes + $video_end + 2 + $dur_between_starts * ($num_starts - 1);
 
             // Convert video end time back to HH:MM format
             $video_end_hour = floor($video_end_time_minutes / 60);
