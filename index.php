@@ -144,6 +144,26 @@
                 echo ", 2nd Start at: $second_start_time";
             }
         }
+        if ($num_starts == 3) {
+            if (isset($dur_between_starts)) {
+                echo ", Duration between starts: $dur_between_starts min";
+
+                // Convert start time to minutes
+                list($start_hour, $start_minute) = explode(':', $start_time);
+                $start_time_minutes = $start_hour * 60 + $start_minute;
+
+                // Calculate third start time in minutes
+                $third_start_time_minutes = $start_time_minutes + $dur_between_starts * 2;
+
+                // Convert third start time back to hours and minutes
+                $third_start_hour = floor($third_start_time_minutes / 60);
+                $third_start_minute = $third_start_time_minutes % 60;
+
+                // Format sthird start time
+                $third_start_time = sprintf('%02d:%02d', $third_start_hour, $third_start_minute);
+                echo ", 3rd Start at: $third_start_time";
+            }
+        }
         if (isset($video_dur)) {
             echo "<br>";
             echo " Video duration: $video_dur min,"  ;
