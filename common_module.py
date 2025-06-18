@@ -232,7 +232,8 @@ def start_video_recording(camera, video_path, file_name, resolution=(1640, 1232)
     encoder = H264Encoder(bitrate=bitrate)
 
     video_config = camera.create_video_configuration(
-        main={"size": resolution, "format": "BGR888"},
+        main={"size": (1920, 1080), "format": "BGR888"},
+        raw={"size": resolution, "format": "BGR888"},
         transform=Transform(hflip=True, vflip=True),  # Rotate 180-degree
         controls={"FrameRate": 5}
         )
@@ -269,7 +270,6 @@ def process_video(video_path, input_file, output_file, frame_rate=None):
 
     #  Add pixel format for consistent output
     command.extend(["-pix_fmt", "yuv420p"])
-
     command.extend(["-y", dest])  # Add output destination
 
     try:
