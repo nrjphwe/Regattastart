@@ -124,45 +124,30 @@
         echo "<p style='font-size:12px'>";
         echo " First start at: " . $start_time;
         echo ", Number of starts= $num_starts";
+        echo ", Duration between starts: $dur_between_starts min";
+        // Convert start time to minutes
+        list($start_hour, $start_minute) = explode(':', $start_time);
+        $start_time_minutes = $start_hour * 60 + $start_minute;
+
+    
         if ($num_starts == 2) {
-            if (isset($dur_between_starts)) {
-                echo ", Duration between starts: $dur_between_starts min";
-
-                // Convert start time to minutes
-                list($start_hour, $start_minute) = explode(':', $start_time);
-                $start_time_minutes = $start_hour * 60 + $start_minute;
-
-                // Calculate second start time in minutes
-                $second_start_time_minutes = $start_time_minutes + $dur_between_starts;
-
-                // Convert second start time back to hours and minutes
-                $second_start_hour = floor($second_start_time_minutes / 60);
-                $second_start_minute = $second_start_time_minutes % 60;
-
-                // Format second start time
-                $second_start_time = sprintf('%02d:%02d', $second_start_hour, $second_start_minute);
-                echo ", 2nd Start at: $second_start_time";
-            }
+            // Calculate second start time in minutes
+            $second_start_time_minutes = $start_time_minutes + $dur_between_starts * 1;
+            // Convert second start time back to hours and minutes
+            $second_start_hour = floor($second_start_time_minutes / 60);
+            $second_start_minute = $second_start_time_minutes % 60;
+            $second_start_time = sprintf('%02d:%02d', $second_start_hour, $second_start_minute);
+            echo ", 2nd Start at: $second_start_time";
         }
         if ($num_starts == 3) {
-            if (isset($dur_between_starts)) {
-                echo ", Duration between starts: $dur_between_starts min";
-
-                // Convert start time to minutes
-                list($start_hour, $start_minute) = explode(':', $start_time);
-                $start_time_minutes = $start_hour * 60 + $start_minute;
-
-                // Calculate third start time in minutes
-                $third_start_time_minutes = $start_time_minutes + $dur_between_starts * 2;
-
-                // Convert third start time back to hours and minutes
-                $third_start_hour = floor($third_start_time_minutes / 60);
-                $third_start_minute = $third_start_time_minutes % 60;
-
-                // Format sthird start time
-                $third_start_time = sprintf('%02d:%02d', $third_start_hour, $third_start_minute);
-                echo ", 3rd Start at: $third_start_time";
-            }
+             // Calculate third start time in minutes
+            $third_start_time_minutes = $start_time_minutes + $dur_between_starts * 2;
+            // Convert third start time back to hours and minutes
+            $third_start_hour = floor($third_start_time_minutes / 60);
+            $third_start_minute = $third_start_time_minutes % 60;
+            // Format third start time
+            $third_start_time = sprintf('%02d:%02d', $third_start_hour, $third_start_minute);
+            echo ", 3rd Start at: $third_start_time";
         }
         if (isset($video_dur)) {
             echo "<br>";
