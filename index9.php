@@ -225,11 +225,13 @@
             <div class="w3-row-padding">
                 <div class="w3-round w3-light-grey w3-cell">
                     <fieldset>
-                        <legend> Setup of 1 or 2 starts </legend>
+                        <legend> Setup of number of starts 1..4 </legend>
                         <p></p>
                         Number of starts: <select name="num_starts" id="num_starts">
                             <option <?php if(isset($num_starts) && $num_starts == "1"){echo "selected=\"selected\"";} ?> value="1">1</option>
                             <option <?php if(isset($num_starts) && $num_starts == "2"){echo "selected=\"selected\"";} ?> value="2">2</option>
+                            <option <?php if(isset($num_starts) && $num_starts == "3"){echo "selected=\"selected\"";} ?> value="3">3</option>
+                            <option <?php if(isset($num_starts) && $num_starts == "4"){echo "selected=\"selected\"";} ?> value="4">4</option>
                         </select>
                         <p></p>
                         <!-- Option that should be hidden when only one start -->
