@@ -295,7 +295,7 @@
         <!-- Display pictures for the 2nd start -->
         <div style="text-align: center;">
             <?php
-                if ($num_starts == 2)
+                //if ($num_starts == 2)
                 {
                     $filename = '1a_start_Start.jpg';
                     $imagePath = 'images/' . $filename; // Relative path
