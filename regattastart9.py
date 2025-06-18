@@ -596,7 +596,7 @@ def main():
                     logger.debug("Start of outer loop iteration. seconds_since_midnight=%d", seconds_since_midnight)
                     logger.debug("start_time_sec=%d", start_time_sec)
 
-                    if num_starts == 1 or num_starts == 2:
+                    if num_starts == 1 or num_starts == 2 or num_starts == 3:
                         # Start video recording just before 5 minutes before the first start
                         logger.debug("Start of video0 recording")
                         start_video_recording(camera, video_path, "video0.h264", resolution=(1920,1080),  bitrate=2000000)
