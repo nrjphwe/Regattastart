@@ -238,7 +238,7 @@ def start_video_recording(camera, video_path, file_name, resolution=(1640, 1232)
         controls={"FrameRate": 5}
         )
     camera.configure(video_config)  # Configure before starting recording
-
+    logger.info(f"video_config {video_config}, resolution: {resolution}, bitrate: {bitrate}")
     # Set the pre_callback to apply the timestamp AFTER configuration
     logger.debug("Setting pre_callback to apply_timestamp")
     camera.pre_callback = apply_timestamp
@@ -368,5 +368,5 @@ def start_sequence(camera, this_start , num_starts, dur_between_starts, photo_pa
             time.sleep(0.1)
 
         logger.info(f"Start_sequence, End of iteration: {i+1}")
-        
+    
     cleanup_gpio(gpio_handle)  # Clean up GPIO after each iteration
