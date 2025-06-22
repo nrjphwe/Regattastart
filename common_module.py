@@ -223,6 +223,48 @@ def apply_timestamp(request):
         logger.error(f"Error in apply_timestamp: {e}", exc_info=True)
 
 
+def restart_camera(camera, resolution=(1640, 1232), fps=5):
+    time.sleep(2)  # Ensure the camera is fully released
+    try:
+        if camera is not None:
+            camera.stop()
+            camera.close()
+            logger.info("Previous camera instance stopped and closed.")
+        time.sleep(2)  # Ensure the camera is fully released
+
+        camera = Picamera2()
+        logger.info("New Picamera2 instance created.")
+        time.sleep(2)
+
+        # List available sensor modes
+        sensor_modes = camera.sensor_modes
+        if not sensor_modes:
+            logger.error("No sensor modes available. Camera may not be detected!")
+            return None
+
+        # Find a sensor mode that best matches the requested resolution
+        best_mode = min(sensor_modes, key=lambda m: abs(m["size"][0] - resolution[0]) + abs(m["size"][1] - resolution[1]))
+        logger.debug(f"Using sensor mode: {best_mode}")
+
+        config = camera.create_video_configuration(
+            # main={"size": best_mode["size"], "format": "BGR888"},
+            main={"size": best_mode["size"], "format": "RGB888"},
+            transform=Transform(hflip=True, vflip=True),
+            colour_space=ColorSpace.Srgb()  # OR ColorSpace.Sycc()
+        )
+        camera.set_controls({"FrameRate": fps})
+        logger.debug(f"Config before applying: {config}")
+        camera.configure(config)
+
+        camera.start()
+        logger.info(f"Camera restarted with best mode resolution {best_mode['size']} and FPS: {fps}.")
+        return camera  # Return new camera instance
+
+    except Exception as e:
+        logger.error(f"Failed to restart camera: {e}")
+        return None  # Avoid using an uninitialized camera
+
+
 def start_video_recording(camera, video_path, file_name, resolution=(1640, 1232), bitrate=2000000):
     """
     Start video recording using H264Encoder and with timestamp.
@@ -316,7 +358,7 @@ def cleanup_gpio(handle):
         logger.error(f"Error while cleaning up GPIO: {e}")
 
 
-def start_sequence(camera, this_start , num_starts, dur_between_starts, photo_path):
+def start_sequence(camera, this_start, num_starts, dur_between_starts, photo_path):
     gpio_handle, SIGNAL, LAMP1, LAMP2 = setup_gpio()
 
     for i in range(num_starts):
