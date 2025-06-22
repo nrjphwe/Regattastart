@@ -233,7 +233,6 @@ def start_video_recording(camera, video_path, file_name, resolution=(1640, 1232)
 
     video_config = camera.create_video_configuration(
         main={"size": resolution, "format": "BGR888"},
-        # raw={"size": resolution, "format": "BGR888"},
         transform=Transform(hflip=True, vflip=True),  # Rotate 180-degree
         controls={"FrameRate": 5}
         )
@@ -258,7 +257,7 @@ def process_video(video_path, input_file, output_file, frame_rate=None):
     source = os.path.join(video_path, input_file)
     dest = os.path.join(video_path, output_file)
     if not os.path.exists(source) or os.path.getsize(source) <= 5000:
-        logger.debug(f"Warning: {input_file} is empty or does not exist. Skipping conversion.")
+        logger.info(f"Warning: {input_file} is empty or does not exist. Skipping conversion.")
         return
     command = ["ffmpeg", "-i", source, "-vcodec", "libx264", "-crf", "23", "-preset", "ultrafast"]
 
