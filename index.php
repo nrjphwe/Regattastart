@@ -126,7 +126,7 @@
         echo ", Number of starts= $num_starts";
         // Convert start time to minutes
         list($start_hour, $start_minute) = explode(':', $start_time);
-        $start_time_minutes = int($start_hour) * 60 + int($start_minute);
+        $start_time_minutes = intval($start_hour) * 60 + intval($start_minute);
 
         if ($num_starts >= 2) {
             echo ", Duration between starts: $dur_between_starts min";
