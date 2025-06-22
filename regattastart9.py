@@ -5,6 +5,7 @@ from common_module import (
     setup_camera,
     remove_picture_files,
     remove_video_files,
+    restart_camera,
     start_video_recording,
     start_sequence,
     stop_video_recording,
@@ -66,48 +67,6 @@ logger.info("="*40)
 # video1-conversion is complete.
 with open('/var/www/html/status.txt', 'w') as status_file:
     status_file.write("")
-
-
-def restart_camera(camera, resolution=(1640, 1232), fps=5):
-    time.sleep(2)  # Ensure the camera is fully released
-    try:
-        if camera is not None:
-            camera.stop()
-            camera.close()
-            logger.info("Previous camera instance stopped and closed.")
-        time.sleep(2)  # Ensure the camera is fully released
-
-        camera = Picamera2()
-        logger.info("New Picamera2 instance created.")
-        time.sleep(2)
-
-        # List available sensor modes
-        sensor_modes = camera.sensor_modes
-        if not sensor_modes:
-            logger.error("No sensor modes available. Camera may not be detected!")
-            return None
-
-        # Find a sensor mode that best matches the requested resolution
-        best_mode = min(sensor_modes, key=lambda m: abs(m["size"][0] - resolution[0]) + abs(m["size"][1] - resolution[1]))
-        logger.info(f"Using sensor mode: {best_mode}")
-
-        config = camera.create_video_configuration(
-            # main={"size": best_mode["size"], "format": "BGR888"},
-            main={"size": best_mode["size"], "format": "RGB888"},
-            transform=Transform(hflip=True, vflip=True),
-            colour_space=ColorSpace.Srgb()  # OR ColorSpace.Sycc()
-        )
-        camera.set_controls({"FrameRate": fps})
-        logger.debug(f"Config before applying: {config}")
-        camera.configure(config)
-
-        camera.start()
-        logger.info(f"Camera restarted with best mode resolution {best_mode['size']} and FPS: {fps}.")
-        return camera  # Return new camera instance
-
-    except Exception as e:
-        logger.error(f"Failed to restart camera: {e}")
-        return None  # Avoid using an uninitialized camera
 
 
 def stop_recording():
@@ -542,6 +501,8 @@ def clean_exit():
 def main():
     stop_event = threading.Event()
     global listening  # Declare listening as global
+    listening = True  # Initialize the global listening flag
+    listen_thread = None  # Initialize listen_thread variable
     try:
         if cpu_model and "Raspberry Pi 3" in cpu_model:
             camera = setup_camera((1280, 720))  # Initialize camera
@@ -555,8 +516,6 @@ def main():
     if camera is None:
         logger.error("Camera setup failed, exiting.")
         exit()
-    listening = True  # Initialize the global listening flag
-    listen_thread = None  # Initialize listen_thread variable
 
     # Check if a command-line argument (JSON data) is provided
     if len(sys.argv) < 2:
