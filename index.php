@@ -124,12 +124,12 @@
         echo "<p style='font-size:12px'>";
         echo " First start at: " . $start_time;
         echo ", Number of starts= $num_starts";
-        echo ", Duration between starts: $dur_between_starts min";
         // Convert start time to minutes
         list($start_hour, $start_minute) = explode(':', $start_time);
         $start_time_minutes = $start_hour * 60 + $start_minute;
 
         if ($num_starts >= 2) {
+            echo ", Duration between starts: $dur_between_starts min";
             // Calculate second start time in minutes
             $second_start_time_minutes = $start_time_minutes + $dur_between_starts * 1;
             // Convert second start time back to hours and minutes
