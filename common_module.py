@@ -295,7 +295,7 @@ def stop_video_recording(cam):
     logger.info("Recording stopped and camera fully released.")
 
 
-def process_video(video_path, input_file, output_file, frame_rate=None):
+def process_video(video_path, input_file, output_file, frame_rate=None, resolution=(1640, 1232)):
     source = os.path.join(video_path, input_file)
     dest = os.path.join(video_path, output_file)
     if not os.path.exists(source) or os.path.getsize(source) <= 5000:
@@ -304,7 +304,7 @@ def process_video(video_path, input_file, output_file, frame_rate=None):
     command = ["ffmpeg", "-i", source, "-vcodec", "libx264", "-crf", "23", "-preset", "ultrafast"]
 
     # vf_filters = ["scale=640:480"]
-    vf_filters = ["scale=1640:1232"]
+    vf_filters = ["scale={}:{}".format(resolution[0], resolution[1])]
     if frame_rate:
         vf_filters.append(f"fps={frame_rate}")
     command.extend(["-vf", ",".join(vf_filters)])
