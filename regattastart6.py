@@ -50,7 +50,7 @@ def finish_recording(camera, video_path, video_delay, num_video, video_dur, star
             time.sleep(0.5)  # was 0.5
 
         stop_video_recording(camera)
-        process_video(video_path, video, f"video{i}.mp4", frame_rate=30)
+        process_video(video_path, video, f"video{i}.mp4", frame_rate=30,resolution=(1640, 1232))
     logger.info("This was the last recorded video =====")
 
 
