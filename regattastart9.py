@@ -89,7 +89,7 @@ def restart_camera(camera, resolution=(1640, 1232), fps=5):
 
         # Find a sensor mode that best matches the requested resolution
         best_mode = min(sensor_modes, key=lambda m: abs(m["size"][0] - resolution[0]) + abs(m["size"][1] - resolution[1]))
-        logger.debug(f"Using sensor mode: {best_mode}")
+        logger.info(f"Using sensor mode: {best_mode}")
 
         config = camera.create_video_configuration(
             # main={"size": best_mode["size"], "format": "BGR888"},
