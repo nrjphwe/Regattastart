@@ -572,7 +572,7 @@ def main():
                             time.sleep(0.2)  # Small delay to reduce CPU usage
                         stop_video_recording(camera)
                         logger.debug("Stopping video0 recording")
-                        process_video(video_path, "video0.h264", "video0.mp4", frame_rate=30)
+                        process_video(video_path, "video0.h264", "video0.mp4", frame_rate=30,resolution=(1640, 1232))
                         logger.info("Video0 converted to mp4")
                     break  # Exit the loop after the if condition is met
                 time.sleep(1)  # Introduce a delay of 2 seconds
@@ -598,7 +598,7 @@ def main():
                 logger.info("listen_thread finished")
 
             time.sleep(2)
-            process_video(video_path, "video1.avi", "video1.mp4")
+            process_video(video_path, "video1.avi", "video1.mp4", frame_rate=30,resolution=(1920, 1080))
 
             # After video conversion is complete
             with open('/var/www/html/status.txt', 'w') as status_file:
