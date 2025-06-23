@@ -9,7 +9,7 @@
     ini_set('session.gc_maxlifetime', 86400); // 24 hours
     session_set_cookie_params(86400); // 24 hours
     if (session_status() === PHP_SESSION_NONE) {
-        session_id("regattastart10");
+        session_id("regattastart");
         session_start();
     }
 
