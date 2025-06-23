@@ -5,17 +5,21 @@
 
     define('APP_VERSION', '25.05.20'); // You can replace '1.0.0' with your desired version number
 
-    // Set session lifetime to a day (86400 seconds)
-    ini_set('session.gc_maxlifetime', 86400); // 24 hours
-    session_set_cookie_params(86400); // 24 hours
-    if (session_status() === PHP_SESSION_NONE) {
-        session_id("regattastart");
-        session_start();
+    $custom_session_path = '/home/pi/php_sessions';
+    if (!file_exists($custom_session_path)) {
+        mkdir($custom_session_path, 0777, true);
     }
+    session_save_path($custom_session_path);
 
-    ini_set('display_errors', 1);
-    error_reporting(E_ALL);
-    
+    // These must be set BEFORE session_start()
+    ini_set('session.gc_maxlifetime', 86400);
+    ini_set('session.cookie_lifetime', 86400);
+    session_set_cookie_params(86400);
+
+    // Use consistent session ID if sharing sessions across pages
+    session_id("regattastart");
+    session_start();
+
     // Check if the session is already started
     print_r($_SESSION);
     echo "<br/>";
