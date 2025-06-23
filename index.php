@@ -1,23 +1,24 @@
 <?php
-    // /var/log/php_error.log
     header("Access-Control-Allow-Origin: *");
     header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
     header("Access-Control-Allow-Headers: *");
     // after "git pull", "sudo cp /home/pi/Regattastart/index.php /var/www/html/"
     define('APP_VERSION', '2025.05.20'); // You can replace '1.0.0' with your desired version number
 
-    if (session_status() !== PHP_SESSION_ACTIVE) {
-        // Set session parameters
-        ini_set('session.gc_maxlifetime', 86400); // 24 hours
-        session_set_cookie_params(86400); // 24 hours
-        ini_set('session.cookie_lifetime', 86400);
+    $custom_session_path = '/home/pi/php_sessions';
+    if (!file_exists($custom_session_path)) {
+        mkdir($custom_session_path, 0777, true);
     }
-    if (session_status() === PHP_SESSION_NONE) {
-        ini_set('session.gc_maxlifetime', 86400); // 24 hours
-        session_set_cookie_params(86400); // 24 hours
-        session_id("regattastart");
-        session_start();
-    }
+    session_save_path($custom_session_path);
+
+    // These must be set BEFORE session_start()
+    ini_set('session.gc_maxlifetime', 86400);
+    ini_set('session.cookie_lifetime', 86400);
+    session_set_cookie_params(86400);
+
+    // Use consistent session ID if sharing sessions across pages
+    session_id("regattastart");
+    session_start();
 
     // echo "The cached session pages expire after $cache_expire minutes";
     // echo "<br/>";
