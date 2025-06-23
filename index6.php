@@ -1,14 +1,21 @@
 <?php
-    define('APP_VERSION', '2025.05.20'); // You can replace '1.0.0' with your desired version number
-    // Start the session
+    header("Access-Control-Allow-Origin: *");
+    header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+    header("Access-Control-Allow-Headers: *");
+
+    define('APP_VERSION', '25.05.20'); // You can replace '1.0.0' with your desired version number
+
+    // Set session lifetime to a day (86400 seconds)
     ini_set('session.gc_maxlifetime', 86400); // 24 hours
     session_set_cookie_params(86400); // 24 hours
     if (session_status() === PHP_SESSION_NONE) {
         session_id("regattastart");
         session_start();
     }
+
     ini_set('display_errors', 1);
     error_reporting(E_ALL);
+    
     // Check if the session is already started
     print_r($_SESSION);
     echo "<br/>";
