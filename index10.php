@@ -15,7 +15,7 @@
 
     ini_set('display_errors', 1);
     error_reporting(E_ALL);
-    
+
     // Check if the session is already started
     print_r($_SESSION);
     echo "<br/>";
