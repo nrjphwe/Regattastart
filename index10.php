@@ -5,7 +5,7 @@
 
     define('APP_VERSION', '25.05.20'); // You can replace '1.0.0' with your desired version number
 
-    $custom_session_path = '/home/pi/php_sessions';
+    $custom_session_path = '/var/www/php_sessions';
     if (!file_exists($custom_session_path)) {
         mkdir($custom_session_path, 0777, true);
     }
