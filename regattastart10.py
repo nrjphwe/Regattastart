@@ -16,8 +16,6 @@ from common_module import (
 )
 import sys
 import cv2
-from PIL import Image
-import numpy as np
 
 # The os.chdir('/home/pi/yolov5') and manual addition of venv_path to "
 # sys.path in your script may be unnecessary if the virtual environment "
@@ -36,9 +34,6 @@ from datetime import datetime, timedelta
 import datetime as dt
 import json
 # import numpy as np # image recognition
-from libcamera import Transform
-from libcamera import ColorSpace
-from picamera2 import Picamera2
 import select
 import threading
 import time
@@ -233,7 +228,7 @@ def extract_sail_number(frame, box):
 
     if sail_number:
         logger.info(f"Detected sail number: {sail_number}")
-        return sail_number   
+        return sail_number
 
 
 def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, fps):
@@ -303,7 +298,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
     except Exception as e:
         logger.error(f"Unhandled exception occurred: {e}", exc_info=True)
         return
-    logger.debug(f"Frame size used to crop for inference calculated, size: {crop_width}x{crop_height}")  
+    logger.debug(f"Frame size used to crop for inference calculated, size: {crop_width}x{crop_height}")
 
     # Set the camera to the desired resolution and frame rate
     fpsw = fps
@@ -426,7 +421,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
 
         # Perform inference only on every x frame
         if frame_counter % 4 == 0:  # every frame from 4 to 8
-            # The cropped frame will cover pixels from (520, 180) to (1800, 900) 
+            # The cropped frame will cover pixels from (520, 180) to (1800, 900)
             # of the original frame.
             cropped_frame = frame[y_start:y_start + crop_height, x_start:x_start + crop_width]
             # logger.debug(f"cropped frame shape: {cropped_frame.shape}")
@@ -597,8 +592,8 @@ def main():
         logger.info("Weekday=%s, Start_time=%s, video_end=%s, num_starts=%s", week_day, start_time.strftime("%H:%M"), video_end, num_starts)
 
         if wd == week_day:
-            # A loop that waits until close to the 5-minute mark, and 
-            # continuously checks the condition without blocking the 
+            # A loop that waits until close to the 5-minute mark, and
+            # continuously checks the condition without blocking the
             # execution completely
             while True:
                 now = dt.datetime.now()
