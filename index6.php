@@ -15,14 +15,13 @@
 
     ini_set('display_errors', 1);
     error_reporting(E_ALL);
-    
+
     // Check if the session is already started
     print_r($_SESSION);
     echo "<br/>";
     print_r($_POST);
     echo "<br/>";
-?>
-<?php
+
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Process and store the form data
         $_SESSION["form_data"] = $_POST;
@@ -39,7 +38,7 @@
         exit;
     }
     $day = date("l");
-    $start_time = "18:25"; // You need to initialize $start_time
+    // $start_time = "18:25"; // You need to initialize $start_time
     $video_delay = isset($_SESSION["form_data"]["video_delay"]) ? $_SESSION["form_data"]["video_delay"] : "";
     $video_dur = isset($_SESSION["form_data"]["video_dur"]) ? $_SESSION["form_data"]["video_dur"] : "";
     $num_video = isset($_SESSION["form_data"]["num_video"]) ? $_SESSION["form_data"]["num_video"] : "";
