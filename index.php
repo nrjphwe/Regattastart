@@ -126,9 +126,13 @@
         echo "<p style='font-size:12px'>";
         echo " First start at: " . $start_time;
         echo ", Number of starts= $num_starts";
-        // Convert start time to minutes
-        list($start_hour, $start_minute) = explode(':', $start_time);
-        $start_time_minutes = intval($start_hour) * 60 + intval($start_minute);
+        if (!empty($start_time) && strpos($start_time, ':') !== false) {
+            list($start_hour, $start_minute) = explode(':', $start_time);
+            $start_time_minutes = intval($start_hour) * 60 + intval($start_minute);
+        } else {
+            echo "<br><strong>Warning:</strong> Invalid or missing start time.";
+            $start_time_minutes = 0; // Default or fallback value
+        }
 
         if ($num_starts >= 2) {
             echo ", Duration between starts: $dur_between_starts min";
