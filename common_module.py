@@ -304,13 +304,14 @@ def process_video(video_path, input_file, output_file, frame_rate=None, resoluti
     command = ["ffmpeg", "-i", source, "-vcodec", "libx264", "-crf", "23", "-preset", "ultrafast"]
 
     # vf_filters = ["scale=640:480"]
-    vf_filters = ["scale={}:{}".format(resolution[0], resolution[1])]
+    vf_filters = [f"scale={resolution[0]}:{resolution[1]}:in_range=full:out_range=tv"]
     if frame_rate:
         vf_filters.append(f"fps={frame_rate}")
     command.extend(["-vf", ",".join(vf_filters)])
 
     #  Add pixel format for consistent output
     command.extend(["-pix_fmt", "yuv420p"])
+    # Overwrite output and set destination
     command.extend(["-y", dest])  # Add output destination
 
     try:
