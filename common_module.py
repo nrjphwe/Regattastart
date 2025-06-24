@@ -301,9 +301,7 @@ def process_video(video_path, input_file, output_file, frame_rate=None, resoluti
     if not os.path.exists(source) or os.path.getsize(source) <= 5000:
         logger.info(f"Warning: {input_file} is empty or does not exist. Skipping conversion.")
         return
-    command = ["ffmpeg", "-i", source, "-vcodec", "libx264", "-crf", "23", "-preset", "ultrafast"]
-
-    # vf_filters = ["scale=640:480"]
+    command = ["ffmpeg", "-i", source, "-vcodec", "libx264", "-crf", "23", "-preset", "+faststart"]
     vf_filters = [f"scale={resolution[0]}:{resolution[1]}:in_range=full:out_range=tv"]
     if frame_rate:
         vf_filters.append(f"fps={frame_rate}")
