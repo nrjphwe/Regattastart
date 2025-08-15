@@ -210,8 +210,8 @@
                             <p></p>
                             End for the finish video, duration from last start:
                             <select name = "video_end" id = "video_end">
+                                <option value="300" <?php if(isset($video_end) && $video_end == "300"){echo "selected=\"selected\"";} ?> value="300">300</option>
                                 <option value="180" <?php if(isset($video_end) && $video_end == "180"){echo "selected=\"selected\"";} ?> value="180">180</option>
-                                <option value="120" <?php if(isset($video_end) && $video_end == "120"){echo "selected=\"selected\"";} ?> value="120">120</option>
                                 <option value="90" <?php if(isset($video_end) && $video_end == "90"){echo "selected=\"selected\"";} ?> value="90">90</option>
                                 <option value="60" <?php if(isset($video_end) && $video_end == "60"){echo "selected=\"selected\"";} ?> value="60">60</option>
                                 <option value="20"  value="20">20</option>
@@ -244,6 +244,7 @@
                             <select name="dur_between_starts" id="dur_between_starts">
                                 <option <?php if(isset($dur_between_starts) && $dur_between_starts == "5"){echo "selected=\"selected\"";} ?> value="5">5</option>
                                 <option <?php if(isset($dur_between_starts) && $dur_between_starts == "10"){echo "selected=\"selected\"";} ?> value="10">10</option>
+                                <option <?php if(isset($dur_between_starts) && $dur_between_starts == "10"){echo "selected=\"selected\"";} ?> value="10">15</option>
                             </select>
                         </div>
                     </fieldset>
