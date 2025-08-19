@@ -213,8 +213,8 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
         logger.error("Camera restart failed, exiting.")
         return  # Prevents crashing if camera restart fails
 
+    # Attempt to capture a frame
     try:
-        # Attempt to capture a frame
         logger.debug("Attempting to capture the first frame.")
         frame = camera.capture_array()
         if frame is None:
@@ -235,8 +235,8 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
         logger.error(f"Exception occurred while accessing frame size: {e}", exc_info=True)
         return
 
+    # Define crop data to maintain the square (1:1) aspect ratio
     try:
-        # Define crop data to maintain the square (1:1) aspect ratio
         logger.debug("calculate crop data for the frame.")
         shift_offset = 100  # horisontal offset for crop -> right part
         # Get dimensions of the full-resolution frame (1640x1232 in your case)
@@ -258,8 +258,8 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
     fpsw = fps
     logger.debug(f"FPS set to {fpsw}, proceeding to load YOLOv5 model.")
 
+    # Inference ## Load the pre-trained YOLOv5 model (e.g., yolov5s)
     try:
-        # Inference ## Load the pre-trained YOLOv5 model (e.g., yolov5s)
         result_queue = queue.Queue()  # Create a queue to hold the result
         load_thread = threading.Thread(target=load_model_with_timeout, args=(result_queue,))
         load_thread.start()
@@ -366,42 +366,48 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
                 cleanup_processed_timestamps(processed_timestamps)
 
         # --- INFERENCE ---
-        # Perform inference only on every x frame
         boat_in_current_frame = False  # Reset detection flag for this frame
-        if frame_counter % 4 == 0:  # every frame from 4 to 8
-            # The cropped frame will cover pixels from (520, 180) to (1800, 900) 
-            # of the original frame.
+
+        if frame_counter % 4 == 0:  # process every 4th frame
+            # Crop ROI
             cropped_frame = frame[y_start:y_start + crop_height, x_start:x_start + crop_width]
-            # Resize the cropped frame to the inference size
             resized_frame = cv2.resize(cropped_frame, (inference_width, inference_height))
-            input_tensor = prepare_input(resized_frame, device='cpu')
 
-            results = model(input_tensor)  # Inference
-            detections = non_max_suppression(results, conf_thres=0.25, iou_thres=0.45)[0]
+            # Run inference
+            results = model(resized_frame)
 
-            if detections is not None and len(detections):
-                for *xyxy, conf, cls in detections:
-                    x1, y1, x2, y2 = map(int, xyxy)
-                    confidence = float(conf)
-                    class_id = int(cls)
-                    class_name = model.names[class_id] if hasattr(model, 'names') else str(class_id)
+            # Each detection = [x1, y1, x2, y2, confidence, class_id]
+            detections = results.xyxy[0].cpu().numpy()
 
-                    if confidence > 0.3 and class_name == 'boat':
-                        boat_in_current_frame = True
-                        origin = (50, max(50, frame_height - 100))  # Position on frame
-                        font = cv2.FONT_HERSHEY_DUPLEX
-                        text_rectangle(frame, (f'{capture_timestamp.strftime("%Y-%m-%d, %H:%M:%S")}'), origin)
+            for x1, y1, x2, y2, conf, cls in detections:
+                confidence = float(conf)
+                class_id = int(cls)
+                class_name = model.names[class_id] if hasattr(model, 'names') else str(class_id)
 
-                        # Adjust the bounding box coordinates to the original frame
-                        x1_orig = int(x1 * scale_x) + x_start
-                        y1_orig = int(y1 * scale_y) + y_start
-                        x2_orig = int(x2 * scale_x) + x_start
-                        y2_orig = int(y2 * scale_y) + y_start
+                if confidence > 0.5 and class_name == 'boat':
+                    boat_in_current_frame = True
 
-                        # Draw bounding box and timestamp label on frame
-                        cv2.rectangle(frame, (x1_orig, y1_orig), (x2_orig, y2_orig), colour, thickness)
-                        detected_timestamp = datetime.now().strftime("%H:%M:%S")
-                        cv2.putText(frame, detected_timestamp, (x1_orig, y2_orig + 50), font, fontScale, colour, thickness)
+                    # Timestamp overlay
+                    origin = (50, max(50, frame_height - 100))
+                    font = cv2.FONT_HERSHEY_DUPLEX
+                    text_rectangle(frame, capture_timestamp.strftime("%Y-%m-%d, %H:%M:%S"), origin)
+
+                    # Draw bounding box + confidence
+                    cv2.rectangle(frame, (int(x1), int(y1)), (int(x2), int(y2)), (0, 255, 0), 2)
+                    cv2.putText(frame, f"{confidence:.2f}", (int(x1), int(y1) - 10),
+                                font, 0.7, (0, 255, 0), 2)
+
+                    # Adjust the bounding box coordinates to the original frame
+                    x1_orig = int(x1 * scale_x) + x_start
+                    y1_orig = int(y1 * scale_y) + y_start
+                    x2_orig = int(x2 * scale_x) + x_start
+                    y2_orig = int(y2 * scale_y) + y_start
+
+                    # Draw bounding box and timestamp label on frame
+                    cv2.rectangle(frame, (x1_orig, y1_orig), (x2_orig, y2_orig), colour, thickness)
+                    detected_timestamp = datetime.now().strftime("%H:%M:%S")
+                    cv2.putText(frame, detected_timestamp, (x1_orig, y2_orig + 50), 
+                                font, fontScale, colour, thickness)
 
         # --- DECISION LOGIC FOR WRITING ---
         if boat_in_current_frame:
@@ -413,7 +419,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
             while pre_detection_buffer:
                 buf_frame, buf_ts = pre_detection_buffer.popleft()
                 cv2.putText(buf_frame, f"PRE {buf_ts}", (50, max(50, frame_height - 100)),
-                            cv2.FONT_HERSHEY_DUPLEX, fontScale, colour, thickness)
+                            font, fontScale, colour, thickness)
                 video_writer.write(buf_frame)
                 logger.debug(f"Pre-detection frame written: {buf_ts}")
             pre_detection_buffer.clear()
@@ -424,7 +430,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
         elif number_of_post_frames > 0:
             #  Still within post-detection window
             cv2.putText(frame, f"POST {capture_timestamp}", (50, max(50, frame_height - 100)),
-                        cv2.FONT_HERSHEY_DUPLEX, fontScale, (0, 255, 0), thickness)
+                        font, fontScale, (0, 255, 0), thickness)
             video_writer.write(frame)
             number_of_post_frames -= 1
             logger.debug(f"Post-detection frame written at {capture_timestamp}, countdown={number_of_post_frames}")
