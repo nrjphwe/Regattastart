@@ -381,143 +381,104 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
     colour = (0, 255, 0)  # Green text
 
     while not recording_stopped:
-        boat_in_current_frame = False  # Reset detection flag for this frame
-        frame_counter += 1  # Increment the frame counter
+        boat_in_current_frame = False  # Reset detection flag
+        frame_counter += 1
 
-        # Capture a frame from the camera
+        # --- Capture frame ---
         try:
             frame = camera.capture_array()
             if frame is None:
-                logger.error("Captured frame is None! Skipping write.")
+                logger.error("Captured frame is None! Skipping frame.")
                 continue
             capture_timestamp = datetime.now() + timedelta(microseconds=frame_counter)
-            # logger.debug(f"  Capture timestamp: {capture_timestamp}")
-
-            if previous_capture_time:
-                time_diff = (capture_timestamp - previous_capture_time).total_seconds()
-                # logger.debug(f"Time since last frame: {time_diff:.3f} sec")
-
-            previous_capture_time = capture_timestamp  # Update for next iteration
-
+            previous_capture_time = capture_timestamp
         except Exception as e:
             logger.error(f"Failed to capture frame: {e}")
-            continue  # Skips this iteration but keeps running the loop
+            continue
 
-        if pre_detection_duration != 0:
-            if capture_timestamp not in processed_timestamps:
-                # Add frame to buffer and record its timestamp
-                pre_detection_buffer.append((frame.copy(), capture_timestamp))
-                processed_timestamps.add(capture_timestamp)  # Store timestamp in set
-                logger.debug(f"Added frame to pre-detection buffer, length: {len(pre_detection_buffer)}")
+        # --- Pre-detection buffering ---
+        if pre_detection_duration != 0 and capture_timestamp not in processed_timestamps:
+            pre_detection_buffer.append((frame.copy(), capture_timestamp))
+            processed_timestamps.add(capture_timestamp)
+            if len(processed_timestamps) > pre_detection_buffer.maxlen:
+                processed_timestamps = set(list(processed_timestamps)[-pre_detection_buffer.maxlen:])
+        if frame_counter % 20 == 0:
+            cleanup_processed_timestamps(processed_timestamps)
 
-                # Trim set to match buffer size
-                if len(processed_timestamps) > pre_detection_buffer.maxlen:
-                    processed_timestamps = set(list(processed_timestamps)[-pre_detection_buffer.maxlen:])
-            else:
-                logger.debug(f"Duplicate frame detected: Timestamp={capture_timestamp}. Skipping.")
-
-            if frame_counter % 20 == 0:
-                cleanup_processed_timestamps(processed_timestamps)
-
-        # Perform inference only on every x frame
-        if frame_counter % 4 == 0:  # every frame from 4 to 8
-            # The cropped frame will cover pixels from (520, 180) to (1800, 900)
-            # of the original frame.
+        # --- Inference every N frames ---
+        if frame_counter % 4 == 0:
             cropped_frame = frame[y_start:y_start + crop_height, x_start:x_start + crop_width]
-            # logger.debug(f"cropped frame shape: {cropped_frame.shape}")
             resized_frame = cv2.resize(cropped_frame, (inference_width, inference_height))
-            # Use resized_frame for YOLO detection instead of full frame
             results = model(resized_frame)
+            detections = results.pandas().xyxy[0]
 
-            detections = results.pandas().xyxy[0]  # Results as a DataFrame
-
-            # Parse the detection results
             for _, row in detections.iterrows():
                 class_name = row['name']
                 confidence = row['confidence']
 
                 if confidence > 0.6 and class_name == 'boat':
-                    origin = (50, max(50, frame_height - 100))  # Position on frame
-                    font = cv2.FONT_HERSHEY_DUPLEX
-                    text_rectangle(frame, (f'{capture_timestamp.strftime("%Y-%m-%d, %H:%M:%S")}'), origin)
                     boat_in_current_frame = True
-                    # logger.debug(f"Confidence {confidence:.2f}, capture_timestamp = {capture_timestamp}")
-                    detected_timestamp = datetime.now().strftime("%H:%M:%S")
-                    # detected_timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")  # timestamp (with microseconds)
-                    # logger.debug(f"Detected_timestamp={detected_timestamp}")
 
-                    #  Adjust the bounding box coordinates to reflect the original frame
+                    # Draw timestamp on frame
+                    origin = (50, max(50, frame_height - 100))
+                    font = cv2.FONT_HERSHEY_DUPLEX
+                    text_rectangle(frame, capture_timestamp.strftime("%Y-%m-%d, %H:%M:%S"), origin)
+
+                    # Map bounding box to original frame
                     x1 = int(row['xmin'] * scale_x) + x_start
                     y1 = int(row['ymin'] * scale_y) + y_start
                     x2 = int(row['xmax'] * scale_x) + x_start
                     y2 = int(row['ymax'] * scale_y) + y_start
 
-                    # Draw bounding box and label on the frame
+                    # Draw bounding box
                     cv2.rectangle(frame, (x1, y1), (x2, y2), colour, thickness)
+                    detected_timestamp = datetime.now().strftime("%H:%M:%S")
                     cv2.putText(frame, detected_timestamp, (x1, y2 + 50),
                                 font, fontScale, colour, thickness)
 
-                    # Extract the sail number
-                    for det in results.xyxy[0]:  # For each detection
+                    # Extract sail number
+                    for det in results.xyxy[0]:
                         cls = int(det[5])
-                        if model.names[cls] == 'boat':  # class for boats
+                        if model.names[cls] == 'boat':
                             sail_number = extract_sail_number(frame, det[:4])
-                            if sail_number is not None:
-                                logger.info(f"sailnumber: {sail_number} time: {detected_timestamp}")
+                            if sail_number:
+                                logger.info(f"Sailnumber: {sail_number}, time: {detected_timestamp}")
 
-                    if frame is not None:
-                        video_writer.write(frame)
-                        # logger.debug("Detected frame written  !!!")
-                    else:
-                        logger.error("Captured frame is None! Skipping write.")
-                        continue
+        # --- Decision logic: write frames ---
+        if boat_in_current_frame:
+            # Write current detection frame
+            if frame is not None:
+                video_writer.write(frame)
+                logger.debug(f"Detected frame written at {capture_timestamp}")
 
-                    if pre_detection_buffer:
-                        # Remove the most recent frame
-                        if len(pre_detection_buffer) >= 1:
-                            pre_detection_buffer.pop()  # Removes the most recent frame
+            # Flush pre-detection buffer
+            while pre_detection_buffer:
+                buf_frame, buf_ts = pre_detection_buffer.popleft()
+                cv2.putText(buf_frame, f"PRE {buf_ts}", origin, font, fontScale, colour, thickness)
+                try:
+                    video_writer.write(buf_frame)
+                    logger.debug(f"Pre-detection frame written: {buf_ts}")
+                except Exception as e:
+                    logger.error(f"Failed to write pre-detection frame: {e}")
+            pre_detection_buffer.clear()
 
-                        # Write pre-detection frames to video
-                        while pre_detection_buffer:
-                            # origin = (50, 700)  # Position on frame
-                            frame, timestamp = pre_detection_buffer.popleft()
-                            cv2.putText(frame, f"PRE {timestamp}", origin, font, fontScale, colour, thickness)
-                            try:
-                                video_writer.write(frame)
-                                logger.debug(f"Pre-detection Timestamp={timestamp}")
-                            except Exception as e:
-                                logger.error(f"Failed to write pre-detection frame: {e}")
-                                continue  # Skips writing this frame but keeps recording
-                        pre_detection_buffer.clear()  # Clear the pre-detection buffer
-                        logger.debug("Pre-detection buffer cleared after writing frames.")
+            # Reset post-detection countdown
+            number_of_post_frames = int(max_post_detection_duration * fpsw)
 
-        # Handle POST-detection frames
-        skip_first_post_frame = False  # Initialize the flag
-        if max_post_detection_duration != 0:
-            colour = (0, 255, 0)  # Green text
-            if boat_in_current_frame:
-                number_of_post_frames = int(max_post_detection_duration * fpsw) # Reset countdown
-                skip_first_post_frame = True  # Set flag to skip the first post-detection frame
+        elif number_of_post_frames > 0:
+            # Write post-detection frame
+            cv2.putText(frame, f"POST {capture_timestamp}", origin,
+                        font, fontScale, (0, 255, 0), thickness)
+            video_writer.write(frame)
+            number_of_post_frames -= 1
+            logger.debug(f"Post-detection frame written at {capture_timestamp}, countdown={number_of_post_frames}")
 
-            if boat_in_current_frame or number_of_post_frames > 0:
-                if skip_first_post_frame:
-                    skip_first_post_frame = False  # Skip this frame, process the next ones
-                else:
-                    try:
-                        # origin = (500, 900)  # Position on frame
-                        origin = (50, max(50, frame_height - 100))  # (50, 1820)
-                        cv2.putText(frame, f"POST {capture_timestamp}", origin, font, fontScale, colour, thickness)
-                        video_writer.write(frame)
-                        logger.debug(f"Post-detection Timestamp={capture_timestamp}")
-                    except Exception as e:
-                        logger.error(f"Failed to write post frame: {e}")
-
-                if not boat_in_current_frame:
-                    number_of_post_frames -= 1
-                logger.debug(f"Number_of_post_frames Post-detection countdown: {number_of_post_frames}")
-
-            if number_of_post_frames == 1:
-                boat_in_current_frame = False
+        # --- Check recording stop ---
+        time_now = dt.datetime.now()
+        elapsed_time = (time_now - dt.datetime.combine(time_now.date(), dt.time(0))).total_seconds() - start_time_sec
+        if elapsed_time >= max_duration:
+            logger.debug(f"Maximum recording time reached: {elapsed_time} seconds")
+            recording_stopped = True
 
         # Check if recording should stop
         time_now = dt.datetime.now()
