@@ -152,7 +152,6 @@ def load_model_with_timeout(result_queue):
         logger.error(f"Failed to load YOLOv5 model: {e}", exc_info=True)
         result_queue.put(e)  # Put the exception in the queue
 
-
 def correct_ocr_digits(text):
     corrections = {
         "I": "1",
@@ -381,31 +380,39 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
     colour = (0, 255, 0)  # Green text
 
     while not recording_stopped:
-        boat_in_current_frame = False  # Reset detection flag
         frame_counter += 1
 
-        # --- Capture frame ---
+        # Capture a frame from the camera
         try:
             frame = camera.capture_array()
             if frame is None:
-                logger.error("Captured frame is None! Skipping frame.")
+                logger.error("Captured frame is None! Skipping write.")
                 continue
             capture_timestamp = datetime.now() + timedelta(microseconds=frame_counter)
-            previous_capture_time = capture_timestamp
+
         except Exception as e:
             logger.error(f"Failed to capture frame: {e}")
-            continue
+            continue  # Skips this iteration but keeps running the loop
 
         # --- Pre-detection buffering ---
         if pre_detection_duration != 0 and capture_timestamp not in processed_timestamps:
+            # Add frame to buffer and record its timestamp
             pre_detection_buffer.append((frame.copy(), capture_timestamp))
             processed_timestamps.add(capture_timestamp)
+
+            # Trim processed_timestamps only when necessary
             if len(processed_timestamps) > pre_detection_buffer.maxlen:
-                processed_timestamps = set(list(processed_timestamps)[-pre_detection_buffer.maxlen:])
-        if frame_counter % 20 == 0:
-            cleanup_processed_timestamps(processed_timestamps)
+                # Keep only the most recent N entries
+                processed_timestamps = set(
+                    list(processed_timestamps)[-pre_detection_buffer.maxlen:]
+                )
+                logger.debug(f"Trimmed processed_timestamps to {len(processed_timestamps)} entries")
+
+            if frame_counter % 20 == 0:
+                cleanup_processed_timestamps(processed_timestamps)
 
         # --- Inference every N frames ---
+        boat_in_current_frame = False  # Reset detection flag for this frame
         if frame_counter % 4 == 0:
             cropped_frame = frame[y_start:y_start + crop_height, x_start:x_start + crop_width]
             resized_frame = cv2.resize(cropped_frame, (inference_width, inference_height))
@@ -481,13 +488,13 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
             recording_stopped = True
 
         # Check if recording should stop
-        time_now = dt.datetime.now()
-        seconds_since_midnight = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
-        elapsed_time = seconds_since_midnight - start_time_sec
+        #time_now = dt.datetime.now()
+        #seconds_since_midnight = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
+        #elapsed_time = seconds_since_midnight - start_time_sec
         # logger.debug(f"Elapsed time since start: {elapsed_time} seconds")
-        if elapsed_time >= max_duration:
-            logger.debug(f"Maximum recording time reached, elapsed _time={elapsed_time}")
-            recording_stopped = True
+        #if elapsed_time >= max_duration:
+        #    logger.debug(f"Maximum recording time reached, elapsed _time={elapsed_time}")
+        #    recording_stopped = True
 
     if recording_stopped:
         logger.info('Video1 recording stopped')
