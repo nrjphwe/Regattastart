@@ -312,7 +312,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
     boat_in_current_frame = False
 
     frame_counter = 0  # Initialize a frame counter
-    previous_capture_time = None  # Track previous frame timestamp
+    # previous_capture_time = None  # Track previous frame timestamp
 
     # Compute scaling factors
     inference_width, inference_height = 640, 480  # Since you resize before inference
@@ -335,7 +335,6 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
     colour = (0, 255, 0)  # Green text
 
     while not recording_stopped:
-        boat_in_current_frame = False  # Reset detection flag for this frame
         frame_counter += 1  # Increment the frame counter
 
         # Capture a frame from the camera
@@ -345,21 +344,14 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
                 logger.error("Captured frame is None! Skipping write.")
                 continue
             capture_timestamp = datetime.now() + timedelta(microseconds=frame_counter)
-            # logger.debug(f"  Capture timestamp: {capture_timestamp}")
-
-            if previous_capture_time:
-                time_diff = (capture_timestamp - previous_capture_time).total_seconds()
-                logger.debug(f"Time since last frame: {time_diff:.3f} sec")
-
-            previous_capture_time = capture_timestamp  # Update for next iteration
 
         except Exception as e:
             logger.error(f"Failed to capture frame: {e}")
             continue  # Skips this iteration but keeps running the loop
 
+        # --- PRE-DETECTION BUFFER ---
         if pre_detection_duration != 0:
             if capture_timestamp not in processed_timestamps:
-                # Add frame to buffer and record its timestamp
                 pre_detection_buffer.append((frame.copy(), capture_timestamp))
                 processed_timestamps.add(capture_timestamp)  # Store timestamp in set
                 logger.debug(f"Added frame to pre-detection buffer, length: {len(pre_detection_buffer)}")
@@ -373,16 +365,17 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
             if frame_counter % 20 == 0:
                 cleanup_processed_timestamps(processed_timestamps)
 
+        # --- INFERENCE ---
         # Perform inference only on every x frame
+        boat_in_current_frame = False  # Reset detection flag for this frame
         if frame_counter % 4 == 0:  # every frame from 4 to 8
             # The cropped frame will cover pixels from (520, 180) to (1800, 900) 
             # of the original frame.
             cropped_frame = frame[y_start:y_start + crop_height, x_start:x_start + crop_width]
             # Resize the cropped frame to the inference size
             resized_frame = cv2.resize(cropped_frame, (inference_width, inference_height))
-
             input_tensor = prepare_input(resized_frame, device='cpu')
-            # logger.debug(f"Input tensor shape: {input_tensor.shape}, dtype: {input_tensor.dtype}")
+
             results = model(input_tensor)  # Inference
             detections = non_max_suppression(results, conf_thres=0.25, iou_thres=0.45)[0]
 
@@ -392,14 +385,12 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
                     confidence = float(conf)
                     class_id = int(cls)
                     class_name = model.names[class_id] if hasattr(model, 'names') else str(class_id)
-                    label = f"{class_name} {confidence:.2f}"
 
                     if confidence > 0.3 and class_name == 'boat':
+                        boat_in_current_frame = True
                         origin = (50, max(50, frame_height - 100))  # Position on frame
                         font = cv2.FONT_HERSHEY_DUPLEX
                         text_rectangle(frame, (f'{capture_timestamp.strftime("%Y-%m-%d, %H:%M:%S")}'), origin)
-                        boat_in_current_frame = True
-                        detected_timestamp = datetime.now().strftime("%H:%M:%S")
 
                         # Adjust the bounding box coordinates to the original frame
                         x1_orig = int(x1 * scale_x) + x_start
@@ -409,61 +400,34 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
 
                         # Draw bounding box and timestamp label on frame
                         cv2.rectangle(frame, (x1_orig, y1_orig), (x2_orig, y2_orig), colour, thickness)
+                        detected_timestamp = datetime.now().strftime("%H:%M:%S")
                         cv2.putText(frame, detected_timestamp, (x1_orig, y2_orig + 50), font, fontScale, colour, thickness)
 
-                    if frame is not None:
-                        video_writer.write(frame)
-                        # logger.debug("Detected frame written  !!!")
-                    else:
-                        logger.error("Captured frame is None! Skipping write.")
-                        continue
+        # --- DECISION LOGIC FOR WRITING ---
+        if boat_in_current_frame:
+            # Write this detection frame
+            video_writer.write(frame)
+            logger.debug(f"Detected frame written at {capture_timestamp}")
 
-                    if pre_detection_buffer:
-                        # Remove the most recent frame
-                        if len(pre_detection_buffer) >= 1:
-                            pre_detection_buffer.pop()  # Removes the most recent frame
+            # Flush pre-detection buffer
+            while pre_detection_buffer:
+                buf_frame, buf_ts = pre_detection_buffer.popleft()
+                cv2.putText(buf_frame, f"PRE {buf_ts}", (50, max(50, frame_height - 100)),
+                            cv2.FONT_HERSHEY_DUPLEX, fontScale, colour, thickness)
+                video_writer.write(buf_frame)
+                logger.debug(f"Pre-detection frame written: {buf_ts}")
+            pre_detection_buffer.clear()
 
-                        # Write pre-detection frames to video
-                        while pre_detection_buffer:
-                            # origin = (50, 700)  # Position on frame
-                            frame, timestamp = pre_detection_buffer.popleft()
-                            cv2.putText(frame, f"PRE {timestamp}", origin, font, fontScale, colour, thickness)
-                            try:
-                                video_writer.write(frame)
-                                logger.debug(f"Pre-detection Timestamp={timestamp}")
-                            except Exception as e:
-                                logger.error(f"Failed to write pre-detection frame: {e}")
-                                continue  # Skips writing this frame but keeps recording
-                        pre_detection_buffer.clear()  # Clear the pre-detection buffer
-                        logger.debug("Pre-detection buffer cleared after writing frames.")
+            # Reset post-detection countdown
+            number_of_post_frames = int(max_post_detection_duration * fpsw)
 
-        # Handle POST-detection frames
-        skip_first_post_frame = False  # Initialize the flag
-        if max_post_detection_duration != 0:
-            colour = (0, 255, 0)  # Green text
-            if boat_in_current_frame:
-                number_of_post_frames = int(max_post_detection_duration * fpsw) # Reset countdown
-                skip_first_post_frame = True  # Set flag to skip the first post-detection frame
-
-            if boat_in_current_frame or number_of_post_frames > 0:
-                if skip_first_post_frame:
-                    skip_first_post_frame = False  # Skip this frame, process the next ones
-                else:
-                    try:
-                        # origin = (500, 900)  # Position on frame
-                        origin = (50, max(50, frame_height - 100))  # (50, 1820)
-                        cv2.putText(frame, f"POST {capture_timestamp}", origin, font, fontScale, colour, thickness)
-                        video_writer.write(frame)
-                        logger.debug(f"Post-detection Timestamp={capture_timestamp}")
-                    except Exception as e:
-                        logger.error(f"Failed to write post frame: {e}")
-
-                if not boat_in_current_frame:
-                    number_of_post_frames -= 1
-                logger.debug(f"Number_of_post_frames Post-detection countdown: {number_of_post_frames}")
-
-            if number_of_post_frames == 1:
-                boat_in_current_frame = False
+        elif number_of_post_frames > 0:
+            #  Still within post-detection window
+            cv2.putText(frame, f"POST {capture_timestamp}", (50, max(50, frame_height - 100)),
+                        cv2.FONT_HERSHEY_DUPLEX, fontScale, (0, 255, 0), thickness)
+            video_writer.write(frame)
+            number_of_post_frames -= 1
+            logger.debug(f"Post-detection frame written at {capture_timestamp}, countdown={number_of_post_frames}")
 
         # Check if recording should stop
         time_now = dt.datetime.now()
