@@ -350,18 +350,18 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
             continue  # Skips this iteration but keeps running the loop
 
         # --- PRE-DETECTION BUFFER ---
-        if pre_detection_duration != 0:
-            if capture_timestamp not in processed_timestamps:
-                pre_detection_buffer.append((frame.copy(), capture_timestamp))
-                processed_timestamps.add(capture_timestamp)  # Store timestamp in set
-                logger.debug(f"Added frame to pre-detection buffer, length: {len(pre_detection_buffer)}")
+        if pre_detection_duration != 0 and capture_timestamp not in processed_timestamps:
+            # Add frame to buffer and record its timestamp
+            pre_detection_buffer.append((frame.copy(), capture_timestamp))
+            processed_timestamps.add(capture_timestamp)
 
-                # Trim set to match buffer size
-                if len(processed_timestamps) > pre_detection_buffer.maxlen:
-                    processed_timestamps = set(list(processed_timestamps)[-pre_detection_buffer.maxlen:])
-            else:
-                logger.debug(f"Duplicate frame detected: Timestamp={capture_timestamp}. Skipping.")
-
+            # Trim processed_timestamps only when necessary
+            if len(processed_timestamps) > pre_detection_buffer.maxlen:
+                # Keep only the most recent N entries
+                processed_timestamps = set(
+                    list(processed_timestamps)[-pre_detection_buffer.maxlen:]
+                )
+                logger.debug(f"Trimmed processed_timestamps to {len(processed_timestamps)} entries")
             if frame_counter % 20 == 0:
                 cleanup_processed_timestamps(processed_timestamps)
 
