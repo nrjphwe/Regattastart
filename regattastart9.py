@@ -47,7 +47,7 @@ warnings.filterwarnings(
     module=".*yolov5_master.models.common*"
 )
 # parameter data
-fps = 5
+fps = 15
 cpu_model = get_cpu_model()
 logger.info(f"Detected CPU model string: '{cpu_model}'")
 
@@ -533,7 +533,7 @@ def main():
                     if num_starts == 1 or num_starts == 2 or num_starts == 3:
                         # Start video recording just before 5 minutes before the first start
                         logger.debug("Start of video0 recording")
-                        start_video_recording(camera, video_path, "video0.h264", resolution=(1640,1232),  bitrate=2000000)
+                        start_video_recording(camera, video_path, "video0.h264", resolution=(1640,1232),  bitrate=4000000)
                         logger.debug("Inner loop, entering the start sequence block.")
                         start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo_path)
                         if num_starts != 1:
