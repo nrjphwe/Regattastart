@@ -223,7 +223,7 @@ def apply_timestamp(request):
         logger.error(f"Error in apply_timestamp: {e}", exc_info=True)
 
 
-def restart_camera(camera, resolution=(1640, 1232), fps=5):
+def restart_camera(camera, resolution=(1640, 1232), fps=15):
     time.sleep(2)  # Ensure the camera is fully released
     try:
         if camera is not None:
@@ -265,7 +265,7 @@ def restart_camera(camera, resolution=(1640, 1232), fps=5):
         return None  # Avoid using an uninitialized camera
 
 
-def start_video_recording(camera, video_path, file_name, resolution=(1640, 1232), bitrate=2000000):
+def start_video_recording(camera, video_path, file_name, resolution=(1640, 1232), bitrate=4000000):
     """
     Start video recording using H264Encoder and with timestamp.
     """
