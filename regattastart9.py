@@ -210,7 +210,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
 
     # Confirm cam is initialized
     if camera is None:
-        logger.error("Camera restart failed, exiting.")
+        logger.error("CAMERA RESTART: failed, exiting.")
         return  # Prevents crashing if camera restart fails
 
     # Attempt to capture a frame
@@ -332,6 +332,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
     fontScale = max(base_fontScale * scale_factor, 0.6)  # Prevent too small text
     thickness = max(int(base_thickness * scale_factor), 1)  # Prevent too thin lines
     font = cv2.FONT_HERSHEY_DUPLEX
+    origin = (50, max(50, frame_height - 100))
     colour = (0, 255, 0)  # Green text
 
     while not recording_stopped:
@@ -341,7 +342,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
         try:
             frame = camera.capture_array()
             if frame is None:
-                logger.error("Captured frame is None! Skipping write.")
+                logger.error(f"CAPTURE: frame is None, skipping")
                 continue
             capture_timestamp = datetime.now() + timedelta(microseconds=frame_counter)
 
@@ -374,66 +375,70 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
             resized_frame = cv2.resize(cropped_frame, (inference_width, inference_height))
 
             # Run inference
-            results = model(resized_frame)
+            input_tensor = prepare_input(resized_frame, device='cpu')
+            results = model(input_tensor)
+            detections = non_max_suppression(results, conf_thres=0.25, iou_thres=0.45)[0]
 
-            # Each detection = [x1, y1, x2, y2, confidence, class_id]
-            detections = results.xyxy[0].cpu().numpy()
+            if not detections.empty:
+                for *xyxy, conf, cls in detections:
+                    x1, y1, x2, y2 = map(int, xyxy)
+                    confidence = float(conf)
+                    class_id = int(cls)
+                    class_name = model.names[class_id] if hasattr(model, 'names') else str(class_id)
 
-            for x1, y1, x2, y2, conf, cls in detections:
-                confidence = float(conf)
-                class_id = int(cls)
-                class_name = model.names[class_id] if hasattr(model, 'names') else str(class_id)
+                    if confidence > 0.5 and class_name == 'boat':
+                        boat_in_current_frame = True
 
-                if confidence > 0.5 and class_name == 'boat':
-                    boat_in_current_frame = True
+                        # Timestamp overlay
+                        origin = (50, max(50, frame_height - 100))
+                        font = cv2.FONT_HERSHEY_DUPLEX
+                        text_rectangle(frame, capture_timestamp.strftime("%Y-%m-%d, %H:%M:%S"), origin)
 
-                    # Timestamp overlay
-                    origin = (50, max(50, frame_height - 100))
-                    font = cv2.FONT_HERSHEY_DUPLEX
-                    text_rectangle(frame, capture_timestamp.strftime("%Y-%m-%d, %H:%M:%S"), origin)
+                        # Draw bounding box + confidence
+                        cv2.rectangle(frame, (int(x1), int(y1)), (int(x2), int(y2)), (0, 255, 0), 2)
+                        cv2.putText(frame, f"{confidence:.2f}", (int(x1), int(y1) - 10),
+                                    font, 0.7, (0, 255, 0), 2)
 
-                    # Draw bounding box + confidence
-                    cv2.rectangle(frame, (int(x1), int(y1)), (int(x2), int(y2)), (0, 255, 0), 2)
-                    cv2.putText(frame, f"{confidence:.2f}", (int(x1), int(y1) - 10),
-                                font, 0.7, (0, 255, 0), 2)
+                        # Adjust the bounding box coordinates to the original frame
+                        x1_orig = int(x1 * scale_x) + x_start
+                        y1_orig = int(y1 * scale_y) + y_start
+                        x2_orig = int(x2 * scale_x) + x_start
+                        y2_orig = int(y2 * scale_y) + y_start
 
-                    # Adjust the bounding box coordinates to the original frame
-                    x1_orig = int(x1 * scale_x) + x_start
-                    y1_orig = int(y1 * scale_y) + y_start
-                    x2_orig = int(x2 * scale_x) + x_start
-                    y2_orig = int(y2 * scale_y) + y_start
-
-                    # Draw bounding box and timestamp label on frame
-                    cv2.rectangle(frame, (x1_orig, y1_orig), (x2_orig, y2_orig), colour, thickness)
-                    detected_timestamp = datetime.now().strftime("%H:%M:%S")
-                    cv2.putText(frame, detected_timestamp, (x1_orig, y2_orig + 50), 
-                                font, fontScale, colour, thickness)
+                        # Draw bounding box and timestamp label on frame
+                        cv2.rectangle(frame, (x1_orig, y1_orig), (x2_orig, y2_orig), colour, thickness)
+                        detected_timestamp = capture_timestamp.strftime("%H:%M:%S")
+                        cv2.putText(frame, detected_timestamp, (x1_orig, y2_orig + 50), 
+                                    font, fontScale, colour, thickness)
 
         # --- DECISION LOGIC FOR WRITING ---
         if boat_in_current_frame:
-            # Write this detection frame
-            video_writer.write(frame)
-            logger.debug(f"Detected frame written at {capture_timestamp}")
+            if frame is not None:
+                # Write this detection frame
+                video_writer.write(frame)
+                logger.debug(f"FRAME: detection written @ {capture_timestamp}")
 
             # Flush pre-detection buffer
             while pre_detection_buffer:
                 buf_frame, buf_ts = pre_detection_buffer.popleft()
-                cv2.putText(buf_frame, f"PRE {buf_ts}", (50, max(50, frame_height - 100)),
-                            font, fontScale, colour, thickness)
-                video_writer.write(buf_frame)
-                logger.debug(f"Pre-detection frame written: {buf_ts}")
+                if buf_frame is not None:
+                    cv2.putText(buf_frame, f"PRE {buf_ts.strftime('%H:%M:%S')}", (50, max(50, frame_height - 100)),
+                                font, fontScale, colour, thickness)
+                    video_writer.write(buf_frame)
+                    logger.debug(f"FRAME: pre-detection written @ {buf_ts}")
             pre_detection_buffer.clear()
 
             # Reset post-detection countdown
             number_of_post_frames = int(max_post_detection_duration * fpsw)
 
         elif number_of_post_frames > 0:
-            #  Still within post-detection window
-            cv2.putText(frame, f"POST {capture_timestamp}", (50, max(50, frame_height - 100)),
-                        font, fontScale, (0, 255, 0), thickness)
-            video_writer.write(frame)
-            number_of_post_frames -= 1
-            logger.debug(f"Post-detection frame written at {capture_timestamp}, countdown={number_of_post_frames}")
+            if frame is not None:
+                #  Still within post-detection window
+                cv2.putText(frame, f"POST  {capture_timestamp.strftime('%H:%M:%S')}", (50, max(50, frame_height - 100)),
+                            font, fontScale, (0, 255, 0), thickness)
+                video_writer.write(frame)
+                number_of_post_frames -= 1
+                logger.debug(f"FRAME: post-detection written @ {capture_timestamp} (countdown={number_of_post_frames})")
 
         # Check if recording should stop
         time_now = dt.datetime.now()
@@ -441,7 +446,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
         elapsed_time = seconds_since_midnight - start_time_sec
         # logger.debug(f"Elapsed time since start: {elapsed_time} seconds")
         if elapsed_time >= max_duration:
-            logger.debug(f"Maximum recording time reached, elapsed _time={elapsed_time}")
+            logger.debug(f"STOP: max duration reached ({elapsed_time:.1f}s)")
             recording_stopped = True
 
     if recording_stopped:
@@ -484,7 +489,7 @@ def main():
         logger.error(f"Failed to fins CPU model: {e}", exc_info=True)
 
     if camera is None:
-        logger.error("Camera setup failed, exiting.")
+        logger.error("CAMERA SETUP: failed, exiting.")
         exit()
 
     # Check if a command-line argument (JSON data) is provided
