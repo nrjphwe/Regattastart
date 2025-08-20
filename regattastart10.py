@@ -229,6 +229,22 @@ def extract_sail_number(frame, box):
         logger.info(f"Detected sail number: {sail_number}")
         return sail_number
 
+def prepare_input(img, device='cpu'):
+    """
+    Prepares an image for YOLOv5 inference.
+    Assumes input is a NumPy image in BGR format (from OpenCV).
+    """
+    if isinstance(img, np.ndarray):
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)  # Convert to RGB
+        img = np.ascontiguousarray(img)             # Ensure it's contiguous
+        img = torch.from_numpy(img).permute(2, 0, 1).float()  # (3, H, W)
+        img /= 255.0                                 # Normalize to [0, 1]
+
+    if img.ndim == 3:
+        img = img.unsqueeze(0)  # (1, 3, H, W)
+
+    return img.to(device)
+
 
 def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, fps):
     global recording_stopped
@@ -255,7 +271,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
 
     # Confirm cam is initialized
     if camera is None:
-        logger.error("Camera restart failed, exiting.")
+        logger.error("CAMERA RESTART: failed.")
         return  # Prevents crashing if camera restart fails
 
     # Attempt to capture a frame
@@ -377,6 +393,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
     fontScale = max(base_fontScale * scale_factor, 0.6)  # Prevent too small text
     thickness = max(int(base_thickness * scale_factor), 1)  # Prevent too thin lines
     font = cv2.FONT_HERSHEY_DUPLEX
+    origin = (50, max(50, frame_height - 100))
     colour = (0, 255, 0)  # Green text
 
     while not recording_stopped:
@@ -386,7 +403,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
         try:
             frame = camera.capture_array()
             if frame is None:
-                logger.error("Captured frame is None! Skipping write.")
+                logger.error(f"CAPTURE: frame is None, skipping")
                 continue
             capture_timestamp = datetime.now() + timedelta(microseconds=frame_counter)
 
@@ -413,89 +430,78 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
 
         # --- INFERENCE ---
         boat_in_current_frame = False  # Reset detection flag for this frame
-
         if frame_counter % 4 == 0:  # process every 4th frame
-            # Crop ROI
+            # Crop region of interest
             cropped_frame = frame[y_start:y_start + crop_height, x_start:x_start + crop_width]
             resized_frame = cv2.resize(cropped_frame, (inference_width, inference_height))
 
-            # Run inference
-            results = model(resized_frame)
+            input_tensor = prepare_input(resized_frame, device='cpu')
+            # Run YOLOv5 inference
+            results = model(input_tensor)
+            detections = results.pandas().xyxy[0]  # DataFrame output
 
-            # Each detection = [x1, y1, x2, y2, confidence, class_id]
-            detections = results.xyxy[0].cpu().numpy()
+            if not detections.empty:
+                for _, row in detections.iterrows():
+                    class_name = row['name']
+                    confidence = row['confidence']
 
-            for x1, y1, x2, y2, conf, cls in detections:
-                confidence = float(conf)
-                class_id = int(cls)
-                class_name = model.names[class_id] if hasattr(model, 'names') else str(class_id)
+                    if confidence > 0.5 and class_name == 'boat':
+                        boat_in_current_frame = True
 
-                if confidence > 0.5 and class_name == 'boat':
-                    boat_in_current_frame = True
+                        # Timestamp overlay
+                        text_rectangle(frame, capture_timestamp.strftime("%Y-%m-%d, %H:%M:%S"), origin)
 
-                    # Timestamp overlay
-                    origin = (50, max(50, frame_height - 100))
-                    font = cv2.FONT_HERSHEY_DUPLEX
-                    text_rectangle(frame, capture_timestamp.strftime("%Y-%m-%d, %H:%M:%S"), origin)
+                        # Scale bounding box back to original coords
+                        x1 = int(row['xmin'] * scale_x) + x_start
+                        y1 = int(row['ymin'] * scale_y) + y_start
+                        x2 = int(row['xmax'] * scale_x) + x_start
+                        y2 = int(row['ymax'] * scale_y) + y_start
 
-                    # Draw bounding box + confidence
-                    cv2.rectangle(frame, (int(x1), int(y1)), (int(x2), int(y2)), (0, 255, 0), 2)
-                    cv2.putText(frame, f"{confidence:.2f}", (int(x1), int(y1) - 10),
-                                font, 0.7, (0, 255, 0), 2)
+                        cv2.rectangle(frame, (x1, y1), (x2, y2), colour, thickness)
 
-                    # Adjust the bounding box coordinates to the original frame
-                    x1_orig = int(x1 * scale_x) + x_start
-                    y1_orig = int(y1 * scale_y) + y_start
-                    x2_orig = int(x2 * scale_x) + x_start
-                    y2_orig = int(y2 * scale_y) + y_start
+                        # Draw bounding box + confidence
+                        cv2.putText(frame, f"{confidence:.2f}", (int(x1), int(y1) - 10),
+                                    font, 0.7, (0, 255, 0), 2)
 
-                    # Draw bounding box and timestamp label on frame
-                    cv2.rectangle(frame, (x1_orig, y1_orig), (x2_orig, y2_orig), colour, thickness)
-                    detected_timestamp = datetime.now().strftime("%H:%M:%S")
-                    cv2.putText(frame, detected_timestamp, (x1_orig, y2_orig + 50), 
-                                font, fontScale, colour, thickness)
+                        detected_timestamp = capture_timestamp.strftime("%H:%M:%S")
+                        cv2.putText(frame, detected_timestamp, (x1, y2 + 50),
+                                    font, fontScale, colour, thickness)
 
         # --- Decision logic: write frames ---
         if boat_in_current_frame:
             # Write current detection frame
             if frame is not None:
                 video_writer.write(frame)
-                logger.debug(f"Detected frame written at {capture_timestamp}")
+                logger.debug(f"FRAME: detection written @ {capture_timestamp}")
 
             # Flush pre-detection buffer
             while pre_detection_buffer:
                 buf_frame, buf_ts = pre_detection_buffer.popleft()
-                cv2.putText(buf_frame, f"PRE {buf_ts}", origin, font, fontScale, colour, thickness)
-                video_writer.write(buf_frame)
-                logger.debug(f"Pre-detection frame written: {buf_ts}")
+                if buf_frame is not None:
+                    cv2.putText(buf_frame, f"PRE {buf_ts.strftime('%H:%M:%S')}", 
+                                origin, font, fontScale, colour, thickness)
+                    video_writer.write(buf_frame)
+                    logger.debug(f"FRAME: pre-detection written @ {buf_ts}")
             pre_detection_buffer.clear()
 
             # Reset post-detection countdown
             number_of_post_frames = int(max_post_detection_duration * fpsw)
 
         elif number_of_post_frames > 0:
-            # Write post-detection frame
-            cv2.putText(frame, f"POST {capture_timestamp}", origin,
-                        font, fontScale, (0, 255, 0), thickness)
-            video_writer.write(frame)
-            number_of_post_frames -= 1
-            logger.debug(f"Post-detection frame written at {capture_timestamp}, countdown={number_of_post_frames}")
+            if frame is not None:
+                # Write post-detection frame
+                cv2.putText(frame, f"POST {capture_timestamp.strftime('%H:%M:%S')}", 
+                            origin, font, fontScale, (0, 255, 0), thickness)
+                video_writer.write(frame)
+                number_of_post_frames -= 1
+                logger.debug(f"FRAME: post-detection written @ {capture_timestamp} (countdown={number_of_post_frames})")
 
         # --- Check recording stop ---
         time_now = dt.datetime.now()
         elapsed_time = (time_now - dt.datetime.combine(time_now.date(), dt.time(0))).total_seconds() - start_time_sec
         if elapsed_time >= max_duration:
-            logger.debug(f"Maximum recording time reached: {elapsed_time} seconds")
+            logger.debug(f"STOP: max duration reached ({elapsed_time:.1f}s)")
             recording_stopped = True
-
-        # Check if recording should stop
-        #time_now = dt.datetime.now()
-        #seconds_since_midnight = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
-        #elapsed_time = seconds_since_midnight - start_time_sec
-        # logger.debug(f"Elapsed time since start: {elapsed_time} seconds")
-        #if elapsed_time >= max_duration:
-        #    logger.debug(f"Maximum recording time reached, elapsed _time={elapsed_time}")
-        #    recording_stopped = True
 
     if recording_stopped:
         logger.info('Video1 recording stopped')
@@ -529,9 +535,9 @@ def main():
         else:
             camera = setup_camera((1640, 1232))  # Initialize camera
     except Exception as e:
-        logger.error(f"Failed to fins CPU model: {e}", exc_info=True)
+        logger.error(f"Failed to find CPU model: {e}", exc_info=True)
     if camera is None:
-        logger.error("Camera setup failed, exiting.")
+        logger.error("CAMERA SETUP: failed)")
         exit()
 
     # Check if a command-line argument (JSON data) is provided
@@ -632,9 +638,6 @@ def main():
                 logger.info("Camera closed successfully.")
             except Exception as e:
                 logger.error(f"Error while cleaning up camera: {e}")
-
-            # GPIO.cleanup(gpio_handle)
-            # logger.debug("After GPIO.cleanup, end of program")
 
             # Log the end of the program
             logger.info("Program has ended")
