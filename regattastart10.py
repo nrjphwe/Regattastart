@@ -393,6 +393,9 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
     fontScale = max(base_fontScale * scale_factor, 0.6)  # Prevent too small text
     thickness = max(int(base_thickness * scale_factor), 1)  # Prevent too thin lines
     font = cv2.FONT_HERSHEY_DUPLEX
+    # (x, y) → OpenCV cv2.putText expects the bottom-left corner of the text string.
+    # x = 50 → fixed horizontal offset, i.e. always 50 pixels from the left edge of the frame
+    # y = max(50, frame_height - 100) → vertical position
     origin = (50, max(50, frame_height - 100))
     colour = (0, 255, 0)  # Green text
 
