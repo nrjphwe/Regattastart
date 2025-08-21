@@ -365,48 +365,46 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
             if frame_counter % 20 == 0:
                 cleanup_processed_timestamps(processed_timestamps)
 
-       # --- INFERENCE ---
+        # --- INFERENCE ---
         boat_in_current_frame = False  # Reset detection flag for this frame
 
         if frame_counter % 4 == 0:  # process every 4th frame
-            # Crop ROI
+            # Crop region of interest
             cropped_frame = frame[y_start:y_start + crop_height, x_start:x_start + crop_width]
             resized_frame = cv2.resize(cropped_frame, (inference_width, inference_height))
 
-            # Run inference
+            # Run YOLOv5 inference
             input_tensor = prepare_input(resized_frame, device='cpu')
             results = model(input_tensor)
-            df = results.pandas().xyxy[0]   # DataFrame with xmin, ymin, xmax, ymax, confidence, class, name
+            detections = results.pandas().xyxy[0]  # DataFrame output
 
-            if not df.empty:
-                for _, row in df.iterrows():
-                    x1, y1, x2, y2 = map(int, [row['xmin'], row['ymin'], row['xmax'], row['ymax']])
-                    confidence = float(row['confidence'])
+            if not detections.empty:
+                for _, row in detections.iterrows():
                     class_name = row['name']
+                    confidence = float(row['confidence'])
 
                     if confidence > 0.5 and class_name == 'boat':
                         boat_in_current_frame = True
 
                         # Timestamp overlay
-                        origin = (50, max(50, frame_height - 100))
-                        font = cv2.FONT_HERSHEY_DUPLEX
                         text_rectangle(frame, capture_timestamp.strftime("%Y-%m-%d, %H:%M:%S"), origin)
 
-                        # Draw bounding box + confidence (on cropped frame)
-                        cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
+                        # Scale bounding box back to original coords
+                        x1 = int(row['xmin'] * scale_x) + x_start
+                        y1 = int(row['ymin'] * scale_y) + y_start
+                        x2 = int(row['xmax'] * scale_x) + x_start
+                        y2 = int(row['ymax'] * scale_y) + y_start
+
+                        # Draw bounding box
+                        cv2.rectangle(frame, (x1, y1), (x2, y2), colour, thickness)
+
+                        # Draw confidence
                         cv2.putText(frame, f"{confidence:.2f}", (x1, y1 - 10),
                                     font, 0.7, (0, 255, 0), 2)
 
-                        # Adjust bounding box coordinates to the original full frame
-                        x1_orig = int(x1 * scale_x) + x_start
-                        y1_orig = int(y1 * scale_y) + y_start
-                        x2_orig = int(x2 * scale_x) + x_start
-                        y2_orig = int(y2 * scale_y) + y_start
-
-                        # Draw bounding box + timestamp label on original frame
-                        cv2.rectangle(frame, (x1_orig, y1_orig), (x2_orig, y2_orig), colour, thickness)
+                        # Draw timestamp below box
                         detected_timestamp = capture_timestamp.strftime("%H:%M:%S")
-                        cv2.putText(frame, detected_timestamp, (x1_orig, y2_orig + 50), 
+                        cv2.putText(frame, detected_timestamp, (x1, y2 + 50),
                                     font, fontScale, colour, thickness)
 
         # --- DECISION LOGIC FOR WRITING ---
