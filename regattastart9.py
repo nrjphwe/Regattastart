@@ -185,7 +185,6 @@ def prepare_input(img, device='cpu'):
 
 
 def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, fps):
-    from utils.general import non_max_suppression
     global recording_stopped
     confidence = 0.0  # Initial value
     class_name = ""  # Initial value
@@ -366,7 +365,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
             if frame_counter % 20 == 0:
                 cleanup_processed_timestamps(processed_timestamps)
 
-        # --- INFERENCE ---
+       # --- INFERENCE ---
         boat_in_current_frame = False  # Reset detection flag for this frame
 
         if frame_counter % 4 == 0:  # process every 4th frame
@@ -377,14 +376,13 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
             # Run inference
             input_tensor = prepare_input(resized_frame, device='cpu')
             results = model(input_tensor)
-            detections = non_max_suppression(results, conf_thres=0.25, iou_thres=0.45)[0]
+            df = results.pandas().xyxy[0]   # DataFrame with xmin, ymin, xmax, ymax, confidence, class, name
 
-            if not detections.empty:
-                for *xyxy, conf, cls in detections:
-                    x1, y1, x2, y2 = map(int, xyxy)
-                    confidence = float(conf)
-                    class_id = int(cls)
-                    class_name = model.names[class_id] if hasattr(model, 'names') else str(class_id)
+            if not df.empty:
+                for _, row in df.iterrows():
+                    x1, y1, x2, y2 = map(int, [row['xmin'], row['ymin'], row['xmax'], row['ymax']])
+                    confidence = float(row['confidence'])
+                    class_name = row['name']
 
                     if confidence > 0.5 and class_name == 'boat':
                         boat_in_current_frame = True
@@ -394,18 +392,18 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
                         font = cv2.FONT_HERSHEY_DUPLEX
                         text_rectangle(frame, capture_timestamp.strftime("%Y-%m-%d, %H:%M:%S"), origin)
 
-                        # Draw bounding box + confidence
-                        cv2.rectangle(frame, (int(x1), int(y1)), (int(x2), int(y2)), (0, 255, 0), 2)
-                        cv2.putText(frame, f"{confidence:.2f}", (int(x1), int(y1) - 10),
+                        # Draw bounding box + confidence (on cropped frame)
+                        cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
+                        cv2.putText(frame, f"{confidence:.2f}", (x1, y1 - 10),
                                     font, 0.7, (0, 255, 0), 2)
 
-                        # Adjust the bounding box coordinates to the original frame
+                        # Adjust bounding box coordinates to the original full frame
                         x1_orig = int(x1 * scale_x) + x_start
                         y1_orig = int(y1 * scale_y) + y_start
                         x2_orig = int(x2 * scale_x) + x_start
                         y2_orig = int(y2 * scale_y) + y_start
 
-                        # Draw bounding box and timestamp label on frame
+                        # Draw bounding box + timestamp label on original frame
                         cv2.rectangle(frame, (x1_orig, y1_orig), (x2_orig, y2_orig), colour, thickness)
                         detected_timestamp = capture_timestamp.strftime("%H:%M:%S")
                         cv2.putText(frame, detected_timestamp, (x1_orig, y2_orig + 50), 
