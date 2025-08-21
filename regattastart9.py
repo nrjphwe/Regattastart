@@ -383,23 +383,22 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
 
             if detections is not None and len(detections) > 0:
 
-                for *xyxy, conf, cls in detections.tolist():
-                    x1, y1, x2, y2 = map(int, xyxy)
+                for det in detections.tolist():
+                    x1, y1, x2, y2, conf, cls = det  # all 6 values in one flat list
+                    x1, y1, x2, y2 = map(int, [x1, y1, x2, y2])
                     confidence = float(conf)
                     class_name = model.names[int(cls)]  # get class name
+
                     if confidence > 0.5 and class_name == 'boat':
                         boat_in_current_frame = True
                         # Timestamp overlay
                         text_rectangle(frame, capture_timestamp.strftime("%Y-%m-%d, %H:%M:%S"), origin)
 
-                        # xyxy comes from detection tensor
-                        x1_resized, y1_resized, x2_resized, y2_resized = map(int, xyxy)
-
                         # Map to original frame
-                        x1 = int(x1_resized * scale_x) + x_start
-                        y1 = int(y1_resized * scale_y) + y_start
-                        x2 = int(x2_resized * scale_x) + x_start
-                        y2 = int(y2_resized * scale_y) + y_start
+                        x1 = int(x1 * scale_x) + x_start
+                        y1 = int(y1 * scale_y) + y_start
+                        x2 = int(x2 * scale_x) + x_start
+                        y2 = int(y2 * scale_y) + y_start
 
                         # Draw bounding box
                         cv2.rectangle(frame, (x1, y1), (x2, y2), colour, thickness)
