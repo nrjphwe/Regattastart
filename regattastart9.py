@@ -397,12 +397,6 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
                     confidence = float(conf)
                     class_name = model.names[int(cls)]  # get class name
 
-                    logger.debug(
-                        f"Detection: class={class_name}, conf={confidence:.2f}, "
-                        f"box=({x1:.1f},{y1:.1f},{x2:.1f},{y2:.1f})"
-                        f"box_int=({x1},{y1},{x2},{y2})"
-                    )
-
                     if confidence > 0.5 and class_name == 'boat':
                         logger.info(f"Boat detected with conf {confidence:.2f}")
                         boat_in_current_frame = True
