@@ -384,7 +384,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
             if detections is not None and len(detections) > 0:
 
                 for det in detections.tolist():
-                    x1, y1, x2, y2, conf, cls = det  # all 6 values in one flat list
+                    x1, y1, x2, y2, conf, cls = det[:6]  # take only first 6 values
                     x1, y1, x2, y2 = map(int, [x1, y1, x2, y2])
                     confidence = float(conf)
                     class_name = model.names[int(cls)]  # get class name
