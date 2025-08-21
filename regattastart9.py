@@ -378,25 +378,28 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
 
             # Run YOLOv5 inference
             input_tensor = prepare_input(resized_frame, device='cpu')
-            results = model(input_tensor)
-            detections = results.pandas().xyxy[0]  # DataFrame output
+            results = model(input_tensor)   # results is a list of tensors
+            detections = results[0]         # tensor of shape [N, 6] -> [x1, y1, x2, y2, conf, class]
 
-            if not detections.empty:
-                for _, row in detections.iterrows():
-                    class_name = row['name']
-                    confidence = float(row['confidence'])
+            if detections is not None and len(detections) > 0:
 
+                for *xyxy, conf, cls in detections.tolist():
+                    x1, y1, x2, y2 = map(int, xyxy)
+                    confidence = float(conf)
+                    class_name = model.names[int(cls)]  # get class name
                     if confidence > 0.5 and class_name == 'boat':
                         boat_in_current_frame = True
-
                         # Timestamp overlay
                         text_rectangle(frame, capture_timestamp.strftime("%Y-%m-%d, %H:%M:%S"), origin)
 
-                        # Scale bounding box back to original coords
-                        x1 = int(row['xmin'] * scale_x) + x_start
-                        y1 = int(row['ymin'] * scale_y) + y_start
-                        x2 = int(row['xmax'] * scale_x) + x_start
-                        y2 = int(row['ymax'] * scale_y) + y_start
+                        # xyxy comes from detection tensor
+                        x1_resized, y1_resized, x2_resized, y2_resized = map(int, xyxy)
+
+                        # Map to original frame
+                        x1 = int(x1_resized * scale_x) + x_start
+                        y1 = int(y1_resized * scale_y) + y_start
+                        x2 = int(x2_resized * scale_x) + x_start
+                        y2 = int(y2_resized * scale_y) + y_start
 
                         # Draw bounding box
                         cv2.rectangle(frame, (x1, y1), (x2, y2), colour, thickness)
