@@ -390,13 +390,21 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
                     elif len(det) == 7:  # has objectness
                         x1, y1, x2, y2, conf, cls, obj = det
                     else:
+                        logger.warning(f"Unexpected detection format: {det}")
                         continue  # unexpected format, skip
 
                     x1, y1, x2, y2 = map(int, [x1, y1, x2, y2])
                     confidence = float(conf)
                     class_name = model.names[int(cls)]  # get class name
 
+                    logger.debug(
+                        f"Detection: class={class_name}, conf={confidence:.2f}, "
+                        f"box=({x1:.1f},{y1:.1f},{x2:.1f},{y2:.1f})"
+                        f"box_int=({x1},{y1},{x2},{y2})"
+                    )
+
                     if confidence > 0.5 and class_name == 'boat':
+                        logger.info(f"Boat detected with conf {confidence:.2f}")
                         boat_in_current_frame = True
                         # Timestamp overlay
                         text_rectangle(frame, capture_timestamp.strftime("%Y-%m-%d, %H:%M:%S"), origin)
