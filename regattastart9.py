@@ -404,11 +404,11 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
                         detected_timestamp = capture_timestamp.strftime("%H:%M:%S")
                         cv2.putText(frame, detected_timestamp, (x1, y_text), font, fontScale, colour, thickness)
 
-                # --- LOGGING ---
-                # Log every N frames to avoid flooding
-                LOG_FRAME_THROTTLE = 10
-                if boat_in_current_frame and (frame_counter % LOG_FRAME_THROTTLE == 0):
-                    logger.info(f"Boat detected in frame {frame_counter} with conf {confidence:.2f}")
+                    # --- LOGGING ---
+                    # Log every N frames to avoid flooding
+                    LOG_FRAME_THROTTLE = 10
+                    if boat_in_current_frame and (frame_counter % LOG_FRAME_THROTTLE == 0):
+                        logger.info(f"Boat detected in frame {frame_counter} with conf {confidence:.2f}")
 
         # --- DECISION LOGIC FOR WRITING ---
         if boat_in_current_frame:
