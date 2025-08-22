@@ -312,7 +312,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
                 f"pre_detection_duration = {pre_detection_duration}, "
                 f"max_post_detection_duration={max_post_detection_duration}")
     number_of_post_frames = int(fpsw * max_post_detection_duration)  # Initial setting, to record after detection
-    boat_in_current_frame = False
+
 
     frame_counter = 0  # Initialize a frame counter
 
@@ -370,55 +370,47 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
                 logger.debug(f"Trimmed processed_timestamps to {len(processed_timestamps)} entries")
             if frame_counter % 20 == 0:
                 cleanup_processed_timestamps(processed_timestamps)
-
-
-
-        # --- INFERENCE ---
-        boat_in_current_frame = False  # Reset detection flag for this frame
-
+ 
         # --- INFERENCE ON EVERY 4TH FRAME ---
         if frame_counter % 4 == 0:
             # Crop region of interest
             cropped_frame = frame[y_start:y_start + crop_height, x_start:x_start + crop_width]
             resized_frame = cv2.resize(cropped_frame, (inference_width, inference_height))
-
-            # Prepare input tensor
             input_tensor = prepare_input(resized_frame, device='cpu')
 
             # Run YOLOv5 inference
             results = model(input_tensor)  # DetectMultiBackend returns list-of-tensors
-            detections = non_max_suppression(results, conf_thres=0.25, iou_thres=0.45)[0]
+            detections = non_max_suppression(results, conf_thres=DETECTION_CONF_THRESHOLD, iou_thres=0.45)[0]
+
+            boat_in_current_frame = False  # Reset detection flag for this frame
 
             if detections is not None and len(detections):
                 for *xyxy, conf, cls in detections:
-                    x1, y1, x2, y2 = map(int, xyxy)
                     confidence = float(conf)
                     class_name = model.names[int(cls)]
                     if confidence > 0.5 and class_name == 'boat':
                         boat_in_current_frame = True
+                        x1, y1, x2, y2 = map(int, xyxy)
+                        # Scale coordinates back to original frame
+                        x1 = int(x1 * scale_x) + x_start
+                        y1 = int(y1 * scale_y) + y_start
+                        x2 = int(x2 * scale_x) + x_start
+                        y2 = int(y2 * scale_y) + y_start
 
-                        if confidence >= DETECTION_CONF_THRESHOLD and class_name == "boat":
-                            boat_in_current_frame = True
-                            # Scale coordinates back to original frame
-                            x1 = int(x1f * scale_x) + x_start
-                            y1 = int(y1f * scale_y) + y_start
-                            x2 = int(x2f * scale_x) + x_start
-                            y2 = int(y2f * scale_y) + y_start
+                        # Overlay timestamp
+                        text_rectangle(frame, capture_timestamp.strftime("%Y-%m-%d, %H:%M:%S"), origin)
 
-                            # Overlay timestamp
-                            text_rectangle(frame, capture_timestamp.strftime("%Y-%m-%d, %H:%M:%S"), origin)
+                        # Draw bounding box
+                        cv2.rectangle(frame, (x1, y1), (x2, y2), colour, thickness)
 
-                            # Draw bounding box
-                            cv2.rectangle(frame, (x1, y1), (x2, y2), colour, thickness)
+                        # Draw confidence
+                        cv2.putText(frame, f"{confidence:.2f}", (x1, y1 - 10),
+                                    font, 0.7, (0, 255, 0), 2)
 
-                            # Draw confidence
-                            cv2.putText(frame, f"{confidence:.2f}", (x1, y1 - 10),
-                                        font, 0.7, (0, 255, 0), 2)
-
-                            # Draw timestamp below box
-                            y_text = min(y2 + 50, int(frame_height * 0.92))  # clamp so text does not go outside
-                            detected_timestamp = capture_timestamp.strftime("%H:%M:%S")
-                            cv2.putText(frame, detected_timestamp, (x1, y_text), font, fontScale, colour, thickness)
+                        # Draw timestamp below box
+                        y_text = min(y2 + 50, int(frame_height * 0.92))  # clamp so text does not go outside
+                        detected_timestamp = capture_timestamp.strftime("%H:%M:%S")
+                        cv2.putText(frame, detected_timestamp, (x1, y_text), font, fontScale, colour, thickness)
 
                 # --- LOGGING ---
                 # Log every N frames to avoid flooding
