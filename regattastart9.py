@@ -193,6 +193,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
     confidence = 0.0  # Initial value
     class_name = ""  # Initial value
     frame_counter = 0  # Initialize a frame counter
+    boat_in_current_frame = False  # Initialize detection flag
 
     # Set duration of video1 recording
     max_duration = (video_end + (num_starts-1)*5) * 60
