@@ -385,21 +385,24 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
                     # det could be 6 or 7 elements
                     if len(det) >= 6:
                         x1, y1, x2, y2, conf, cls = det[:6]
+                        conf = conf[0] if isinstance(conf, list) else conf
+                        cls = cls[0] if isinstance(cls, list) else cls
+
                         confidence = float(conf)
                         class_name = model.names[int(cls)]
 
                         if confidence > 0.5 and class_name == 'boat':
                             # logger.info(f"Boat detected with conf {confidence:.2f}")
                             boat_in_current_frame = True
-    
+  
                             # Timestamp overlay
                             text_rectangle(frame, capture_timestamp.strftime("%Y-%m-%d, %H:%M:%S"), origin)
 
                             # Map to original frame
-                            x1 = int(x1 * scale_x) + x_start
-                            y1 = int(y1 * scale_y) + y_start
-                            x2 = int(x2 * scale_x) + x_start
-                            y2 = int(y2 * scale_y) + y_start
+                            x1 = x1[0] if isinstance(x1, list) else x1
+                            y1 = y1[0] if isinstance(y1, list) else y1
+                            x2 = x2[0] if isinstance(x2, list) else x2
+                            y2 = y2[0] if isinstance(y2, list) else y2
 
                             # Draw bounding box
                             cv2.rectangle(frame, (x1, y1), (x2, y2), colour, thickness)
