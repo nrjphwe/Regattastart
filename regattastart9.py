@@ -374,77 +374,90 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
         # --- INFERENCE ---
         boat_in_current_frame = False  # Reset detection flag for this frame
 
-        if frame_counter % 4 == 0:  # process every 4th frame
+        # --- INFERENCE ON EVERY 4TH FRAME ---
+        if frame_counter % 4 == 0:
             # Crop region of interest
             cropped_frame = frame[y_start:y_start + crop_height, x_start:x_start + crop_width]
             resized_frame = cv2.resize(cropped_frame, (inference_width, inference_height))
 
-            # Run YOLOv5 inference
+            # Prepare input tensor
             input_tensor = prepare_input(resized_frame, device='cpu')
-            results = model(input_tensor)   # results is a list of tensors
 
-            if isinstance(results, list) or isinstance(results, tuple):
-                detections = results[0]   # tensor-like (Nx6) or (Nx7)
-            elif hasattr(results, "xyxy"):  # Results object
-                detections = results.xyxy[0]
+            # Run YOLOv5 inference
+            results = model(input_tensor)  # DetectMultiBackend returns list-of-tensors
+
+            # Extract first tensor (first/only image in batch)
+            if isinstance(results, (list, tuple)):
+                detections = results[0]  # tensor shape [N,6] or [N,7]
+            elif hasattr(results, "xyxy"):
+                detections = results.xyxy[0]  # Results object
             else:
-                # fallback if model returned a raw tensor already
-                detections = results
+                detections = results  # fallback
 
-            if detections is not None and len(detections):
+            boat_in_current_frame = False
+
+            if detections is not None and len(detections) > 0:
                 for det in detections.tolist():
-                   # det sometimes contains nested lists (e.g. [ [123.], [45.], ... ]) — flatten
+                    # Flatten any nested 1-element lists
                     det = [d[0] if isinstance(d, (list, tuple)) and len(d) == 1 else d for d in det]
 
+                    # Take first 6 values (x1, y1, x2, y2, conf, cls)
                     if len(det) < 6:
                         logger.warning(f"Unexpected detection format (len<6): {det}")
                         continue
 
-                    # take first 6 values (ignore any extra like objectness)
                     x1_raw, y1_raw, x2_raw, y2_raw, conf_raw, cls_raw = det[:6]
 
-                    # ensure scalar numeric types (defensive)
-                    x1f = float(x1_raw[0] if isinstance(x1_raw, (list, tuple)) else x1_raw)
-                    y1f = float(y1_raw[0] if isinstance(y1_raw, (list, tuple)) else y1_raw)
-                    x2f = float(x2_raw[0] if isinstance(x2_raw, (list, tuple)) else x2_raw)
-                    y2f = float(y2_raw[0] if isinstance(y2_raw, (list, tuple)) else y2_raw)
-                    confidence = float(conf_raw[0] if isinstance(conf_raw, (list, tuple)) else conf_raw)
-                    cls_idx = int(cls_raw[0] if isinstance(cls_raw, (list, tuple)) else cls_raw)
+                    # Ensure numeric scalars
+                    try:
+                        x1f = float(x1_raw)
+                        y1f = float(y1_raw)
+                        x2f = float(x2_raw)
+                        y2f = float(y2_raw)
+                        confidence = float(conf_raw)
+                        cls_idx = int(cls_raw)
+                    except Exception as e:
+                        logger.warning(f"Skipping detection, cannot convert values: {det}, {e}")
+                        continue
 
                     class_name = model.names[cls_idx] if hasattr(model, "names") else str(cls_idx)
 
-                    # filter
-                    if confidence >= DETECTION_CONF_THRESHOLD and class_name == "boat":
+                    if confidence >= 0.5 and class_name == "boat":
                         boat_in_current_frame = True
 
-                        # scale to original (resized_frame -> crop -> original frame)
+                        # Scale coordinates back to original frame
                         x1 = int(x1f * scale_x) + x_start
                         y1 = int(y1f * scale_y) + y_start
                         x2 = int(x2f * scale_x) + x_start
                         y2 = int(y2f * scale_y) + y_start
 
-  
-                        # draw and timestamp
-                        text_rectangle(frame, capture_timestamp.strftime('%Y-%m-%d, %H:%M:%S'), origin)
-                        cv2.rectangle(frame, (x1, y1), (x2, y2), colour, thickness)
-                        cv2.putText(frame, f"{confidence:.2f}", (x1, y1 - 10), font, 0.7, (0, 255, 0), 2)
+                        # Overlay timestamp
+                        text_rectangle(frame, capture_timestamp.strftime("%Y-%m-%d, %H:%M:%S"), origin)
 
-                        # optionally draw box timestamp (clamped)
-                        y_text = min(y2 + 50, int(frame_height * 0.92))
-                        detected_timestamp = capture_timestamp.strftime('%H:%M:%S')
+                        # Draw bounding box
+                        cv2.rectangle(frame, (x1, y1), (x2, y2), colour, thickness)
+
+                        # Draw confidence
+                        cv2.putText(frame, f"{confidence:.2f}", (x1, y1 - 10),
+                                    font, 0.7, (0, 255, 0), 2)
+
+                        # Draw timestamp below box
+                        y_text = min(y2 + 50, int(frame_height * 0.92))  # clamp so text does not go outside
+                        detected_timestamp = capture_timestamp.strftime("%H:%M:%S")
                         cv2.putText(frame, detected_timestamp, (x1, y_text), font, fontScale, colour, thickness)
 
-                # end for
-                # controlled logging per frame:
+                # --- LOGGING ---
+                # Log every N frames to avoid flooding
+                LOG_FRAME_THROTTLE = 10
                 if boat_in_current_frame and (frame_counter % LOG_FRAME_THROTTLE == 0):
-                    logger.info(f"Boat detected in frame {frame_counter}")
+                    logger.info(f"Boat detected in frame {frame_counter} with conf {confidence:.2f}")
 
         # --- DECISION LOGIC FOR WRITING ---
         if boat_in_current_frame:
             if frame is not None:
                 # Write this detection frame
                 video_writer.write(frame)
-                logger.debug(f"FRAME: detection written @ {capture_timestamp.strftime('%H:%M:%S')}")
+                # logger.debug(f"FRAME: detection written @ {capture_timestamp.strftime('%H:%M:%S')}")
 
             # Flush pre-detection buffer
             while pre_detection_buffer:
@@ -453,7 +466,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
                     cv2.putText(buf_frame, f"PRE {buf_ts.strftime('%H:%M:%S')}", (50, max(50, frame_height - 100)),
                                 font, fontScale, colour, thickness)
                     video_writer.write(buf_frame)
-                    logger.debug(f"FRAME: pre-detection written @ {buf_ts}")
+                    # logger.debug(f"FRAME: pre-detection written @ {buf_ts}")
             pre_detection_buffer.clear()
 
             # Reset post-detection countdown
