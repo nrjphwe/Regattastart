@@ -185,6 +185,10 @@ def prepare_input(img, device='cpu'):
 
 
 def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, fps):
+    from utils.general import non_max_suppression
+    # config
+    DETECTION_CONF_THRESHOLD = 0.2
+    LOG_FRAME_THROTTLE = 10  # log every N frames when boat found
     global recording_stopped
     confidence = 0.0  # Initial value
     class_name = ""  # Initial value
@@ -367,9 +371,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
             if frame_counter % 20 == 0:
                 cleanup_processed_timestamps(processed_timestamps)
 
-        # config
-        DETECTION_CONF_THRESHOLD = 0.2
-        LOG_FRAME_THROTTLE = 10  # log every N frames when boat found
+
 
         # --- INFERENCE ---
         boat_in_current_frame = False  # Reset detection flag for this frame
@@ -385,66 +387,38 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
 
             # Run YOLOv5 inference
             results = model(input_tensor)  # DetectMultiBackend returns list-of-tensors
+            detections = non_max_suppression(results, conf_thres=0.25, iou_thres=0.45)[0]
 
-            # Extract first tensor (first/only image in batch)
-            if isinstance(results, (list, tuple)):
-                detections = results[0]  # tensor shape [N,6] or [N,7]
-            elif hasattr(results, "xyxy"):
-                detections = results.xyxy[0]  # Results object
-            else:
-                detections = results  # fallback
-
-            boat_in_current_frame = False
-
-            if detections is not None and len(detections) > 0:
-                for det in detections.tolist():
-                    # Flatten any nested 1-element lists
-                    det = [d[0] if isinstance(d, (list, tuple)) and len(d) == 1 else d for d in det]
-
-                    # Take first 6 values (x1, y1, x2, y2, conf, cls)
-                    if len(det) < 6:
-                        logger.warning(f"Unexpected detection format (len<6): {det}")
-                        continue
-
-                    x1_raw, y1_raw, x2_raw, y2_raw, conf_raw, cls_raw = det[:6]
-
-                    # Ensure numeric scalars
-                    try:
-                        x1f = float(x1_raw)
-                        y1f = float(y1_raw)
-                        x2f = float(x2_raw)
-                        y2f = float(y2_raw)
-                        confidence = float(conf_raw)
-                        cls_idx = int(cls_raw)
-                    except Exception as e:
-                        logger.warning(f"Skipping detection, cannot convert values: {det}, {e}")
-                        continue
-
-                    class_name = model.names[cls_idx] if hasattr(model, "names") else str(cls_idx)
-
-                    if confidence >= DETECTION_CONF_THRESHOLD and class_name == "boat":
+            if detections is not None and len(detections):
+                for *xyxy, conf, cls in detections:
+                    x1, y1, x2, y2 = map(int, xyxy)
+                    confidence = float(conf)
+                    class_name = model.names[int(cls)]
+                    if confidence > 0.5 and class_name == 'boat':
                         boat_in_current_frame = True
 
-                        # Scale coordinates back to original frame
-                        x1 = int(x1f * scale_x) + x_start
-                        y1 = int(y1f * scale_y) + y_start
-                        x2 = int(x2f * scale_x) + x_start
-                        y2 = int(y2f * scale_y) + y_start
+                        if confidence >= DETECTION_CONF_THRESHOLD and class_name == "boat":
+                            boat_in_current_frame = True
+                            # Scale coordinates back to original frame
+                            x1 = int(x1f * scale_x) + x_start
+                            y1 = int(y1f * scale_y) + y_start
+                            x2 = int(x2f * scale_x) + x_start
+                            y2 = int(y2f * scale_y) + y_start
 
-                        # Overlay timestamp
-                        text_rectangle(frame, capture_timestamp.strftime("%Y-%m-%d, %H:%M:%S"), origin)
+                            # Overlay timestamp
+                            text_rectangle(frame, capture_timestamp.strftime("%Y-%m-%d, %H:%M:%S"), origin)
 
-                        # Draw bounding box
-                        cv2.rectangle(frame, (x1, y1), (x2, y2), colour, thickness)
+                            # Draw bounding box
+                            cv2.rectangle(frame, (x1, y1), (x2, y2), colour, thickness)
 
-                        # Draw confidence
-                        cv2.putText(frame, f"{confidence:.2f}", (x1, y1 - 10),
-                                    font, 0.7, (0, 255, 0), 2)
+                            # Draw confidence
+                            cv2.putText(frame, f"{confidence:.2f}", (x1, y1 - 10),
+                                        font, 0.7, (0, 255, 0), 2)
 
-                        # Draw timestamp below box
-                        y_text = min(y2 + 50, int(frame_height * 0.92))  # clamp so text does not go outside
-                        detected_timestamp = capture_timestamp.strftime("%H:%M:%S")
-                        cv2.putText(frame, detected_timestamp, (x1, y_text), font, fontScale, colour, thickness)
+                            # Draw timestamp below box
+                            y_text = min(y2 + 50, int(frame_height * 0.92))  # clamp so text does not go outside
+                            detected_timestamp = capture_timestamp.strftime("%H:%M:%S")
+                            cv2.putText(frame, detected_timestamp, (x1, y_text), font, fontScale, colour, thickness)
 
                 # --- LOGGING ---
                 # Log every N frames to avoid flooding
