@@ -217,7 +217,7 @@ def apply_timestamp(request):
                 logger.error("apply_timestamp: Frame is None or empty!")
                 return
             # Define text position
-            origin = (40, int(frame.shape[0] * 0.90)) # Bottom-left corner
+            origin = (40, int(frame.shape[0] * 0.80))  # Bottom-left corner
             # origin = (40, max(50, frame.shape[0] - 50))  # Bottom-left corner
             text_colour = (0, 0, 255)  # Red text in BGR
             # Use text_rectangle to draw the timestamp
