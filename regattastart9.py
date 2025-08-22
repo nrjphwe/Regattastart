@@ -414,7 +414,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
             if frame is not None:
                 # Write this detection frame
                 video_writer.write(frame)
-                logger.debug(f"FRAME: detection written @ {capture_timestamp.strftime("%H:%M:%S")}")
+                logger.debug(f"FRAME: detection written @ {capture_timestamp.strftime('%H:%M:%S')}")
 
             # Flush pre-detection buffer
             while pre_detection_buffer:
@@ -436,7 +436,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
                             font, fontScale, (0, 255, 0), thickness)
                 video_writer.write(frame)
                 number_of_post_frames -= 1
-                logger.debug(f"FRAME: post-detection written @ {capture_timestamp.strftime("%H:%M:%S")} (countdown={number_of_post_frames})")
+                logger.debug(f"FRAME: post-detection written @ {capture_timestamp.strftime('%H:%M:%S')} (countdown={number_of_post_frames})")
 
         # Check if recording should stop
         time_now = dt.datetime.now()
