@@ -367,6 +367,10 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
             if frame_counter % 20 == 0:
                 cleanup_processed_timestamps(processed_timestamps)
 
+        # config
+        DETECTION_CONF_THRESHOLD = 0.5
+        LOG_FRAME_THROTTLE = 10  # log every N frames when boat found
+
         # --- INFERENCE ---
         boat_in_current_frame = False  # Reset detection flag for this frame
 
@@ -378,45 +382,62 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
             # Run YOLOv5 inference
             input_tensor = prepare_input(resized_frame, device='cpu')
             results = model(input_tensor)   # results is a list of tensors
-            detections = results[0]  # get the tensor for the first (and only) frame
 
-            if detections is not None and len(detections) > 0:
+            if isinstance(results, list) or isinstance(results, tuple):
+                detections = results[0]   # tensor-like (Nx6) or (Nx7)
+            elif hasattr(results, "xyxy"):  # Results object
+                detections = results.xyxy[0]
+            else:
+                # fallback if model returned a raw tensor already
+                detections = results
+
+            if detections is not None and len(detections):
                 for det in detections.tolist():
-                    # det could be 6 or 7 elements
-                    if len(det) >= 6:
-                        x1, y1, x2, y2, conf, cls = det[:6]
-                        conf = conf[0] if isinstance(conf, list) else conf
-                        cls = cls[0] if isinstance(cls, list) else cls
+                   # det sometimes contains nested lists (e.g. [ [123.], [45.], ... ]) — flatten
+                    det = [d[0] if isinstance(d, (list, tuple)) and len(d) == 1 else d for d in det]
 
-                        confidence = float(conf)
-                        class_name = model.names[int(cls)]
+                    if len(det) < 6:
+                        logger.warning(f"Unexpected detection format (len<6): {det}")
+                        continue
 
-                        if confidence > 0.5 and class_name == 'boat':
-                            # logger.info(f"Boat detected with conf {confidence:.2f}")
-                            boat_in_current_frame = True
+                    # take first 6 values (ignore any extra like objectness)
+                    x1_raw, y1_raw, x2_raw, y2_raw, conf_raw, cls_raw = det[:6]
+
+                    # ensure scalar numeric types (defensive)
+                    x1f = float(x1_raw[0] if isinstance(x1_raw, (list, tuple)) else x1_raw)
+                    y1f = float(y1_raw[0] if isinstance(y1_raw, (list, tuple)) else y1_raw)
+                    x2f = float(x2_raw[0] if isinstance(x2_raw, (list, tuple)) else x2_raw)
+                    y2f = float(y2_raw[0] if isinstance(y2_raw, (list, tuple)) else y2_raw)
+                    confidence = float(conf_raw[0] if isinstance(conf_raw, (list, tuple)) else conf_raw)
+                    cls_idx = int(cls_raw[0] if isinstance(cls_raw, (list, tuple)) else cls_raw)
+
+                    class_name = model.names[cls_idx] if hasattr(model, "names") else str(cls_idx)
+
+                    # filter
+                    if confidence >= DETECTION_CONF_THRESHOLD and class_name == "boat":
+                        boat_in_current_frame = True
+
+                        # scale to original (resized_frame -> crop -> original frame)
+                        x1 = int(x1f * scale_x) + x_start
+                        y1 = int(y1f * scale_y) + y_start
+                        x2 = int(x2f * scale_x) + x_start
+                        y2 = int(y2f * scale_y) + y_start
+
   
-                            # Timestamp overlay
-                            text_rectangle(frame, capture_timestamp.strftime("%Y-%m-%d, %H:%M:%S"), origin)
+                        # draw and timestamp
+                        text_rectangle(frame, capture_timestamp.strftime('%Y-%m-%d, %H:%M:%S'), origin)
+                        cv2.rectangle(frame, (x1, y1), (x2, y2), colour, thickness)
+                        cv2.putText(frame, f"{confidence:.2f}", (x1, y1 - 10), font, 0.7, (0, 255, 0), 2)
 
-                            # Map to original frame
-                            x1 = x1[0] if isinstance(x1, list) else x1
-                            y1 = y1[0] if isinstance(y1, list) else y1
-                            x2 = x2[0] if isinstance(x2, list) else x2
-                            y2 = y2[0] if isinstance(y2, list) else y2
+                        # optionally draw box timestamp (clamped)
+                        y_text = min(y2 + 50, int(frame_height * 0.92))
+                        detected_timestamp = capture_timestamp.strftime('%H:%M:%S')
+                        cv2.putText(frame, detected_timestamp, (x1, y_text), font, fontScale, colour, thickness)
 
-                            # Draw bounding box
-                            cv2.rectangle(frame, (x1, y1), (x2, y2), colour, thickness)
-
-                            # Draw confidence
-                            cv2.putText(frame, f"{confidence:.2f}", (x1, y1 - 10),
-                                        font, 0.7, (0, 255, 0), 2)
-
-                            # Draw timestamp below box
-                            detected_timestamp = capture_timestamp.strftime("%H:%M:%S")
-                            cv2.putText(frame, detected_timestamp, (x1, y2 + 50),
-                                        font, fontScale, colour, thickness)
-                        if boat_in_current_frame and frame_counter % 10 == 0:
-                            logger.info(f"Boat detected in frame {frame_counter} (conf={confidence:.2f})")
+                # end for
+                # controlled logging per frame:
+                if boat_in_current_frame and (frame_counter % LOG_FRAME_THROTTLE == 0):
+                    logger.info(f"Boat detected in frame {frame_counter}")
 
         # --- DECISION LOGIC FOR WRITING ---
         if boat_in_current_frame:
