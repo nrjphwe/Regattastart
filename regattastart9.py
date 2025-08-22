@@ -377,23 +377,13 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
             # Run YOLOv5 inference
             input_tensor = prepare_input(resized_frame, device='cpu')
             results = model(input_tensor)   # results is a list of tensors
-            detections = results[0]         # tensor of shape [N, 6] -> [x1, y1, x2, y2, conf, class]
+            detections = results.xyxy[0]         # tensor of shape [N, 6] -> [x1, y1, x2, y2, conf, class]
 
             if detections is not None and len(detections) > 0:
 
-                for det in detections.tolist():
-                    det = [d[0] if isinstance(d, list) else d for d in det]  # flatten nested lists
-                    if len(det) == 6:
-                        x1, y1, x2, y2, conf, cls = det
-                    elif len(det) == 7:  # has objectness
-                        x1, y1, x2, y2, conf, cls, obj = det
-                    else:
-                        logger.warning(f"Unexpected detection format: {det}")
-                        continue  # unexpected format, skip
-
-                    x1, y1, x2, y2 = map(int, [x1, y1, x2, y2])
+                for x1, y1, x2, y2, conf, cls in detections.tolist():
                     confidence = float(conf)
-                    class_name = model.names[int(cls)]  # get class name
+                    class_name = model.names[int(cls)]
 
                     if confidence > 0.5 and class_name == 'boat':
                         logger.info(f"Boat detected with conf {confidence:.2f}")
