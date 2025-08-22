@@ -130,7 +130,6 @@ def letterbox(image, target_size=(640, 480)):
     nw, nh = int(iw * scale), int(ih * scale)
 
     logger.debug(f"Original: {iw}x{ih}, Target: {w}x{h}, New: {nw}x{nh}")
-
     image_resized = cv2.resize(image, (nw, nh), interpolation=cv2.INTER_LINEAR)
 
     top = (h - nh) // 2
@@ -149,7 +148,6 @@ def letterbox(image, target_size=(640, 480)):
 def capture_picture(camera, photo_path, file_name, rotate=False):
     try:
         request = camera.capture_request()  # Capture a single request
-
         with MappedArray(request, "main") as m:
             frame = m.array  # Get the frame as a NumPy array
             logger.debug(f"frame shape: {frame.shape} dtype: {frame.dtype}")
@@ -160,8 +158,7 @@ def capture_picture(camera, photo_path, file_name, rotate=False):
 
             # Apply timestamp (reuse the same logic as in apply_timestamp)
             timestamp = time.strftime("%Y-%m-%d %X")
-            origin = (40, int(frame.shape[0] * 0.90))  # Bottom-left corner
-            # origin = (40, max(50, frame.shape[0] - 50))  # Bottom-left corner
+            origin = (40, int(frame.shape[0] * 0.80))  # Bottom-left corner
             text_colour = (255, 0, 0)  # Blue text in BGR, Blue text RGB = (0, 0, 255)
             bg_colour = (200, 200, 200)  # Gray background
             # Use text_rectangle function in common_module to draw timestamp
@@ -169,8 +166,6 @@ def capture_picture(camera, photo_path, file_name, rotate=False):
             if rotate:
                 frame = cv2.rotate(frame, cv2.ROTATE_180)
 
-            # Use this version for display and saved images
-            # resized_for_display = letterbox(frame, (640, 480))
             resized_for_display = letterbox(frame, (1280, 960))
             cv2.imwrite(os.path.join(photo_path, file_name), resized_for_display)
             logger.debug(f"Saved resized_for_display size: {resized_for_display.shape}")
@@ -185,9 +180,9 @@ def text_rectangle(frame, text, origin, text_colour=(255, 0, 0), bg_colour=(200,
     """
     Draw a background rectangle and overlay text on a frame.
     Default values for text_colour is Blue and for background is grey.
+    OpenCV uses BGR by default, ensure colours are set in BGR format
     """
     try:
-        # OpenCV uses BGR by default, ensure colours are set in BGR format
 
         # Calculate text size
         text_size = cv2.getTextSize(text, font, font_scale, thickness)[0]
@@ -218,9 +213,7 @@ def apply_timestamp(request):
                 return
             # Define text position
             origin = (40, int(frame.shape[0] * 0.80))  # Bottom-left corner
-            # origin = (40, max(50, frame.shape[0] - 50))  # Bottom-left corner
             text_colour = (0, 0, 255)  # Red text in BGR
-            # Use text_rectangle to draw the timestamp
             text_rectangle(frame, timestamp, origin, text_colour)
     except Exception as e:
         logger.error(f"Error in apply_timestamp: {e}", exc_info=True)
@@ -417,5 +410,5 @@ def start_sequence(camera, this_start, num_starts, dur_between_starts, photo_pat
             time.sleep(0.1)
 
         logger.info(f"Start_sequence, End of iteration: {i+1}")
-    
+
     cleanup_gpio(gpio_handle)  # Clean up GPIO after each iteration
