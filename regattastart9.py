@@ -368,7 +368,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
                 cleanup_processed_timestamps(processed_timestamps)
 
         # config
-        DETECTION_CONF_THRESHOLD = 0.3
+        DETECTION_CONF_THRESHOLD = 0.2
         LOG_FRAME_THROTTLE = 10  # log every N frames when boat found
 
         # --- INFERENCE ---
@@ -422,7 +422,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
 
                     class_name = model.names[cls_idx] if hasattr(model, "names") else str(cls_idx)
 
-                    if confidence >= 0.5 and class_name == "boat":
+                    if confidence >= DETECTION_CONF_THRESHOLD and class_name == "boat":
                         boat_in_current_frame = True
 
                         # Scale coordinates back to original frame
