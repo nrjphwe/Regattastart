@@ -160,7 +160,8 @@ def capture_picture(camera, photo_path, file_name, rotate=False):
 
             # Apply timestamp (reuse the same logic as in apply_timestamp)
             timestamp = time.strftime("%Y-%m-%d %X")
-            origin = (40, max(50, frame.shape[0] - 50))  # Bottom-left corner
+            origin = (40, int(frame.shape[0] * 0.90))  # Bottom-left corner
+            # origin = (40, max(50, frame.shape[0] - 50))  # Bottom-left corner
             text_colour = (255, 0, 0)  # Blue text in BGR, Blue text RGB = (0, 0, 255)
             bg_colour = (200, 200, 200)  # Gray background
             # Use text_rectangle function in common_module to draw timestamp
@@ -193,8 +194,9 @@ def text_rectangle(frame, text, origin, text_colour=(255, 0, 0), bg_colour=(200,
         text_width, text_height = text_size
 
         # Calculate background rectangle coordinates
-        bg_top_left = (origin[0] - 10, origin[1] - text_height - 10)  # Top-left corner
-        bg_bottom_right = (origin[0] + text_width + 10, origin[1] + 10)  # Bottom-right corner
+        pad = int(5 * font_scale)
+        bg_top_left = (origin[0] - pad, origin[1] - text_height - pad) 
+        bg_bottom_right = (origin[0] + text_width + pad, origin[1] + pad)
 
         # Draw the background rectangle
         cv2.rectangle(frame, bg_top_left, bg_bottom_right, bg_colour, -1)  # -1 fills the rectangle
@@ -215,7 +217,8 @@ def apply_timestamp(request):
                 logger.error("apply_timestamp: Frame is None or empty!")
                 return
             # Define text position
-            origin = (40, max(50, frame.shape[0] - 50))  # Bottom-left corner
+            origin = (40, int(frame.shape[0] * 0.90)) # Bottom-left corner
+            # origin = (40, max(50, frame.shape[0] - 50))  # Bottom-left corner
             text_colour = (0, 0, 255)  # Red text in BGR
             # Use text_rectangle to draw the timestamp
             text_rectangle(frame, timestamp, origin, text_colour)
