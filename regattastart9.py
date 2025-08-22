@@ -192,6 +192,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
     global recording_stopped
     confidence = 0.0  # Initial value
     class_name = ""  # Initial value
+    frame_counter = 0  # Initialize a frame counter
 
     # Set duration of video1 recording
     max_duration = (video_end + (num_starts-1)*5) * 60
@@ -313,9 +314,6 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
                 f"max_post_detection_duration={max_post_detection_duration}")
     number_of_post_frames = int(fpsw * max_post_detection_duration)  # Initial setting, to record after detection
 
-
-    frame_counter = 0  # Initialize a frame counter
-
     # Compute scaling factors
     inference_width, inference_height = 640, 480  # Since you resize before inference
     scale_x = crop_width / inference_width
@@ -349,8 +347,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
             if frame is None:
                 logger.error("CAPTURE: frame is None, skipping")
                 continue
-            capture_timestamp = datetime.now() + timedelta(microseconds=frame_counter)
-
+            capture_timestamp = datetime.now()
         except Exception as e:
             logger.error(f"Failed to capture frame: {e}")
             continue  # Skips this iteration but keeps running the loop
@@ -370,7 +367,8 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
                 logger.debug(f"Trimmed processed_timestamps to {len(processed_timestamps)} entries")
             if frame_counter % 20 == 0:
                 cleanup_processed_timestamps(processed_timestamps)
- 
+
+        boat_in_current_frame = False   # Reset per frame
         # --- INFERENCE ON EVERY 4TH FRAME ---
         if frame_counter % 4 == 0:
             # Crop region of interest
@@ -380,15 +378,13 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
 
             # Run YOLOv5 inference
             results = model(input_tensor)  # DetectMultiBackend returns list-of-tensors
-            detections = non_max_suppression(results, conf_thres=DETECTION_CONF_THRESHOLD, iou_thres=0.45)[0]
-
-            boat_in_current_frame = False  # Reset detection flag for this frame
+            detections = non_max_suppression(results, conf_thres=0.25, iou_thres=0.45)[0]
 
             if detections is not None and len(detections):
                 for *xyxy, conf, cls in detections:
                     confidence = float(conf)
                     class_name = model.names[int(cls)]
-                    if confidence > 0.5 and class_name == 'boat':
+                    if confidence > DETECTION_CONF_THRESHOLD and class_name == 'boat':
                         boat_in_current_frame = True
                         x1, y1, x2, y2 = map(int, xyxy)
                         # Scale coordinates back to original frame
@@ -397,16 +393,11 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
                         x2 = int(x2 * scale_x) + x_start
                         y2 = int(y2 * scale_y) + y_start
 
-                        # Overlay timestamp
-                        text_rectangle(frame, capture_timestamp.strftime("%Y-%m-%d, %H:%M:%S"), origin)
-
                         # Draw bounding box
                         cv2.rectangle(frame, (x1, y1), (x2, y2), colour, thickness)
-
                         # Draw confidence
-                        cv2.putText(frame, f"{confidence:.2f}", (x1, y1 - 10),
+                        cv2.putText(frame, f"{confidence:.2f}", (x1, y1 - 10), 
                                     font, 0.7, (0, 255, 0), 2)
-
                         # Draw timestamp below box
                         y_text = min(y2 + 50, int(frame_height * 0.92))  # clamp so text does not go outside
                         detected_timestamp = capture_timestamp.strftime("%H:%M:%S")
@@ -420,11 +411,6 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
 
         # --- DECISION LOGIC FOR WRITING ---
         if boat_in_current_frame:
-            if frame is not None:
-                # Write this detection frame
-                video_writer.write(frame)
-                # logger.debug(f"FRAME: detection written @ {capture_timestamp.strftime('%H:%M:%S')}")
-
             # Flush pre-detection buffer
             while pre_detection_buffer:
                 buf_frame, buf_ts = pre_detection_buffer.popleft()
@@ -432,8 +418,11 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
                     cv2.putText(buf_frame, f"PRE {buf_ts.strftime('%H:%M:%S')}", (50, max(50, frame_height - 100)),
                                 font, fontScale, colour, thickness)
                     video_writer.write(buf_frame)
-                    # logger.debug(f"FRAME: pre-detection written @ {buf_ts}")
             pre_detection_buffer.clear()
+
+            # Overlay timestamp
+            text_rectangle(frame, capture_timestamp.strftime("%Y-%m-%d, %H:%M:%S"), origin)
+            video_writer.write(frame)
 
             # Reset post-detection countdown
             number_of_post_frames = int(max_post_detection_duration * fpsw)
@@ -441,8 +430,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
         elif number_of_post_frames > 0:
             if frame is not None:
                 #  Still within post-detection window
-                cv2.putText(frame, f"POST  {capture_timestamp.strftime('%H:%M:%S')}", (50, max(50, frame_height - 100)),
-                            font, fontScale, (0, 255, 0), thickness)
+                text_rectangle(frame, f"POST {capture_timestamp.strftime('%H:%M:%S')}", origin)
                 video_writer.write(frame)
                 number_of_post_frames -= 1
                 logger.debug(f"FRAME: post-detection written @ {capture_timestamp.strftime('%H:%M:%S')} (countdown={number_of_post_frames})")
