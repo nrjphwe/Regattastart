@@ -187,7 +187,7 @@ def prepare_input(img, device='cpu'):
 def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, fps):
     from utils.general import non_max_suppression
     # config
-    DETECTION_CONF_THRESHOLD = 0.2
+    DETECTION_CONF_THRESHOLD = 0.5
     LOG_FRAME_THROTTLE = 10  # log every N frames when boat found
     global recording_stopped
     confidence = 0.0  # Initial value
