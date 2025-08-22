@@ -368,7 +368,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
                 cleanup_processed_timestamps(processed_timestamps)
 
         # config
-        DETECTION_CONF_THRESHOLD = 0.5
+        DETECTION_CONF_THRESHOLD = 0.3
         LOG_FRAME_THROTTLE = 10  # log every N frames when boat found
 
         # --- INFERENCE ---
