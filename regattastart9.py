@@ -60,9 +60,9 @@ crop_width, crop_height = 1440, 1080  # Crop size for inference
 listening = True  # Define the listening variable
 recording_stopped = False  # Global variable
 
-logger.info("="*40)
+logger.info("="*60)
 logger.info(f"Starting new regattastart9.py session at {dt.datetime.now()}")
-logger.info("="*40)
+logger.info("="*60)
 # reset the contents of the status variable, used for flagging that
 # video1-conversion is complete.
 with open('/var/www/html/status.txt', 'w') as status_file:
@@ -163,7 +163,7 @@ def load_model_with_timeout(result_queue):
         # model = torch.hub.load('/home/pi/yolov5', 'custom', path='/var/www/html/yolov5s.pt', source='local')
         result_queue.put(model)  # Put the model in the queue
     except Exception as e:
-        logger.error(f"Failed to load YOLOv5 model: {e}", exc_info=True)
+        logger.error(f"FAILED to load YOLOv5 model: {e}", exc_info=True)
         result_queue.put(e)  # Put the exception in the queue
 
 
@@ -257,7 +257,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
     fpsw = fps
     logger.debug(f"FPS set to {fpsw}, proceeding to load YOLOv5 model.")
 
-    # Inference ## Load the pre-trained YOLOv5 model (e.g., yolov5s)
+    # Load the pre-trained YOLOv5 model (e.g., yolov5s)
     try:
         result_queue = queue.Queue()  # Create a queue to hold the result
         load_thread = threading.Thread(target=load_model_with_timeout, args=(result_queue,))
@@ -311,7 +311,6 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
     boat_in_current_frame = False
 
     frame_counter = 0  # Initialize a frame counter
-    # previous_capture_time = None  # Track previous frame timestamp
 
     # Compute scaling factors
     inference_width, inference_height = 640, 480  # Since you resize before inference
@@ -339,12 +338,11 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
 
     while not recording_stopped:
         frame_counter += 1  # Increment the frame counter
-
         # Capture a frame from the camera
         try:
             frame = camera.capture_array()
             if frame is None:
-                logger.error(f"CAPTURE: frame is None, skipping")
+                logger.error("CAPTURE: frame is None, skipping")
                 continue
             capture_timestamp = datetime.now() + timedelta(microseconds=frame_counter)
 
@@ -426,7 +424,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
             if frame is not None:
                 # Write this detection frame
                 video_writer.write(frame)
-                logger.debug(f"FRAME: detection written @ {capture_timestamp}")
+                logger.debug(f"FRAME: detection written @ {capture_timestamp.strftime("%H:%M:%S")}")
 
             # Flush pre-detection buffer
             while pre_detection_buffer:
@@ -448,7 +446,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
                             font, fontScale, (0, 255, 0), thickness)
                 video_writer.write(frame)
                 number_of_post_frames -= 1
-                logger.debug(f"FRAME: post-detection written @ {capture_timestamp} (countdown={number_of_post_frames})")
+                logger.debug(f"FRAME: post-detection written @ {capture_timestamp.strftime("%H:%M:%S")} (countdown={number_of_post_frames})")
 
         # Check if recording should stop
         time_now = dt.datetime.now()
@@ -496,7 +494,7 @@ def main():
         else:
             camera = setup_camera((1640, 1232))  # Initialize camera
     except Exception as e:
-        logger.error(f"Failed to fins CPU model: {e}", exc_info=True)
+        logger.error(f"Failed to find CPU model: {e}", exc_info=True)
 
     if camera is None:
         logger.error("CAMERA SETUP: failed, exiting.")
