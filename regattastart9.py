@@ -295,11 +295,20 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
     # Filter for 'boat' class (COCO ID for 'boat' is 8)
     model.classes = [8]
 
+    # New setup for video writer
+    # --- Setup VideoWriter for hardware-encoded H.264 ---
+    # 'avc1' is the MP4-friendly FourCC for H.264
+    # 'H264' also works, but 'avc1' avoids some playback issues on Windows/Mac
+    fourcc = cv2.VideoWriter_fourcc(*'avc1')
+
     # setup video writer
-    fourcc = cv2.VideoWriter_fourcc(*'MJPG')  # Use 'XVID' for .avi, or 'mp4v' for .mp4
-    video_writer = cv2.VideoWriter(video_path + 'video1' + '.avi', fourcc, fpsw, frame_size)
+    # fourcc = cv2.VideoWriter_fourcc(*'MJPG')  # Use 'XVID' for .avi, or 'mp4v' for .mp4
+    video_writer = cv2.VideoWriter(video_path + 'video1' + '.mp4', fourcc, fpsw, frame_size)
+    # video_writer = cv2.VideoWriter(video_path + 'video1' + '.avi', fourcc, fpsw, frame_size)
     if not video_writer.isOpened():
         logger.error(f"Failed to open video1.avi for writing. Selected frame_size: {frame_size}")
+        raise RuntimeError("Failed to open VideoWriter with H.264. "
+                       "Make sure ffmpeg with libx264 is installed!")
         exit(1)
     logger.debug(f"Video writer initialized successfully, frame_size: {frame_size}")
 
