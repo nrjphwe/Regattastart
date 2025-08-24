@@ -329,6 +329,19 @@ class FFmpegVideoWriter:
                 logger.error(f"FFmpeg SW write failed: {e}")
                 self.proc = None
 
+    def release(self):
+        if self.proc:
+            try:
+                if self.proc.stdin:
+                    self.proc.stdin.close()
+                stdout, stderr = self.proc.communicate(timeout=5)
+                if stderr:
+                    logger.debug(f"FFmpeg stderr: {stderr.decode(errors='ignore')}")
+            except Exception as e:
+                logger.error(f"Error releasing FFmpeg process: {e}")
+            finally:
+                self.proc = None
+
 
 def get_h264_writer(video_path, fps, frame_size):
     """Try hardware encoder first, fallback to software."""
