@@ -261,6 +261,53 @@ def restart_camera(camera, resolution=(1640, 1232), fps=15):
         return None  # Avoid using an uninitialized camera
 
 
+class FFmpegVideoWriter:
+    def __init__(self, filename, fps, frame_size):
+        self.filename = filename
+        self.fps = fps
+        self.frame_size = frame_size
+
+        width, height = frame_size
+        ffmpeg_cmd = [
+            "ffmpeg",
+            "-y",
+            "-f", "rawvideo",
+            "-pix_fmt", "bgr24",
+            "-s", f"{width}x{height}",
+            "-r", str(fps),
+            "-i", "-",
+            "-c:v", "h264_v4l2m2m",
+            "-pix_fmt", "yuv420p",
+            filename
+        ]
+        self.proc = subprocess.Popen(ffmpeg_cmd, stdin=subprocess.PIPE)
+
+    def write(self, frame):
+        self.proc.stdin.write(frame.tobytes())
+
+    def release(self):
+        if self.proc:
+            self.proc.stdin.close()
+            self.proc.wait()
+            self.proc = None
+
+
+def get_h264_writer(filename, fps, frame_size):
+    """
+    Try to create OpenCV H.264 VideoWriter.
+    If that fails, fallback to FFmpeg hardware H.264.
+    """
+    fourcc = cv2.VideoWriter_fourcc(*'avc1')  # or try 'H264'
+    out = cv2.VideoWriter(filename, fourcc, fps, frame_size)
+
+    if out.isOpened():
+        logger.info("Using OpenCV VideoWriter (libx264)")
+        return out, "opencv"
+    else:
+        logger.error("OpenCV VideoWriter failed, using FFmpeg h264_v4l2m2m")
+        return FFmpegVideoWriter(filename, fps, frame_size), "ffmpeg"
+
+
 def start_video_recording(camera, video_path, file_name, resolution=(1640, 1232), bitrate=4000000):
     """
     Start video recording using H264Encoder and with timestamp.
