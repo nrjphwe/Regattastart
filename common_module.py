@@ -307,26 +307,24 @@ class FFmpegVideoWriter:
         h, w = frame.shape[:2]
         exp_w, exp_h = self.frame_size
         if (w, h) != (exp_w, exp_h):
-            logger.debug(f"Resizing frame from {w}x{h} to {exp_w}x{exp_h}")
             frame = cv2.resize(frame, (exp_w, exp_h))
 
-        # Ensure frame has 3 channels for YUV conversion
-        if self.use_hw:
-            if frame.ndim == 2 or frame.shape[2] == 1:
-                logger.debug("Converting single-channel frame to 3-channel BGR")
-                frame = cv2.cvtColor(frame, cv2.COLOR_GRAY2BGR)
-            try:
+        try:
+            if self.use_hw:
+                # Ensure frame has 3 channels
+                if frame.shape[2] != 3:
+                    logger.error(f"Invalid frame channels: {frame.shape[2]}")
+                    return
                 frame_yuv = cv2.cvtColor(frame, cv2.COLOR_BGR2YUV_I420)
                 self.proc.stdin.write(frame_yuv.tobytes())
-            except Exception as e:
-                logger.error(f"FFmpeg HW write failed: {e}")
-                self.proc = None
-        else:
-            try:
+            else:
                 self.proc.stdin.write(frame.tobytes())
-            except Exception as e:
-                logger.error(f"FFmpeg SW write failed: {e}")
-                self.proc = None
+        except BrokenPipeError:
+            logger.error("FFmpeg pipe broken. Frame dropped.")
+            self.proc = None
+        except Exception as e:
+            logger.error(f"Unexpected FFmpeg write error: {e}")
+            self.proc = None
 
     def release(self):
         if self.proc:
