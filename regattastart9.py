@@ -296,24 +296,18 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
     # Filter for 'boat' class (COCO ID for 'boat' is 8)
     model.classes = [8]
 
-    # New setup for video writer
-    # --- Setup VideoWriter for hardware-encoded H.264 ---
+    # --- SETUP VIDEO_WRITER (H.264 hardware if possible) ---
     # 'avc1' is the MP4-friendly FourCC for H.264
     # 'H264' also works, but 'avc1' avoids some playback issues on Windows/Mac
-    # fourcc = cv2.VideoWriter_fourcc(*'avc1')
 
     # setup video writer
     writer, writer_type = get_h264_writer(video_path, fps, frame_size)
     video_writer = writer
-    # fourcc = cv2.VideoWriter_fourcc(*'MJPG')  # Use 'XVID' for .avi, or 'mp4v' for .mp4
-    #video_writer = cv2.VideoWriter(video_path + 'video1' + '.mp4', fourcc, fpsw, frame_size)
-    # video_writer = cv2.VideoWriter(video_path + 'video1' + '.avi', fourcc, fpsw, frame_size)
-    #if not video_writer.isOpened():
-    #    logger.error(f"Failed to open video1.avi for writing. Selected frame_size: {frame_size}")
-    #    raise RuntimeError("Failed to open VideoWriter with H.264. "
-    #                   "Make sure ffmpeg with libx264 is installed!")
-    #    exit(1)
-    logger.debug(f"Video writer initialized successfully, frame_size: {frame_size}")
+
+    if writer_type == "opencv":
+        logger.debug(f"VideoWriter (OpenCV/libx264) initialized successfully, frame_size: {frame_size}")
+    else:
+        logger.debug(f"VideoWriter (FFmpeg h264_v4l2m2m) initialized successfully, frame_size: {frame_size}")
 
     # Setup pre-detection parameters
     pre_detection_duration = 0  # Seconds
@@ -430,12 +424,20 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
                 if buf_frame is not None:
                     cv2.putText(buf_frame, f"PRE {buf_ts.strftime('%H:%M:%S')}", (50, max(50, frame_height - 100)),
                                 font, fontScale, colour, thickness)
-                    video_writer.write(buf_frame)
+                    if writer_type == "opencv":
+                        video_writer.write(buf_frame)
+                    elif writer_type == "ffmpeg":
+                        # Write raw frame data to ffmpeg stdin
+                        video_writer.stdin.write(buf_frame.tobytes())
             pre_detection_buffer.clear()
 
             # Overlay timestamp
             text_rectangle(frame, capture_timestamp.strftime("%Y-%m-%d, %H:%M:%S"), origin)
-            video_writer.write(frame)
+            if writer_type == "opencv":
+                video_writer.write(frame)
+            elif writer_type == "ffmpeg":
+                # Write raw frame data to ffmpeg stdin
+                video_writer.stdin.write(frame.tobytes())
 
             # Reset post-detection countdown
             number_of_post_frames = int(max_post_detection_duration * fpsw)
@@ -444,7 +446,11 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
             if frame is not None:
                 #  Still within post-detection window
                 text_rectangle(frame, f"POST {capture_timestamp.strftime('%H:%M:%S')}", origin)
-                video_writer.write(frame)
+                if writer_type == "opencv":
+                    video_writer.write(frame)
+                elif writer_type == "ffmpeg":
+                    # Write raw frame data to ffmpeg stdin
+                    video_writer.stdin.write(frame.tobytes())
                 number_of_post_frames -= 1
                 logger.debug(f"FRAME: post-detection written @ {capture_timestamp.strftime('%H:%M:%S')} (countdown={number_of_post_frames})")
 
@@ -464,8 +470,16 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
         stop_video_recording(camera)
         recording_stopped = True
     if video_writer is not None:
-        video_writer.release()  # Release the video writer
-        logger.info("Video writer released")
+        if writer_type == "opencv":
+            # Normal OpenCV cleanup
+            video_writer.release()
+            logger.info(f"VideoWriter (OpenCV) closed for {video_path}")
+        elif writer_type == "ffmpeg":
+            # Close the FFmpeg process cleanly
+            video_writer.stdin.close()
+            video_writer.wait()
+            logger.info(f"FFmpeg (h264_v4l2m2m) process closed for {video_path}")
+        video_writer = None
     logger.info("Exited the finish_recording module.")
 
 
