@@ -262,46 +262,42 @@ def restart_camera(camera, resolution=(1640, 1232), fps=15):
 
 
 class FFmpegVideoWriter:
-    """Robust FFmpeg H.264 writer with hardware/software fallback."""
-    def __init__(self, filename, fps, frame_size, use_hw=True):
+    """Wraps an FFmpeg subprocess for software H.264 encoding."""
+    def __init__(self, filename, fps, frame_size):
         self.filename = filename
         self.fps = fps
         self.frame_size = frame_size
-        self.use_hw = use_hw
         width, height = frame_size
-
-        codec = "h264_v4l2m2m" if use_hw else "libx264"
-        pix_fmt = "yuv420p" if use_hw else "bgr24"
 
         ffmpeg_cmd = [
             "ffmpeg",
-            "-y",
+            "-y",  # overwrite
             "-f", "rawvideo",
-            "-pix_fmt", pix_fmt,
+            "-pix_fmt", "bgr24",   # direct BGR from Picamera2
             "-s", f"{width}x{height}",
             "-r", str(fps),
             "-i", "-",  # stdin
-            "-an",
-            "-c:v", codec,
-            "-b:v", "2M",
+            "-an",      # no audio
+            "-c:v", "libx264",
+            "-preset", "fast",
+            "-crf", "23",
             filename
         ]
-
         try:
             self.proc = subprocess.Popen(
                 ffmpeg_cmd,
                 stdin=subprocess.PIPE,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL
             )
-            logger.debug(f"Started FFmpeg ({'HW' if use_hw else 'SW'}) for {filename}")
+            print(f"[FFmpegVideoWriter] Started software H.264 for {filename}")
         except Exception as e:
-            logger.error(f"Failed to start FFmpeg: {e}")
+            print(f"[FFmpegVideoWriter] Failed to start FFmpeg: {e}")
             self.proc = None
 
     def write(self, frame):
         if self.proc is None:
-            logger.error("FFmpeg process not initialized")
+            print("[FFmpegVideoWriter] FFmpeg not initialized")
             return
 
         h, w = frame.shape[:2]
@@ -310,27 +306,9 @@ class FFmpegVideoWriter:
             frame = cv2.resize(frame, (exp_w, exp_h))
 
         try:
-            if self.use_hw:
-                # Ensure frame has 3 channels
-                if frame.shape[2] != 3:
-                    logger.error(f"Invalid frame channels: {frame.shape[2]}")
-                    return
-                frame_yuv = cv2.cvtColor(frame, cv2.COLOR_BGR2YUV_I420)
-                self.proc.stdin.write(frame_yuv.tobytes())
-            else:
-                self.proc.stdin.write(frame.tobytes())
-
-            # Check if FFmpeg exited
-            if self.proc.poll() is not None:
-                err = self.proc.stderr.read().decode()
-                logger.error(f"FFmpeg exited unexpectedly: {err}")
-                self.proc = None
-
-        except BrokenPipeError:
-            logger.error("FFmpeg pipe broken. Frame dropped.")
-            self.proc = None
+            self.proc.stdin.write(frame.tobytes())
         except Exception as e:
-            logger.error(f"Unexpected FFmpeg write error: {e}")
+            print(f"[FFmpegVideoWriter] Error writing frame: {e}")
             self.proc = None
 
     def release(self):
@@ -339,28 +317,24 @@ class FFmpegVideoWriter:
                 if self.proc.stdin:
                     self.proc.stdin.close()
                 self.proc.wait()
-                logger.debug(f"[FFmpegVideoWriter] Released encoder for {self.filename}")
             except Exception as e:
-                logger.error(f"Error releasing FFmpeg process: {e}")
+                print(f"[FFmpegVideoWriter] Error releasing FFmpeg: {e}")
             finally:
                 self.proc = None
 
 
 def get_h264_writer(video_path, fps, frame_size):
-    """Try hardware encoder first, fallback to software."""
-    # 1. Try hardware
-    writer = FFmpegVideoWriter(video_path, fps, frame_size, use_hw=True)
+    """
+    Force software H.264 using libx264.
+    Returns (writer_object, writer_type).
+    """
+    writer = FFmpegVideoWriter(video_path, fps, frame_size)
     if writer.proc and writer.proc.poll() is None:
-        logger.info("Using hardware H.264 (h264_v4l2m2m)")
-        return writer, "ffmpeg-hw"
-
-    # 2. Fallback: software
-    writer = FFmpegVideoWriter(video_path, fps, frame_size, use_hw=False)
-    if writer.proc and writer.proc.poll() is None:
-        logger.info("Using software H.264 (libx264)")
+        print(f"[get_h264_writer] Using software H.264 (libx264) for {video_path}")
         return writer, "ffmpeg-sw"
 
-    raise RuntimeError("Failed to initialize FFmpeg H.264 writer.")
+    raise RuntimeError("Failed to initialize FFmpeg software H.264 writer.")
+
 
 
 def start_video_recording(camera, video_path, file_name, resolution=(1640, 1232), bitrate=4000000):
