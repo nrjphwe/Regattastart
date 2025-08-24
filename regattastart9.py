@@ -304,6 +304,8 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
     video_writer, writer_type = get_h264_writer(video_path, fps, frame_size)
     logger.info(f"Video writer backend: {writer_type}")
     logger.info(f"Video writer object type: {type(video_writer)}")
+    if video_writer.proc is None:
+        logger.error("FFmpeg process failed to start!")
 
     if writer_type == "opencv":
         logger.debug(f"VideoWriter (OpenCV/libx264) initialized successfully, frame_size: {frame_size}")
@@ -431,6 +433,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
             # Overlay timestamp
             text_rectangle(frame, capture_timestamp.strftime("%Y-%m-%d, %H:%M:%S"), origin)
             video_writer.write(frame)
+            logger.info("writer write frame with boat detected")
 
             # Reset post-detection countdown
             number_of_post_frames = int(max_post_detection_duration * fpsw)
