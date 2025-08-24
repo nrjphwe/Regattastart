@@ -291,8 +291,8 @@ class FFmpegVideoWriter:
             self.proc = subprocess.Popen(
                 ffmpeg_cmd,
                 stdin=subprocess.PIPE,
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE
             )
             logger.debug(f"Started FFmpeg ({'HW' if use_hw else 'SW'}) for {filename}")
         except Exception as e:
@@ -319,6 +319,13 @@ class FFmpegVideoWriter:
                 self.proc.stdin.write(frame_yuv.tobytes())
             else:
                 self.proc.stdin.write(frame.tobytes())
+
+            # Check if FFmpeg exited
+            if self.proc.poll() is not None:
+                err = self.proc.stderr.read().decode()
+                logger.error(f"FFmpeg exited unexpectedly: {err}")
+                self.proc = None
+
         except BrokenPipeError:
             logger.error("FFmpeg pipe broken. Frame dropped.")
             self.proc = None
