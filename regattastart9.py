@@ -425,22 +425,25 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
             while pre_detection_buffer:
                 buf_frame, buf_ts = pre_detection_buffer.popleft()
                 if buf_frame is not None:
+                    buf_frame = cv2.resize(buf_frame, frame_size)  # enforce correct size
                     cv2.putText(buf_frame, f"PRE {buf_ts.strftime('%H:%M:%S')}", (50, max(50, frame_height - 100)),
                                 font, fontScale, colour, thickness)
                     video_writer.write(buf_frame)
             pre_detection_buffer.clear()
 
             # Overlay timestamp
-            text_rectangle(frame, capture_timestamp.strftime("%Y-%m-%d, %H:%M:%S"), origin)
-            video_writer.write(frame)
-            logger.info("writer write frame with boat detected")
+            if frame is not None:
+                frame = cv2.resize(frame, frame_size)
+                text_rectangle(frame, capture_timestamp.strftime("%Y-%m-%d, %H:%M:%S"), origin)
+                video_writer.write(frame)
+                logger.debug(f"FRAME: detection written @ {capture_timestamp.strftime('%H:%M:%S')}")
 
             # Reset post-detection countdown
             number_of_post_frames = int(max_post_detection_duration * fpsw)
 
         elif number_of_post_frames > 0:
             if frame is not None:
-                #  Still within post-detection window
+                frame = cv2.resize(frame, frame_size)
                 text_rectangle(frame, f"POST {capture_timestamp.strftime('%H:%M:%S')}", origin)
                 video_writer.write(frame)
                 number_of_post_frames -= 1
@@ -455,16 +458,18 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
             logger.debug(f"STOP: max duration reached ({elapsed_time:.1f}s)")
             recording_stopped = True
 
+    # --- CLEAN SHUTDOWN ---
     if recording_stopped:
         logger.info('Video1 recording stopped')
-    else:
-        logger.info("Calling stop_video_recording")
-        stop_video_recording(camera)
-        recording_stopped = True
-    if video_writer is not None:
-        video_writer.release()
-        video_writer = None
-    logger.info("Exited the finish_recording module.")
+        if video_writer is not None:
+            try:
+                video_writer.release()
+                logger.info("Video1 writer released, file should be finalized.")
+            except Exception as e:
+                logger.error(f"Error releasing video_writer: {e}")
+            video_writer = None
+        else:
+            logger.warning("Video1 writer was None at shutdown!")
 
 
 def stop_listen_thread():
