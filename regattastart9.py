@@ -576,7 +576,7 @@ def main():
                 logger.info("listen_thread finished")
 
             time.sleep(2)
-            process_video(video_path, "video1.avi", "video1.mp4", frame_rate=30,resolution=(1920, 1080))
+            #process_video(video_path, "video1.avi", "video1.mp4", frame_rate=30,resolution=(1920, 1080))
 
             # After video conversion is complete
             with open('/var/www/html/status.txt', 'w') as status_file:
