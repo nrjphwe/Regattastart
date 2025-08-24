@@ -268,9 +268,8 @@ class FFmpegVideoWriter:
         self.fps = fps
         self.frame_size = frame_size
         self.use_hw = use_hw
-        self.proc = None
-
         width, height = frame_size
+
         codec = "h264_v4l2m2m" if use_hw else "libx264"
         pix_fmt = "yuv420p" if use_hw else "bgr24"
 
@@ -285,15 +284,15 @@ class FFmpegVideoWriter:
             "-an",
             "-c:v", codec,
             "-b:v", "2M",
-            self.filename
+            filename
         ]
 
         try:
             self.proc = subprocess.Popen(
                 ffmpeg_cmd,
                 stdin=subprocess.PIPE,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL
             )
             logger.debug(f"Started FFmpeg ({'HW' if use_hw else 'SW'}) for {filename}")
         except Exception as e:
@@ -334,9 +333,8 @@ class FFmpegVideoWriter:
             try:
                 if self.proc.stdin:
                     self.proc.stdin.close()
-                stdout, stderr = self.proc.communicate(timeout=5)
-                if stderr:
-                    logger.debug(f"FFmpeg stderr: {stderr.decode(errors='ignore')}")
+                self.proc.wait()
+                logger.debug(f"[FFmpegVideoWriter] Released encoder for {self.filename}")
             except Exception as e:
                 logger.error(f"Error releasing FFmpeg process: {e}")
             finally:
