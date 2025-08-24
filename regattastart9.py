@@ -13,7 +13,7 @@ from common_module import (
     text_rectangle,
     process_video,
     get_cpu_model,
-    get_h264_writer
+    get_h264_writer_ffmpeg
 )
 
 # Use a deque to store the most recent frames in memory
@@ -301,7 +301,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
     # 'H264' also works, but 'avc1' avoids some playback issues on Windows/Mac
 
     # setup video writer
-    writer, writer_type = get_h264_writer(video_path, fps, frame_size)
+    writer, writer_type = get_h264_writer_ffmpeg(video_path, fps, frame_size)
     video_writer = writer
 
     if writer_type == "opencv":
@@ -451,6 +451,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
                 elif writer_type == "ffmpeg":
                     # Write raw frame data to ffmpeg stdin
                     video_writer.stdin.write(frame.tobytes())
+
                 number_of_post_frames -= 1
                 logger.debug(f"FRAME: post-detection written @ {capture_timestamp.strftime('%H:%M:%S')} (countdown={number_of_post_frames})")
 
