@@ -13,6 +13,7 @@ from common_module import (
     text_rectangle,
     process_video,
     get_cpu_model,
+    get_h264_writer
 )
 
 # Use a deque to store the most recent frames in memory
@@ -299,17 +300,19 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
     # --- Setup VideoWriter for hardware-encoded H.264 ---
     # 'avc1' is the MP4-friendly FourCC for H.264
     # 'H264' also works, but 'avc1' avoids some playback issues on Windows/Mac
-    fourcc = cv2.VideoWriter_fourcc(*'avc1')
+    # fourcc = cv2.VideoWriter_fourcc(*'avc1')
 
     # setup video writer
+    writer, writer_type = get_h264_writer(video_path, fps, frame_size)
+    video_writer = writer
     # fourcc = cv2.VideoWriter_fourcc(*'MJPG')  # Use 'XVID' for .avi, or 'mp4v' for .mp4
-    video_writer = cv2.VideoWriter(video_path + 'video1' + '.mp4', fourcc, fpsw, frame_size)
+    #video_writer = cv2.VideoWriter(video_path + 'video1' + '.mp4', fourcc, fpsw, frame_size)
     # video_writer = cv2.VideoWriter(video_path + 'video1' + '.avi', fourcc, fpsw, frame_size)
-    if not video_writer.isOpened():
-        logger.error(f"Failed to open video1.avi for writing. Selected frame_size: {frame_size}")
-        raise RuntimeError("Failed to open VideoWriter with H.264. "
-                       "Make sure ffmpeg with libx264 is installed!")
-        exit(1)
+    #if not video_writer.isOpened():
+    #    logger.error(f"Failed to open video1.avi for writing. Selected frame_size: {frame_size}")
+    #    raise RuntimeError("Failed to open VideoWriter with H.264. "
+    #                   "Make sure ffmpeg with libx264 is installed!")
+    #    exit(1)
     logger.debug(f"Video writer initialized successfully, frame_size: {frame_size}")
 
     # Setup pre-detection parameters
