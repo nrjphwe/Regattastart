@@ -441,7 +441,8 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
 
             input_tensor = prepare_input(resized_frame, device='cpu')
             # Run YOLOv5 inference
-            results = model(input_tensor)
+            results = model(resized_frame)
+            # results = model(input_tensor)
             detections = results.pandas().xyxy[0]  # DataFrame output
 
             if not detections.empty:
