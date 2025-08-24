@@ -267,8 +267,8 @@ class FFmpegVideoWriter:
         self.filename = filename
         self.fps = fps
         self.frame_size = frame_size
-
         width, height = frame_size
+
         ffmpeg_cmd = [
             "ffmpeg",
             "-y",  # overwrite output
@@ -280,29 +280,54 @@ class FFmpegVideoWriter:
             "-an",  # no audio
             "-c:v", "h264_v4l2m2m",  # Raspberry Pi hardware H.264
             "-b:v", "2M",
-            self.filename
+            filename
         ]
         try:
-            self.proc = subprocess.Popen(ffmpeg_cmd, stdin=subprocess.PIPE)
-            logger.debug(f"Started FFmpeg process for {filename}")
+            self.proc = subprocess.Popen(
+                ffmpeg_cmd,
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE
+            )
         except Exception as e:
-            logger.error(f"Failed to start FFmpeg H.264 writer: {e}")
-            raise
+            logger.error(f"Failed to start FFmpeg process: {e}")
+            self.proc = None
 
     def write(self, frame):
-        """Write a single frame (BGR) to FFmpeg."""
-        if self.proc and self.proc.stdin:
+        if self.proc is None:
+            logger.error("FFmpeg process not initialized")
+            return
+
+        # Ensure frame shape matches expected size
+        height, width = frame.shape[:2]
+        expected_width, expected_height = self.frame_size
+        if (width, height) != (expected_width, expected_height):
+            logger.warning(f"Frame size {width}x{height} does not match expected {expected_width}x{expected_height}. Resizing.")
+            frame = cv2.resize(frame, (expected_width, expected_height))
+
+        # Check if FFmpeg process is still running
+        if self.proc.poll() is not None:
+            logger.error("FFmpeg process has exited unexpectedly. Frame dropped.")
+            return
+
+        # Write frame safely
+        try:
             self.proc.stdin.write(frame.tobytes())
+        except BrokenPipeError:
+            logger.error("FFmpeg pipe broken. Frame dropped.")
+        except Exception as e:
+            logger.error(f"Unexpected error writing frame: {e}")
 
     def release(self):
-        """Close FFmpeg process cleanly."""
         if self.proc:
-            if self.proc.stdin:
-                self.proc.stdin.close()
-            self.proc.wait()
-            self.proc = None
-            logger.debug(f"FFmpeg process closed for {self.filename}")
-
+            try:
+                if self.proc.stdin:
+                    self.proc.stdin.close()
+                self.proc.wait()
+            except Exception as e:
+                logger.error(f"Error releasing FFmpeg process: {e}")
+            finally:
+                self.proc = None
 
 def get_h264_writer(video_path, fps, frame_size):
     """
