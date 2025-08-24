@@ -305,6 +305,57 @@ class FFmpegVideoWriter:
             logger.error("FFmpeg process not initialized or exited")
             return
 
+        # Resize frame if needed
+        h, w = frame.shape[:2]
+        exp_w, exp_h = self.frame_size
+        if (w, h) != (exp_w, exp_h):
+            frame = cv2.resize(frame, (exp_w, exp_h))
+
+        # Convert to YUV420p if hardware encoder
+        if self.use_hw:
+            try:
+                frame_yuv = cv2.cvtColor(frame, cv2.COLOR_BGR2YUV_I420)
+                self.proc.stdin.write(frame_yuv.tobytes())
+            except Exception as e:
+                logger.error(f"FFmpeg HW write failed: {e}")
+                self.proc = None
+        else:
+            try:
+                self.proc.stdin.write(frame.tobytes())
+            except Exception as e:
+                logger.error(f"FFmpeg SW write failed: {e}")
+                self.proc = None
+
+    def release(self):
+        if self.proc:
+            try:
+                if self.proc.stdin:
+                    self.proc.stdin.close()
+                stdout, stderr = self.proc.communicate(timeout=5)
+                if stderr:
+                    logger.debug(f"FFmpeg stderr: {stderr.decode(errors='ignore')}")
+            except Exception as e:
+                logger.error(f"Error releasing FFmpeg process: {e}")
+            finally:
+                self.proc = None
+
+
+def get_h264_writer(video_path, fps, frame_size):
+    """Try hardware encoder first, fallback to software."""
+    # 1. Try hardware
+    writer = FFmpegVideoWriter(video_path, fps, frame_size, use_hw=True)
+    if writer.proc and writer.proc.poll() is None:
+        logger.info("Using hardware H.264 (h264_v4l2m2m)")
+        return writer, "ffmpeg-hw"
+
+    # 2. Fallback: software
+    writer = FFmpegVideoWriter(video_path, fps, frame_size, use_hw=False)
+    if writer.proc and writer.proc.poll() is None:
+        logger.info("Using software H.264 (libx264)")
+        return writer, "ffmpeg-sw"
+
+    raise RuntimeError("Failed to initialize FFmpeg H.264 writer.")
+
 
 def start_video_recording(camera, video_path, file_name, resolution=(1640, 1232), bitrate=4000000):
     """
