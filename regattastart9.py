@@ -13,7 +13,7 @@ from common_module import (
     text_rectangle,
     process_video,
     get_cpu_model,
-    get_h264_writer
+    get_h264_writer,
 )
 
 # Use a deque to store the most recent frames in memory
