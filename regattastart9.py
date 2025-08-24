@@ -13,7 +13,7 @@ from common_module import (
     text_rectangle,
     process_video,
     get_cpu_model,
-    get_h264_writer_ffmpeg
+    get_h264_writer
 )
 
 # Use a deque to store the most recent frames in memory
@@ -301,8 +301,9 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
     # 'H264' also works, but 'avc1' avoids some playback issues on Windows/Mac
 
     # setup video writer
-    writer, writer_type = get_h264_writer_ffmpeg(video_path, fps, frame_size)
-    video_writer = writer
+    video_writer, writer_type = get_h264_writer(video_path, fps, frame_size)
+    logger.info(f"Video writer backend: {writer_type}")
+    logger.info(f"Video writer object type: {type(video_writer)}")
 
     if writer_type == "opencv":
         logger.debug(f"VideoWriter (OpenCV/libx264) initialized successfully, frame_size: {frame_size}")
@@ -424,20 +425,12 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
                 if buf_frame is not None:
                     cv2.putText(buf_frame, f"PRE {buf_ts.strftime('%H:%M:%S')}", (50, max(50, frame_height - 100)),
                                 font, fontScale, colour, thickness)
-                    if writer_type == "opencv":
-                        video_writer.write(buf_frame)
-                    elif writer_type == "ffmpeg":
-                        # Write raw frame data to ffmpeg stdin
-                        video_writer.stdin.write(buf_frame.tobytes())
+                    video_writer.write(buf_frame)
             pre_detection_buffer.clear()
 
             # Overlay timestamp
             text_rectangle(frame, capture_timestamp.strftime("%Y-%m-%d, %H:%M:%S"), origin)
-            if writer_type == "opencv":
-                video_writer.write(frame)
-            elif writer_type == "ffmpeg":
-                # Write raw frame data to ffmpeg stdin
-                video_writer.stdin.write(frame.tobytes())
+            video_writer.write(frame)
 
             # Reset post-detection countdown
             number_of_post_frames = int(max_post_detection_duration * fpsw)
@@ -446,12 +439,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
             if frame is not None:
                 #  Still within post-detection window
                 text_rectangle(frame, f"POST {capture_timestamp.strftime('%H:%M:%S')}", origin)
-                if writer_type == "opencv":
-                    video_writer.write(frame)
-                elif writer_type == "ffmpeg":
-                    # Write raw frame data to ffmpeg stdin
-                    video_writer.stdin.write(frame.tobytes())
-
+                video_writer.write(frame)
                 number_of_post_frames -= 1
                 logger.debug(f"FRAME: post-detection written @ {capture_timestamp.strftime('%H:%M:%S')} (countdown={number_of_post_frames})")
 
@@ -471,15 +459,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
         stop_video_recording(camera)
         recording_stopped = True
     if video_writer is not None:
-        if writer_type == "opencv":
-            # Normal OpenCV cleanup
-            video_writer.release()
-            logger.info(f"VideoWriter (OpenCV) closed for {video_path}")
-        elif writer_type == "ffmpeg":
-            # Close the FFmpeg process cleanly
-            video_writer.stdin.close()
-            video_writer.wait()
-            logger.info(f"FFmpeg (h264_v4l2m2m) process closed for {video_path}")
+        video_writer.release()
         video_writer = None
     logger.info("Exited the finish_recording module.")
 
