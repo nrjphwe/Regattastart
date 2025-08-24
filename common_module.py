@@ -336,7 +336,6 @@ def get_h264_writer(video_path, fps, frame_size):
     raise RuntimeError("Failed to initialize FFmpeg software H.264 writer.")
 
 
-
 def start_video_recording(camera, video_path, file_name, resolution=(1640, 1232), bitrate=4000000):
     """
     Start video recording using H264Encoder and with timestamp.
