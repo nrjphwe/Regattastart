@@ -301,18 +301,21 @@ class FFmpegVideoWriter:
             self.proc = None
 
     def write(self, frame):
-        if self.proc is None or self.proc.poll() is not None:
-            logger.error("FFmpeg process not initialized or exited")
+        if self.proc is None:
+            logger.error("FFmpeg process not initialized")
             return
 
-        # Resize frame if needed
         h, w = frame.shape[:2]
         exp_w, exp_h = self.frame_size
         if (w, h) != (exp_w, exp_h):
+            logger.debug(f"Resizing frame from {w}x{h} to {exp_w}x{exp_h}")
             frame = cv2.resize(frame, (exp_w, exp_h))
 
-        # Convert to YUV420p if hardware encoder
+        # Ensure frame has 3 channels for YUV conversion
         if self.use_hw:
+            if frame.ndim == 2 or frame.shape[2] == 1:
+                logger.debug("Converting single-channel frame to 3-channel BGR")
+                frame = cv2.cvtColor(frame, cv2.COLOR_GRAY2BGR)
             try:
                 frame_yuv = cv2.cvtColor(frame, cv2.COLOR_BGR2YUV_I420)
                 self.proc.stdin.write(frame_yuv.tobytes())
@@ -324,19 +327,6 @@ class FFmpegVideoWriter:
                 self.proc.stdin.write(frame.tobytes())
             except Exception as e:
                 logger.error(f"FFmpeg SW write failed: {e}")
-                self.proc = None
-
-    def release(self):
-        if self.proc:
-            try:
-                if self.proc.stdin:
-                    self.proc.stdin.close()
-                stdout, stderr = self.proc.communicate(timeout=5)
-                if stderr:
-                    logger.debug(f"FFmpeg stderr: {stderr.decode(errors='ignore')}")
-            except Exception as e:
-                logger.error(f"Error releasing FFmpeg process: {e}")
-            finally:
                 self.proc = None
 
 
