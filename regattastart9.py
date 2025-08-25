@@ -13,7 +13,8 @@ from common_module import (
     text_rectangle,
     process_video,
     get_cpu_model,
-    get_h264_writer
+    get_h264_writer,
+    clean_exit
 )
 
 # Use a deque to store the most recent frames in memory
@@ -32,7 +33,6 @@ import cv2
 import torch
 import warnings
 import queue
-import pandas
 import site
 import gc
 import atexit
@@ -411,7 +411,8 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
                         # Draw timestamp below box
                         y_text = min(y2 + 50, int(frame_height * 0.92))  # clamp so text does not go outside
                         detected_timestamp = capture_timestamp.strftime("%H:%M:%S")
-                        cv2.putText(frame, detected_timestamp, (x1, y_text), font, fontScale, colour, thickness)
+                        cv2.putText(frame, detected_timestamp, (x1, y_text),
+                                    font, fontScale, colour, thickness)
 
                         # --- LOGGING ---
                         # Log every N frames to avoid flooding
@@ -477,28 +478,6 @@ def stop_listen_thread():
     listening = False
     # Log a message indicating that the listen_thread has been stopped
     logger.info("stop_listening thread  listening set to False")
-
-
-def clean_exit(camera=None, video_writer=None):
-    logger.info("Clean exit initiated")
-
-    # Stop detection-driven video
-    if video_writer is not None:
-        try:
-            video_writer.release()
-            logger.info("Video1 writer released, file finalized.")
-        except Exception as e:
-            logger.error(f"Error releasing video_writer: {e}")
-
-    # Stop continuous recording (Video0)
-    if camera is not None:
-        try:
-            stop_video_recording(camera)
-            camera.close()
-            logger.info("Camera stopped and closed.")
-        except Exception as e:
-            logger.error(f"Error stopping/closing camera: {e}")
-    logger.info("Exiting now.")
 
 
 def main():
