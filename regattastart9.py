@@ -301,16 +301,14 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
     # 'H264' also works, but 'avc1' avoids some playback issues on Windows/Mac
 
     # setup video writer
-    video_writer, writer_type = get_h264_writer(video_path, fps, frame_size)
+    video_writer, writer_type = get_h264_writer(video_path, fps, frame_size,use_hardware=False)
     logger.info(f"Video writer backend: {writer_type}")
     logger.info(f"Video writer object type: {type(video_writer)}")
-    if video_writer.proc is None:
-        logger.error("FFmpeg process failed to start!")
 
-    if writer_type == "opencv":
-        logger.debug(f"VideoWriter (OpenCV/libx264) initialized successfully, frame_size: {frame_size}")
+    if video_writer is None or getattr(video_writer, "proc", None) is None:
+        logger.error("FFmpeg writer failed to initialize — no video will be created!")
     else:
-        logger.debug(f"VideoWriter (FFmpeg h264_v4l2m2m) initialized successfully, frame_size: {frame_size}")
+        logger.info(f"FFmpeg writer started for {video_path}")
 
     # Setup pre-detection parameters
     pre_detection_duration = 0  # Seconds
@@ -458,18 +456,18 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
             logger.debug(f"STOP: max duration reached ({elapsed_time:.1f}s)")
             recording_stopped = True
 
-    # --- CLEAN SHUTDOWN ---
-    if recording_stopped:
-        logger.info('Video1 recording stopped')
-        if video_writer is not None:
-            try:
-                video_writer.release()
-                logger.info("Video1 writer released, file should be finalized.")
-            except Exception as e:
-                logger.error(f"Error releasing video_writer: {e}")
-            video_writer = None
-        else:
-            logger.warning("Video1 writer was None at shutdown!")
+        # --- CLEAN SHUTDOWN ---
+        if recording_stopped:
+            logger.info('Video1 recording stopped')
+            if video_writer is not None:
+                try:
+                    video_writer.release()
+                    logger.info("Video1 writer released, file should be finalized.")
+                except Exception as e:
+                    logger.error(f"Error releasing video_writer: {e}")
+                video_writer = None
+            else:
+                logger.warning("Video1 writer was None at shutdown!")
 
 
 def stop_listen_thread():
