@@ -13,6 +13,7 @@ from common_module import (
     text_rectangle,
     process_video,
     get_cpu_model,
+    clean_exit,
 )
 import sys
 import cv2
@@ -41,6 +42,7 @@ import numpy as np  # image recognition
 import torch
 import warnings
 import queue
+import atexit
 
 warnings.filterwarnings(
     "ignore",
@@ -153,6 +155,7 @@ def load_model_with_timeout(result_queue):
         logger.error(f"Failed to load YOLOv5 model: {e}", exc_info=True)
         result_queue.put(e)  # Put the exception in the queue
 
+
 def correct_ocr_digits(text):
     corrections = {
         "I": "1",
@@ -229,6 +232,7 @@ def extract_sail_number(frame, box):
     if sail_number:
         logger.info(f"Detected sail number: {sail_number}")
         return sail_number
+
 
 def prepare_input(img, device='cpu'):
     """
@@ -657,3 +661,5 @@ if __name__ == "__main__":
         logger.error(f"An unhandled exception occurred: {e}", exc_info=True)
     finally:
         logger.info("Exiting program")
+        atexit.register(clean_exit)
+        sys.exit(0)  # Now clean_exit() is guaranteed to run after this
