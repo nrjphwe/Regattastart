@@ -282,7 +282,7 @@ class FFmpegVideoWriter:
             "-preset", "fast",
             "-crf", "23",
             "-pix_fmt", "yuv420p",
-            "-movflags", " +faststart",
+            "-movflags", "faststart",
             filename
         ]
         try:
