@@ -343,7 +343,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
     # (x, y) → OpenCV cv2.putText expects the bottom-left corner of the text string.
     # x = 50 → fixed horizontal offset, i.e. always 50 pixels from the left edge of the frame
     # y = max(50, frame_height - 100) → vertical position
-    origin = (40, int(frame.shape[0] * 0.90)) # Bottom-left corner
+    origin = (40, int(frame.shape[0] * 0.90))  # Bottom-left corner
     # origin = (50, max(50, frame_height - 100))
     colour = (0, 255, 0)  # Green text
 
