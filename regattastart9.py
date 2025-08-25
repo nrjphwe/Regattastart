@@ -472,6 +472,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
                 logger.warning("Video1 writer was None at shutdown!")
     return video1_file
 
+
 def stop_listen_thread():
     global listening
     listening = False
