@@ -301,7 +301,8 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
     # 'H264' also works, but 'avc1' avoids some playback issues on Windows/Mac
 
     # setup video writer
-    video_writer, writer_type = get_h264_writer(video_path, fps, frame_size)
+    video1_file = os.path.join(video_path, "video1.mp4")
+    video_writer, writer_type = get_h264_writer(video1_file, fps, frame_size)
     logger.info(f"Video writer backend: {writer_type}")
     logger.info(f"Video writer object type: {type(video_writer)}")
 
@@ -424,8 +425,9 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
                 buf_frame, buf_ts = pre_detection_buffer.popleft()
                 if buf_frame is not None:
                     buf_frame = cv2.resize(buf_frame, frame_size)  # enforce correct size
-                    cv2.putText(buf_frame, f"PRE {buf_ts.strftime('%H:%M:%S')}", (50, max(50, frame_height - 100)),
-                                font, fontScale, colour, thickness)
+                    cv2.putText(buf_frame, f"PRE {buf_ts.strftime('%H:%M:%S')}",
+                                (50, max(50, frame_height - 100)), font,
+                                 fontScale, colour, thickness)
                     video_writer.write(buf_frame)
             pre_detection_buffer.clear()
 
@@ -462,13 +464,13 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
             if video_writer is not None:
                 try:
                     video_writer.release()
-                    logger.info("Video1 writer released, file should be finalized.")
+                    logger.info(f"Video1 writer released. File finalized at {video1_file}")
                 except Exception as e:
                     logger.error(f"Error releasing video_writer: {e}")
                 video_writer = None
             else:
                 logger.warning("Video1 writer was None at shutdown!")
-
+    return video1_file
 
 def stop_listen_thread():
     global listening
@@ -497,6 +499,7 @@ def clean_exit(camera=None, video_writer=None):
         except Exception as e:
             logger.error(f"Error stopping/closing camera: {e}")
     logger.info("Exiting now.")
+
 
 def main():
     stop_event = threading.Event()
@@ -544,8 +547,8 @@ def main():
         logger.info("Weekday=%s, Start_time=%s, video_end=%s, num_starts=%s", week_day, start_time.strftime("%H:%M"), video_end, num_starts)
 
         if wd == week_day:
-            # A loop that waits until close to the 5-minute mark, and 
-            # continuously checks the condition without blocking the 
+            # A loop that waits until close to the 5-minute mark, and
+            # continuously checks the condition without blocking the
             # execution completely
             while True:
                 now = dt.datetime.now()
