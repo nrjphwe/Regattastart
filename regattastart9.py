@@ -348,6 +348,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
     # origin = (50, max(50, frame_height - 100))
     colour = (0, 255, 0)  # Green text
 
+    # MAIN LOOP
     while not recording_stopped:
         frame_counter += 1  # Increment the frame counter
         # Capture a frame from the camera
@@ -418,7 +419,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
                         if boat_in_current_frame and (frame_counter % LOG_FRAME_THROTTLE == 0):
                             logger.info(f"Boat detected in frame {frame_counter} with conf {confidence:.2f}")
 
-        # --- DECISION LOGIC FOR WRITING ---
+        # -- WRITE VIDEO ---
         if boat_in_current_frame:
             # Flush pre-detection buffer
             while pre_detection_buffer:
@@ -451,25 +452,23 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
 
         # Check if recording should stop
         time_now = dt.datetime.now()
-        seconds_since_midnight = time_now.hour * 3600 + time_now.minute * 60 + time_now.second
-        elapsed_time = seconds_since_midnight - start_time_sec
-        # logger.debug(f"Elapsed time since start: {elapsed_time} seconds")
+        elapsed_time = (time_now.hour*3600 + time_now.minute*60 + time_now.second) - start_time_sec
         if elapsed_time >= max_duration:
             logger.debug(f"STOP: max duration reached ({elapsed_time:.1f}s)")
             recording_stopped = True
 
-        # --- CLEAN SHUTDOWN ---
-        if recording_stopped:
-            logger.info('Video1 recording stopped')
-            if video_writer is not None:
-                try:
-                    video_writer.release()
-                    logger.info(f"Video1 writer released. File finalized at {video1_file}")
-                except Exception as e:
-                    logger.error(f"Error releasing video_writer: {e}")
-                video_writer = None
-            else:
-                logger.warning("Video1 writer was None at shutdown!")
+    # ---ENSURE RELEASE OUTSIDE LOOP ---
+    if recording_stopped:
+        logger.info('Video1 recording stopped')
+        if video_writer is not None:
+            try:
+                video_writer.release()
+                logger.info(f"Video1 writer released. File finalized at {video1_file}")
+            except Exception as e:
+                logger.error(f"Error releasing video_writer: {e}")
+            video_writer = None
+        else:
+            logger.warning("Video1 writer was None at shutdown!")
     return video1_file
 
 
