@@ -492,6 +492,7 @@ def start_sequence(camera, this_start, num_starts, dur_between_starts, photo_pat
 
 
 def clean_exit(camera=None, video_writer=None):
+    """Release camera, video writer, and log clean shutdown."""
     logger.info("Clean exit initiated")
 
     # Stop detection-driven video
@@ -510,4 +511,5 @@ def clean_exit(camera=None, video_writer=None):
             logger.info("Camera stopped and closed.")
         except Exception as e:
             logger.error(f"Error stopping/closing camera: {e}")
+
     logger.info("Exiting now.")
