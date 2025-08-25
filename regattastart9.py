@@ -301,7 +301,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
     # 'H264' also works, but 'avc1' avoids some playback issues on Windows/Mac
 
     # setup video writer
-    video_writer, writer_type = get_h264_writer(video_path, fps, frame_size,use_hardware=False)
+    video_writer, writer_type = get_h264_writer(video_path, fps, frame_size)
     logger.info(f"Video writer backend: {writer_type}")
     logger.info(f"Video writer object type: {type(video_writer)}")
 
@@ -477,10 +477,26 @@ def stop_listen_thread():
     logger.info("stop_listening thread  listening set to False")
 
 
-def clean_exit():
-    logger.info("Forced exit with os._exit(0)")
-    os._exit(0)
+def clean_exit(camera=None, video_writer=None):
+    logger.info("Clean exit initiated")
 
+    # Stop detection-driven video
+    if video_writer is not None:
+        try:
+            video_writer.release()
+            logger.info("Video1 writer released, file finalized.")
+        except Exception as e:
+            logger.error(f"Error releasing video_writer: {e}")
+
+    # Stop continuous recording (Video0)
+    if camera is not None:
+        try:
+            stop_video_recording(camera)
+            camera.close()
+            logger.info("Camera stopped and closed.")
+        except Exception as e:
+            logger.error(f"Error stopping/closing camera: {e}")
+    logger.info("Exiting now.")
 
 def main():
     stop_event = threading.Event()
@@ -582,7 +598,7 @@ def main():
                 logger.info("listen_thread finished")
 
             time.sleep(2)
-            #process_video(video_path, "video1.avi", "video1.mp4", frame_rate=30,resolution=(1920, 1080))
+            # process_video(video_path, "video1.avi", "video1.mp4", frame_rate=30,resolution=(1920, 1080))
 
             # After video conversion is complete
             with open('/var/www/html/status.txt', 'w') as status_file:
@@ -611,7 +627,7 @@ def main():
 
             # Log the end of the program
             logger.info("Program has ended")
-            os._exit(0)  # Forcibly terminate the process
+            sys.exit(0)  # Forcibly terminate the process
 
 
 if __name__ == "__main__":
