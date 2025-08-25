@@ -281,6 +281,8 @@ class FFmpegVideoWriter:
             "-c:v", "libx264",
             "-preset", "fast",
             "-crf", "23",
+            "-pix_fmt", "yuv420p",
+            "-movflags", " +faststart",
             filename
         ]
         try:
