@@ -489,3 +489,25 @@ def start_sequence(camera, this_start, num_starts, dur_between_starts, photo_pat
         logger.info(f"Start_sequence, End of iteration: {i+1}")
 
     cleanup_gpio(gpio_handle)  # Clean up GPIO after each iteration
+
+
+def clean_exit(camera=None, video_writer=None):
+    logger.info("Clean exit initiated")
+
+    # Stop detection-driven video
+    if video_writer is not None:
+        try:
+            video_writer.release()
+            logger.info("Video1 writer released, file finalized.")
+        except Exception as e:
+            logger.error(f"Error releasing video_writer: {e}")
+
+    # Stop continuous recording (Video0)
+    if camera is not None:
+        try:
+            stop_video_recording(camera)
+            camera.close()
+            logger.info("Camera stopped and closed.")
+        except Exception as e:
+            logger.error(f"Error stopping/closing camera: {e}")
+    logger.info("Exiting now.")
