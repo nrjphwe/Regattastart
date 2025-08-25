@@ -18,20 +18,18 @@ from common_module import (
 import sys
 import cv2
 
-# The os.chdir('/home/pi/yolov5') and manual addition of venv_path to "
-# sys.path in your script may be unnecessary if the virtual environment "
-# is correctly set up."
-# os.chdir('/home/pi/yolov5')
-"""
-# Manually add the virtual environment's site-packages directory to sys.path
+""" The os.chdir('/home/pi/yolov5') and manual addition of venv_path to "
+sys.path in your script may be unnecessary if the virtual environment "
+is correctly set up." os.chdir('/home/pi/yolov5')
+
+Manually add the virtual environment's site-packages directory to sys.path
 venv_path = "/home/pi/yolov5_env/lib/python3.11/site-packages"
-if venv_path not in sys.path:
-    sys.path.insert(0, venv_path)
+if venv_path not in sys.path: sys.path.insert(0, venv_path)
 """
 
 # Use a deque to store the most recent frames in memory
 from collections import deque
-from datetime import datetime, timedelta
+from datetime import datetime
 import datetime as dt
 import json
 # import numpy as np # image recognition
@@ -50,24 +48,22 @@ warnings.filterwarnings(
     category=FutureWarning,
     module=".*yolov5_master.models.common*"
 )
-# parameter data
-fps = 5
-cpu_model = get_cpu_model()
-logger.info(f"Detected CPU model string: '{cpu_model}'")
-
-signal_dur = 0.9  # 0.9 sec
+# Parameter data
+fps = 15
+signal_dur = 0.9  # sec
 log_path = '/var/www/html/'
 video_path = '/var/www/html/images/'
 photo_path = '/var/www/html/images/'
 # crop_width, crop_height = 1440, 1080  # Crop size for inference
 crop_width, crop_height = 1280, 720  # Crop size for inference
-# gpio_handle, LAMP1, LAMP2, SIGNAL, = setup_gpio()
 listening = True  # Define the listening variable
 recording_stopped = False  # Global variable
 
-logger.info("="*40)
+cpu_model = get_cpu_model()
+logger.info("="*60)
 logger.info(f"Starting new regattastart10.py session at {dt.datetime.now()}")
-logger.info("="*40)
+logger.info(f"Detected CPU model string: '{cpu_model}'")
+logger.info("="*60)
 
 # reset the contents of the status variable, used for flagging that
 # video1-conversion is complete.
@@ -411,9 +407,9 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
         try:
             frame = camera.capture_array()
             if frame is None:
-                logger.error(f"CAPTURE: frame is None, skipping")
+                logger.error("CAPTURE: frame is None, skipping")
                 continue
-            capture_timestamp = datetime.now() + timedelta(microseconds=frame_counter)
+            capture_timestamp = datetime.now()
 
         except Exception as e:
             logger.error(f"Failed to capture frame: {e}")
@@ -661,5 +657,6 @@ if __name__ == "__main__":
         logger.error(f"An unhandled exception occurred: {e}", exc_info=True)
     finally:
         logger.info("Exiting program")
+        atexit.register(common_module.clean_exit, camera=camera, video_writer=video_writer)
         atexit.register(clean_exit)
         sys.exit(0)  # Now clean_exit() is guaranteed to run after this
