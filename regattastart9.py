@@ -19,7 +19,7 @@ from common_module import (
 
 # Use a deque to store the most recent frames in memory
 from collections import deque
-from datetime import datetime, timedelta
+from datetime import datetime
 import datetime as dt
 import json
 import numpy as np  # image recognition
@@ -47,23 +47,24 @@ warnings.filterwarnings(
     category=FutureWarning,
     module=".*yolov5_master.models.common*"
 )
-# parameter data
+# Parameter data
 fps = 15
-cpu_model = get_cpu_model()
-logger.info(f"Detected CPU model string: '{cpu_model}'")
 
-signal_dur = 0.9  # 0.9 sec
+
+signal_dur = 0.9  # seconds
 log_path = '/var/www/html/'
 video_path = '/var/www/html/images/'
 photo_path = '/var/www/html/images/'
 crop_width, crop_height = 1440, 1080  # Crop size for inference
-# gpio_handle, LAMP1, LAMP2, SIGNAL, = setup_gpio()
 listening = True  # Define the listening variable
 recording_stopped = False  # Global variable
 
+cpu_model = get_cpu_model()
 logger.info("="*60)
 logger.info(f"Starting new regattastart9.py session at {dt.datetime.now()}")
+logger.info(f"Detected CPU model string: '{cpu_model}'")
 logger.info("="*60)
+
 # reset the contents of the status variable, used for flagging that
 # video1-conversion is complete.
 with open('/var/www/html/status.txt', 'w') as status_file:
@@ -144,7 +145,6 @@ def cleanup_processed_timestamps(processed_timestamps, threshold_seconds=30):
 # function to load the YOLOv5 model
 def load_model_with_timeout(result_queue):
     try:
-        logger.info(f"Detected CPU model string: '{cpu_model}'")
         if cpu_model and "Raspberry Pi 3" in cpu_model:
             # inference_interval = 2.0  # seconds between inferences
             yolov_model = "yolov5n"   # lighter model
@@ -160,8 +160,6 @@ def load_model_with_timeout(result_queue):
         logger.info(f"Loading YOLOv5 model from {model_path} for {cpu_model} with model {yolov_model}")
         device = 'cpu'
         model = DetectMultiBackend(model_path, device=device)
-        # model = torch.hub.load('/home/pi/yolov5', 'yolov5s', source='local', force_reload=True)
-        # model = torch.hub.load('/home/pi/yolov5', 'custom', path='/var/www/html/yolov5s.pt', source='local')
         result_queue.put(model)  # Put the model in the queue
     except Exception as e:
         logger.error(f"FAILED to load YOLOv5 model: {e}", exc_info=True)
@@ -429,7 +427,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
                     buf_frame = cv2.resize(buf_frame, frame_size)  # enforce correct size
                     cv2.putText(buf_frame, f"PRE {buf_ts.strftime('%H:%M:%S')}",
                                 (50, max(50, frame_height - 100)), font,
-                                 fontScale, colour, thickness)
+                                fontScale, colour, thickness)
                     video_writer.write(buf_frame)
             pre_detection_buffer.clear()
 
