@@ -511,17 +511,23 @@ def main():
         # this is the first start
         start_time_str = str(form_data["start_time"])
         dur_between_starts = int(form_data["dur_between_starts"])
-        start_time = datetime.strptime(start_time_str, "%H:%M").time()
-        # Extract hour and minute
-        start_hour = start_time.hour
-        start_minute = start_time.minute
-        start_time_sec = 60 * start_minute + 3600 * start_hour
-        t5min_warning = start_time_sec - 5 * 60  # time to start start-machine.
+
+        # Parse into datetime for today's date
+        start_time_dt = dt.datetime.combine(
+            dt.date.today(),
+            dt.datetime.strptime(start_time_str, "%H:%M").time()
+        )
+        logger.info(f"First start scheduled at {start_time_dt}, "
+                    f"{num_starts} starts, {dur_between_starts} min apart")
+
+        t5min_warning = start_time_dt - dt.timedelta(minutes=5)  # time to start start-machine.
         wd = dt.datetime.today().strftime("%A")
 
         remove_video_files(photo_path, "video")  # clean up
         remove_picture_files(photo_path, ".jpg")  # clean up
-        logger.info("Weekday=%s, Start_time=%s, video_end=%s, num_starts=%s", week_day, start_time.strftime("%H:%M"), video_end, num_starts)
+
+        logger.info("Weekday=%s, Start_time=%s, num_starts=%s",
+                    week_day, start_time_dt, num_starts)
 
         if wd == week_day:
             # A loop that waits until close to the 5-minute mark, and
@@ -529,30 +535,33 @@ def main():
             # execution completely
             while True:
                 now = dt.datetime.now()
-                seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
 
-                if seconds_since_midnight > t5min_warning - 4:
-                    logger.debug("Start of outer loop iteration. seconds_since_midnight=%d", seconds_since_midnight)
-                    logger.debug("start_time_sec=%d", start_time_sec)
+                if now >= (t5min_warning - dt.timedelta(seconds=4)):
+                    logger.debug("Start of outer loop")
+                    logger.debug("start_time_dt=%s", start_time_dt)
 
+                    # Start video recording just before 5 minutes before the first start
                     if num_starts in (1, 2, 3):
-                        # Start video recording just before 5 minutes before the first start
                         logger.debug("Start of video0 recording")
-                        start_video_recording(camera, video_path, "video0.h264", resolution=(1640,1232),  bitrate=4000000)
+                        start_video_recording(camera, video_path,
+                                              "video0.h264",
+                                              resolution=(1640, 1232),
+                                              bitrate=4000000)
 
-                        logger.debug("Inner loop, entering the start sequence block.")
-                        start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo_path)
+                        logger.debug("Entering the start sequence block.")
+                        start_sequence(camera, start_time_dt, num_starts, dur_between_starts, photo_path)
 
                         # Compute 2 minutes after the *last* start
-                        last_start = start_time_sec + (num_starts - 1) * dur_between_starts * 60
-                        end_time = last_start + 120  
+                        last_start = start_time_dt + dt.timedelta(minutes=(num_starts - 1) * dur_between_starts)
+                        end_time = last_start + dt.timedelta(minutes=2)
 
-                        while dt.datetime.now().timestamp() < end_time:
+                        while dt.datetime.now() < end_time:
                             time.sleep(0.2)
 
                         stop_video_recording(camera)
                         logger.debug("Stopping video0 recording")
-                        process_video(video_path, "video0.h264", "video0.mp4", frame_rate=30,resolution=(1640, 1232))
+                        process_video(video_path, "video0.h264", "video0.mp4", 
+                                      frame_rate=30, resolution=(1640, 1232))
                         logger.info("Video0 converted to mp4")
                         break  # Exit the loop after the if condition is met
                 time.sleep(1)  # Introduce a delay of 2 seconds
