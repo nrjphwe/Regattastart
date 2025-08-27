@@ -442,23 +442,23 @@ def start_sequence(camera, this_start, num_starts, dur_between_starts, photo_pat
     for i in range(num_starts):
         logger.info(f"Start_sequence. Start of iteration {i+1}")
 
-        this_start = this_start  + i * dur_between_starts * 60
-        logger.info(f"Start_sequence, this_this_start : {this_start}")
+        start_time = this_start  + i * dur_between_starts * 60
+        logger.info(f"Start_sequence, this_start_time : {start_time}")
 
         # Define time intervals for each relay trigger
         time_intervals = [
-            (this_start  - 5 * 60, lambda: trigger_relay(gpio_handle, LAMP1, "on"), "5_min Lamp1 ON -- Flag P UP"),
-            (this_start  - 5 * 60 + 1, lambda: trigger_relay(gpio_handle, SIGNAL, "on", 2), "5_min Warning Signal"),
-            (this_start  - 4 * 60 - 2, lambda: trigger_relay(gpio_handle, LAMP2, "on"), "4_min Lamp2 ON"),
-            (this_start  - 4 * 60, lambda: trigger_relay(gpio_handle, SIGNAL, "on", 2), "4_min Preparation Signal"),
-            (this_start  - 1 * 60 - 2, lambda: trigger_relay(gpio_handle, LAMP2, "off"), "1_min Lamp2 OFF -- Flag P DOWN"),
-            (this_start  - 1 * 60, lambda: trigger_relay(gpio_handle, SIGNAL, "on", 2), "1_min Signal"),
-            (this_start  - 2, lambda: trigger_relay(gpio_handle, LAMP1, "off"), "Lamp1 OFF at Start"),
-            (this_start , lambda: trigger_relay(gpio_handle, SIGNAL, "on", 1), "Start Signal"),
+            (start_time  - 5 * 60, lambda: trigger_relay(gpio_handle, LAMP1, "on"), "5_min Lamp1 ON -- Flag P UP"),
+            (start_time  - 5 * 60 + 1, lambda: trigger_relay(gpio_handle, SIGNAL, "on", 2), "5_min Warning Signal"),
+            (start_time  - 4 * 60 - 2, lambda: trigger_relay(gpio_handle, LAMP2, "on"), "4_min Lamp2 ON"),
+            (start_time  - 4 * 60, lambda: trigger_relay(gpio_handle, SIGNAL, "on", 2), "4_min Preparation Signal"),
+            (start_time  - 1 * 60 - 2, lambda: trigger_relay(gpio_handle, LAMP2, "off"), "1_min Lamp2 OFF -- Flag P DOWN"),
+            (start_time  - 1 * 60, lambda: trigger_relay(gpio_handle, SIGNAL, "on", 2), "1_min Signal"),
+            (start_time  - 2, lambda: trigger_relay(gpio_handle, LAMP1, "off"), "Lamp1 OFF at Start"),
+            (start_time , lambda: trigger_relay(gpio_handle, SIGNAL, "on", 1), "Start Signal"),
         ]
 
         last_triggered = set()
-        timeout_seconds = this_start + 30  # fail-safe timeout
+        timeout_seconds = start_time + 30  # fail-safe timeout
 
         while True:
             now = dt.datetime.now()
