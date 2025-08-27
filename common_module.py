@@ -437,34 +437,40 @@ def cleanup_gpio(handle):
 
 
 def start_sequence(camera, this_start, num_starts, dur_between_starts, photo_path):
+    """
+    Run one or more start sequences.
+    - first_start_time: datetime of the FIRST start
+    - num_starts: how many start sequences (1–3 typically)
+    - dur_between_starts: minutes between starts
+    """
     gpio_handle, SIGNAL, LAMP1, LAMP2 = setup_gpio()
 
     for i in range(num_starts):
         logger.info(f"Start_sequence. Start of iteration {i+1}")
 
-        start_time = this_start  + i * dur_between_starts * 60
-        logger.info(f"Start_sequence, this_start_time : {start_time}")
+        start_time = first_start_time + dt.timedelta(minutes=i * dur_between_starts)
+        logger.info(f"Start_sequence, start_time : {start_time}")
 
         # Define time intervals for each relay trigger
+        # Define schedule of events
         time_intervals = [
-            (start_time  - 5 * 60, lambda: trigger_relay(gpio_handle, LAMP1, "on"), "5_min Lamp1 ON -- Flag P UP"),
-            (start_time  - 5 * 60 + 1, lambda: trigger_relay(gpio_handle, SIGNAL, "on", 2), "5_min Warning Signal"),
-            (start_time  - 4 * 60 - 2, lambda: trigger_relay(gpio_handle, LAMP2, "on"), "4_min Lamp2 ON"),
-            (start_time  - 4 * 60, lambda: trigger_relay(gpio_handle, SIGNAL, "on", 2), "4_min Preparation Signal"),
-            (start_time  - 1 * 60 - 2, lambda: trigger_relay(gpio_handle, LAMP2, "off"), "1_min Lamp2 OFF -- Flag P DOWN"),
-            (start_time  - 1 * 60, lambda: trigger_relay(gpio_handle, SIGNAL, "on", 2), "1_min Signal"),
-            (start_time  - 2, lambda: trigger_relay(gpio_handle, LAMP1, "off"), "Lamp1 OFF at Start"),
-            (start_time , lambda: trigger_relay(gpio_handle, SIGNAL, "on", 1), "Start Signal"),
+            (start_time - dt.timedelta(minutes=5), lambda: trigger_relay(gpio_handle, LAMP1, "on"), "5_min Lamp1 ON -- Flag P UP"),
+            (start_time - dt.timedelta(minutes=5) + dt.timedelta(seconds=1), lambda: trigger_relay(gpio_handle, SIGNAL, "on", 2), "5_min Warning Signal"),
+            (start_time - dt.timedelta(minutes=4, seconds=2), lambda: trigger_relay(gpio_handle, LAMP2, "on"), "4_min Lamp2 ON"),
+            (start_time - dt.timedelta(minutes=4), lambda: trigger_relay(gpio_handle, SIGNAL, "on", 2), "4_min Preparation Signal"),
+            (start_time - dt.timedelta(minutes=1, seconds=2), lambda: trigger_relay(gpio_handle, LAMP2, "off"), "1_min Lamp2 OFF -- Flag P DOWN"),
+            (start_time - dt.timedelta(minutes=1), lambda: trigger_relay(gpio_handle, SIGNAL, "on", 2), "1_min Signal"),
+            (start_time - dt.timedelta(seconds=2), lambda: trigger_relay(gpio_handle, LAMP1, "off"), "Lamp1 OFF at Start"),
+            (start_time, lambda: trigger_relay(gpio_handle, SIGNAL, "on", 1), "Start Signal"),
         ]
 
         last_triggered = set()
-        timeout_seconds = start_time + 30  # fail-safe timeout
+        timeout = start_time + dt.timedelta(seconds=30)  # fail-safe
 
         while True:
             now = dt.datetime.now()
-            seconds_now = now.hour * 3600 + now.minute * 60 + now.second
 
-            if seconds_now > timeout_seconds:
+            if now > timeout:
                 logger.warning(f"Start_sequence: Timeout reached for iteration {i+1}")
                 break
 
@@ -474,7 +480,7 @@ def start_sequence(camera, this_start, num_starts, dur_between_starts, photo_pat
                 break
 
             for event_time, action, label in time_intervals:
-                if abs(seconds_now - event_time) <= 1 and (event_time, label) not in last_triggered:
+                if abs((now - event_time).total_seconds()) <= 1 and (event_time, label) not in last_triggered:
                     logger.info(f"Triggering: {label} at {event_time}")
                     action()
                     if any(k in label for k in ["5_min", "4_min", "1_min", "Start"]):
@@ -485,9 +491,7 @@ def start_sequence(camera, this_start, num_starts, dur_between_starts, photo_pat
                     last_triggered.add((event_time, label))
 
             time.sleep(0.1)
-
         logger.info(f"Start_sequence, End of iteration: {i+1}")
-
     cleanup_gpio(gpio_handle)  # Clean up GPIO after each iteration
 
 
