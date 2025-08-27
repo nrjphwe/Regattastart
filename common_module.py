@@ -436,7 +436,7 @@ def cleanup_gpio(handle):
         logger.error(f"Error while cleaning up GPIO: {e}")
 
 
-def start_sequence(camera, this_start, num_starts, dur_between_starts, photo_path):
+def start_sequence(camera, first_start_time, num_starts, dur_between_starts, photo_path):
     """
     Run one or more start sequences.
     - first_start_time: datetime of the FIRST start
