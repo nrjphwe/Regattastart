@@ -535,26 +535,26 @@ def main():
                     logger.debug("Start of outer loop iteration. seconds_since_midnight=%d", seconds_since_midnight)
                     logger.debug("start_time_sec=%d", start_time_sec)
 
-                    if num_starts == 1 or num_starts == 2 or num_starts == 3:
+                    if num_starts in (1, 2, 3):
                         # Start video recording just before 5 minutes before the first start
                         logger.debug("Start of video0 recording")
                         start_video_recording(camera, video_path, "video0.h264", resolution=(1640,1232),  bitrate=4000000)
+
                         logger.debug("Inner loop, entering the start sequence block.")
                         start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo_path)
-                        if num_starts != 1:
-                            start_time_sec = start_time_sec + (dur_between_starts * 60) * num_starts
-                        logger.debug("Wait 2 minutes then stop video0 recording")
-                        t0 = dt.datetime.now()
-                        logger.debug(f"t0 = {t0}, dt.datetime.now(): {dt.datetime.now()}")
-                        logger.debug("(dt.datetime.now() - t0).seconds: %d", (dt.datetime.now() - t0).seconds)
-                        while ((dt.datetime.now() - t0).seconds < 119):
-                            now = dt.datetime.now()
-                            time.sleep(0.2)  # Small delay to reduce CPU usage
+
+                        # Compute 2 minutes after the *last* start
+                        last_start = start_time_sec + (num_starts - 1) * dur_between_starts * 60
+                        end_time = last_start + 120  
+
+                        while dt.datetime.now().timestamp() < end_time:
+                            time.sleep(0.2)
+
                         stop_video_recording(camera)
                         logger.debug("Stopping video0 recording")
                         process_video(video_path, "video0.h264", "video0.mp4", frame_rate=30,resolution=(1640, 1232))
                         logger.info("Video0 converted to mp4")
-                    break  # Exit the loop after the if condition is met
+                        break  # Exit the loop after the if condition is met
                 time.sleep(1)  # Introduce a delay of 2 seconds
 
     except json.JSONDecodeError as e:
