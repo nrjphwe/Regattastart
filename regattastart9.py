@@ -183,7 +183,7 @@ def prepare_input(img, device='cpu'):
     return img.to(device)
 
 
-def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, fps):
+def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, fps):
     from utils.general import non_max_suppression
     # config
     DETECTION_CONF_THRESHOLD = 0.5
@@ -451,7 +451,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
 
         # Check if recording should stop
         time_now = dt.datetime.now()
-        elapsed_time = (time_now.hour*3600 + time_now.minute*60 + time_now.second) - start_time_sec
+        elapsed_time = (time_now.hour*3600 + time_now.minute*60 + time_now.second) - start_time_dt
         if elapsed_time >= max_duration:
             logger.debug(f"STOP: max duration reached ({elapsed_time:.1f}s)")
             recording_stopped = True
@@ -536,14 +536,14 @@ def main():
         stop_video_recording(camera)
         process_video(video_path, "video0.h264", "video0.mp4", frame_rate=30, resolution=(1640,1232))
 
-         # --- Finish recording & process videos ---
+        # --- Finish recording & process videos ---
         finish_recording(camera, video_path, num_starts, video_end, start_time_dt, fps)
 
         # --- Write status --
         with open('/var/www/html/status.txt', 'w') as status_file:
             status_file.write('complete')
         return 0  # success
-    
+
     except json.JSONDecodeError as e:
         logger.error(f"Failed to parse JSON: {e}")
         return 1
