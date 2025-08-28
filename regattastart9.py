@@ -72,31 +72,25 @@ with open('/var/www/html/status.txt', 'w') as status_file:
 
 
 def stop_recording():
-    global listening
-    global recording_stopped
-    logger.info("stop_recording function called. Setting flags to stop listening and recording.")
+    global listening, recording_stopped
+    logger.info("stop_recording called. Stopping recording early.")
     recording_stopped = True
-    listening = False  # Set flag to False to terminate the loop in listen_for_messages
+    listening = False  # exit listen_for_messages loop
     logger.debug(f"recording_stopped = {recording_stopped}, listening = {listening}")
 
 
 def listen_for_messages(stop_event, timeout=0.1):
     global listening  # Use global flag
-    logger.debug(f"Listening flag value: {listening}")
-    logger.info("listen_for_messages from PHP script via a named pipe")
     pipe_path = '/var/www/html/tmp/stop_recording_pipe'
-    logger.info(f"pipepath = {pipe_path}")
+    logger.info("listen_for_messages: starting")
+    logger.info(f"Pipe path = {pipe_path}")
 
     # Ensure the named pipe exists
     try:
         if os.path.exists(pipe_path):
-            if os.path.isdir(pipe_path):
-                logger.error(f"{pipe_path} is a directory. Remove it or use another path.")
-                raise IsADirectoryError(f"{pipe_path} is a directory.")
-            else:
-                os.unlink(pipe_path)  # Remove existing file or pipe
+            os.unlink(pipe_path)  # Remove existing file or pipe
         os.mkfifo(pipe_path)  # Create a new named pipe
-        os.chmod(pipe_path, 0o666)  # Set permissions to allow read/write for all users
+        os.chmod(pipe_path, 0o666)  # Set permissions to allow read/write
         logger.info(f"Pipe created with permissions 666: {pipe_path}")
     except Exception as e:
         logger.error(f"Failed to create named pipe: {e}", exc_info=True)
@@ -104,9 +98,6 @@ def listen_for_messages(stop_event, timeout=0.1):
 
     while not stop_event.is_set():
         try:
-            if not listening:
-                logger.info("Listening flag is False. Exiting listen_for_messages.")
-                break
             with open(pipe_path, 'r') as fifo:
                 logger.debug("Waiting for input from the pipe...")
                 rlist, _, _ = select.select([fifo], [], [], timeout)
@@ -117,14 +108,11 @@ def listen_for_messages(stop_event, timeout=0.1):
                         stop_recording()
                         logger.info("Message == stop_recording")
                         break  # Exit the loop when stop_recording received
-        except OSError as e:
-            logger.error(f"Error while opening or reading pipe: {e}")
-            break
         except Exception as e:
             logger.error(f"Error in listen_for_messages: {e}", exc_info=True)
             break
-        time.sleep(0.1)  # Add a small delay to prevent high CPU usage
-    logger.info("Listening thread exiting")
+        time.sleep(0.1)
+    logger.info("Listening for messages: exiting")
 
 
 # Clean up processed_timestamps to remove old entries
@@ -451,7 +439,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
 
         # Check if recording should stop
         time_now = dt.datetime.now()
-        elapsed_time = (time_now.hour*3600 + time_now.minute*60 + time_now.second) - start_time_dt
+        elapsed_time = (time_now - start_time_dt).total_seconds()
         if elapsed_time >= max_duration:
             logger.debug(f"STOP: max duration reached ({elapsed_time:.1f}s)")
             recording_stopped = True
@@ -474,8 +462,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
 def stop_listen_thread():
     global listening
     listening = False
-    # Log a message indicating that the listen_thread has been stopped
-    logger.info("stop_listening thread  listening set to False")
+    logger.info("stop_listening thread called: listening set to False")
 
 
 def main():
@@ -553,8 +540,14 @@ def main():
     finally:
         logger.info("Main finally: cleanup")
         stop_event.set()
-        if listen_thread and listen_thread.is_alive():
-            listen_thread.join(timeout=1)
+        if listen_thread:
+
+            listen_thread.join(timeout=2)
+            if listen_thread.is_alive():
+                logger.warning("listen_thread did not stop within timeout.")
+            else:
+                logger.info("listen_thread stopped cleanly.")
+
         clean_exit(camera)
         gc.collect()
         logger.info("Cleanup complete")
