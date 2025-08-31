@@ -38,6 +38,7 @@ import threading
 import time
 import numpy as np  # image recognition
 import torch
+import gc
 import warnings
 import queue
 import atexit
