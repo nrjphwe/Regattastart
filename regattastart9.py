@@ -48,9 +48,7 @@ warnings.filterwarnings(
     module=".*yolov5_master.models.common*"
 )
 # Parameter data
-fps = 15
-
-
+fps = 15  # frames per second for video1
 signal_dur = 0.9  # seconds
 log_path = '/var/www/html/'
 video_path = '/var/www/html/images/'
@@ -331,7 +329,6 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
     # x = 50 → fixed horizontal offset, i.e. always 50 pixels from the left edge of the frame
     # y = max(50, frame_height - 100) → vertical position
     origin = (40, int(frame.shape[0] * 0.90))  # Bottom-left corner
-    # origin = (50, max(50, frame_height - 100))
     colour = (0, 255, 0)  # Green text
 
     # MAIN LOOP
@@ -469,7 +466,6 @@ def main():
     stop_event = threading.Event()
     global listening  # Declare listening as global
     camera = None
-    # listening = True  # Initialize the global listening flag
     listen_thread = None  # Initialize listen_thread variable
 
     try:
