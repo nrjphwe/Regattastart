@@ -72,8 +72,7 @@ with open('/var/www/html/status.txt', 'w') as status_file:
 
 
 def stop_recording():
-    global listening
-    global recording_stopped
+    global listening, recording_stopped
     logger.info("stop_recording function called. Setting flags to stop listening and recording.")
     recording_stopped = True
     listening = False  # Set flag to False to terminate the loop in listen_for_messages
@@ -82,21 +81,16 @@ def stop_recording():
 
 def listen_for_messages(stop_event, timeout=0.1):
     global listening  # Use global flag
-    logger.debug(f"Listening flag value: {listening}")
-    logger.info("listen_for_messages from PHP script via a named pipe")
     pipe_path = '/var/www/html/tmp/stop_recording_pipe'
+    logger.info("listen_for_messages: starting")
     logger.info(f"pipepath = {pipe_path}")
 
     # Ensure the named pipe exists
     try:
         if os.path.exists(pipe_path):
-            if os.path.isdir(pipe_path):
-                logger.error(f"{pipe_path} is a directory. Remove it or use another path.")
-                raise IsADirectoryError(f"{pipe_path} is a directory.")
-            else:
-                os.unlink(pipe_path)  # Remove existing file or pipe
+            os.unlink(pipe_path)  # Remove existing file or pipe
         os.mkfifo(pipe_path)  # Create a new named pipe
-        os.chmod(pipe_path, 0o666)  # Set permissions to allow read/write for all users
+        os.chmod(pipe_path, 0o666)  # Set permissions to allow read/write
         logger.info(f"Pipe created with permissions 666: {pipe_path}")
     except Exception as e:
         logger.error(f"Failed to create named pipe: {e}", exc_info=True)
@@ -104,9 +98,6 @@ def listen_for_messages(stop_event, timeout=0.1):
 
     while not stop_event.is_set():
         try:
-            if not listening:
-                logger.info("Listening flag is False. Exiting listen_for_messages.")
-                break
             with open(pipe_path, 'r') as fifo:
                 logger.debug("Waiting for input from the pipe...")
                 rlist, _, _ = select.select([fifo], [], [], timeout)
@@ -117,14 +108,11 @@ def listen_for_messages(stop_event, timeout=0.1):
                         stop_recording()
                         logger.info("Message == stop_recording")
                         break  # Exit the loop when stop_recording received
-        except OSError as e:
-            logger.error(f"Error while opening or reading pipe: {e}")
-            break
         except Exception as e:
             logger.error(f"Error in listen_for_messages: {e}", exc_info=True)
             break
-        time.sleep(0.1)  # Add a small delay to prevent high CPU usage
-    logger.info("Listening thread exiting")
+        time.sleep(0.1)
+    logger.info("Listening for messages: exiting")
 
 
 # Clean up processed_timestamps to remove old entries
@@ -524,139 +512,100 @@ def stop_listen_thread():
     global listening
     listening = False
     # Log a message indicating that the listen_thread has been stopped
-    logger.info("stop_listening thread  listening set to False")
+    logger.info("stop_listening thread: listening set to False")
 
 
 def main():
     stop_event = threading.Event()
     global listening  # Declare listening as global
-    listening = True  # Initialize the global listening flag
+    camera = None
     listen_thread = None  # Initialize listen_thread variable
-    try:
-        if cpu_model and "Raspberry Pi 3" in cpu_model:
-            camera = setup_camera((1280, 720))  # Initialize camera
-        elif cpu_model and "Raspberry Pi 5" in cpu_model:
-            camera = setup_camera((1920, 1080))  # Initialize camera
-        else:
-            camera = setup_camera((1640, 1232))  # Initialize camera
-    except Exception as e:
-        logger.error(f"Failed to find CPU model: {e}", exc_info=True)
-    if camera is None:
-        logger.error("CAMERA SETUP: failed)")
-        exit()
-
-    # Check if a command-line argument (JSON data) is provided
-    if len(sys.argv) < 2:
-        logger.error("No JSON data provided as a command-line argument.")
-        sys.exit(1)
 
     try:
+        # --- Camera setup ---
+        camera = setup_camera()  # choose resolution internally
+        if camera is None:
+            logger.error("CAMERA SETUP: failed")
+            return 1
+
+        # --- Parse JSON ---
+        if len(sys.argv) < 2:
+            logger.error("No JSON data provided as a command-line argument.")
+            return 1
+
         # logger.info("form_data: %s", form_data)
         form_data = json.loads(sys.argv[1])
         week_day = str(form_data["day"])
         video_end = int(form_data["video_end"])
         num_starts = int(form_data["num_starts"])
-        # this is the first start
-        start_time_str = str(form_data["start_time"])
+        start_time_str = str(form_data["start_time"])  # this is the first start
         dur_between_starts = int(form_data["dur_between_starts"])
-        start_time = datetime.strptime(start_time_str, "%H:%M").time()
-        # Extract hour and minute
-        start_hour = start_time.hour
-        start_minute = start_time.minute
-        start_time_sec = 60 * start_minute + 3600 * start_hour
-        t5min_warning = start_time_sec - 5 * 60  # time to start start-machine.
-        wd = dt.datetime.today().strftime("%A")
+
+        # Parse into datetime for today's date
+        start_time_dt = dt.datetime.combine(dt.date.today(),
+                                            dt.datetime.strptime(start_time_str, "%H:%M").time())
+        t5min_warning = start_time_dt - dt.timedelta(minutes=5)  # time to start start-machine.
+        # wd = dt.datetime.today().strftime("%A")
 
         remove_video_files(photo_path, "video")  # clean up
         remove_picture_files(photo_path, ".jpg")  # clean up
-        logger.info("Weekday=%s, Start_time=%s, video_end=%s, num_starts=%s", week_day, start_time.strftime("%H:%M"), video_end, num_starts)
 
-        if wd == week_day:
-            # A loop that waits until close to the 5-minute mark, and
-            # continuously checks the condition without blocking the
-            # execution completely
-            while True:
-                now = dt.datetime.now()
-                seconds_since_midnight = now.hour * 3600 + now.minute * 60 + now.second
+        logger.info("Weekday=%s, Start_time=%s, num_starts=%s",
+                    week_day, start_time_dt, num_starts)
 
-                if seconds_since_midnight > t5min_warning - 4:
-                    logger.debug("Start of outer loop iteration. seconds_since_midnight=%d", seconds_since_midnight)
-                    logger.debug("start_time_sec=%d", start_time_sec)
+        # --- Wait until 5-minute warning ---
+        while dt.datetime.now() < t5min_warning: 
+            time.sleep(1)
 
-                    if num_starts == 1 or num_starts == 2:
-                        # Start video recording just before 5 minutes before the first start
-                        logger.debug("Start of video0 recording")
-                        start_video_recording(camera, video_path, "video0.h264", bitrate=4000000)
-                        logger.debug("Inner loop, entering the start sequence block.")
-                        start_sequence(camera, start_time_sec, num_starts, dur_between_starts, photo_path)
-                        if num_starts == 2:
-                            start_time_sec = start_time_sec + (dur_between_starts * 60)
-                        logger.debug("Wait 2 minutes then stop video0 recording")
-                        t0 = dt.datetime.now()
-                        logger.debug(f"t0 = {t0}, dt.datetime.now(): {dt.datetime.now()}")
-                        logger.debug("(dt.datetime.now() - t0).seconds: %d", (dt.datetime.now() - t0).seconds)
-                        while ((dt.datetime.now() - t0).seconds < 119):
-                            now = dt.datetime.now()
-                            time.sleep(0.2)  # Small delay to reduce CPU usage
-                        stop_video_recording(camera)
-                        logger.debug("Stopping video0 recording")
-                        process_video(video_path, "video0.h264", "video0.mp4", frame_rate=30, resolution=(1640, 1232))
-                        logger.info("Video0 converted to mp4")
-                    break  # Exit the loop after the if condition is met
-                time.sleep(1)  # Introduce a delay of 2 seconds
+        # --- Start listening thread ---
+        listen_thread = threading.Thread(target=listen_for_messages, args=(stop_event,), daemon=True)
+        listen_thread.start()
+
+        # --- Start video0 recording & start sequences ---
+        start_video_recording(camera, video_path, "video0.h264", resolution=(1640,1232), bitrate=4000000)
+        start_sequence(camera, start_time_dt, num_starts, dur_between_starts, photo_path)
+        last_start = start_time_dt + dt.timedelta(minutes=(num_starts - 1) * dur_between_starts)
+        end_time = last_start + dt.timedelta(minutes=2)
+        while dt.datetime.now() < end_time:
+            time.sleep(0.2)
+
+        stop_video_recording(camera)
+        process_video(video_path, "video0.h264", "video0.mp4", frame_rate=30, resolution=(1640,1232))
+
+         # --- Finish recording & process videos ---
+        finish_recording(camera, video_path, num_starts, video_end, start_time_dt, fps)
+
+        # --- Write status --
+        with open('/var/www/html/status.txt', 'w') as status_file:
+            status_file.write('complete')
+        return 0  # success
 
     except json.JSONDecodeError as e:
-        logger.error("Failed to parse JSON: %", str(e))
-        sys.exit(1)
+        logger.error(f"Failed to parse JSON: {e}")
+        return 1
+    except Exception as e:
+        logger.error(f"Unhandled exception: {e}", exc_info=True)
+        return 1
     finally:
-        logger.info("Finally section, before listen_for_message")
-        # Start a thread for listening for messages with a timeout
-        listen_thread = threading.Thread(target=listen_for_messages, args=(stop_event,))
-        listen_thread.start()
-        logger.info("Finally section, before 'Finish recording'. start_time=%s video_end=%s", start_time, video_end)
-        time.sleep(2)
-        finish_recording(camera, video_path, num_starts, video_end, start_time_sec, fps)
-        logger.info("After function finished_recording")
-        try:
-            stop_event.set()  # Signal the listening thread to stop
-            listen_thread.join(timeout=10)
+        logger.info("Main finally: cleanup")
+        stop_event.set()
+        if listen_thread:
+
+            listen_thread.join(timeout=2)
             if listen_thread.is_alive():
-                logger.info("listen_thread is still alive after timeout")
+                logger.warning("listen_thread did not stop within timeout.")
             else:
-                logger.info("listen_thread finished")
+                logger.info("listen_thread stopped cleanly.")
 
-            time.sleep(2)
-            process_video(video_path, "video1.avi", "video1.mp4", frame_rate=30, resolution=(1920, 1080))
-
-            # After video conversion is complete
-            with open('/var/www/html/status.txt', 'w') as status_file:
-                status_file.write('complete')
-            logger.info("Finished with finish_recording and recording converted to mp4")
-
-        except Exception as e:
-            logger.error(f"An error occurred in the 'finally' section: {e}", exc_info=True)
-
-        finally:
-            try:
-                stop_video_recording(camera)
-                camera.close()
-                logger.info("Camera closed successfully.")
-            except Exception as e:
-                logger.error(f"Error while cleaning up camera: {e}")
-
-            # Log the end of the program
-            logger.info("Program has ended")
-            os._exit(0)  # Forcibly terminate the process
+        clean_exit(camera)
+        gc.collect()
+        logger.info("Cleanup complete")
 
 
 if __name__ == "__main__":
-    # logger = setup_logging()  # Initialize logger before using it
     try:
-        main()
+        rc = main()
     except Exception as e:
         logger.error(f"An unhandled exception occurred: {e}", exc_info=True)
-    finally:
-        logger.info("Exiting program")
-        atexit.register(common_module.clean_exit, camera=camera, video_writer=video_writer)
-        atexit.register(clean_exit)
-        sys.exit(0)  # Now clean_exit() is guaranteed to run after this
+        rc = 1
+    sys.exit(rc)
