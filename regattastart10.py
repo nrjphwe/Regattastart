@@ -13,6 +13,7 @@ from common_module import (
     text_rectangle,
     process_video,
     get_cpu_model,
+    get_h264_writer,
     clean_exit,
 )
 import sys
@@ -236,10 +237,16 @@ def prepare_input(img, device='cpu'):
     return img.to(device)
 
 
-def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, fps):
+def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, fps):
+    from utils.general import non_max_suppression
+    # config
+    DETECTION_CONF_THRESHOLD = 0.5
+    LOG_FRAME_THROTTLE = 10  # log every N frames when boat found
     global recording_stopped
     confidence = 0.0  # Initial value
     class_name = ""  # Initial value
+    frame_counter = 0  # Initialize a frame counter
+    boat_in_current_frame = False  # Initialize detection flag
 
     # Set duration of video1 recording
     max_duration = (video_end + (num_starts-1)*5) * 60
@@ -295,7 +302,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
         x_start = max((frame_width - crop_width) // 2 + shift_offset, 50)
         y_start = max((frame_height - crop_height) // 2, 0)
 
-        if frame_size[0] != 1920 or frame_size[1] != 1080:
+        if frame_size != (1920, 1080):
             logger.error(f"Resolution mismatch! Expected (1920, 1080) but got {frame_size}.")
         else:
             logger.debug("Resolution matches expected values.")
@@ -341,13 +348,20 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
     # Filter for 'boat' class (COCO ID for 'boat' is 8)
     model.classes = [8]
 
+    # --- SETUP VIDEO_WRITER (H.264 hardware if possible) ---
+    # 'avc1' is the MP4-friendly FourCC for H.264
+    # 'H264' also works, but 'avc1' avoids some playback issues on Windows/Mac
+
     # setup video writer
-    fourcc = cv2.VideoWriter_fourcc(*'MJPG')  # Use 'XVID' for .avi, or 'mp4v' for .mp4
-    video_writer = cv2.VideoWriter(video_path + 'video1' + '.avi', fourcc, fpsw, frame_size)
-    if not video_writer.isOpened():
-        logger.error(f"Failed to open video1.avi for writing. Selected frame_size: {frame_size}")
-        exit(1)
-    logger.debug(f"Video writer initialized successfully, frame_size: {frame_size}")
+    video1_file = os.path.join(video_path, "video1.mp4")
+    video_writer, writer_type = get_h264_writer(video1_file, fps, frame_size)
+    logger.info(f"Video writer backend: {writer_type}")
+    logger.info(f"Video writer object type: {type(video_writer)}")
+
+    if video_writer is None or getattr(video_writer, "proc", None) is None:
+        logger.error("FFmpeg writer failed to initialize — no video will be created!")
+    else:
+        logger.info(f"FFmpeg writer started for {video_path}")
 
     # Setup pre-detection parameters
     pre_detection_duration = 0  # Seconds
@@ -363,7 +377,6 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
     boat_in_current_frame = False
 
     frame_counter = 0  # Initialize a frame counter
-    # previous_capture_time = None  # Track previous frame timestamp
 
     # Compute scaling factors
     inference_width, inference_height = 640, 480  # Since you resize before inference
@@ -374,7 +387,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
     logger.debug(f"Crop aspect: {aspect_crop:.2f}, Inference aspect: {aspect_infer:.2f}")
     logger.debug(f"inference_width, inference_height = {inference_width, inference_height}")
     logger.debug(f"crop_width, crop_height = {crop_width, crop_height}")
-    logger.debug(f"scale_x = {scale_x}, scale_y= {scale_y}")
+    logger.debug(f"scale_x = {scale_x}, scale_y = {scale_y}")
 
     # Base scale text size and thickness
     base_fontScale = 0.9  # Default font size at 640x480
@@ -386,12 +399,12 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
     # (x, y) → OpenCV cv2.putText expects the bottom-left corner of the text string.
     # x = 50 → fixed horizontal offset, i.e. always 50 pixels from the left edge of the frame
     # y = max(50, frame_height - 100) → vertical position
-    origin = (50, max(50, frame_height - 100))
+    origin = (40, int(frame.shape[0] * 0.90))  # Bottom-left corner
     colour = (0, 255, 0)  # Green text
 
+    # MAIN LOOP
     while not recording_stopped:
         frame_counter += 1
-
         # Capture a frame from the camera
         try:
             frame = camera.capture_array()
@@ -417,12 +430,11 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
                     list(processed_timestamps)[-pre_detection_buffer.maxlen:]
                 )
                 logger.debug(f"Trimmed processed_timestamps to {len(processed_timestamps)} entries")
-
             if frame_counter % 20 == 0:
                 cleanup_processed_timestamps(processed_timestamps)
 
+        boat_in_current_frame = False   # Reset per frame
         # --- INFERENCE ---
-        boat_in_current_frame = False  # Reset detection flag for this frame
         if frame_counter % 4 == 0:  # process every 4th frame
             # Crop region of interest
             cropped_frame = frame[y_start:y_start + crop_height, x_start:x_start + crop_width]
@@ -439,7 +451,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
                     class_name = row['name']
                     confidence = row['confidence']
 
-                    if confidence > 0.5 and class_name == 'boat':
+                    if confidence > DETECTION_CONF_THRESHOLD and class_name == 'boat':
                         boat_in_current_frame = True
 
                         # Timestamp overlay
@@ -461,52 +473,64 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_sec, 
                         cv2.putText(frame, detected_timestamp, (x1, y2 + 50),
                                     font, fontScale, colour, thickness)
 
-        # --- Decision logic: write frames ---
-        if boat_in_current_frame:
-            # Write current detection frame
-            if frame is not None:
-                video_writer.write(frame)
-                logger.debug(f"FRAME: detection written @ {capture_timestamp}")
+                        # --- LOGGING ---
+                        # Log every N frames to avoid flooding
+                        LOG_FRAME_THROTTLE = 10
+                        if boat_in_current_frame and (frame_counter % LOG_FRAME_THROTTLE == 0):
+                            logger.info(f"Boat detected in frame {frame_counter} with conf {confidence:.2f}")
 
+
+        # -- WRITE VIDEO ---
+        if boat_in_current_frame:
             # Flush pre-detection buffer
             while pre_detection_buffer:
                 buf_frame, buf_ts = pre_detection_buffer.popleft()
                 if buf_frame is not None:
-                    cv2.putText(buf_frame, f"PRE {buf_ts.strftime('%H:%M:%S')}", 
-                                origin, font, fontScale, colour, thickness)
+                    buf_frame = cv2.resize(buf_frame, frame_size)  # enforce correct size
+                    cv2.putText(buf_frame, f"PRE {buf_ts.strftime('%H:%M:%S')}",
+                                (50, max(50, frame_height - 100)), font,
+                                fontScale, colour, thickness)
                     video_writer.write(buf_frame)
-                    logger.debug(f"FRAME: pre-detection written @ {buf_ts}")
             pre_detection_buffer.clear()
+
+            # Overlay timestamp
+            if frame is not None:
+                frame = cv2.resize(frame, frame_size)
+                text_rectangle(frame, capture_timestamp.strftime("%Y-%m-%d, %H:%M:%S"), origin)
+                video_writer.write(frame)
+                logger.debug(f"FRAME: detection written @ {capture_timestamp.strftime('%H:%M:%S')}")
 
             # Reset post-detection countdown
             number_of_post_frames = int(max_post_detection_duration * fpsw)
 
         elif number_of_post_frames > 0:
             if frame is not None:
-                # Write post-detection frame
-                cv2.putText(frame, f"POST {capture_timestamp.strftime('%H:%M:%S')}", 
-                            origin, font, fontScale, (0, 255, 0), thickness)
+                frame = cv2.resize(frame, frame_size)
+                text_rectangle(frame, f"POST {capture_timestamp.strftime('%H:%M:%S')}", origin)
                 video_writer.write(frame)
                 number_of_post_frames -= 1
-                logger.debug(f"FRAME: post-detection written @ {capture_timestamp} (countdown={number_of_post_frames})")
+                logger.debug(f"FRAME: post-detection written @ {capture_timestamp.strftime('%H:%M:%S')} (countdown={number_of_post_frames})")
 
-        # --- Check recording stop ---
+        # Check if recording should stop
         time_now = dt.datetime.now()
-        elapsed_time = (time_now - dt.datetime.combine(time_now.date(), dt.time(0))).total_seconds() - start_time_sec
+        elapsed_time = (time_now - start_time_dt).total_seconds()
         if elapsed_time >= max_duration:
             logger.debug(f"STOP: max duration reached ({elapsed_time:.1f}s)")
             recording_stopped = True
 
+    # ---ENSURE RELEASE OUTSIDE LOOP ---
     if recording_stopped:
         logger.info('Video1 recording stopped')
-    else:
-        logger.info("Calling stop_video_recording")
-        stop_video_recording(camera)
-        recording_stopped = True
-    if video_writer is not None:
-        video_writer.release()  # Release the video writer
-        logger.info("Video writer released")
-    logger.info("Exited the finish_recording module.")
+        if video_writer is not None:
+            try:
+                video_writer.release()
+                logger.info(f"Video1 writer released. File finalized at {video1_file}")
+            except Exception as e:
+                logger.error(f"Error releasing video_writer: {e}")
+            video_writer = None
+        else:
+            logger.warning("Video1 writer was None at shutdown!")
+    return video1_file
 
 
 def stop_listen_thread():
@@ -573,7 +597,7 @@ def main():
         stop_video_recording(camera)
         process_video(video_path, "video0.h264", "video0.mp4", frame_rate=30, resolution=(1640,1232))
 
-         # --- Finish recording & process videos ---
+        # --- Finish recording & process videos ---
         finish_recording(camera, video_path, num_starts, video_end, start_time_dt, fps)
 
         # --- Write status --
