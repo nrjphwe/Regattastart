@@ -43,6 +43,7 @@ import gc
 import warnings
 import queue
 import atexit
+import csv
 
 warnings.filterwarnings(
     "ignore",
@@ -162,62 +163,123 @@ def correct_ocr_digits(text):
 
 
 def extract_sail_number(frame, box):
-    import pytesseract
-    import re
+    import pytesseract, re
     x1, y1, x2, y2 = map(int, box)  # YOLO returns float
     w = x2 - x1
     h = y2 - y1
 
-    # Focus on the upper 40% of the bounding box (main sail usually here)
-    crop_y1 = max(0, y1 - int(0.2 * h))  # Allow some area above the box
-    crop_y2 = y1 + int(0.4 * h)
-
-    # Focus on the central 60% horizontally
-    crop_x1 = x1 + int(0.2 * w)
-    crop_x2 = x2 - int(0.2 * w)
+    # ---- ROI focus: upper/main sail band, center horizontally ----
+    H_UP = 0.45  # use a bit more of the upper region; adjust if needed
+    W_PAD = 0.18
+    crop_y1 = max(0, y1 - int(0.15 * h))    # allow slightly above
+    crop_y2 = y1 + int(H_UP * h)
+    crop_x1 = x1 + int(W_PAD * w)
+    crop_x2 = x2 - int(W_PAD * w)
 
     # Ensure coordinates are within bounds
     crop_y2 = min(crop_y2, frame.shape[0])
     crop_x2 = min(crop_x2, frame.shape[1])
+    if crop_y2 <= crop_y1 or crop_x2 <= crop_x1:
+        return None
 
     # Crop region
     sail_crop = frame[crop_y1:crop_y2, crop_x1:crop_x2]
 
-    # Preprocess the cropped image for better OCR
+    # ---- Preprocess: CLAHE -> adaptive thresholds (both polarities) ----
     gray = cv2.cvtColor(sail_crop, cv2.COLOR_BGR2GRAY)
-    resized = cv2.resize(gray, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
-    blurred = cv2.GaussianBlur(resized, (3, 3), 0)
-    _, thresh = cv2.threshold(blurred, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+    clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))
+    g = clahe(gray)
 
-    # OCR with whitelist
-    custom_config = r'--oem 3 --psm 6 -c tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
-    text = pytesseract.image_to_string(thresh, config=custom_config)
+    # try both normal and inverted binarization
+    def binarize(img, invert=False):
+        if invert:
+            img = cv2.bitwise_not(img)
+        # adaptive mean is robust on textured sails
+        th = cv2.adaptiveThreshold(img, 255, cv2.ADAPTIVE_THRESH_MEAN_C,
+                                   cv2.THRESH_BINARY, 31, 5)
+        # light morphological clean
+        th = cv2.morphologyEx(th, cv2.MORPH_OPEN, np.ones((2,2), np.uint8), iterations=1)
+        return th
 
-    # Try structured detection: "SWE" on one line, number below
-    lines = text.splitlines()
-    sail_number = ""
-    for i, line in enumerate(lines):
-        line_upper = line.strip().upper()
-        if "SWE" in line_upper:
-            # Search next 1–2 lines for a likely number
-            for j in range(1, 3):
-                if i + j < len(lines):
-                    candidate = lines[i + j].strip()
-                    candidate = correct_ocr_digits(candidate)
-                    combined = f"{line_upper} {candidate}"
-                    match = re.search(r'SWE\s*\d{1,4}', combined)
-                    if match:
-                        sail_number = match.group(0).strip()
-                        break
-        if sail_number:
-            break
+    candidates = []
+    for invert in (False, True):
+        th = binarize(g, invert=invert)
+        # also try a slightly tighter crop to remove borders/rigging lines
+        h2, w2 = th.shape[:2]
+        d = max(2, min(h2, w2)//40)
+        th_tight = th[d:h2-d, d:w2-d] if (h2-2*d>20 and w2-2*d>20) else th
 
-    if not sail_number and "SWE" in text:
-        sail_number = "SWE"
+        for img in (th, th_tight):
+            # upscale helps Tesseract
+            up = cv2.resize(img, None, fx=2.0, fy=2.0, interpolation=cv2.INTER_CUBIC)
+            cfg = r'--oem 3 --psm 6 -c tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+            txt = pytesseract.image_to_string(up, config=cfg)
+            candidates.append(txt)
 
-    if sail_number:
-        logger.info(f"Detected sail number: {sail_number}")
-        return sail_number
+            # also run on a horizontally flipped image to catch mirrored text
+            up_flipped = cv2.flip(up, 1)
+            txt_flip = pytesseract.image_to_string(up_flipped, config=cfg)
+            candidates.append(txt_flip)
+
+    # ---- Normalize + score candidates ----
+    def correct_ocr_digits(text):
+        map_ = {"I":"1","l":"1","O":"0","Q":"0","S":"5","Z":"2","B":"8","G":"6","E":"3"}
+        return ''.join(map_.get(c, c) for c in text)
+
+    MIN_DIGITS, MAX_DIGITS = 1, 4
+    best = None
+    best_score = -1
+
+    for raw in candidates:
+        lines = [L.strip().upper() for L in raw.splitlines() if L.strip()]
+        # simple two-line heuristic: SWE line + digits line nearby
+        for i, L in enumerate(lines):
+            if "SWE" in L:
+                # check same line first
+                combined = correct_ocr_digits(L)
+                m = re.search(r'SWE\D*([0-9]{%d,%d})' % (MIN_DIGITS, MAX_DIGITS), combined)
+                if m:
+                    digits = m.group(1)
+                    score = len(digits)  # more digits is better
+                    if score > best_score:
+                        best = f"SWE {digits}"
+                        best_score = score
+                    continue
+                # check following 1–2 lines for digits
+                for j in (1, 2):
+                    if i+j < len(lines):
+                        nxt = correct_ocr_digits(lines[i+j])
+                        m2 = re.search(r'([0-9]{%d,%d})' % (MIN_DIGITS, MAX_DIGITS), nxt)
+                        if m2:
+                            digits = m2.group(1)
+                            score = len(digits)
+                            if score > best_score:
+                                best = f"SWE {digits}"
+                                best_score = score
+
+    # fallback: sometimes only SWE is visible
+    if not best:
+        for raw in candidates:
+            if "SWE" in raw.upper():
+                best = "SWE"
+                best_score = 0
+                break
+
+    if best:
+        logger.info(f"Detected sail number: {best}")
+    return best
+
+
+def log_sailnumber_to_csv(sailnumber, ts, csv_file="/var/www/html/sailnumbers.csv"):
+    try:
+        newfile = not os.path.exists(csv_file)
+        with open(csv_file, "a", newline="") as f:
+            writer = csv.writer(f)
+            if newfile:
+                writer.writerow(["timestamp", "sailnumber"])
+            writer.writerow([ts.strftime("%Y-%m-%d %H:%M:%S"), sailnumber])
+    except Exception as e:
+        logger.error(f"CSV logging failed: {e}")
 
 
 def prepare_input(img, device='cpu'):
@@ -237,7 +299,7 @@ def prepare_input(img, device='cpu'):
     return img.to(device)
 
 
-def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, fps):
+def finish_recording(camera, model, video_path, num_starts, video_end, start_time_dt, fps):
     from utils.general import non_max_suppression
     # config
     DETECTION_CONF_THRESHOLD = 0.5
@@ -316,38 +378,6 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
     fpsw = fps
     logger.debug(f"FPS set to {fpsw}, proceeding to load YOLOv5 model.")
 
-    # Inference ## Load the pre-trained YOLOv5 model (e.g., yolov5s)
-    try:
-        result_queue = queue.Queue()  # Create a queue to hold the result
-        load_thread = threading.Thread(target=load_model_with_timeout, args=(result_queue,))
-        load_thread.start()
-        load_thread.join(timeout=60)  # Wait for up to 60 seconds
-    except Exception as e:
-        logger.error(f"Unhandled exception occurred load_thread: {e}", exc_info=True)
-        return
-
-    if not load_thread.is_alive():
-        try:
-            result = result_queue.get_nowait()  # Get the result from the queue
-            if isinstance(result, Exception):
-                logger.error("YOLOv5 model loading failed with an exception.")
-                return
-            model = result  # Successfully loaded model
-            logger.debug("YOLOv5 model loaded successfully.")
-        except queue.Empty:
-            logger.error("YOLOv5 model loading failed: No result returned.")
-            return
-    else:
-        logger.error("YOLOv5 model loading timed out.")
-        load_thread.join()  # Ensure the thread is cleaned up
-        return
-
-    # Continue with the rest of the `finish_recording` logic
-    logger.debug("After loading YOLOv5 model.")
-
-    # Filter for 'boat' class (COCO ID for 'boat' is 8)
-    model.classes = [8]
-
     # --- SETUP VIDEO_WRITER (H.264 hardware if possible) ---
     # 'avc1' is the MP4-friendly FourCC for H.264
     # 'H264' also works, but 'avc1' avoids some playback issues on Windows/Mac
@@ -402,6 +432,31 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
     origin = (40, int(frame.shape[0] * 0.90))  # Bottom-left corner
     colour = (0, 255, 0)  # Green text
 
+    # at init (before MAIN LOOP)
+    from collections import deque, Counter
+    ocr_history = deque(maxlen=40)  # ~8–12 s depending on your sampling
+    OCR_EVERY = 2
+    ocr_tick = 0
+
+    # inside detection block (after drawing box)
+    if confidence > DETECTION_CONF_THRESHOLD and class_name == 'boat':
+        if (w := (x2-x1)) >= 120 and (h := (y2-y1)) >= 120:
+            ocr_tick += 1
+            if ocr_tick % OCR_EVERY == 0:
+                sail_number = extract_sail_number(frame, (x1,y1,x2,y2))
+                if sail_number:
+                    ocr_history.append((sail_number, capture_timestamp))
+                    # promote when seen >=3 times in last ~8s
+                    recent = [v for v,t in ocr_history if (capture_timestamp - t).total_seconds() <= 8]
+                    if recent:
+                        val, cnt = Counter(recent).most_common(1)[0]
+                        if cnt >= 3:
+                            logger.info(f"CONFIRMED sailnumber: {val} @ {ts:%H:%M:%S}")
+                            log_sailnumber_to_csv(val, ts)  # <-- new line
+                            cv2.putText(frame, val, (x1, y1-25),
+                                        cv2.FONT_HERSHEY_DUPLEX, 0.9, (0,255,0), 2)
+
+
     # MAIN LOOP
     while not recording_stopped:
         frame_counter += 1
@@ -440,7 +495,6 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
             cropped_frame = frame[y_start:y_start + crop_height, x_start:x_start + crop_width]
             resized_frame = cv2.resize(cropped_frame, (inference_width, inference_height))
 
-            input_tensor = prepare_input(resized_frame, device='cpu')
             # Run YOLOv5 inference
             results = model(resized_frame)
             # results = model(input_tensor)
@@ -604,8 +658,16 @@ def main():
         stop_video_recording(camera)
         process_video(video_path, "video0.h264", "video0.mp4", frame_rate=30, resolution=(1640,1232))
 
+        # ---- load YOLO once here ----
+        logger.info("Loading YOLOv5 model once...")
+        model = torch.hub.load('/home/pi/yolov5','yolov5s',source='local')
+        model.classes=[8] # boats only
+        model.conf=0.35 # lower conf for recall
+        model.iou=0.45
+
+
         # --- Finish recording & process videos ---
-        finish_recording(camera, video_path, num_starts, video_end, start_time_dt, fps)
+        finish_recording(camera, model, video_path, num_starts, video_end, start_time_dt, fps)
 
         # --- Write status --
         with open('/var/www/html/status.txt', 'w') as status_file:
