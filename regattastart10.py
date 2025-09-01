@@ -473,12 +473,19 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
                         cv2.putText(frame, detected_timestamp, (x1, y2 + 50),
                                     font, fontScale, colour, thickness)
 
+                        # Extract the sail number
+                        for det in results.xyxy[0]:  # For each detection
+                            cls = int(det[5])
+                            if model.names[cls] == 'boat':  # class for boats
+                                sail_number = extract_sail_number(frame, det[:4])
+                                if sail_number is not None:
+                                    logger.info(f"sailnumber: {sail_number} time: {detected_timestamp}")
+
                         # --- LOGGING ---
                         # Log every N frames to avoid flooding
                         LOG_FRAME_THROTTLE = 10
                         if boat_in_current_frame and (frame_counter % LOG_FRAME_THROTTLE == 0):
                             logger.info(f"Boat detected in frame {frame_counter} with conf {confidence:.2f}")
-
 
         # -- WRITE VIDEO ---
         if boat_in_current_frame:
