@@ -262,6 +262,18 @@ def extract_sail_number(frame, box,clahe):
                 best = "SWE"
                 best_score = 0
                 break
+    # NEW fallback: plain numeric detection (no SWE seen)
+    if not best:
+        for raw in candidates:
+            lines = [correct_ocr_digits(L.strip().upper()) for L in raw.splitlines() if L.strip()]
+            for L in lines:
+                m = re.search(r'([0-9]{%d,%d})' % (MIN_DIGITS, MAX_DIGITS), L)
+                if m:
+                    digits = m.group(1)
+                    score = len(digits)
+                    if score > best_score:
+                        best = digits
+                        best_score = score
 
     if best:
         logger.info(f"Detected sail number: {best}")
@@ -279,22 +291,6 @@ def log_sailnumber_to_csv(sailnumber, ts, csv_file="/var/www/html/sailnumbers.cs
     except Exception as e:
         logger.error(f"CSV logging failed: {e}")
 
-
-def prepare_input(img, device='cpu'):
-    """
-    Prepares an image for YOLOv5 inference.
-    Assumes input is a NumPy image in BGR format (from OpenCV).
-    """
-    if isinstance(img, np.ndarray):
-        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)  # Convert to RGB
-        img = np.ascontiguousarray(img)             # Ensure it's contiguous
-        img = torch.from_numpy(img).permute(2, 0, 1).float()  # (3, H, W)
-        img /= 255.0                                 # Normalize to [0, 1]
-
-    if img.ndim == 3:
-        img = img.unsqueeze(0)  # (1, 3, H, W)
-
-    return img.to(device)
 
 
 def finish_recording(camera, model, video_path, num_starts, video_end, start_time_dt, fps):
