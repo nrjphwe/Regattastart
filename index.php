@@ -416,7 +416,7 @@
                 // regattastart9/10 logic
                 $video_name = 'images/video1.mp4';
                 if ($video0Exists) {
-                    if ($video1Exists) {
+                    if ($video1Exists && filesize($video_name) > 1000) {
                         if ($stopRecordingPressed || $recordingEndedByTime) {
                             // Show finished video
                             echo "<h3>Finish video, this is video 1 for the finish</h3>";
