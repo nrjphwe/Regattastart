@@ -159,7 +159,7 @@ def correct_ocr_digits(text):
     return corrected
 
 
-def extract_sail_number(frame, box):
+def extract_sail_number(frame, box,clahe):
     import pytesseract, re
     x1, y1, x2, y2 = map(int, box)  # YOLO returns float
     w = x2 - x1
@@ -184,8 +184,7 @@ def extract_sail_number(frame, box):
 
     # ---- Preprocess: CLAHE -> adaptive thresholds (both polarities) ----
     gray = cv2.cvtColor(sail_crop, cv2.COLOR_BGR2GRAY)
-    clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))
-    g = clahe(gray)
+    g = clahe.apply(gray)
 
     # try both normal and inverted binarization
     def binarize(img, invert=False):
@@ -212,11 +211,13 @@ def extract_sail_number(frame, box):
             cfg = r'--oem 3 --psm 6 -c tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
             txt = pytesseract.image_to_string(up, config=cfg)
             candidates.append(txt)
+            logger.debug(f"OCR candidate (normal): {txt!r}")
 
             # also run on a horizontally flipped image to catch mirrored text
             up_flipped = cv2.flip(up, 1)
             txt_flip = pytesseract.image_to_string(up_flipped, config=cfg)
             candidates.append(txt_flip)
+            logger.debug(f"OCR candidate (flipped): {txt_flip!r}")
 
     # ---- Normalize + score candidates ----
     def correct_ocr_digits(text):
@@ -428,6 +429,8 @@ def finish_recording(camera, model, video_path, num_starts, video_end, start_tim
     OCR_EVERY = 2
     ocr_tick = 0
 
+    clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))
+
     # MAIN LOOP
     while not recording_stopped:
         frame_counter += 1
@@ -499,7 +502,7 @@ def finish_recording(camera, model, video_path, num_starts, video_end, start_tim
                         if w >= 120 and h >= 120:
                             ocr_tick += 1
                             if ocr_tick % OCR_EVERY == 0:
-                                sail_number = extract_sail_number(frame, (x1,y1,x2,y2))
+                                sail_number = extract_sail_number(frame, (x1,y1,x2,y2), clahe)
                                 if sail_number:
                                     logger.debug(f"RAW sailnumber seen: {sail_number} @ {capture_timestamp:%H:%M:%S}")
                                     ocr_history.append((sail_number, capture_timestamp))
