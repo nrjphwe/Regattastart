@@ -497,7 +497,9 @@ def finish_recording(camera, model, video_path, num_starts, video_end, start_tim
                                     font, fontScale, colour, thickness)
 
                         # --- OCR ---
-                        if (w := (x2-x1)) >= 120 and (h := (y2-y1)) >= 120:
+                        w = x2 - x1
+                        h = y2 - y1
+                        if w >= 120 and h >= 120:
                             ocr_tick += 1
                             if ocr_tick % OCR_EVERY == 0:
                                 sail_number = extract_sail_number(frame, (x1,y1,x2,y2))
