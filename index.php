@@ -411,44 +411,47 @@
         <!-- PHP script to display remaining videos -->
         <div style="text-align: center;" class="w3-panel w3-pale-red", style="display: inline-block; padding: 20px;">
             <?php
-                $video_avi = 'images/video1.avi';
                 $video_mp4 = 'images/video1.mp4';
                 if ($video0Exists)
                 {
                     // wait with check until after the stop-recording button was pressed
                     if ($video1Exists)
-                    {
-                        for ($x = 1; $x <= $num_video; $x++) 
                         {
-                            $video_name = 'images/video' . $x . '.mp4';
-                            // console_log("Loop to display video = $video_name");
-                            if (file_exists($video_name) && filesize($video_name) > 1000)
+                        // Only show finish video if recording has ended
+                        $stopRecordingPressed = isset($_SESSION['stopRecordingPressed']) ? $_SESSION['stopRecordingPressed'] : false;
+                        $recordingEndedByTime = file_exists("recording_done.flag"); // marker file set by Python when time ends
+
+                        if ($stopRecordingPressed || $recordingEndedByTime) 
+                        {
+                            for ($x = 1; $x <= $num_video; $x++) 
                             {
-                                // Display the video
-                                echo "<h3> Finish video, this is video $x for the finish</h3>";
-                                echo '<video id="video' . $x . '" width="640" height="480" controls>
-                                <source src="' . $video_name . '" type="video/mp4"></video><p>
-                                    <div>
-                                        <button onclick="stepFrame(' . $x . ', -1)">Previous Frame</button>
-                                        <button onclick="stepFrame(' . $x . ', 1)">Next Frame</button>
-                                    </div>';
+                                $video_name = 'images/video' . $x . '.mp4';
+                                // console_log("Loop to display video = $video_name");
+                                if (file_exists($video_name) && filesize($video_name) > 1000)
+                                {
+                                    // Display the video
+                                    echo "<h3> Finish video, this is video $x for the finish</h3>";
+                                    echo '<video id="video' . $x . '" width="640" height="480" controls>
+                                    <source src="' . $video_name . '" type="video/mp4"></video><p>
+                                        <div>
+                                            <button onclick="stepFrame(' . $x . ', -1)">Previous Frame</button>
+                                            <button onclick="stepFrame(' . $x . ', 1)">Next Frame</button>
+                                        </div>';
+                                }
                             }
+                        } else {
+                            // Video file exists but recording still ongoing
+                            echo '<div style="display:flex;align-items:center;justify-content:center;background:#eee;border:1px solid #ccc;">
+                                    <p style="font-size:20px;color:#555;">Video being created...</p>
+                                </div>';
+                            console_log("Video1.mp4 exists, but recording not ended yet");
+                        } else {
+                            // Neither usable .mp4 nor→ nothing detected
+                            echo '<div style="display:flex;align-items:center;justify-content:center;background:#eee;border:1px solid #ccc;">
+                                    <p style="font-size:20px;color:#555;">No boat detected</p>
+                                </div>';
+                            console_log("Video1 do not exist, no boat detected");
                         }
-                    } elseif (file_exists($video_avi) && filesize($video_avi) == 0 ) 
-                    {
-                        // AVI exists but MP4 is not done or still 0 KB → still recording/detecting
-                        # echo '<div style="width:640px;height:480px;display:flex;align-items:center;justify-content:center;background:#eee;border:1px solid #ccc;">
-                        echo '<div style="display:flex;align-items:center;justify-content:center;background:#eee;border:1px solid #ccc;">
-                            <p style="font-size:20px;color:#555;">Video being created...</p>
-                            </div>';
-                            console_log("Video1.avi exist and filesize = 0, video beeing created");
-                    } else {
-                        // Neither usable .mp4 nor active .avi → nothing detected
-                        echo '<div style="display:flex;align-items:center;justify-content:center;background:#eee;border:1px solid #ccc;">
-                                <p style="font-size:20px;color:#555;">No boat detected</p>
-                            </div>';
-                        console_log("Video1 do not exist, no boat detected");
-                    }
                 }
             ?>
         </div>
