@@ -616,7 +616,7 @@ def main():
                     week_day, start_time_dt, num_starts)
 
         # --- Wait until 5-minute warning ---
-        while dt.datetime.now() < t5min_warning: 
+        while dt.datetime.now() < t5min_warning:
             time.sleep(1)
 
         # --- Start listening thread ---
@@ -637,9 +637,9 @@ def main():
         # ---- load YOLO once here ----
         logger.info("Loading YOLOv5 model once...")
         model = torch.hub.load('/home/pi/yolov5','yolov5s',source='local')
-        model.classes=[8] # boats only
-        model.conf=0.35 # lower conf for recall
-        model.iou=0.45
+        model.classes = [8]  # boats only
+        model.conf = 0.35  # lower conf for recall
+        model.iou = 0.45
 
         # --- Finish recording & process videos ---
         finish_recording(camera, model, video_path, num_starts, video_end, start_time_dt, fps)
