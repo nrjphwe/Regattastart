@@ -445,13 +445,14 @@
                                     <p style="font-size:20px;color:#555;">Video being created...</p>
                                 </div>';
                             console_log("Video1.mp4 exists, but recording not ended yet");
-                        } else {
-                            // Neither usable .mp4 nor→ nothing detected
-                            echo '<div style="display:flex;align-items:center;justify-content:center;background:#eee;border:1px solid #ccc;">
-                                    <p style="font-size:20px;color:#555;">No boat detected</p>
-                                </div>';
-                            console_log("Video1 do not exist, no boat detected");
                         }
+                    } else {
+                        // Neither usable .mp4 nor→ nothing detected
+                        echo '<div style="display:flex;align-items:center;justify-content:center;background:#eee;border:1px solid #ccc;">
+                                <p style="font-size:20px;color:#555;">No boat detected</p>
+                            </div>';
+                        console_log("Video1 do not exist, no boat detected");
+                    }
                 }
             ?>
         </div>
