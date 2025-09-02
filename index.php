@@ -378,83 +378,63 @@
             <?php
                 if ($num_video == 1) // which is valid for regattastart9 and not selectable 
                 {
-                    // Retrieve the value of the session variable
+                    // Check the Stop Recording button state
                     $stopRecordingPressed = isset($_SESSION['stopRecordingPressed']) ? $_SESSION['stopRecordingPressed'] : false;
-                    if ($video0Exists) // stop-recording button should not be visible unless the video0 exists
-                    {
-                        if ($stopRecordingPressed) // If button was pressed hide button
-                        {
-                            echo '<div id="stopRecordingButtonDiv" style="display: none;">'; // Hide the div
+
+                    // Check recording status from status.txt
+                    $status_file = '/var/www/html/status.txt';
+                    $videoComplete = file_exists($status_file) && trim(file_get_contents($status_file)) === 'complete';
+
+                    // Show Stop Recording button only if video is not yet complete
+                    if (!$videoComplete && $video0Exists) {
+                        if ($stopRecordingPressed) {
+                            echo '<div id="stopRecordingButtonDiv" style="display: none;">';
                         } else {
-                            echo '<div id="stopRecordingButtonDiv" style="display: block;">'; // Display the div
+                            echo '<div id="stopRecordingButtonDiv" style="display: block;">';
                             echo "
-                                <form id=\"stopRecordingForm\" action=\"" . htmlspecialchars($_SERVER["PHP_SELF"]) . "\" method=\"post\" onsubmit=\"return refreshPage()\">
+                                <form id=\"stopRecordingForm\" action=\"" . htmlspecialchars($_SERVER["PHP_SELF"]) . "\" method=\"post\">
                                     <input type=\"hidden\" name=\"stop_recording\" value=\"true\">
-                                    <input type=\"hidden\" name=\"stopRecordingPressed\" id=\"stopRecordingPressed\" value=\"0\"> 
-                                    <!-- Hidden input field for stopRecordingPressed -->
+                                    <input type=\"hidden\" name=\"stopRecordingPressed\" id=\"stopRecordingPressed\" value=\"0\">
                                     <input type=\"submit\" id=\"stopRecordingButton\" value=\"Stop Recording\">
                                 </form>
                             </div>";
-                            //  "Stop Recording" button not yet visible
-                            console_log("stopRecording button not yet pressed");
                         }
                     } else {
-                       // Log an information that video0 is not ready
-                       console_log("video0 is not available");
+                        // Recording finished: hide button
+                        echo '<div id="stopRecordingButtonDiv" style="display: none;"></div>';
                     }
-                } else {
-                    // Log an error if $num_video is not equal to 1
-                    console_log("num_video = $num_video which is not 1");
                 }
             ?>
         </div>
         <!-- PHP script to display remaining videos -->
-        <div style="text-align: center;" class="w3-panel w3-pale-red", style="display: inline-block; padding: 20px;">
-            <?php
-                $video_mp4 = 'images/video1.mp4';
-                if ($video0Exists)
-                {
-                    // wait with check until after the stop-recording button was pressed
-                    if ($video1Exists)
-                        {
-                        // Only show finish video if recording has ended
-                        $stopRecordingPressed = isset($_SESSION['stopRecordingPressed']) ? $_SESSION['stopRecordingPressed'] : false;
-                        $recordingEndedByTime = file_exists("recording_done.flag"); // marker file set by Python when time ends
+        <div style="text-align: center;" class="w3-panel w3-pale-red">
+        <?php
+            for ($x = 1; $x <= $num_video; $x++) {
+                $video_mp4 = "images/video$x.mp4";
+                $status_file = "/var/www/html/status$x.txt";
+                $videoComplete = file_exists($status_file) && trim(file_get_contents($status_file)) === 'complete';
 
-                        if ($stopRecordingPressed || $recordingEndedByTime) 
-                        {
-                            for ($x = 1; $x <= $num_video; $x++) 
-                            {
-                                $video_name = 'images/video' . $x . '.mp4';
-                                // console_log("Loop to display video = $video_name");
-                                if (file_exists($video_name) && filesize($video_name) > 1000)
-                                {
-                                    // Display the video
-                                    echo "<h3> Finish video, this is video $x for the finish</h3>";
-                                    echo '<video id="video' . $x . '" width="640" height="480" controls>
-                                    <source src="' . $video_name . '" type="video/mp4"></video><p>
-                                        <div>
-                                            <button onclick="stepFrame(' . $x . ', -1)">Previous Frame</button>
-                                            <button onclick="stepFrame(' . $x . ', 1)">Next Frame</button>
-                                        </div>';
-                                }
-                            }
-                        } else {
-                            // Video file exists but recording still ongoing
-                            echo '<div style="display:flex;align-items:center;justify-content:center;background:#eee;border:1px solid #ccc;">
-                                    <p style="font-size:20px;color:#555;">Video being created...</p>
-                                </div>';
-                            console_log("Video1.mp4 exists, but recording not ended yet");
-                        }
-                    } else {
-                        // Neither usable .mp4 nor→ nothing detected
-                        echo '<div style="display:flex;align-items:center;justify-content:center;background:#eee;border:1px solid #ccc;">
-                                <p style="font-size:20px;color:#555;">No boat detected</p>
+                if ($videoComplete && file_exists($video_mp4) && filesize($video_mp4) > 1000) {
+                    echo "<h3>Finish video, this is video $x for the finish</h3>";
+                    echo '<video id="video' . $x . '" width="640" height="480" controls>
+                            <source src="' . $video_mp4 . '" type="video/mp4"></video><p>
+                            <div>
+                                <button onclick="stepFrame(' . $x . ', -1)">Previous Frame</button>
+                                <button onclick="stepFrame(' . $x . ', 1)">Next Frame</button>
                             </div>';
-                        console_log("Video1 do not exist, no boat detected");
-                    }
+                } elseif ($video0Exists) {
+                    // Video still processing
+                    echo '<div style="display:flex;align-items:center;justify-content:center;background:#eee;border:1px solid #ccc;">
+                            <p style="font-size:20px;color:#555;">Video ' . $x . ' being created...</p>
+                        </div>';
+                } else {
+                    // Video does not exist / nothing detected
+                    echo '<div style="display:flex;align-items:center;justify-content:center;background:#eee;border:1px solid #ccc;">
+                            <p style="font-size:20px;color:#555;">No boat detected for video ' . $x . '</p>
+                        </div>';
                 }
-            ?>
+            }
+        ?>
         </div>
     </main>
     <!-- footer -->
@@ -474,35 +454,6 @@
             echo " Time now: " .date("H:i:s");
         ?> 
     </div>
-    <!--- Java Scripts  -->
-    <script> // Function to check Video1 completion status and reload page if complete
-        //var checkCompletionInterval;
-        var video1Exists = <?php echo json_encode($video1Exists); ?>; // Get the value from PHP 
-        //console.log('index.php, function response=', video1Exists);
-
-        function checkVideoCompletion() {
-            // AJAX call to PHP script to check completion status
-            $.get('check_video_completion.php', function(response, status) {
-                //alert("Data: " + response + "\nStatus: " + status);
-                var trimmed_response = response.trim(); // Trim the response text
-                // If Video1 is completed, reload the page
-                if (trimmed_response === 'complete') {
-                    console.log('checkVideo OK, Reloading page...');
-                    location.reload(true); // Reload with hard refresh
-                } else {
-                    console.log('Video1 not completed yet.');
-                    // Handle the case when Video1 is not completed yet
-                }
-            }).fail(function(xhr, status, error) {
-                 console.error('AJAX failed:', error);
-            });
-        }
-        if (!video1Exists) 
-        {
-            // Start interval to check completion every 60 seconds
-            checkCompletionInterval = setInterval(checkVideoCompletion, 60000); // Check every 60 seconds
-        }
-    </script>
     <!-- JavaScript to step frames in videos -->
     <script> // function to step frames 
         function stepFrame(videoNum, step) {
