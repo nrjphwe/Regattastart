@@ -106,7 +106,6 @@ def listen_for_messages(stop_event, timeout=0.1):
                 rlist, _, _ = select.select([fifo], [], [], timeout)
                 if rlist:
                     message = fifo.readline().strip()
-                    logger.debug(f"Message received from pipe: {message}")
                     if message == 'stop_recording':
                         stop_recording()
                         logger.info("Message == stop_recording")
@@ -114,7 +113,7 @@ def listen_for_messages(stop_event, timeout=0.1):
         except Exception as e:
             logger.error(f"Error in listen_for_messages: {e}", exc_info=True)
             break
-        time.sleep(0.1)
+        time.sleep(0.05)
     logger.info("Listening for messages: exiting")
 
 
