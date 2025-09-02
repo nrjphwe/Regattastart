@@ -83,7 +83,6 @@ def stop_recording():
 
 
 def listen_for_messages(stop_event, timeout=0.1):
-    global listening  # Use global flag
     pipe_path = '/var/www/html/tmp/stop_recording_pipe'
     logger.info("listen_for_messages: starting")
     logger.info(f"pipepath = {pipe_path}")
@@ -112,7 +111,6 @@ def listen_for_messages(stop_event, timeout=0.1):
                         break  # Exit the loop when stop_recording received
         except Exception as e:
             logger.error(f"Error in listen_for_messages: {e}", exc_info=True)
-            break
         time.sleep(0.05)
     logger.info("Listening for messages: exiting")
 
@@ -644,7 +642,6 @@ def main():
         model.conf=0.35 # lower conf for recall
         model.iou=0.45
 
-
         # --- Finish recording & process videos ---
         finish_recording(camera, model, video_path, num_starts, video_end, start_time_dt, fps)
 
@@ -663,7 +660,6 @@ def main():
         logger.info("Main finally: cleanup")
         stop_event.set()
         if listen_thread:
-
             listen_thread.join(timeout=2)
             if listen_thread.is_alive():
                 logger.warning("listen_thread did not stop within timeout.")
