@@ -29,7 +29,7 @@ if venv_path not in sys.path: sys.path.insert(0, venv_path)
 """
 
 # Use a deque to store the most recent frames in memory
-from collections import deque
+from collections import deque, Counter
 from datetime import datetime
 import datetime as dt
 import json
@@ -433,7 +433,6 @@ def finish_recording(camera, model, video_path, num_starts, video_end, start_tim
     colour = (0, 255, 0)  # Green text
 
     # at init (before MAIN LOOP)
-    from collections import deque, Counter
     ocr_history = deque(maxlen=40)  # ~8–12 s depending on your sampling
     OCR_EVERY = 2
     ocr_tick = 0
@@ -455,7 +454,6 @@ def finish_recording(camera, model, video_path, num_starts, video_end, start_tim
                             log_sailnumber_to_csv(val, ts)  # <-- new line
                             cv2.putText(frame, val, (x1, y1-25),
                                         cv2.FONT_HERSHEY_DUPLEX, 0.9, (0,255,0), 2)
-
 
     # MAIN LOOP
     while not recording_stopped:
@@ -497,7 +495,6 @@ def finish_recording(camera, model, video_path, num_starts, video_end, start_tim
 
             # Run YOLOv5 inference
             results = model(resized_frame)
-            # results = model(input_tensor)
             detections = results.pandas().xyxy[0]  # DataFrame output
 
             if not detections.empty:
