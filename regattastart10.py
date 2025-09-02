@@ -159,7 +159,7 @@ def correct_ocr_digits(text):
     return corrected
 
 
-def extract_sail_number(frame, box,clahe):
+def extract_sail_number(frame, box, clahe):
     import pytesseract, re
     x1, y1, x2, y2 = map(int, box)  # YOLO returns float
     w = x2 - x1
@@ -290,7 +290,6 @@ def log_sailnumber_to_csv(sailnumber, ts, csv_file="/var/www/html/sailnumbers.cs
             writer.writerow([ts.strftime("%Y-%m-%d %H:%M:%S"), sailnumber])
     except Exception as e:
         logger.error(f"CSV logging failed: {e}")
-
 
 
 def finish_recording(camera, model, video_path, num_starts, video_end, start_time_dt, fps):
@@ -641,7 +640,7 @@ def main():
         model.conf = 0.35  # lower conf for recall
         model.iou = 0.45
 
-        # --- Finish recording & process videos ---
+        # --- Finish recording - > Video1 ---
         finish_recording(camera, model, video_path, num_starts, video_end, start_time_dt, fps)
 
         # --- Write status --
