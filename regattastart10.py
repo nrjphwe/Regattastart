@@ -327,7 +327,6 @@ def finish_recording(camera, model, video_path, num_starts, video_end, start_tim
         return
 
     camera = restart_camera(camera, resolution=(1920, 1080), fps=fps)
-
     # Confirm cam is initialized
     if camera is None:
         logger.error("CAMERA RESTART: failed.")
@@ -386,26 +385,21 @@ def finish_recording(camera, model, video_path, num_starts, video_end, start_tim
     video1_file = os.path.join(video_path, "video1.mp4")
     video_writer, writer_type = get_h264_writer(video1_file, fps, frame_size)
     logger.info(f"Video writer backend: {writer_type}")
-    logger.info(f"Video writer object type: {type(video_writer)}")
-
     if video_writer is None or getattr(video_writer, "proc", None) is None:
         logger.error("FFmpeg writer failed to initialize — no video will be created!")
     else:
         logger.info(f"FFmpeg writer started for {video_path}")
 
-    # Setup pre-detection parameters
+    # Buffers
     pre_detection_duration = 0  # Seconds
     pre_detection_buffer = deque(maxlen=int(pre_detection_duration*fpsw))  # Adjust buffer size if needed
     processed_timestamps = set()  # Use a set for fast lookups
-
-    # setup Post detection
     max_post_detection_duration = 0  # sec
-    logger.info(f"max_duration,{max_duration}, FPS={fpsw},"
-                f"pre_detection_duration = {pre_detection_duration}, "
-                f"max_post_detection_duration={max_post_detection_duration}")
+    # logger.info(f"max_duration,{max_duration}, FPS={fpsw},"
+    #            f"pre_detection_duration = {pre_detection_duration}, "
+    #            f"max_post_detection_duration={max_post_detection_duration}")
     number_of_post_frames = int(fpsw * max_post_detection_duration)  # Initial setting, to record after detection
     boat_in_current_frame = False
-
     frame_counter = 0  # Initialize a frame counter
 
     # Compute scaling factors
@@ -419,7 +413,7 @@ def finish_recording(camera, model, video_path, num_starts, video_end, start_tim
     logger.debug(f"crop_width, crop_height = {crop_width, crop_height}")
     logger.debug(f"scale_x = {scale_x}, scale_y = {scale_y}")
 
-    # Base scale text size and thickness
+    # Font size and thickness
     base_fontScale = 0.9  # Default font size at 640x480
     base_thickness = 2  # Default thickness at 640x480
     scale_factor = (scale_x + scale_y) / 2  # Average scale factor
@@ -432,28 +426,10 @@ def finish_recording(camera, model, video_path, num_starts, video_end, start_tim
     origin = (40, int(frame.shape[0] * 0.90))  # Bottom-left corner
     colour = (0, 255, 0)  # Green text
 
-    # at init (before MAIN LOOP)
+    # OCR init
     ocr_history = deque(maxlen=40)  # ~8–12 s depending on your sampling
     OCR_EVERY = 2
     ocr_tick = 0
-
-    # inside detection block (after drawing box)
-    if confidence > DETECTION_CONF_THRESHOLD and class_name == 'boat':
-        if (w := (x2-x1)) >= 120 and (h := (y2-y1)) >= 120:
-            ocr_tick += 1
-            if ocr_tick % OCR_EVERY == 0:
-                sail_number = extract_sail_number(frame, (x1,y1,x2,y2))
-                if sail_number:
-                    ocr_history.append((sail_number, capture_timestamp))
-                    # promote when seen >=3 times in last ~8s
-                    recent = [v for v,t in ocr_history if (capture_timestamp - t).total_seconds() <= 8]
-                    if recent:
-                        val, cnt = Counter(recent).most_common(1)[0]
-                        if cnt >= 3:
-                            logger.info(f"CONFIRMED sailnumber: {val} @ {ts:%H:%M:%S}")
-                            log_sailnumber_to_csv(val, ts)  # <-- new line
-                            cv2.putText(frame, val, (x1, y1-25),
-                                        cv2.FONT_HERSHEY_DUPLEX, 0.9, (0,255,0), 2)
 
     # MAIN LOOP
     while not recording_stopped:
@@ -470,7 +446,7 @@ def finish_recording(camera, model, video_path, num_starts, video_end, start_tim
             logger.error(f"Failed to capture frame: {e}")
             continue  # Skips this iteration but keeps running the loop
 
-        # --- Pre-detection buffering ---
+        # --- Buffering ---
         if pre_detection_duration != 0 and capture_timestamp not in processed_timestamps:
             # Add frame to buffer and record its timestamp
             pre_detection_buffer.append((frame.copy(), capture_timestamp))
@@ -487,13 +463,12 @@ def finish_recording(camera, model, video_path, num_starts, video_end, start_tim
                 cleanup_processed_timestamps(processed_timestamps)
 
         boat_in_current_frame = False   # Reset per frame
+
         # --- INFERENCE ---
         if frame_counter % 4 == 0:  # process every 4th frame
             # Crop region of interest
             cropped_frame = frame[y_start:y_start + crop_height, x_start:x_start + crop_width]
             resized_frame = cv2.resize(cropped_frame, (inference_width, inference_height))
-
-            # Run YOLOv5 inference
             results = model(resized_frame)
             detections = results.pandas().xyxy[0]  # DataFrame output
 
@@ -504,7 +479,6 @@ def finish_recording(camera, model, video_path, num_starts, video_end, start_tim
 
                     if confidence > DETECTION_CONF_THRESHOLD and class_name == 'boat':
                         boat_in_current_frame = True
-
                         # Timestamp overlay
                         text_rectangle(frame, capture_timestamp.strftime("%Y-%m-%d, %H:%M:%S"), origin)
 
@@ -513,9 +487,7 @@ def finish_recording(camera, model, video_path, num_starts, video_end, start_tim
                         y1 = int(row['ymin'] * scale_y) + y_start
                         x2 = int(row['xmax'] * scale_x) + x_start
                         y2 = int(row['ymax'] * scale_y) + y_start
-
                         cv2.rectangle(frame, (x1, y1), (x2, y2), colour, thickness)
-
                         # Draw bounding box + confidence
                         cv2.putText(frame, f"{confidence:.2f}", (int(x1), int(y1) - 10),
                                     font, 0.7, (0, 255, 0), 2)
@@ -524,17 +496,26 @@ def finish_recording(camera, model, video_path, num_starts, video_end, start_tim
                         cv2.putText(frame, detected_timestamp, (x1, y2 + 50),
                                     font, fontScale, colour, thickness)
 
-                        # Extract the sail number
-                        for det in results.xyxy[0]:  # For each detection
-                            cls = int(det[5])
-                            if model.names[cls] == 'boat':  # class for boats
-                                sail_number = extract_sail_number(frame, det[:4])
-                                if sail_number is not None:
-                                    logger.info(f"sailnumber: {sail_number} time: {detected_timestamp}")
+                        # --- OCR ---
+                        if (w := (x2-x1)) >= 120 and (h := (y2-y1)) >= 120:
+                            ocr_tick += 1
+                            if ocr_tick % OCR_EVERY == 0:
+                                sail_number = extract_sail_number(frame, (x1,y1,x2,y2))
+                                if sail_number:
+                                    logger.debug(f"RAW sailnumber seen: {sail_number} @ {capture_timestamp:%H:%M:%S}")
+                                    ocr_history.append((sail_number, capture_timestamp))
+                                    # promote when seen >=3 times in last ~8s
+                                    recent = [v for v, t in ocr_history 
+                                              if (capture_timestamp - t).total_seconds() <= 8]
+                                    if recent:
+                                        val, cnt = Counter(recent).most_common(1)[0]
+                                        if cnt >= 3:
+                                            logger.info(f"CONFIRMED sailnumber: {val} @ {ts:%H:%M:%S}")
+                                            log_sailnumber_to_csv(val, ts)  # <-- new line
+                                            cv2.putText(frame, val, (x1, y1-25),
+                                                        cv2.FONT_HERSHEY_DUPLEX, 0.9, (0,255,0), 2)
 
                         # --- LOGGING ---
-                        # Log every N frames to avoid flooding
-                        LOG_FRAME_THROTTLE = 10
                         if boat_in_current_frame and (frame_counter % LOG_FRAME_THROTTLE == 0):
                             logger.info(f"Boat detected in frame {frame_counter} with conf {confidence:.2f}")
 
