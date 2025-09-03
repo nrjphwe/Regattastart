@@ -410,58 +410,41 @@
         <div style="text-align: center;" class="w3-panel w3-pale-red", style="display: inline-block; padding: 20px;">
         <?php
             $stopRecordingPressed = isset($_SESSION['stopRecordingPressed']) ? $_SESSION['stopRecordingPressed'] : false;
-            $recordingEndedByTime = file_exists("recording_done.flag");
 
-            // also check the status file written by Python
+            // Check the status file written by Python
             $status_file = '/var/www/html/status.txt';
             $videoComplete = file_exists($status_file) && trim(file_get_contents($status_file)) === 'complete';
 
             $recordingEnded = $stopRecordingPressed || $recordingEndedByTime || $videoComplete;
 
-            if ($num_video == 1) {
-                // regattastart9/10 logic
-                $video_name = 'images/video1.mp4';
-                if ($video0Exists) {
-                    if ($video1Exists && filesize($video_name) > 1000) {
-                        if ($recordingEnded) {
-                            // Show finished video
-                            echo "<h3>Finish video, this is video 1 for the finish</h3>";
-                            echo '<video id="video1" width="640" height="480" controls>
+            if ($video1Exists) {
+                if ($stopRecordingPressed || $videoComplete) {
+                    // Show finished videos
+                    for ($x = 1; $x <= $num_video; $x++) {
+                        $video_name = 'images/video' . $x . '.mp4';
+                        if (file_exists($video_name) && filesize($video_name) > 1000) {
+                            echo "<h3> Finish video, this is video $x for the finish</h3>";
+                            echo '<video id="video' . $x . '" width="640" height="480" controls>
                                     <source src="' . $video_name . '" type="video/mp4"></video><p>
                                     <div>
-                                        <button onclick="stepFrame(1, -1)">Previous Frame</button>
-                                        <button onclick="stepFrame(1, 1)">Next Frame</button>
+                                        <button onclick="stepFrame(' . $x . ', -1)">Previous Frame</button>
+                                        <button onclick="stepFrame(' . $x . ', 1)">Next Frame</button>
                                     </div>';
-                        } else {
-                            // Video still recording
-                            echo '<div style="display:flex;align-items:center;justify-content:center;background:#eee;border:1px solid #ccc;">
-                                    <p style="font-size:20px;color:#555;">Video being created...</p>
-                                </div>';
-                            console_log("Video1.mp4 exists, but recording not ended yet");
                         }
-                    } else {
-                        // No video yet
-                        echo '<div style="display:flex;align-items:center;justify-content:center;background:#eee;border:1px solid #ccc;">
-                                <p style="font-size:20px;color:#555;">No boat detected</p>
-                            </div>';
-                        console_log("Video1 do not exist, no boat detected");
                     }
+                } else {
+                    // Recording still ongoing
+                    echo '<div style="display:flex;align-items:center;justify-content:center;background:#eee;border:1px solid #ccc;">
+                            <p style="font-size:20px;color:#555;">Video being created...</p>
+                        </div>';
+                    console_log("Video1.mp4 exists, but recording not ended yet");
                 }
-            } elseif ($num_video > 1) {
-                // regattastart6 logic: loop over all videos
-                for ($x = 1; $x <= $num_video; $x++) {
-                    $video_name = 'images/video' . $x . '.mp4';
-                    if (file_exists($video_name) && filesize($video_name) > 1000) {
-                        echo "<h3>Video $x</h3>";
-                        echo '<video id="video' . $x . '" width="640" height="480" controls>
-                                <source src="' . $video_name . '" type="video/mp4"></video><p>';
-                    } else {
-                        // Video not yet ready
-                        echo '<div style="display:flex;align-items:center;justify-content:center;background:#eee;border:1px solid #ccc;">
-                                <p style="font-size:20px;color:#555;">Video ' . $x . ' being created...</p>
-                            </div>';
-                    }
-                }
+            } else {
+                // Neither usable .mp4 nor anything detected
+                echo '<div style="display:flex;align-items:center;justify-content:center;background:#eee;border:1px solid #ccc;">
+                        <p style="font-size:20px;color:#555;">No boat detected</p>
+                    </div>';
+                console_log("Video1 does not exist, no boat detected");
             }
         ?>
     </div>
