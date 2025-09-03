@@ -412,12 +412,18 @@
             $stopRecordingPressed = isset($_SESSION['stopRecordingPressed']) ? $_SESSION['stopRecordingPressed'] : false;
             $recordingEndedByTime = file_exists("recording_done.flag");
 
+            // also check the status file written by Python
+            $status_file = '/var/www/html/status.txt';
+            $videoComplete = file_exists($status_file) && trim(file_get_contents($status_file)) === 'complete';
+
+            $recordingEnded = $stopRecordingPressed || $recordingEndedByTime || $videoComplete;
+
             if ($num_video == 1) {
                 // regattastart9/10 logic
                 $video_name = 'images/video1.mp4';
                 if ($video0Exists) {
                     if ($video1Exists && filesize($video_name) > 1000) {
-                        if ($stopRecordingPressed || $recordingEndedByTime) {
+                        if ($recordingEnded) {
                             // Show finished video
                             echo "<h3>Finish video, this is video 1 for the finish</h3>";
                             echo '<video id="video1" width="640" height="480" controls>
