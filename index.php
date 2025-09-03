@@ -415,7 +415,6 @@
             $status_file = '/var/www/html/status.txt';
             $videoComplete = file_exists($status_file) && trim(file_get_contents($status_file)) === 'complete';
 
-
             if ($video1Exists) {
                 if ($stopRecordingPressed || $videoComplete) {
                     // Show finished videos
