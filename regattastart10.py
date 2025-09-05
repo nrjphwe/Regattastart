@@ -507,8 +507,8 @@ def finish_recording(camera, model, video_path, num_starts, video_end, start_tim
                                     if recent:
                                         val, cnt = Counter(recent).most_common(1)[0]
                                         if cnt >= 3:
-                                            logger.info(f"CONFIRMED sailnumber: {val} @ {ts:%H:%M:%S}")
-                                            log_sailnumber_to_csv(val, ts)  # <-- new line
+                                            logger.info(f"CONFIRMED sailnumber: {val} @ {capture_timestamp:%H:%M:%S}")
+                                            log_sailnumber_to_csv(val, capture_timestamp)  # <-- new line
                                             cv2.putText(frame, val, (x1, y1-25),
                                                         cv2.FONT_HERSHEY_DUPLEX, 0.9, (0,255,0), 2)
 
