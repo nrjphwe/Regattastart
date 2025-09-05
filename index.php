@@ -407,55 +407,57 @@
             ?>
         </div>
         <!-- PHP script to display remaining videos -->
-        <div style="text-align: center;" class="w3-panel w3-pale-red", style="display: inline-block; padding: 20px;">
-       <?php
+        <div style="text-align: center;" class="w3-panel w3-pale-red" style="display: inline-block; padding: 20px;">
+        <?php
             $stopRecordingPressed = isset($_SESSION['stopRecordingPressed']) ? $_SESSION['stopRecordingPressed'] : false;
-
-            // Check the status file written by Python
             $status_file = '/var/www/html/status.txt';
             $videoComplete = file_exists($status_file) && trim(file_get_contents($status_file)) === 'complete';
 
+            // --- Case: regattastart9/10 (only 1 video expected, but $num_video=1)
+            // --- or regattastart6 (multiple numbered videos)
             if ($video1Exists) {
-                for ($x = 1; $x <= $num_video; $x++) {
-                    $video_name = 'images/video' . $x . '.mp4';
-
-                    if (($stopRecordingPressed || $videoComplete) && file_exists($video_name) && filesize($video_name) > 1000) {
-                        // Show finished video
-                        echo "<h3> Finish video, this is video $x for the finish</h3>";
-                        echo '<video id="video' . $x . '" width="640" height="480" controls>
-                                <source src="' . $video_name . '" type="video/mp4"></video><p>
-                                <div>
-                                    <button onclick="stepFrame(' . $x . ', -1)">Previous Frame</button>
-                                    <button onclick="stepFrame(' . $x . ', 1)">Next Frame</button>
-                                </div>';
-                    } elseif ($stopRecordingPressed || $videoComplete) {
-                        // Status says complete, but file not finalized yet
-                        echo '<div style="display:flex;align-items:center;justify-content:center;background:#eee;border:1px solid #ccc;">
-                                <p style="font-size:20px;color:#555;">Finalizing video...</p>
-                            </div>';
-                        echo '<script>
-                                setTimeout(function() {
-                                    location.reload(true);
-                                }, 5000); // refresh every 5 sec
-                            </script>';
-                        console_log("Recording ended, waiting for video file to finalize");
-                    } else {
-                        // Recording still ongoing
-                        echo '<div style="display:flex;align-items:center;justify-content:center;background:#eee;border:1px solid #ccc;">
-                                <p style="font-size:20px;color:#555;">Video being created...</p>
-                            </div>';
-                        console_log("Video1.mp4 exists, but recording not ended yet");
+                if ($stopRecordingPressed || $videoComplete || $num_video > 1) {
+                    // Show finished videos (loop supports both 1 and N videos)
+                    for ($x = 1; $x <= $num_video; $x++) {
+                        $video_name = 'images/video' . $x . '.mp4';
+                        if (file_exists($video_name)) {
+                            $size = filesize($video_name);
+                            if ($size > 1000) {
+                                // ✅ valid MP4
+                                echo "<h3> Finish video, this is video $x for the finish</h3>";
+                                echo '<video id="video' . $x . '" width="640" height="480" controls>
+                                        <source src="' . $video_name . '" type="video/mp4"></video><p>
+                                        <div>
+                                            <button onclick="stepFrame(' . $x . ', -1)">Previous Frame</button>
+                                            <button onclick="stepFrame(' . $x . ', 1)">Next Frame</button>
+                                        </div>';
+                            } else {
+                                // 🚫 Tiny placeholder file
+                                echo '<div style="display:flex;align-items:center;justify-content:center;background:#eee;border:1px solid #ccc;">
+                                        <p style="font-size:20px;color:#555;">
+                                        Recording finished, but no valid video was produced for video ' . $x . '.
+                                        </p>
+                                    </div>';
+                                console_log("Video$x exists but is too small ($size bytes).");
+                            }
+                        }
                     }
+                } else {
+                    // Recording still ongoing
+                    echo '<div style="display:flex;align-items:center;justify-content:center;background:#eee;border:1px solid #ccc;">
+                            <p style="font-size:20px;color:#555;">Video being created...</p>
+                        </div>';
+                    console_log("Video1.mp4 exists, but recording not ended yet");
                 }
             } else {
-                // Neither usable .mp4 nor anything detected
+                // Nothing detected
                 echo '<div style="display:flex;align-items:center;justify-content:center;background:#eee;border:1px solid #ccc;">
                         <p style="font-size:20px;color:#555;">No boat detected</p>
                     </div>';
                 console_log("Video1 does not exist, no boat detected");
             }
         ?>
-    </div>
+        </div>
     </main>
     <!-- footer -->
     <div style="text-align: center;" class="w3-panel w3-grey">
