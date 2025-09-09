@@ -362,8 +362,9 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
                 cleanup_processed_timestamps(processed_timestamps)
 
         boat_in_current_frame = False   # Reset per frame
-        # --- INFERENCE ON EVERY 4TH FRAME ---
-        if frame_counter % 4 == 0:
+      
+        # --- INFERENCE ON EVERY 5TH FRAME ---
+        if frame_counter % 5 == 0:
             # Crop region of interest
             cropped_frame = frame[y_start:y_start + crop_height, x_start:x_start + crop_width]
             resized_frame = cv2.resize(cropped_frame, (inference_width, inference_height))
