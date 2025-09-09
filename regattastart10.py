@@ -396,7 +396,8 @@ def finish_recording(camera, model, video_path, num_starts, video_end, start_tim
     frame_counter = 0  # Initialize a frame counter
 
     # Compute scaling factors
-    inference_width, inference_height = 640, 480  # Since you resize before inference
+    inference_width, inference_height = 416, 416
+    #inference_width, inference_height = 640, 480  # Since you resize before inference
     scale_x = crop_width / inference_width
     scale_y = crop_height / inference_height
     aspect_crop = crop_width / crop_height
