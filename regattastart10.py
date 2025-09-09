@@ -397,7 +397,7 @@ def finish_recording(camera, model, video_path, num_starts, video_end, start_tim
 
     # Compute scaling factors
     inference_width, inference_height = 416, 416
-    #inference_width, inference_height = 640, 480  # Since you resize before inference
+    # inference_width, inference_height = 640, 480  # Since you resize before inference
     scale_x = crop_width / inference_width
     scale_y = crop_height / inference_height
     aspect_crop = crop_width / crop_height
@@ -460,8 +460,20 @@ def finish_recording(camera, model, video_path, num_starts, video_end, start_tim
 
         boat_in_current_frame = False   # Reset per frame
 
+        # --- adaptive frame skipping based on temperature ---
+        skip_rate = 4  # default: process every 4th frame
+        try:
+            # check Pi temp (only every N frames to avoid overhead)
+            if frame_counter % 120 == 0:
+                temp_str = os.popen("vcgencmd measure_temp").readline()
+                current_temp = float(temp_str.replace("temp=", "").replace("'C\n", ""))
+                if current_temp > 80:
+                    skip_rate = 8  # lighten load when hot
+        except Exception:
+            pass  # if vcgencmd not available, keep default
+
         # --- INFERENCE ---
-        if frame_counter % 4 == 0:  # process every 4th frame
+        if frame_counter % skip_rate == 0:
             # Crop region of interest
             cropped_frame = frame[y_start:y_start + crop_height, x_start:x_start + crop_width]
             resized_frame = cv2.resize(cropped_frame, (inference_width, inference_height))
@@ -495,7 +507,7 @@ def finish_recording(camera, model, video_path, num_starts, video_end, start_tim
                         # --- OCR ---
                         w = x2 - x1
                         h = y2 - y1
-                        if w >= 120 and h >= 120:
+                        if confidence > 0.6 and w >= 150 and h >= 150:
                             ocr_tick += 1
                             if ocr_tick % OCR_EVERY == 0:
                                 sail_number = extract_sail_number(frame, (x1,y1,x2,y2), clahe)
