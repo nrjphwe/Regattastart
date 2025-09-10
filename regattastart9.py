@@ -225,24 +225,28 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
         logger.error(f"Exception occurred while accessing frame size: {e}", exc_info=True)
         return
 
-    # Define crop data to maintain the square (1:1) aspect ratio
+    # --- CROP DATA FOR INFERENCE ---
     try:
-        logger.debug("calculate crop data for the frame.")
-        shift_offset = 100  # horisontal offset for crop -> right part
-        # Get dimensions of the full-resolution frame (1640x1232 in your case)
-        frame_height, frame_width = frame.shape[:2]  # shape = (height, width, channels)
+        logger.debug("Calculating crop data for inference only.")
+
+        # Full camera resolution
+        frame_height, frame_width = frame.shape[:2]
+        camera_frame_size = (frame_width, frame_height)
+
+        shift_offset = 100  # horizontal offset for crop -> right part
         x_start = max((frame_width - crop_width) // 2 + shift_offset, 50)
         y_start = max((frame_height - crop_height) // 2, 0)
 
-        if frame_size != (1920, 1080):
-            logger.error(f"Resolution mismatch! Expected (1920, 1080) but got {frame_size}.")
+        if camera_frame_size != (1920, 1080):
+            logger.error(f"Resolution mismatch! Expected (1920, 1080) but got {camera_frame_size}.")
         else:
             logger.debug("Resolution matches expected values.")
 
+        logger.debug(f"Frame size used to crop for inference: {crop_width}x{crop_height}")
+
     except Exception as e:
-        logger.error(f"Unhandled exception occurred: {e}", exc_info=True)
+        logger.error(f"Unhandled exception occurred during crop setup: {e}", exc_info=True)
         return
-    logger.debug(f"Frame size used to crop for inference calculated, size: {crop_width}x{crop_height}")  
 
     # Set the camera to the desired resolution and frame rate
     fpsw = fps
@@ -280,23 +284,19 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
     # Filter for 'boat' class (COCO ID for 'boat' is 8)
     model.classes = [8]
 
-    # --- SETUP VIDEO_WRITER (H.264 hardware if possible) ---
-    # 'avc1' is the MP4-friendly FourCC for H.264
-    # 'H264' also works, but 'avc1' avoids some playback issues on Windows/Mac
-
     # SETUP VIDEO WRITER
     """
     Writes frames directly as H.264, avoiding constant MP4 container 
     overhead during detection
     """
     video1_h264_file = os.path.join(video_path, "video1.h264")
-    video_writer, writer_type = get_h264_writer(video1_h264_file, fps, frame_size)
+    video_writer, writer_type = get_h264_writer(video1_h264_file, fps, camera_frame_size)
 
     # Previous in New_6
     # video1_file = os.path.join(video_path, "video1.mp4")
     # video_writer, writer_type = get_h264_writer(video1_file, fps, frame_size)
 
-    logger.info(f"Video writer backend: {writer_type} (raw .h264)")
+    logger.info(f"Video writer backend: {writer_type} (raw .h264), frame_size: {frame_size}")
     logger.info(f"Video writer object type: {type(video_writer)}")
 
     if video_writer is None or getattr(video_writer, "proc", None) is None:
