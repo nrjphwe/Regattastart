@@ -419,26 +419,37 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
             while pre_detection_buffer:
                 buf_frame, buf_ts = pre_detection_buffer.popleft()
                 if buf_frame is not None:
-                    text_rectangle(buf_frame, f"PRE {buf_ts:%H:%M:%S}", origin)
-                    video_writer.write(buf_frame)   # no resize here!
+                    # ensure we write a full-frame image to writer
+                    if buf_frame.shape[1] != camera_frame_size[0] or buf_frame.shape[0] != camera_frame_size[1]:
+                        buf_frame_full = cv2.resize(buf_frame, camera_frame_size)
+                    else:
+                        buf_frame_full = buf_frame
+                    text_rectangle(buf_frame_full, f"PRE {buf_ts:%H:%M:%S}", origin)
+                    video_writer.write(buf_frame_full)
             pre_detection_buffer.clear()
 
-            # Overlay timestamp
+            # Overlay timestamp on the ORIGINAL full frame (not the cropped inference frame)
             if frame is not None:
-                # Annotate timestamp on full frame
-                text_rectangle(frame, capture_timestamp.strftime("%Y-%m-%d, %H:%M:%S"), origin)
-                # Write full, uncropped frame
-                video_writer.write(frame)
-                logger.debug(f"FRAME: detection written @ {capture_timestamp.strftime('%H:%M:%S')} with frame_size: {frame_size}")
+                # If for some reason frame isn't camera size, resize to writer size
+                if frame.shape[1] != camera_frame_size[0] or frame.shape[0] != camera_frame_size[1]: 
+                    frame_full = cv2.resize(frame, camera_frame_size)
+                else:
+                    frame_full = frame
+                text_rectangle(frame_full, capture_timestamp.strftime("%Y-%m-%d, %H:%M:%S"), origin)
+                video_writer.write(frame_full)
+                logger.debug(f"FRAME: detection written @ {capture_timestamp.strftime('%H:%M:%S')} with writer_frame_size: {camera_frame_size}")
 
             # Reset post-detection countdown
             number_of_post_frames = int(max_post_detection_duration * fpsw)
 
         elif number_of_post_frames > 0:
             if frame is not None:
-                # frame_full = cv2.resize(frame, frame_size)
-                text_rectangle(frame, f"POST {capture_timestamp.strftime('%H:%M:%S')}", origin)
-                video_writer.write(frame)
+                if frame.shape[1] != camera_frame_size[0] or frame.shape[0] != camera_frame_size[1]:
+                    frame_full = cv2.resize(frame, camera_frame_size)
+                else:
+                    frame_full = frame
+                text_rectangle(frame_full, f"POST {capture_timestamp.strftime('%H:%M:%S')}", origin)
+                video_writer.write(frame_full)
                 number_of_post_frames -= 1
                 logger.debug(f"FRAME: post-detection written @ {capture_timestamp.strftime('%H:%M:%S')} (countdown={number_of_post_frames})")
 
