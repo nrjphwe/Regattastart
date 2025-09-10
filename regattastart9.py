@@ -284,10 +284,19 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
     # 'avc1' is the MP4-friendly FourCC for H.264
     # 'H264' also works, but 'avc1' avoids some playback issues on Windows/Mac
 
-    # setup video writer
-    video1_file = os.path.join(video_path, "video1.mp4")
-    video_writer, writer_type = get_h264_writer(video1_file, fps, frame_size)
-    logger.info(f"Video writer backend: {writer_type}")
+    # SETUP VIDEO WRITER
+    """
+    Writes frames directly as H.264, avoiding constant MP4 container 
+    overhead during detection
+    """
+    video1_h264_file = os.path.join(video_path, "video1.h264")
+    video_writer, writer_type = get_h264_writer(video1_h264_file, fps, frame_size)
+
+    # Previous in New_6
+    # video1_file = os.path.join(video_path, "video1.mp4")
+    # video_writer, writer_type = get_h264_writer(video1_file, fps, frame_size)
+
+    logger.info(f"Video writer backend: {writer_type} (raw .h264)")
     logger.info(f"Video writer object type: {type(video_writer)}")
 
     if video_writer is None or getattr(video_writer, "proc", None) is None:
@@ -362,7 +371,6 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
                 cleanup_processed_timestamps(processed_timestamps)
 
         boat_in_current_frame = False   # Reset per frame
-
         # --- INFERENCE ON EVERY 5TH FRAME ---
         if frame_counter % 5 == 0:
             # Crop region of interest
@@ -448,9 +456,14 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
         if video_writer is not None:
             try:
                 video_writer.release()
-                logger.info(f"Video1 writer released. File finalized at {video1_file}")
+                logger.info(f"Video1 H.264 writer released. Raw file at {video1_h264_file}")
+                # Remux to MP4
+                video1_file = os.path.join(video_path, "video1.mp4")
+                process_video(video_path, "video1.h264", "video1.mp4", frame_rate=fps, resolution=frame_size)
+                logger.info(f"Video1 remuxed to MP4: {video1_file}")
+                os.remove(video1_h264_file)  # optional cleanup
             except Exception as e:
-                logger.error(f"Error releasing video_writer: {e}")
+                logger.error(f"Error releasing or remuxing video_writer: {e}")
             video_writer = None
         else:
             logger.warning("Video1 writer was None at shutdown!")
