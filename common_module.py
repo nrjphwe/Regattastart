@@ -368,34 +368,61 @@ def stop_video_recording(cam):
     logger.info("Recording stopped and camera fully released.")
 
 
-def process_video(video_path, input_file, output_file, frame_rate=None, resolution=(1640, 1232)):
+def process_video(video_path, input_file, output_file, frame_rate=None, resolution=(1640, 1232), mode="remux"):
     source = os.path.join(video_path, input_file)
     dest = os.path.join(video_path, output_file)
+
     if not os.path.exists(source) or os.path.getsize(source) <= 5000:
         logger.info(f"Warning: {input_file} is empty or does not exist. Skipping conversion.")
         return
-    command = [
-        "ffmpeg",
-        "-i", source,
-        "-vcodec", "libx264",
-        "-crf", "23",
-        "-preset", "fast",  # or another valid preset
-        "-movflags", "+faststart",  # <--- this is the correct way
-    ]
-    vf_filters = [f"scale={resolution[0]}:{resolution[1]}:in_range=full:out_range=tv"]
-    if frame_rate:
-        vf_filters.append(f"fps={frame_rate}")
-    command.extend(["-vf", ",".join(vf_filters)])
-    #  Add pixel format for consistent output
-    command.extend(["-pix_fmt", "yuv420p"])
-    # Overwrite output and set destination
-    command.extend(["-y", dest])  # Add output destination
+
+    if mode == "remux":
+        #  Fastest, no re-encode
+        command = [
+            "ffmpeg", "-i", source,
+            "-c", "copy",
+            "-y", dest
+        ]
+
+    elif mode == "hw":  
+        #  Hardware encoder (keeps Pi cool)
+        command = [
+            "ffmpeg", "-i", source,
+            "-c:v", "h264_v4l2m2m",
+            "-b:v", "4M",  # adjust bitrate
+            "-movflags", "+faststart",
+            "-y", dest
+        ]
+        if frame_rate or resolution:
+            vf_filters = []
+            if resolution:
+                vf_filters.append(f"scale={resolution[0]}:{resolution[1]}:in_range=full:out_range=tv")
+            if frame_rate:
+                vf_filters.append(f"fps={frame_rate}")
+            if vf_filters:
+                command.extend(["-vf", ",".join(vf_filters)])
+
+    else:
+        # Software fallback (not recommended on Pi for high-res)
+        command = [
+            "ffmpeg", "-i", source,
+            "-vcodec", "libx264",
+            "-crf", "23",
+            "-preset", "fast",
+            "-movflags", "+faststart",
+        ]
+        vf_filters = [f"scale={resolution[0]}:{resolution[1]}:in_range=full:out_range=tv"]
+        if frame_rate:
+            vf_filters.append(f"fps={frame_rate}")
+        command.extend(["-vf", ",".join(vf_filters)])
+        command.extend(["-pix_fmt", "yuv420p"])
+        command.extend(["-y", dest])
 
     try:
         subprocess.run(command, check=True)
-        logger.debug("Video processed: %s", output_file)
+        logger.debug(f"Video processed: {output_file} (mode={mode})")
     except Exception as e:
-        logger.error(f"Failed to process video: {e}")
+        logger.error(f"Failed to process video {input_file}: {e}")
         return
 
 
