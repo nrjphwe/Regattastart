@@ -461,7 +461,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
                 video1_file = os.path.join(video_path, "video1.mp4")
                 process_video(video_path, "video1.h264", "video1.mp4", mode="remux")
                 logger.info(f"Video1 {video1_file} remuxed to MP4, with frame_size: {frame_size}")
-                os.remove(video1_h264_file)  # optional cleanup
+                # os.remove(video1_h264_file)  # optional cleanup
             except Exception as e:
                 logger.error(f"Error releasing or remuxing video_writer: {e}")
             video_writer = None
