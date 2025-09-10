@@ -415,21 +415,20 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
         # -- WRITE VIDEO ---
         if boat_in_current_frame:
             # Flush pre-detection buffer
+            # PRE-detection frames: write full uncropped
             while pre_detection_buffer:
                 buf_frame, buf_ts = pre_detection_buffer.popleft()
                 if buf_frame is not None:
-                    buf_frame_full = cv2.resize(buf_frame, frame_size)  # enforce correct size
-                    cv2.putText(buf_frame_full, f"PRE {buf_ts.strftime('%H:%M:%S')}",
-                                (50, max(50, frame_height - 100)), font,
-                                fontScale, colour, thickness)
-                    video_writer.write(buf_frame_full)
+                    text_rectangle(buf_frame, f"PRE {buf_ts:%H:%M:%S}", origin)
+                    video_writer.write(buf_frame)   # no resize here!
             pre_detection_buffer.clear()
 
             # Overlay timestamp
             if frame is not None:
-                frame_full = cv2.resize(frame, frame_size)
-                text_rectangle(frame_full, capture_timestamp.strftime("%Y-%m-%d, %H:%M:%S"), origin)
-                video_writer.write(frame_full)
+                # Annotate timestamp on full frame
+                text_rectangle(frame, capture_timestamp.strftime("%Y-%m-%d, %H:%M:%S"), origin)
+                # Write full, uncropped frame
+                video_writer.write(frame)
                 logger.debug(f"FRAME: detection written @ {capture_timestamp.strftime('%H:%M:%S')} with frame_size: {frame_size}")
 
             # Reset post-detection countdown
@@ -437,9 +436,9 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
 
         elif number_of_post_frames > 0:
             if frame is not None:
-                frame_full = cv2.resize(frame, frame_size)
-                text_rectangle(frame_full, f"POST {capture_timestamp.strftime('%H:%M:%S')}", origin)
-                video_writer.write(frame_full)
+                # frame_full = cv2.resize(frame, frame_size)
+                text_rectangle(frame, f"POST {capture_timestamp.strftime('%H:%M:%S')}", origin)
+                video_writer.write(frame)
                 number_of_post_frames -= 1
                 logger.debug(f"FRAME: post-detection written @ {capture_timestamp.strftime('%H:%M:%S')} (countdown={number_of_post_frames})")
 
