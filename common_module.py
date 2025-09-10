@@ -380,7 +380,7 @@ def process_video(video_path, input_file, output_file, frame_rate=None, resoluti
     if mode == "remux":
         #  Fastest, no re-encode
         command = [
-            "ffmpeg", "-i", source,
+            "ffmpeg", "-fflags", "+genpts", "-i", source,
             "-c", "copy",
             "-y", dest
         ]
