@@ -368,7 +368,7 @@ def stop_video_recording(cam):
     logger.info("Recording stopped and camera fully released.")
 
 
-# Changed this with New_7, from libx264 to h264_v4l2m2m 
+# Changed this with New_7, from libx264 to h264_v4l2m2m
 def process_video(video_path, input_file, output_file, frame_rate=None, resolution=None, mode="remux"):
     source = os.path.join(video_path, input_file)
     dest = os.path.join(video_path, output_file)
@@ -384,8 +384,9 @@ def process_video(video_path, input_file, output_file, frame_rate=None, resoluti
             "-c", "copy",
             "-y", dest
         ]
+        resolution = None  # explicitly ignore resolution for remux
 
-    elif mode == "hw":  
+    elif mode == "hw":
         #  Hardware encoder (keeps Pi cool)
         command = [
             "ffmpeg", "-i", source,
