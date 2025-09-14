@@ -263,7 +263,7 @@ def restart_camera(camera, resolution=(1640, 1232), fps=15):
 
 class FFmpegVideoWriter:
     """Wraps an FFmpeg subprocess for H.264 encoding, preferring hardware (v4l2m2m) with fallback to software (libx264)."""
-    def __init__(self, filename, fps, frame_size):
+    def __init__(self, filename, fps, frame_size, force_sw=False):
         self.filename = filename
         self.fps = fps
         self.frame_size = frame_size
@@ -271,11 +271,11 @@ class FFmpegVideoWriter:
         self.hw_enabled = False
 
         # Try hardware encoder first
-        if self._start_ffmpeg(hw=True):
-            print(f"[FFmpegVideoWriter] Started hardware H.264 (v4l2m2m) for {filename}")
+        if not force_sw and self._start_ffmpeg(hw=True):
+            logger.debug(f"[FFmpegVideoWriter] Started hardware H.264 (v4l2m2m) for {filename}")
             self.hw_enabled = True
         else:
-            print(f"[FFmpegVideoWriter] Falling back to software H.264 (libx264) for {filename}")
+            logger.debug(f"[FFmpegVideoWriter] Falling back to software H.264 (libx264) for {filename}")
             if not self._start_ffmpeg(hw=False):
                 raise RuntimeError("Failed to start FFmpeg (hw and sw both failed).")
 
@@ -322,7 +322,7 @@ class FFmpegVideoWriter:
             )
             return True
         except Exception as e:
-            print(f"[FFmpegVideoWriter] Failed to start FFmpeg ({codec}): {e}")
+            logger.debug(f"[FFmpegVideoWriter] Failed to start FFmpeg ({codec}): {e}")
             return False
 
     def write(self, frame):
@@ -338,7 +338,7 @@ class FFmpegVideoWriter:
             self.proc.stdin.write(frame.tobytes())
         except Exception as e:
             err = self.proc.stderr.read().decode(errors="ignore")
-            print(f"[FFmpegVideoWriter] Error writing frame: {e}\nFFmpeg stderr:\n{err}")
+            logger.debug(f"[FFmpegVideoWriter] Error writing frame: {e}\nFFmpeg stderr:\n{err}")
             self.release()
             return
 
@@ -351,9 +351,9 @@ class FFmpegVideoWriter:
                 if self.proc.stderr:
                     err = self.proc.stderr.read().decode(errors="ignore")
                     if err.strip():
-                        print(f"[FFmpegVideoWriter] FFmpeg log:\n{err}")
+                        logger.debug(f"[FFmpegVideoWriter] FFmpeg log:\n{err}")
             except Exception as e:
-                print(f"[FFmpegVideoWriter] Error releasing FFmpeg: {e}")
+                logger.debug(f"[FFmpegVideoWriter] Error releasing FFmpeg: {e}")
             finally:
                 self.proc = None
 
