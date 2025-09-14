@@ -262,67 +262,48 @@ def restart_camera(camera, resolution=(1640, 1232), fps=15):
 
 
 class FFmpegVideoWriter:
-    """Wraps an FFmpeg subprocess for H.264 encoding, preferring hardware (v4l2m2m) with fallback to software (libx264)."""
-    def __init__(self, filename, fps, frame_size, force_sw=False):
+    """Wraps an FFmpeg subprocess for H.264 encoding, preferring hardware with fallback to software."""
+    def __init__(self, filename, fps, frame_size, force_sw=False, logger=None):
         self.filename = filename
         self.fps = fps
         self.frame_size = frame_size
         self.proc = None
         self.hw_enabled = False
 
-        # Try hardware encoder first
+        # Try hardware first unless forced software
         if not force_sw and self._start_ffmpeg(hw=True):
-            logger.debug(f"[FFmpegVideoWriter] Started hardware H.264 (v4l2m2m) for {filename}")
             self.hw_enabled = True
+            logger.info(f"[FFmpegVideoWriter] Started hardware H.264 (v4l2m2m) for {filename}")
         else:
-            logger.debug(f"[FFmpegVideoWriter] Falling back to software H.264 (libx264) for {filename}")
+            logger.info(f"[FFmpegVideoWriter] Using software H.264 (libx264) for {filename}")
             if not self._start_ffmpeg(hw=False):
                 raise RuntimeError("Failed to start FFmpeg (hw and sw both failed).")
 
     def _start_ffmpeg(self, hw=True):
         width, height = self.frame_size
         codec = "h264_v4l2m2m" if hw else "libx264"
-
         ffmpeg_cmd = [
-            "ffmpeg",
-            "-y",  # overwrite
-            "-f", "rawvideo",
-            "-pix_fmt", "bgr24",   # input from OpenCV
-            "-s", f"{width}x{height}",
-            "-r", str(self.fps),
-            "-i", "-",  # stdin
-            "-an",      # no audio
+            "ffmpeg", "-y", "-f", "rawvideo", "-pix_fmt", "bgr24",
+            "-s", f"{width}x{height}", "-r", str(self.fps), "-i", "-", "-an"
         ]
 
         if hw:
-            ffmpeg_cmd.extend([
-                "-vf", "format=nv12",   # hw encoder needs NV12
-                "-c:v", codec,
-                "-b:v", "4M"
-            ])
+            ffmpeg_cmd += ["-vf", "format=nv12", "-c:v", codec, "-b:v", "4M"]
         else:
-            ffmpeg_cmd.extend([
-                "-c:v", codec,
-                "-preset", "fast",
-                "-crf", "23"
-            ])
+            ffmpeg_cmd += ["-c:v", codec, "-preset", "fast", "-crf", "23"]
 
-        ffmpeg_cmd.extend([
-            "-pix_fmt", "yuv420p",
-            "-movflags", "+faststart",
-            self.filename
-        ])
+        ffmpeg_cmd += ["-pix_fmt", "yuv420p", "-movflags", "+faststart", self.filename]
 
         try:
             self.proc = subprocess.Popen(
                 ffmpeg_cmd,
                 stdin=subprocess.PIPE,
                 stdout=subprocess.DEVNULL,
-                stderr=subprocess.PIPE  # capture errors for debugging
+                stderr=subprocess.PIPE
             )
             return True
         except Exception as e:
-            logger.debug(f"[FFmpegVideoWriter] Failed to start FFmpeg ({codec}): {e}")
+            logger.error(f"[FFmpegVideoWriter] Failed to start FFmpeg ({codec}): {e}")
             return False
 
     def write(self, frame):
@@ -337,10 +318,9 @@ class FFmpegVideoWriter:
         try:
             self.proc.stdin.write(frame.tobytes())
         except Exception as e:
-            err = self.proc.stderr.read().decode(errors="ignore")
-            logger.debug(f"[FFmpegVideoWriter] Error writing frame: {e}\nFFmpeg stderr:\n{err}")
+            err = self.proc.stderr.read().decode(errors="ignore") if self.proc.stderr else ""
+            logger.error(f"[FFmpegVideoWriter] Error writing frame: {e}\nFFmpeg stderr:\n{err}")
             self.release()
-            return
 
     def release(self):
         if self.proc:
@@ -350,23 +330,31 @@ class FFmpegVideoWriter:
                 self.proc.wait(timeout=5)
                 if self.proc.stderr:
                     err = self.proc.stderr.read().decode(errors="ignore")
-                    if err.strip():
-                        logger.debug(f"[FFmpegVideoWriter] FFmpeg log:\n{err}")
+                    if err.strip() and self.logger:
+                        logger.error(f"[FFmpegVideoWriter] FFmpeg final log:\n{err}")
             except Exception as e:
-                logger.debug(f"[FFmpegVideoWriter] Error releasing FFmpeg: {e}")
+                logger.error(f"[FFmpegVideoWriter] Error releasing FFmpeg: {e}")
             finally:
                 self.proc = None
 
 
-def get_h264_writer(video_path, fps, frame_size, force_sw=False):
+def get_h264_writer(video_path, fps, frame_size, force_sw=False, logger=None):
     """
-    Returns (writer_object, writer_type) with hw→sw fallback.
-    Pass force_sw=True to skip hardware encoder and use software libx264.
+    Returns (writer_object, writer_type) with hardware→software fallback.
+
+    Args:
+        video_path (str): Path to output .h264 file
+        fps (int): frames per second
+        frame_size (tuple): (width, height)
+        force_sw (bool): If True, skip hardware encoder and use software only
+        logger (logging.Logger): Logger for capturing FFmpeg messages
     """
     writer = FFmpegVideoWriter(video_path, fps, frame_size, force_sw=force_sw)
+
     if writer.hw_enabled:
         return writer, "ffmpeg-hw"
-    return writer, "ffmpeg-sw"
+    else:
+        return writer, "ffmpeg-sw"
 
 
 def start_video_recording(camera, video_path, file_name, resolution=(1640, 1232), bitrate=4000000):
