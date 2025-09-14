@@ -290,7 +290,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
     overhead during detection
     """
     video1_h264_file = os.path.join(video_path, "video1.h264")
-    video_writer, writer_type = get_h264_writer(video1_h264_file, fps, camera_frame_size)
+    video_writer, writer_type = get_h264_writer(video1_h264_file, fps, camera_frame_size, force_sw=True)
 
     # Previous in New_6
     # video1_file = os.path.join(video_path, "video1.mp4")
@@ -425,7 +425,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
                         buf_frame_full = buf_frame
                     text_rectangle(buf_frame_full, f"PRE {buf_ts:%H:%M:%S}", origin)
 
-                    # ✅ write only if newer than last_written_id
+                    # write only if newer than last_written_id
                     if frame_counter > last_written_id:
                         video_writer.write(buf_frame_full)
                         last_written_id = frame_counter
