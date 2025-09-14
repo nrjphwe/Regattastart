@@ -358,11 +358,12 @@ class FFmpegVideoWriter:
                 self.proc = None
 
 
-def get_h264_writer(video_path, fps, frame_size):
+def get_h264_writer(video_path, fps, frame_size, force_sw=False):
     """
     Returns (writer_object, writer_type) with hw→sw fallback.
+    Pass force_sw=True to skip hardware encoder and use software libx264.
     """
-    writer = FFmpegVideoWriter(video_path, fps, frame_size)
+    writer = FFmpegVideoWriter(video_path, fps, frame_size, force_sw=force_sw)
     if writer.hw_enabled:
         return writer, "ffmpeg-hw"
     return writer, "ffmpeg-sw"
