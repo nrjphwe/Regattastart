@@ -514,9 +514,15 @@ def main():
         start_time_str = str(form_data["start_time"])  # this is the first start
         dur_between_starts = int(form_data["dur_between_starts"])
 
-        # Parse into datetime for today's date
-        start_time_dt = dt.datetime.combine(dt.date.today(),
-                                            dt.datetime.strptime(start_time_str, "%H:%M").time())
+        today = dt.date.today()
+        start_time_today = dt.datetime.combine(today, dt.datetime.strptime(start_time_str, "%H:%M").time())
+
+        # If start_time has already passed today, schedule for tomorrow
+        if start_time_today < dt.datetime.now():
+            start_time_dt = start_time_today + dt.timedelta(days=1)
+        else:
+            start_time_dt = start_time_today
+
         t5min_warning = start_time_dt - dt.timedelta(minutes=5)  # time to start start-machine.
         # wd = dt.datetime.today().strftime("%A")
 
