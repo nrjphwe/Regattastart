@@ -284,15 +284,12 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
     model.classes = [8]
 
     # SETUP VIDEO WRITER
-    fourcc = cv2.VideoWriter_fourcc(*'avc1')  # 'avc1' is H.264
-    video1_file = os.path.join(video_path, "video1.mp4")
-    video_writer = cv2.VideoWriter(video1_file, fourcc, fpsw, frame_size)
+    video1_h264_file = os.path.join(video_path, "video1.h264")
+    video_writer = get_h264_writer(video1_h264_file, fps=fps, frame_size=frame_size)
 
-    if not video_writer.isOpened():
-        logger.error(f"Failed to open {video1_file} for writing")
-        exit(1)
-    else:
-        logger.debug(f"video writer started for {video1_file}")
+    if video_writer is None:
+        logger.error("Failed to initialize H.264 writer, aborting recording")
+        return
 
     # Setup pre-detection parameters
     pre_detection_duration = 0  # Seconds
@@ -468,10 +465,14 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
             if video_writer is not None:
                 video_writer.release()
                 video_writer = None
-                logger.info(f"Video1 recording finished: {video1_file}")
+                logger.info(f"Video1 H.264 writer released: {video1_h264_file}")
         except Exception as e:
             logger.error(f"Error releasing video_writer: {e}")
-    return video1_file
+    # Remux
+    video1_mp4_file = os.path.join(video_path, "video1.mp4")
+    process_video(video_path, "video1.h264", "video1.mp4", mode="remux")
+    logger.info(f"Video1 remuxed to MP4: {video1_mp4_file}")
+    return
 
 
 def stop_listen_thread():
