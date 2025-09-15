@@ -269,13 +269,16 @@ class FFmpegVideoWriter:
         self.frame_size = frame_size
         self.proc = None
         self.hw_enabled = False
+        self.logger = logger  # store logger
 
         # Try hardware first unless forced software
         if not force_sw and self._start_ffmpeg(hw=True):
             self.hw_enabled = True
-            logger.info(f"[FFmpegVideoWriter] Started hardware H.264 (v4l2m2m) for {filename}")
+            if self.logger:
+                self.logger.info(f"[FFmpegVideoWriter] Started hardware H.264 (v4l2m2m) for {filename}")
         else:
-            logger.info(f"[FFmpegVideoWriter] Using software H.264 (libx264) for {filename}")
+            if self.logger:
+                self.logger.info(f"[FFmpegVideoWriter] Using software H.264 (libx264) for {filename}")
             if not self._start_ffmpeg(hw=False):
                 raise RuntimeError("Failed to start FFmpeg (hw and sw both failed).")
 
@@ -303,7 +306,8 @@ class FFmpegVideoWriter:
             )
             return True
         except Exception as e:
-            logger.error(f"[FFmpegVideoWriter] Failed to start FFmpeg ({codec}): {e}")
+            if self.logger:
+                self.logger.error(f"[FFmpegVideoWriter] Failed to start FFmpeg ({codec}): {e}")
             return False
 
     def write(self, frame):
@@ -319,7 +323,8 @@ class FFmpegVideoWriter:
             self.proc.stdin.write(frame.tobytes())
         except Exception as e:
             err = self.proc.stderr.read().decode(errors="ignore") if self.proc.stderr else ""
-            logger.error(f"[FFmpegVideoWriter] Error writing frame: {e}\nFFmpeg stderr:\n{err}")
+            if self.logger:
+                self.logger.error(f"[FFmpegVideoWriter] Error writing frame: {e}\nFFmpeg stderr:\n{err}")
             self.release()
 
     def release(self):
@@ -331,26 +336,16 @@ class FFmpegVideoWriter:
                 if self.proc.stderr:
                     err = self.proc.stderr.read().decode(errors="ignore")
                     if err.strip() and self.logger:
-                        logger.error(f"[FFmpegVideoWriter] FFmpeg final log:\n{err}")
+                        self.logger.error(f"[FFmpegVideoWriter] FFmpeg final log:\n{err}")
             except Exception as e:
-                logger.error(f"[FFmpegVideoWriter] Error releasing FFmpeg: {e}")
+                if self.logger:
+                    self.logger.error(f"[FFmpegVideoWriter] Error releasing FFmpeg: {e}")
             finally:
                 self.proc = None
 
 
 def get_h264_writer(video_path, fps, frame_size, force_sw=False, logger=None):
-    """
-    Returns (writer_object, writer_type) with hardware→software fallback.
-
-    Args:
-        video_path (str): Path to output .h264 file
-        fps (int): frames per second
-        frame_size (tuple): (width, height)
-        force_sw (bool): If True, skip hardware encoder and use software only
-        logger (logging.Logger): Logger for capturing FFmpeg messages
-    """
-    writer = FFmpegVideoWriter(video_path, fps, frame_size, force_sw=force_sw)
-
+    writer = FFmpegVideoWriter(video_path, fps, frame_size, force_sw=force_sw, logger=logger)
     if writer.hw_enabled:
         return writer, "ffmpeg-hw"
     else:
