@@ -284,8 +284,10 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
     model.classes = [8]
 
     # SETUP VIDEO WRITER
+    # SETUP VIDEO WRITER
     video1_h264_file = os.path.join(video_path, "video1.h264")
-    video_writer = get_h264_writer(video1_h264_file, fps=fps, frame_size=frame_size)
+    video_writer, writer_type = get_h264_writer(video1_h264_file, fps=fps, frame_size=frame_size)
+    logger.info(f"Video writer initialized: {writer_type} -> {video1_h264_file}")
 
     if video_writer is None:
         logger.error("Failed to initialize H.264 writer, aborting recording")
