@@ -208,10 +208,9 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
         logger.debug("Attempting to capture the first frame.")
         frame = camera.capture_array()
         if frame is None:
-            logger.error("First captured frame is None! Exiting video recording.")
+            logger.error("CAPTURE: frame is None, skipping")
+            time.sleep(1/fps)
             return
-        else:
-            logger.debug(f"First frame captured successfully. Frame shape: {frame.shape}, dtype={frame.dtype}")
     except Exception as e:
         logger.error(f"Exception occurred while capturing the first frame: {e}", exc_info=True)
         return
@@ -465,20 +464,13 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
     # ---ENSURE RELEASE OUTSIDE LOOP ---
     if recording_stopped:
         logger.info('Video1 recording stopped')
-        if video_writer is not None:
-            try:
+        try:
+            if video_writer is not None:
                 video_writer.release()
-                logger.info("Video1 writer released.")
-                # Remux to MP4
-                # video1_file = os.path.join(video_path, "video1.mp4")
-                # process_video(video_path, "video1.h264", "video1.mp4", mode="remux")
-                # logger.info(f"Video1 {video1_file} remuxed to MP4, with frame_size: {frame_size}")
-                # os.remove(video1_h264_file)  # optional cleanup
-            except Exception as e:
-                logger.error(f"Error releasing or remuxing video_writer: {e}")
-            video_writer = None
-        else:
-            logger.warning("Video1 writer was None at shutdown!")
+                video_writer = None
+                logger.info(f"Video1 recording finished: {video1_file}")
+        except Exception as e:
+            logger.error(f"Error releasing video_writer: {e}")
     return video1_file
 
 
