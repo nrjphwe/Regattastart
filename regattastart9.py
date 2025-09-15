@@ -287,7 +287,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
     # SETUP VIDEO WRITER
     # H.264 codec in MP4 container
     fourcc = cv2.VideoWriter_fourcc(*'avc1')  # 'avc1' is H.264
-    video_writer = cv2.VideoWriter(video_path, fourcc, fps, frame_size)
+    video_writer = cv2.VideoWriter(video_path + 'video1' + '.mp4', fourcc, fpsw, frame_size)
 
     if not video_writer.isOpened():
         logger.error(f"Failed to open {video_path} for writing")
