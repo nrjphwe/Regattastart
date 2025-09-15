@@ -285,24 +285,15 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
     model.classes = [8]
 
     # SETUP VIDEO WRITER
-    """
-    Writes frames directly as H.264, avoiding constant MP4 container 
-    overhead during detection
-    """
-    video1_h264_file = os.path.join(video_path, "video1.h264")
-    video_writer, writer_type = get_h264_writer(video1_h264_file, fps, camera_frame_size, force_sw=True)
+    # H.264 codec in MP4 container
+    fourcc = cv2.VideoWriter_fourcc(*'avc1')  # 'avc1' is H.264
+    video_writer = cv2.VideoWriter(video_path, fourcc, fps, frame_size)
 
-    # Previous in New_6
-    # video1_file = os.path.join(video_path, "video1.mp4")
-    # video_writer, writer_type = get_h264_writer(video1_file, fps, frame_size)
-
-    logger.info(f"Video writer backend: {writer_type} (raw .h264), frame_size: {frame_size}")
-    logger.info(f"Video writer object type: {type(video_writer)}")
-
-    if video_writer is None or getattr(video_writer, "proc", None) is None:
-        logger.error("FFmpeg writer failed to initialize — no video will be created!")
+    if not video_writer.isOpened():
+        logger.error(f"Failed to open {video_path} for writing")
+        exit(1)
     else:
-        logger.info(f"FFmpeg writer started for {video_path}")
+        logger.debug(f"video writer started for {video_path}")
 
     # Setup pre-detection parameters
     pre_detection_duration = 0  # Seconds
