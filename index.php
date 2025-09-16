@@ -380,29 +380,24 @@
                 {
                     // Check the Stop Recording button state
                     $stopRecordingPressed = isset($_SESSION['stopRecordingPressed']) ? $_SESSION['stopRecordingPressed'] : false;
-
-                    // Check recording status from status.txt
-                    $status_file = '/var/www/html/status.txt';
+                    $status_file = '/var/www/html/status.txt'; // Check recording status from status.txt
                     $videoComplete = file_exists($status_file) && trim(file_get_contents($status_file)) === 'complete';
 
-                    // Show Stop Recording button only if video is not yet complete
+                    // Show Stop Recording button only if video still being recored
                     if (!$videoComplete && $video0Exists) {
                         if ($stopRecordingPressed) {
-                            echo '<div id="stopRecordingButtonDiv" style="display: none;">';
-                        } else {
-                            echo '<div id="stopRecordingButtonDiv" style="display: block;">';
-                            echo "
-                                <form id=\"stopRecordingForm\" action=\"" . htmlspecialchars($_SERVER["PHP_SELF"]) . "\" method=\"post\">
-                                    <input type=\"hidden\" name=\"stop_recording\" value=\"true\">
-                                    <input type=\"hidden\" name=\"stopRecordingPressed\" id=\"stopRecordingPressed\" value=\"0\">
-                                    <input type=\"submit\" id=\"stopRecordingButton\" value=\"Stop Recording\">
+                            echo '<div id="stopRecordingButtonDiv" style="display: block;">
+                                <form id="stopRecordingForm" action="' . htmlspecialchars($_SERVER["PHP_SELF"]) . '" method="post">
+                                    <input type="hidden" name="stop_recording" value="true">
+                                    <input type="hidden" id="stopRecordingPressed" name="stopRecordingPressed" value="0">
+                                    <input type="submit" id="stopRecordingButton" value="Stop Recording">
                                 </form>
-                            </div>";
-                        }
+                            </div>';
                     } else {
-                        // Recording finished: hide button
                         echo '<div id="stopRecordingButtonDiv" style="display: none;"></div>';
                     }
+                } else {
+                    echo '<div id="stopRecordingButtonDiv" style="display: none;"></div>';
                 }
             ?>
         </div>
@@ -513,6 +508,45 @@
                     location.reload();
                 }, 1000); // 1 sec
             }
+    </script>
+    <!-- JavaScript: Poll for video completion -->
+    <script>
+    function checkVideoStatus() {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', '/status.txt', true);
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                var status = xhr.responseText.trim();
+                if (status === 'complete') {
+                    console.log("Video complete! Reloading page...");
+                    location.reload();  // show video1.mp4
+                } else {
+                    // Not complete yet: check again after 2 seconds
+                    setTimeout(checkVideoStatus, 2000);
+                }
+            } else if (xhr.readyState === 4) {
+                // HTTP error: try again after 2 seconds
+                setTimeout(checkVideoStatus, 2000);
+            }
+        };
+        xhr.send();
+    }
+
+    // Start polling only if Stop Recording button was pressed
+    var stopPressedInput = document.getElementById("stopRecordingPressed");
+    if (stopPressedInput && stopPressedInput.value === "1") {
+        console.log("Stop Recording pressed, starting to poll for video completion...");
+        checkVideoStatus();
+    }
+
+    // Optional: set hidden input to 1 when button is pressed
+    var stopButton = document.getElementById("stopRecordingButton");
+    if (stopButton) {
+        stopButton.addEventListener('click', function() {
+            stopPressedInput.value = "1";
+            console.log("Stop Recording button clicked: stopRecordingPressed=1");
+        });
+    }
     </script>
 </body>
 </html>
