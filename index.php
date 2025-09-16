@@ -405,53 +405,53 @@
         <!-- PHP script to display remaining videos -->
         <div style="text-align: center;" class="w3-panel w3-pale-red" style="display: inline-block; padding: 20px;">
         <?php
-            $stopRecordingPressed = isset($_SESSION['stopRecordingPressed']) ? $_SESSION['stopRecordingPressed'] : false;
+            $stopRecordingPressed = $_SESSION['stopRecordingPressed'] ?? false;
+            // $stopRecordingPressed = isset($_SESSION['stopRecordingPressed']) ? $_SESSION['stopRecordingPressed'] : false;
             $status_file = '/var/www/html/status.txt';
             $videoComplete = file_exists($status_file) && trim(file_get_contents($status_file)) === 'complete';
 
-            // --- Case: regattastart9/10 (only 1 video expected, but $num_video=1)
-            // --- or regattastart6 (multiple numbered videos)
-            if ($video1Exists) {
-                if ($stopRecordingPressed || $videoComplete || $num_video > 1) {
-                    // Show finished videos (loop supports both 1 and N videos)
-                    for ($x = 1; $x <= $num_video; $x++) {
-                        $video_name = 'images/video' . $x . '.mp4';
-                        if (file_exists($video_name)) {
-                            $size = filesize($video_name);
-                            if ($size > 1000) {
-                                // ✅ valid MP4
-                                echo "<h3> Finish video, this is video $x for the finish</h3>";
-                                echo '<video id="video' . $x . '" width="640" height="480" controls>
-                                        <source src="' . $video_name . '" type="video/mp4"></video><p>
-                                        <div>
-                                            <button onclick="stepFrame(' . $x . ', -1)">Previous Frame</button>
-                                            <button onclick="stepFrame(' . $x . ', 1)">Next Frame</button>
-                                        </div>';
-                            } else {
-                                // Tiny placeholder file
-                                echo '<div style="display:flex;align-items:center;justify-content:center;background:#eee;border:1px solid #ccc;">
-                                        <p style="font-size:20px;color:#555;">
-                                        Recording finished, but no valid video was produced for video ' . $x . '.
-                                        </p>
-                                    </div>';
-                                console_log("Video$x exists but is too small ($size bytes).");
-                            }
-                        }
-                    }
-                } else {
-                    // Recording still ongoing
-                    echo '<div style="display:flex;align-items:center;justify-content:center;background:#eee;border:1px solid #ccc;">
-                            <p style="font-size:20px;color:#555;">Video being created...</p>
+            // --- Regattastart9/10 (only 1 video expected, but $num_video=1)
+            if ($num_video == 1) {
+                // Show Stop Recording button if recording not complete
+                if (!$videoComplete && $video0Exists) {
+                    if ($stopRecordingPressed) {
+                        echo '<div id="stopRecordingButtonDiv" style="display:block;">
+                            <form id="stopRecordingForm" action="' . htmlspecialchars($_SERVER["PHP_SELF"]) . '" method="post">
+                                <input type="hidden" name="stop_recording" value="true">
+                                <input type="hidden" id="stopRecordingPressed" name="stopRecordingPressed" value="0">
+                                <input type="submit" id="stopRecordingButton" value="Stop Recording">
+                            </form>
                         </div>';
-                    console_log("Video1.mp4 exists, but recording not ended yet");
+                    } else {
+                        echo '<div id="stopRecordingButtonDiv" style="display:none;"></div>';
+                    }
+                    // Message while video is being created
+                    echo '<p style="font-size:18px;color:#555;">Video being created...</p>';
+
+                } else {
+                    // Recording complete → show video1.mp4
+                    $video_name = 'images/video1.mp4';
+                    if (file_exists($video_name) && filesize($video_name) > 1000) {
+                        echo "<h3>Finish video (video1.mp4)</h3>";
+                        echo '<video id="video1" width="640" height="480" controls>
+                                <source src="' . $video_name . '" type="video/mp4"></video><p>';
+                    } else {
+                        echo '<p style="font-size:18px;color:#555;">Recording finished, but no valid video produced.</p>';
+                    }
                 }
             } else {
-                // Nothing detected
-                echo '<div style="display:flex;align-items:center;justify-content:center;background:#eee;border:1px solid #ccc;">
-                        <p style="font-size:20px;color:#555;">No boat detected</p>
-                    </div>';
-                console_log("Video1 does not exist, no boat detected");
+            // --- Regattastart6 mode: multiple videos ---
+            for ($x = 1; $x <= $num_video; $x++) {
+                $video_name = "images/video$x.mp4";
+                if (file_exists($video_name) && filesize($video_name) > 1000) {
+                    echo "<h3>Finish video $x</h3>";
+                    echo '<video id="video' . $x . '" width="640" height="480" controls>
+                            <source src="' . $video_name . '" type="video/mp4"></video><p>';
+                } else {
+                    echo "<p style='font-size:18px;color:#555;'>Video $x not available or incomplete.</p>";
+                }
             }
+        }
         ?>
         </div>
     </main>
