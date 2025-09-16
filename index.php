@@ -482,26 +482,6 @@
             }
         }
     </script>
-    <!-- java script that executes AFTER the stop_recording button on Line 340 was pushed -->
-    <script>
-        var stopRecordingPressed;
-
-        function refreshPage() {
-            // Wait until after the Stop_Recording button was pressed
-            // alert("Wait a while after button was pressed!");
-            if (stopRecordingPressed) {
-                // Set the value of the hidden input field
-                document.getElementById("stopRecordingPressed").value = "1"; // Set stopRecordingPressed value to 1
-                console.log("stopRecordingPressed value:", stopRecordingPressed); // Log the value
-                document.getElementById("stopRecordingButton").style.display = "none";
-                stopRecordingPressed = true;
-                // Reload the page after 60 seconds
-                setTimeout(function() {
-                    location.reload(true);
-                }, 60000); // 60 sec
-            }
-        }
-    </script>
     <!-- JavaScript to refresh the page after the "Refresh" button was pressed -->
     <script>
         function refreshThePage() {
