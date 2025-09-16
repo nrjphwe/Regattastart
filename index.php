@@ -403,41 +403,43 @@
             ?>
         <!-- PHP script to display remaining videos -->
         <?php
-        if ($video0Exists) {
-            echo '<div class="w3-panel w3-pale-red" style="text-align: center; padding: 20px;">';
-            if ($num_video == 1) 
+        if ($video0Exists) 
             {
+            echo '<div class="w3-panel w3-pale-red" style="text-align: center; padding: 20px;">';
+            // Regattastart9/10
+            if ($num_video == 1) 
+            { 
                 $stopRecordingPressed = $_SESSION['stopRecordingPressed'] ?? false;
                 $status_file = '/var/www/html/status.txt';
                 $videoComplete = file_exists($status_file) && trim(file_get_contents($status_file)) === 'complete';
+                $video1Exists = file_exists('images/video1.mp4') && filesize('images/video1.mp4') > 1000;
 
-                if (!$videoComplete && $stopRecordingPressed) 
-                {
-                    // Stop Recording button + message
-                    echo '<div id="stopRecordingButtonDiv" style="display:block;">
-                            <form id="stopRecordingForm" action="' . htmlspecialchars($_SERVER["PHP_SELF"]) . '" method="post">
-                                <input type="hidden" name="stop_recording" value="true">
-                                <input type="hidden" id="stopRecordingPressed" name="stopRecordingPressed" value="0">
-                                <input type="submit" id="stopRecordingButton" value="Stop Recording">
-                            </form>
-                        </div>';
+                if (!$stopRecordingPressed && !$videoComplete) {
+                    // --- Recording is ongoing ---
+                    echo '<form id="stopRecordingForm" method="post">
+                            <input type="hidden" name="stop_recording" value="true">
+                            <input type="hidden" id="stopRecordingPressed" name="stopRecordingPressed" value="0">
+                            <input type="submit" id="stopRecordingButton" value="Stop Recording">
+                        </form>';
+                    echo '<p style="font-size:18px;color:#555;">Recording in progress...</p>';
+
+                } elseif ($stopRecordingPressed && !$videoComplete) {
+                    // --- Stop pressed, video is being generated ---
                     echo '<p style="font-size:18px;color:#555;">Video being created...</p>';
 
-                } elseif ($videoComplete&& !$stopRecordingPressed) {
-                    // Waiting for user to press Stop Recording
-                    echo '<p style="font-size:18px;color:#555;">Recording in progress...</p>';
+                } elseif ($videoComplete && $video1Exists) {
+                    // --- Video ready ---
+                    echo "<h3>Finish video (video1.mp4)</h3>";
+                    echo '<video id="video1" width="640" height="480" controls>
+                            <source src="images/video1.mp4" type="video/mp4">
+                        </video><p>';
+
                 } else {
-                    // Recording complete → show video1.mp4
-                    $video_name = 'images/video1.mp4';
-                    if (file_exists($video_name) && filesize($video_name) > 1000) {
-                        echo "<h3>Finish video (video1.mp4)</h3>";
-                        echo '<video id="video1" width="640" height="480" controls>
-                                <source src="' . $video_name . '" type="video/mp4"></video><p>';
-                    } else {
-                        echo '<p style="font-size:18px;color:#555;">Recording finished, but no valid video produced.</p>';
-                    }
+                    // fallback (should rarely happen)
+                    echo '<p style="font-size:18px;color:#555;">Recording finished, but no valid video produced.</p>';
                 }
-                echo '</div>'; // close red panel
+            }
+            echo '</div>'; // close red panel
             } else {
                 // --- Regattastart6 mode: multiple videos ---
                 for ($x = 1; $x <= $num_video; $x++) 
@@ -453,7 +455,6 @@
                     }
                 }
             }
-        }
         ?>
         </div>
         <?php if ($num_video == 1): ?>
