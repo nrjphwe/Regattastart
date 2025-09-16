@@ -403,20 +403,20 @@
             ?>
         </div>
         <!-- Display of video1 when it is available in w3-pale-red section -->
+        <!-- PHP script to display video1 area (red panel) -->
         <?php
-        if ($video0Exists) 
-            {
-            echo '<div class="w3-panel w3-pale-red" id="videoStatusDiv" style="text-align: center; padding: 20px;">';
-            // Regattastart9/10
-            if ($num_video == 1) 
-            { 
+        if ($video0Exists) {
+            echo '<div class="w3-panel w3-pale-red" style="text-align:center; padding:20px;">';
+
+            if ($num_video == 1) {
+                // --- Regattastart9/10 (only one video expected) ---
                 $stopRecordingPressed = $_SESSION['stopRecordingPressed'] ?? false;
                 $status_file = '/var/www/html/status.txt';
                 $videoComplete = file_exists($status_file) && trim(file_get_contents($status_file)) === 'complete';
-                $video1Exists = file_exists('images/video1.mp4') && filesize('images/video1.mp4') > 1000;
+                $video1File = 'images/video1.mp4';
 
-                if (!$stopRecordingPressed && !$videoComplete) {
-                    // --- Recording is ongoing ---
+                if (!$stopRecordingPressed) {
+                    // Case 2: Recording ongoing, before stop pressed
                     echo '<form id="stopRecordingForm" method="post">
                             <input type="hidden" name="stop_recording" value="true">
                             <input type="hidden" id="stopRecordingPressed" name="stopRecordingPressed" value="0">
@@ -425,38 +425,40 @@
                     echo '<p style="font-size:18px;color:#555;">Recording in progress...</p>';
 
                 } elseif ($stopRecordingPressed && !$videoComplete) {
-                    // --- Stop pressed, video is being generated ---
+                    // Case 3: Stop pressed, waiting for processing
                     echo '<p style="font-size:18px;color:#555;">Video being created...</p>';
 
-                } elseif ($videoComplete && $video1Exists) {
-                    // --- Video ready ---
+                } elseif ($videoComplete && file_exists($video1File) && filesize($video1File) > 1000) {
+                    // Case 4: Video complete, show player
                     echo "<h3>Finish video (video1.mp4)</h3>";
                     echo '<video id="video1" width="640" height="480" controls>
-                            <source src="images/video1.mp4" type="video/mp4">
-                        </video><p>';
+                            <source src="' . $video1File . '" type="video/mp4">
+                        </video>';
 
                 } else {
-                    // fallback (should rarely happen)
+                    // Fallback if file missing or too small
                     echo '<p style="font-size:18px;color:#555;">Recording finished, but no valid video produced.</p>';
                 }
-            }
-            echo '</div>'; // close red panel
+
             } else {
-                // --- Regattastart6 mode: multiple videos ---
-                for ($x = 1; $x <= $num_video; $x++) 
-                {
+                // --- Regattastart6 (multiple videos) ---
+                for ($x = 1; $x <= $num_video; $x++) {
                     $video_name = "images/video$x.mp4";
-                    if (file_exists($video_name) && filesize($video_name) > 1000) 
-                    {
+                    if (file_exists($video_name) && filesize($video_name) > 1000) {
                         echo "<h3>Finish video $x</h3>";
                         echo '<video id="video' . $x . '" width="640" height="480" controls>
-                                <source src="' . $video_name . '" type="video/mp4"></video><p>';
+                                <source src="' . $video_name . '" type="video/mp4">
+                            </video><p>';
                     } else {
                         echo "<p style='font-size:18px;color:#555;'>Video $x not available or incomplete.</p>";
                     }
                 }
             }
+
+            echo '</div>'; // end pale-red panel
+        }
         ?>
+
         </div>
         <script>
         <?php if ($num_video == 1 && ($stopRecordingPressed && !$videoComplete)): ?>
