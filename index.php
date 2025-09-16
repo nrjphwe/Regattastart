@@ -426,9 +426,9 @@
 
                 } elseif ($stopRecordingPressed && !$videoComplete) {
                     // Case 3: Stop pressed, waiting for processing
-                    echo <div id="videoStatusDiv">
+                    echo '<div id="videoStatusDiv">
                         <p id="statusText" style="font-size:18px;color:#555;">Video being created...</p>
-                    </div>
+                    </div>';
                 } elseif ($videoComplete && file_exists($video1File) && filesize($video1File) > 1000) {
                     // Case 4: Video complete, show player
                     echo "<h3>Finish video (video1.mp4)</h3>";
