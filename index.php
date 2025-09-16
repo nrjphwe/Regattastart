@@ -401,7 +401,8 @@
                     }
                 }
             ?>
-        <!-- PHP script to display remaining videos -->
+        </div>
+        <!-- Display of video1 when it is available -->
         <?php
         if ($video0Exists) 
             {
@@ -457,43 +458,39 @@
             }
         ?>
         </div>
-        <?php if ($num_video == 1): ?>
         <script>
-        function checkVideoStatus() {
+        <?php if ($num_video == 1 && ($stopRecordingPressed && !$videoComplete)): ?>
+        // JavaScript to poll for video1 completion (only for regattastart9/10)
+        function pollVideoStatus() {
             var xhr = new XMLHttpRequest();
             xhr.open('GET', '/status.txt', true);
             xhr.onreadystatechange = function() {
                 if (xhr.readyState === 4 && xhr.status === 200) {
                     var status = xhr.responseText.trim();
+                    var statusText = document.getElementById('statusText');
                     if (status === 'complete') {
-                        console.log("Video complete! Reloading page...");
-                        location.reload(); // reload to display video1.mp4
+                        // Replace text with video1
+                        var div = document.getElementById('videoStatusDiv');
+                        div.innerHTML = '<h3>Finish video (video1.mp4)</h3>' +
+                                        '<video id="video1" width="640" height="480" controls>' +
+                                        '<source src="images/video1.mp4" type="video/mp4">' +
+                                        '</video>';
                     } else {
-                        setTimeout(checkVideoStatus, 2000); // retry every 2s
+                        // check again in 2 seconds
+                        setTimeout(pollVideoStatus, 2000);
                     }
+                } else if (xhr.readyState === 4) {
+                    // HTTP error: try again
+                    setTimeout(pollVideoStatus, 2000);
                 }
             };
             xhr.send();
         }
 
-        // Start polling only if Stop Recording button was pressed
-        var stopPressedInput = document.getElementById("stopRecordingPressed");
-        if (stopPressedInput && stopPressedInput.value === "1") {
-            checkVideoStatus();
-        }
-
-        // Optional: set hidden input to 1 when button is pressed
-        var stopButton = document.getElementById("stopRecordingButton");
-        if (stopButton) {
-            stopButton.addEventListener('click', function() {
-                stopPressedInput.value = "1";
-                console.log("Stop Recording button clicked: stopRecordingPressed=1");
-                checkVideoStatus(); // start polling immediately
-            });
-        }
-        </script>
+        // Start polling automatically
+        pollVideoStatus();
         <?php endif; ?>
-
+        </script>
     </main>
     <!-- footer -->
     <div style="text-align: center;" class="w3-panel w3-grey">
