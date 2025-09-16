@@ -55,7 +55,7 @@ video_path = '/var/www/html/images/'
 photo_path = '/var/www/html/images/'
 crop_width, crop_height = 1440, 1080  # Crop size for inference
 listening = True  # Define the listening variable
-recording_stopped = False  # Global variable
+stop_event = threading.Event()
 
 cpu_model = get_cpu_model()
 logger.info("="*60)
@@ -70,15 +70,14 @@ with open('/var/www/html/status.txt', 'w') as status_file:
 
 
 def stop_recording():
-    global listening, recording_stopped
     logger.info("stop_recording called. Stopping recording early.")
-    recording_stopped = True
+    stop_event.set()
     listening = False  # exit listen_for_messages loop
-    logger.debug(f"recording_stopped = {recording_stopped}, listening = {listening}")
+    logger.debug(f"listening = {listening}")
 
 
 def listen_for_messages(stop_event, timeout=0.1):
-    global listening  # Use global flag
+    # global listening  # Use global flag
     pipe_path = '/var/www/html/tmp/stop_recording_pipe'
     logger.info("listen_for_messages: starting")
     logger.info(f"Pipe path = {pipe_path}")
@@ -103,8 +102,8 @@ def listen_for_messages(stop_event, timeout=0.1):
                     message = fifo.readline().strip()
                     logger.debug(f"Message received from pipe: {message}")
                     if message == 'stop_recording':
-                        stop_recording()
-                        logger.info("Message == stop_recording")
+                        logger.info("Message == stop_recording → setting stop_event")
+                        stop_event.set()   # unified stop signal
                         break  # Exit the loop when stop_recording received
         except Exception as e:
             logger.error(f"Error in listen_for_messages: {e}", exc_info=True)
@@ -174,7 +173,6 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
     # config
     DETECTION_CONF_THRESHOLD = 0.5
     LOG_FRAME_THROTTLE = 10  # log every N frames when boat found
-    global recording_stopped
     confidence = 0.0  # Initial value
     class_name = ""  # Initial value
     frame_counter = 0  # Initialize a frame counter
@@ -335,14 +333,15 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
     colour = (0, 255, 0)  # Green text
     last_written_id = -1   # keep track of last written frame
 
-    # MAIN LOOP
-    while not recording_stopped:
+    # MAIN LOOP IN finish_recording
+    while not stop_event.is_set():
         frame_counter += 1  # Increment the frame counter
         # Capture a frame from the camera
         try:
             frame = camera.capture_array()
             if frame is None:
                 logger.error("CAPTURE: frame is None, skipping")
+                time.sleep(0.01)
                 continue
             capture_timestamp = datetime.now()
         except Exception as e:
@@ -463,18 +462,17 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
         elapsed_time = (time_now - start_time_dt).total_seconds()
         if elapsed_time >= max_duration:
             logger.debug(f"STOP: max duration reached ({elapsed_time:.1f}s)")
-            recording_stopped = True
+            stop_event.set()
 
     # ---ENSURE RELEASE OUTSIDE LOOP ---
-    if recording_stopped:
-        logger.info('Video1 recording stopped')
-        try:
-            if video_writer is not None:
-                video_writer.release()
-                video_writer = None
-                logger.info(f"Video1 H.264 writer released: {video1_h264_file}")
-        except Exception as e:
-            logger.error(f"Error releasing video_writer: {e}")
+    logger.info('Video1 recording stopped')
+    try:
+        if video_writer is not None:
+            video_writer.release()
+            video_writer = None
+            logger.info(f"Video1 H.264 writer released: {video1_h264_file}")
+    except Exception as e:
+        logger.error(f"Error releasing video_writer: {e}")
     # Remux
     video1_mp4_file = os.path.join(video_path, "video1.mp4")
     process_video(video_path, "video1.h264", "video1.mp4", mode="remux")
@@ -489,7 +487,7 @@ def stop_listen_thread():
 
 
 def main():
-    stop_event = threading.Event()
+    # stop_event = threading.Event()
     global listening  # Declare listening as global
     camera = None
     listen_thread = None  # Initialize listen_thread variable
@@ -569,7 +567,6 @@ def main():
         logger.info("Main finally: cleanup")
         stop_event.set()
         if listen_thread:
-
             listen_thread.join(timeout=2)
             if listen_thread.is_alive():
                 logger.warning("listen_thread did not stop within timeout.")
