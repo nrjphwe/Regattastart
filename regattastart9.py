@@ -249,7 +249,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
     fpsw = fps
     logger.debug(f"FPS set to {fpsw}, proceeding to load YOLOv5 model.")
 
-    # Load the pre-trained YOLOv5 model (e.g., yolov5s)
+    # LOAD YOLOv5 MODEL
     try:
         result_queue = queue.Queue()  # Create a queue to hold the result
         load_thread = threading.Thread(target=load_model_with_timeout, args=(result_queue,))
@@ -275,13 +275,9 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
         load_thread.join()  # Ensure the thread is cleaned up
         return
 
-    # Continue with the rest of the `finish_recording` logic
-    logger.debug("After loading YOLOv5 model.")
-
     # Filter for 'boat' class (COCO ID for 'boat' is 8)
     model.classes = [8]
 
-    # SETUP VIDEO WRITER
     # SETUP VIDEO WRITER
     video1_h264_file = os.path.join(video_path, "video1.h264")
     video_writer, writer_type = get_h264_writer(
@@ -351,20 +347,15 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
         # --- PRE-DETECTION BUFFER ---
         if pre_detection_duration != 0 and capture_timestamp not in processed_timestamps:
             # Add frame to buffer and record its timestamp
-            pre_detection_buffer.append((frame.copy(), capture_timestamp))
-            processed_timestamps.add(capture_timestamp)
+            pre_detection_buffer.append((frame_counter, frame.copy(), capture_timestamp))
+            # processed_timestamps.add(capture_timestamp)
 
             # Trim processed_timestamps only when necessary
-            if len(processed_timestamps) > pre_detection_buffer.maxlen:
-                # Keep only the most recent N entries
-                processed_timestamps = set(
-                    list(processed_timestamps)[-pre_detection_buffer.maxlen:]
-                )
-                logger.debug(f"Trimmed processed_timestamps to {len(processed_timestamps)} entries")
-            if frame_counter % 20 == 0:
-                cleanup_processed_timestamps(processed_timestamps)
+            if len(pre_detection_buffer) > pre_detection_buffer.maxlen:
+                pre_detection_buffer.popleft()
 
         boat_in_current_frame = False   # Reset per frame
+
         # --- INFERENCE ON EVERY 5TH FRAME ---
         if frame_counter % 5 == 0:
             # Crop region of interest
@@ -403,14 +394,14 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
                         # --- LOGGING ---
                         # Log every N frames to avoid flooding
                         LOG_FRAME_THROTTLE = 10
-                        if boat_in_current_frame and (frame_counter % LOG_FRAME_THROTTLE == 0):
+                        if frame_counter % LOG_FRAME_THROTTLE == 0:
                             logger.info(f"Boat detected in frame {frame_counter} with conf {confidence:.2f}")
 
         # -- WRITE VIDEO ---
         if boat_in_current_frame:
             # Flush pre-detection buffer
             while pre_detection_buffer:
-                buf_frame, buf_ts = pre_detection_buffer.popleft()
+                buf_id, buf_frame, buf_ts = pre_detection_buffer.popleft()
                 if buf_frame is not None:
                     if buf_frame.shape[1] != camera_frame_size[0] or buf_frame.shape[0] != camera_frame_size[1]:
                         buf_frame_full = cv2.resize(buf_frame, camera_frame_size)
@@ -419,11 +410,9 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
                     text_rectangle(buf_frame_full, f"PRE {buf_ts:%H:%M:%S}", origin)
 
                     # write only if newer than last_written_id
-                    if frame_counter > last_written_id:
+                    if buf_id > last_written_id:
                         video_writer.write(buf_frame_full)
-                        last_written_id = frame_counter
-
-            pre_detection_buffer.clear()
+                        last_written_id = buf_id
 
             # Overlay timestamp on the ORIGINAL full frame (not the cropped inference frame)
             if frame is not None:
@@ -439,7 +428,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
                     last_written_id = frame_counter
                     logger.debug(f"FRAME: detection written @ {capture_timestamp.strftime('%H:%M:%S')} with writer_frame_size: {camera_frame_size}")
 
-            # Reset post-detection countdown
+            #  Reset post-detection countdown
             number_of_post_frames = int(max_post_detection_duration * fpsw)
 
         elif number_of_post_frames > 0:
