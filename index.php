@@ -545,5 +545,16 @@
         }
         </script>
     <?php endif; ?>
+    <script>
+    function stepFrame(videoNum, step) {
+        var video = document.getElementById('video' + videoNum);
+        if (video) {
+            video.pause();
+            // Default: assume 25 fps → 0.04 sec per frame
+            var frameTime = 1 / 25;  
+            video.currentTime += step * frameTime;
+        }
+    }
+</script>
 </body>
 </html>
