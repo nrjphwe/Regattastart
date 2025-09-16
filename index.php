@@ -426,8 +426,9 @@
 
                 } elseif ($stopRecordingPressed && !$videoComplete) {
                     // Case 3: Stop pressed, waiting for processing
-                    echo '<p style="font-size:18px;color:#555;">Video being created...</p>';
-
+                    echo <div id="videoStatusDiv">
+                        <p id="statusText" style="font-size:18px;color:#555;">Video being created...</p>
+                    </div>
                 } elseif ($videoComplete && file_exists($video1File) && filesize($video1File) > 1000) {
                     // Case 4: Video complete, show player
                     echo "<h3>Finish video (video1.mp4)</h3>";
@@ -458,8 +459,6 @@
             echo '</div>'; // end pale-red panel
         }
         ?>
-
-        </div>
         <script>
         <?php if ($num_video == 1 && ($stopRecordingPressed && !$videoComplete)): ?>
         // JavaScript to poll for video1 completion (only for regattastart9/10)
