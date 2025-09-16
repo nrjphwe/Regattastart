@@ -405,13 +405,12 @@
         <!-- PHP script to display remaining videos -->
         <div class="w3-panel w3-pale-red" style="text-align: center; padding: 20px;">
         <?php
-            $stopRecordingPressed = $_SESSION['stopRecordingPressed'] ?? false;
-            // $stopRecordingPressed = isset($_SESSION['stopRecordingPressed']) ? $_SESSION['stopRecordingPressed'] : false;
-            $status_file = '/var/www/html/status.txt';
-            $videoComplete = file_exists($status_file) && trim(file_get_contents($status_file)) === 'complete';
-
             // --- Regattastart9/10 (only 1 video expected, but $num_video=1)
             if ($num_video == 1) {
+                $stopRecordingPressed = $_SESSION['stopRecordingPressed'] ?? false;
+                $status_file = '/var/www/html/status.txt';
+                $videoComplete = file_exists($status_file) && trim(file_get_contents($status_file)) === 'complete';
+
                 // Show Stop Recording button if recording not complete
                 if (!$videoComplete && $video0Exists) {
                     if ($stopRecordingPressed) {
