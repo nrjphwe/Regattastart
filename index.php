@@ -402,11 +402,11 @@
                 }
             ?>
         </div>
-        <!-- Display of video1 when it is available -->
+        <!-- Display of video1 when it is available in w3-pale-red section -->
         <?php
         if ($video0Exists) 
             {
-            echo '<div class="w3-panel w3-pale-red" style="text-align: center; padding: 20px;">';
+            echo '<div class="w3-panel w3-pale-red" id="videoStatusDiv" style="text-align: center; padding: 20px;">';
             // Regattastart9/10
             if ($num_video == 1) 
             { 
