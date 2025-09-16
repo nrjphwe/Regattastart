@@ -404,15 +404,16 @@
         <!-- PHP script to display remaining videos -->
         <?php
         if ($video0Exists) {
-            if ($num_video == 1) {
+            echo '<div class="w3-panel w3-pale-red" style="text-align: center; padding: 20px;">';
+            if ($num_video == 1) 
+            {
                 $stopRecordingPressed = $_SESSION['stopRecordingPressed'] ?? false;
                 $status_file = '/var/www/html/status.txt';
                 $videoComplete = file_exists($status_file) && trim(file_get_contents($status_file)) === 'complete';
 
-                echo '<div class="w3-panel w3-pale-red" style="text-align: center; padding: 20px;">';
-
-                if (!$videoComplete && $stopRecordingPressed) {
-                    // Stop Recording button
+                if (!$videoComplete && $stopRecordingPressed) 
+                {
+                    // Stop Recording button + message
                     echo '<div id="stopRecordingButtonDiv" style="display:block;">
                             <form id="stopRecordingForm" action="' . htmlspecialchars($_SERVER["PHP_SELF"]) . '" method="post">
                                 <input type="hidden" name="stop_recording" value="true">
@@ -422,7 +423,10 @@
                         </div>';
                     echo '<p style="font-size:18px;color:#555;">Video being created...</p>';
 
-                } elseif ($videoComplete) {
+                } elseif ($videoComplete&& !$stopRecordingPressed) {
+                    // Waiting for user to press Stop Recording
+                    echo '<p style="font-size:18px;color:#555;">Recording in progress...</p>';
+                } else {
                     // Recording complete → show video1.mp4
                     $video_name = 'images/video1.mp4';
                     if (file_exists($video_name) && filesize($video_name) > 1000) {
@@ -434,12 +438,13 @@
                     }
                 }
                 echo '</div>'; // close red panel
-
             } else {
                 // --- Regattastart6 mode: multiple videos ---
-                for ($x = 1; $x <= $num_video; $x++) {
+                for ($x = 1; $x <= $num_video; $x++) 
+                {
                     $video_name = "images/video$x.mp4";
-                    if (file_exists($video_name) && filesize($video_name) > 1000) {
+                    if (file_exists($video_name) && filesize($video_name) > 1000) 
+                    {
                         echo "<h3>Finish video $x</h3>";
                         echo '<video id="video' . $x . '" width="640" height="480" controls>
                                 <source src="' . $video_name . '" type="video/mp4"></video><p>';
@@ -451,6 +456,43 @@
         }
         ?>
         </div>
+        <?php if ($num_video == 1): ?>
+        <script>
+        function checkVideoStatus() {
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', '/status.txt', true);
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    var status = xhr.responseText.trim();
+                    if (status === 'complete') {
+                        console.log("Video complete! Reloading page...");
+                        location.reload(); // reload to display video1.mp4
+                    } else {
+                        setTimeout(checkVideoStatus, 2000); // retry every 2s
+                    }
+                }
+            };
+            xhr.send();
+        }
+
+        // Start polling only if Stop Recording button was pressed
+        var stopPressedInput = document.getElementById("stopRecordingPressed");
+        if (stopPressedInput && stopPressedInput.value === "1") {
+            checkVideoStatus();
+        }
+
+        // Optional: set hidden input to 1 when button is pressed
+        var stopButton = document.getElementById("stopRecordingButton");
+        if (stopButton) {
+            stopButton.addEventListener('click', function() {
+                stopPressedInput.value = "1";
+                console.log("Stop Recording button clicked: stopRecordingPressed=1");
+                checkVideoStatus(); // start polling immediately
+            });
+        }
+        </script>
+        <?php endif; ?>
+
     </main>
     <!-- footer -->
     <div style="text-align: center;" class="w3-panel w3-grey">
