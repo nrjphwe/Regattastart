@@ -413,8 +413,10 @@
                     $videoComplete = file_exists($status_file) && trim(file_get_contents($status_file)) === 'complete';
 
                     // Show Stop Recording button if recording not complete
-                    if (!$videoComplete && $video0Exists) {
-                        if ($stopRecordingPressed) {
+                    if ($video0Exists && $stopRecordingPressed) {
+                        echo '<div class="w3-panel w3-pale-red" style="text-align: center; padding: 20px;">';
+                        if (!$videoComplete)
+                        {
                             echo '<div id="stopRecordingButtonDiv" style="display:block;">
                                 <form id="stopRecordingForm" action="' . htmlspecialchars($_SERVER["PHP_SELF"]) . '" method="post">
                                     <input type="hidden" name="stop_recording" value="true">
@@ -425,20 +427,20 @@
                         } else {
                             echo '<div id="stopRecordingButtonDiv" style="display:none;"></div>';
                         }
-                        // Message while video is being created
-                        echo '<p style="font-size:18px;color:#555;">Video being created...</p>';
+                            // Message while video is being created
+                            echo '<p style="font-size:18px;color:#555;">Video being created...</p>';
 
-                    } else {
-                        // Recording complete → show video1.mp4
-                        $video_name = 'images/video1.mp4';
-                        if (file_exists($video_name) && filesize($video_name) > 1000) {
-                            echo "<h3>Finish video (video1.mp4)</h3>";
-                            echo '<video id="video1" width="640" height="480" controls>
-                                    <source src="' . $video_name . '" type="video/mp4"></video><p>';
                         } else {
-                            echo '<p style="font-size:18px;color:#555;">Recording finished, but no valid video produced.</p>';
+                            // Recording complete → show video1.mp4
+                            $video_name = 'images/video1.mp4';
+                            if (file_exists($video_name) && filesize($video_name) > 1000) {
+                                echo "<h3>Finish video (video1.mp4)</h3>";
+                                echo '<video id="video1" width="640" height="480" controls>
+                                        <source src="' . $video_name . '" type="video/mp4"></video><p>';
+                            } else {
+                                echo '<p style="font-size:18px;color:#555;">Recording finished, but no valid video produced.</p>';
+                            }
                         }
-                    }
                 } else {
                 // --- Regattastart6 mode: multiple videos ---
                 for ($x = 1; $x <= $num_video; $x++) {
