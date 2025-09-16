@@ -373,35 +373,6 @@
                 }
             ?>
         </div>
-        <!-- PHP script to show "Stop recording" button after video0 is ready -->
-        <div style="text-align: center;" class="w3-panel w3-pale-green">
-            <?php
-                if ($num_video == 1) // which is valid for regattastart9 and not selectable 
-                {
-                    // Check the Stop Recording button state
-                    $stopRecordingPressed = isset($_SESSION['stopRecordingPressed']) ? $_SESSION['stopRecordingPressed'] : false;
-                    $status_file = '/var/www/html/status.txt'; // Check recording status from status.txt
-                    $videoComplete = file_exists($status_file) && trim(file_get_contents($status_file)) === 'complete';
-
-                    // Show Stop Recording button only if video still being recored
-                    if (!$videoComplete && $video0Exists) 
-                    {
-                        echo '<div id="stopRecordingButtonDiv">';
-                        if (!$stopRecordingPressed) 
-                        {
-                            echo '<form id="stopRecordingForm" method="post">
-                                    <input type="hidden" name="stop_recording" value="true">
-                                    <input type="hidden" id="stopRecordingPressed" name="stopRecordingPressed" value="0">
-                                    <input type="submit" id="stopRecordingButton" value="Stop Recording">
-                                </form>';
-                        }
-                        echo '</div>';
-                    } else {
-                        echo '<div id="stopRecordingButtonDiv" style="display:none;"></div>';
-                    }
-                }
-            ?>
-        </div>
         <!-- Display of video1 when it is available in w3-pale-red section -->
         <!-- PHP script to display video1 area (red panel) -->
         <?php
