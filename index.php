@@ -405,6 +405,10 @@
                     echo "<h3>Finish video (video1.mp4)</h3>";
                     echo '<video id="video1" width="640" height="480" controls>
                             <source src="' . $video1File . '" type="video/mp4">
+                            <div>
+                            <button onclick="stepFrame(' . $x . ', -1)">Previous Frame</button>
+                            <button onclick="stepFrame(' . $x . ', 1)">Next Frame</button>
+                        </div>;
                         </video>';
 
                 } else {
