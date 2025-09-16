@@ -403,7 +403,7 @@
             ?>
         </div>
         <!-- PHP script to display remaining videos -->
-        <div class="w3-panel w3-pale-red" style="text-align: center; display: inline-block; padding: 20px;">
+        <div class="w3-panel w3-pale-red" style="text-align: center; padding: 20px;">
         <?php
             $stopRecordingPressed = $_SESSION['stopRecordingPressed'] ?? false;
             // $stopRecordingPressed = isset($_SESSION['stopRecordingPressed']) ? $_SESSION['stopRecordingPressed'] : false;
