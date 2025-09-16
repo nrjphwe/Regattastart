@@ -3,7 +3,7 @@
     header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
     header("Access-Control-Allow-Headers: *");
     // after "git pull", "sudo cp /home/pi/Regattastart/index.php /var/www/html/"
-    define('APP_VERSION', '2025.05.20'); // You can replace '1.0.0' with your desired version number
+    define('APP_VERSION', '2025.09.16'); // You can replace '1.0.0' with your desired version number
 
     $custom_session_path = '/var/www/php_sessions';
     if (!file_exists($custom_session_path)) {
@@ -240,7 +240,7 @@
                 {
                     $imagePath .= '?' . filemtime($imagePath);
                     echo "<h3> Varningssignal 5 minuter innan 1a start</h3>";
-                    echo "<img id='$filename' src='$imagePath' alt='1a_start 5 min picture' width='640' height='406'>";
+                    echo "<img id='$filename' src='$imagePath' alt='1a_start 5 min picture' width='640' height='406' loading='lazy' />";
 
                     // Check and display the second image
                     $filename = '1a_start_4_min.jpg';
@@ -403,7 +403,7 @@
             ?>
         </div>
         <!-- PHP script to display remaining videos -->
-        <div style="text-align: center;" class="w3-panel w3-pale-red" style="display: inline-block; padding: 20px;">
+        <div class="w3-panel w3-pale-red" style="text-align: center; display: inline-block; padding: 20px;">
         <?php
             $stopRecordingPressed = $_SESSION['stopRecordingPressed'] ?? false;
             // $stopRecordingPressed = isset($_SESSION['stopRecordingPressed']) ? $_SESSION['stopRecordingPressed'] : false;
