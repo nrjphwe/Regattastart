@@ -292,17 +292,16 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
         logger.error("Failed to initialize H.264 writer, aborting recording")
         return
 
-    # Setup pre-detection parameters
-    pre_detection_duration = 0  # Seconds
-    pre_detection_buffer = deque(maxlen=int(pre_detection_duration*fpsw))  # Adjust buffer size if needed
-    processed_timestamps = set()  # Use a set for fast lookups
+    # CONFIGURE DETECTION LOGIC
+    pre_detection_duration = 2  # Seconds
+    max_post_detection_duration = 2  # sec
 
-    # setup Post detection
-    max_post_detection_duration = 0  # sec
-    logger.info(f"max_duration,{max_duration}, FPS={fpsw},"
-                f"pre_detection_duration = {pre_detection_duration}, "
-                f"max_post_detection_duration={max_post_detection_duration}")
-    number_of_post_frames = int(fpsw * max_post_detection_duration)  # Initial setting, to record after detection
+    pre_detection_buffer = deque(maxlen=int(pre_detection_duration * fpsw))  # Adjust buffer size if needed
+    number_of_post_frames = 0
+    last_written_id = -1   # ensures frames never go backwards in time
+
+    # Optional: record *all* frames for testing
+    write_all_frames = False
 
     # Compute scaling factors
     inference_width, inference_height = 640, 480  # Since you resize before inference
@@ -335,26 +334,31 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
             if stop_event.is_set():
                 logger.info("stop event set, break recording loop")
                 break
+
             frame_counter += 1  # Increment the frame counter
             # Capture a frame from the camera
             frame = camera.capture_array()
             if frame is None:
                 logger.error("CAPTURE: frame is None, skipping")
                 continue
+
+            frame_height, frame_width = frame.shape[:2]
+            # --- TIMESTAMP ---
             capture_timestamp = datetime.now()
-        
 
-            # --- PRE-DETECTION BUFFER ---
-            if pre_detection_duration != 0 and capture_timestamp not in processed_timestamps:
-                # Add frame to buffer and record its timestamp
+            # Always-record mode (for testing smoothness & timing)
+            if write_all_frames:
+                if frame_counter > last_written_id:
+                    text_rectangle(frame, capture_timestamp.strftime("%Y-%m-%d %H:%M:%S"), origin)
+                    video_writer.write(frame)
+                    last_written_id = frame_counter
+                continue
+
+            # Store in pre-detection buffer
+            if pre_detection_duration > 0:
                 pre_detection_buffer.append((frame_counter, frame.copy(), capture_timestamp))
-                # processed_timestamps.add(capture_timestamp)
 
-                # Trim processed_timestamps only when necessary
-                if len(pre_detection_buffer) > pre_detection_buffer.maxlen:
-                    pre_detection_buffer.popleft()
-
-            boat_in_current_frame = False   # Reset per frame
+            boat_in_current_frame = False
 
             # --- INFERENCE ON EVERY 5TH FRAME ---
             if frame_counter % 5 == 0:
@@ -398,60 +402,38 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
 
             # -- WRITE VIDEO ---
             if boat_in_current_frame:
-                # Flush pre-detection buffer
+                # Flush pre-buffer
                 while pre_detection_buffer:
                     buf_id, buf_frame, buf_ts = pre_detection_buffer.popleft()
-                    if buf_frame is not None:
-                        if buf_frame.shape[1] != camera_frame_size[0] or buf_frame.shape[0] != camera_frame_size[1]:
-                            buf_frame_full = cv2.resize(buf_frame, camera_frame_size)
-                        else:
-                            buf_frame_full = buf_frame
-                        text_rectangle(buf_frame_full, f"PRE {buf_ts:%H:%M:%S}", origin)
+                    if buf_id > last_written_id:
+                        text_rectangle(buf_frame, f"PRE {buf_ts:%Y-%m-%d %H:%M:%S}", origin)
+                        video_writer.write(buf_frame)
+                        last_written_id = buf_id
 
-                        # write only if newer than last_written_id
-                        if buf_id > last_written_id:
-                            video_writer.write(buf_frame_full)
-                            last_written_id = buf_id
+                # Write current frame
+                if frame_counter > last_written_id:
+                    text_rectangle(frame, capture_timestamp.strftime("%Y-%m-%d %H:%M:%S"), origin)
+                    video_writer.write(frame)
+                    last_written_id = frame_counter
 
-                # Overlay timestamp on the ORIGINAL full frame (not the cropped inference frame)
-                if frame is not None:
-                    if frame.shape[1] != camera_frame_size[0] or frame.shape[0] != camera_frame_size[1]:
-                        frame_full = cv2.resize(frame, camera_frame_size)
-                    else:
-                        frame_full = frame
-                    text_rectangle(frame_full, capture_timestamp.strftime("%Y-%m-%d, %H:%M:%S"), origin)
-
-                    # write only if newer than last_written_id
-                    if frame_counter > last_written_id:
-                        video_writer.write(frame_full)
-                        last_written_id = frame_counter
-                        logger.debug(f"FRAME: detection written @ {capture_timestamp.strftime('%H:%M:%S')} with writer_frame_size: {camera_frame_size}")
-
-                #  Reset post-detection countdown
+                # Reset post-detection counter
                 number_of_post_frames = int(max_post_detection_duration * fpsw)
 
             elif number_of_post_frames > 0:
-                if frame is not None:
-                    if frame.shape[1] != camera_frame_size[0] or frame.shape[0] != camera_frame_size[1]:
-                        frame_full = cv2.resize(frame, camera_frame_size)
-                    else:
-                        frame_full = frame
-                    text_rectangle(frame_full, f"POST {capture_timestamp.strftime('%H:%M:%S')}", origin)
-
-                    # write only if newer than last_written_id
-                    if frame_counter > last_written_id:
-                        video_writer.write(frame_full)
-                        last_written_id = frame_counter
-                        number_of_post_frames -= 1
-                        logger.debug(f"FRAME: post-detection written @ {capture_timestamp.strftime('%H:%M:%S')} (countdown={number_of_post_frames})")
+                # Write post frames
+                if frame_counter > last_written_id:
+                    text_rectangle(frame, f"POST {capture_timestamp:%Y-%m-%d %H:%M:%S}", origin)
+                    video_writer.write(frame)
+                    last_written_id = frame_counter
+                    number_of_post_frames -= 1
+                logger.debug(f"FRAME: post-detection written @ {capture_timestamp:%H:%M:%S} (countdown={number_of_post_frames})")
 
         except Exception as e:
             logger.error(f"Unhandled error in recording loop: {e}", exc_info=True)
             continue  # skip this iteration
 
-        # Check if recording should stop
-        time_now = dt.datetime.now()
-        elapsed_time = (time_now - start_time_dt).total_seconds()
+        # Stop condition
+        elapsed_time = (datetime.now() - start_time_dt).total_seconds()
         if elapsed_time >= max_duration:
             logger.debug(f"STOP: max duration reached ({elapsed_time:.1f}s)")
             stop_event.set()
