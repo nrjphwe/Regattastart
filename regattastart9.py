@@ -556,15 +556,12 @@ def main():
         return 1
     finally:
         logger.info("Main finally: cleanup")
-        stop_event.set()
         if listen_thread:
             listen_thread.join(timeout=2)
             if listen_thread.is_alive():
                 logger.warning("listen_thread did not stop within timeout.")
             else:
                 logger.info("listen_thread stopped cleanly.")
-
-        clean_exit(camera)
         gc.collect()
         logger.info("Cleanup complete")
 
