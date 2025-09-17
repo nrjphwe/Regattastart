@@ -330,19 +330,20 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
     last_written_id = -1   # keep track of last written frame
 
     # MAIN LOOP IN finish_recording
-    while not stop_event.is_set():
-        frame_counter += 1  # Increment the frame counter
+    while True:
+        if stop_event.is_set():
+            break
         # Capture a frame from the camera
         try:
             frame = camera.capture_array()
-            if frame is None:
-                logger.error("CAPTURE: frame is None, skipping")
-                time.sleep(0.01)
-                continue
             capture_timestamp = datetime.now()
         except Exception as e:
             logger.error(f"Failed to capture frame: {e}")
             continue  # Skips this iteration but keeps running the loop
+
+        if stop_event.is_set():
+            break
+        frame_counter += 1  # Increment the frame counter
 
         # --- PRE-DETECTION BUFFER ---
         if pre_detection_duration != 0 and capture_timestamp not in processed_timestamps:
@@ -464,7 +465,8 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
         logger.error(f"Error releasing video_writer: {e}")
     # Remux
     video1_mp4_file = os.path.join(video_path, "video1.mp4")
-    process_video(video_path, "video1.h264", "video1.mp4", mode="remux")
+    logger.info("Calling process_video for %s → %s", video1_h264_file, video1_mp4_file)
+    process_video(video1_h264_file, video1_mp4_file, mode="remux")
     logger.info(f"Video1 remuxed to MP4: {video1_mp4_file}")
     return
 
