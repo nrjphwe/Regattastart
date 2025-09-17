@@ -466,7 +466,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
     # Remux
     video1_mp4_file = os.path.join(video_path, "video1.mp4")
     logger.info("Calling process_video for %s → %s", video1_h264_file, video1_mp4_file)
-    process_video(video1_h264_file, video1_mp4_file, mode="remux")
+    process_video(video_path, "video1.h264", "video1.mp4", mode="remux")
     logger.info(f"Video1 remuxed to MP4: {video1_mp4_file}")
     return
 
