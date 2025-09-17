@@ -169,187 +169,180 @@ def prepare_input(img, device='cpu'):
 
 
 def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, fps):
+    from utils.general import non_max_suppression
+    # config
+    DETECTION_CONF_THRESHOLD = 0.5
+    LOG_FRAME_THROTTLE = 10  # log every N frames when boat found
+    confidence = 0.0  # Initial value
+    class_name = ""  # Initial value
+    frame_counter = 0  # Initialize a frame counter
+    boat_in_current_frame = False  # Initialize detection flag
+
+    # Set duration of video1 recording
+    max_duration = (video_end + (num_starts-1)*5) * 60
+    logger.debug(f"Video1, max recording duration: {max_duration} seconds")
+
+    # Ensure the camera is stopped before reconfiguring
     try:
-        while True:
-            if stop_event.is_set():
-                logger.info("STOP: stop_event set, breaking recording loop")
-                break
+        if camera is not None:
+            logger.info("Stopping the camera before reconfiguring.")
+            camera.stop()
+        else:
+            logger.warning("Camera was already None before restart.")
 
-        from utils.general import non_max_suppression
-        # config
-        DETECTION_CONF_THRESHOLD = 0.5
-        LOG_FRAME_THROTTLE = 10  # log every N frames when boat found
-        confidence = 0.0  # Initial value
-        class_name = ""  # Initial value
-        frame_counter = 0  # Initialize a frame counter
-        boat_in_current_frame = False  # Initialize detection flag
+    except Exception as e:
+        logger.error(f"Error while stopping camera: {e}")
+        return
 
-        # Set duration of video1 recording
-        max_duration = (video_end + (num_starts-1)*5) * 60
-        logger.debug(f"Video1, max recording duration: {max_duration} seconds")
+    camera = restart_camera(camera, resolution=(1920, 1080), fps=fps)
 
-        # Ensure the camera is stopped before reconfiguring
-        try:
-            if camera is not None:
-                logger.info("Stopping the camera before reconfiguring.")
-                camera.stop()
-            else:
-                logger.warning("Camera was already None before restart.")
+    # Confirm cam is initialized
+    if camera is None:
+        logger.error("CAMERA RESTART: failed, exiting.")
+        return  # Prevents crashing if camera restart fails
 
-        except Exception as e:
-            logger.error(f"Error while stopping camera: {e}")
+    # Attempt to capture a frame
+    try:
+        logger.debug("Attempting to capture the first frame.")
+        frame = camera.capture_array()
+        if frame is None:
+            logger.error("CAPTURE: frame is None, skipping")
+            time.sleep(1/fps)
             return
+    except Exception as e:
+        logger.error(f"Exception occurred while capturing the first frame: {e}", exc_info=True)
+        return
 
-        camera = restart_camera(camera, resolution=(1920, 1080), fps=fps)
+    # Confirm resolution before proceeding
+    try:
+        frame_size = (frame.shape[1], frame.shape[0])
+        time.sleep(0.5)  # Add a short delay to ensure the camera is ready
+        logger.info(f"Camera frame size before recording: {frame_size}")
+    except Exception as e:
+        logger.error(f"Exception occurred while accessing frame size: {e}", exc_info=True)
+        return
 
-        # Confirm cam is initialized
-        if camera is None:
-            logger.error("CAMERA RESTART: failed, exiting.")
-            return  # Prevents crashing if camera restart fails
+    # --- CROP DATA FOR INFERENCE ---
+    try:
+        logger.debug("Calculating crop data for inference only.")
 
-        # Attempt to capture a frame
+        # Full camera resolution
+        frame_height, frame_width = frame.shape[:2]
+        camera_frame_size = (frame_width, frame_height)
+
+        shift_offset = 100  # horizontal offset for crop -> right part
+        x_start = max((frame_width - crop_width) // 2 + shift_offset, 50)
+        y_start = max((frame_height - crop_height) // 2, 0)
+
+        if camera_frame_size != (1920, 1080):
+            logger.error(f"Resolution mismatch! Expected (1920, 1080) but got {camera_frame_size}.")
+        else:
+            logger.debug("Resolution matches expected values.")
+
+        logger.debug(f"Frame size used to crop for inference: {crop_width}x{crop_height}")
+
+    except Exception as e:
+        logger.error(f"Unhandled exception occurred during crop setup: {e}", exc_info=True)
+        return
+
+    # Set the camera to the desired resolution and frame rate
+    fpsw = fps
+    logger.debug(f"FPS set to {fpsw}, proceeding to load YOLOv5 model.")
+
+    # LOAD YOLOv5 MODEL
+    try:
+        result_queue = queue.Queue()  # Create a queue to hold the result
+        load_thread = threading.Thread(target=load_model_with_timeout, args=(result_queue,))
+        load_thread.start()
+        load_thread.join(timeout=60)  # Wait for up to 60 seconds
+    except Exception as e:
+        logger.error(f"Unhandled exception occurred load_thread: {e}", exc_info=True)
+        return
+
+    if not load_thread.is_alive():
         try:
-            logger.debug("Attempting to capture the first frame.")
+            result = result_queue.get_nowait()  # Get the result from the queue
+            if isinstance(result, Exception):
+                logger.error("YOLOv5 model loading failed with an exception.")
+                return
+            model = result  # Successfully loaded model
+            logger.debug("YOLOv5 model loaded successfully.")
+        except queue.Empty:
+            logger.error("YOLOv5 model loading failed: No result returned.")
+            return
+    else:
+        logger.error("YOLOv5 model loading timed out.")
+        load_thread.join()  # Ensure the thread is cleaned up
+        return
+
+    # Filter for 'boat' class (COCO ID for 'boat' is 8)
+    model.classes = [8]
+
+    # SETUP VIDEO WRITER
+    video1_h264_file = os.path.join(video_path, "video1.h264")
+    video_writer, writer_type = get_h264_writer(
+        video1_h264_file,
+        fps=fps,
+        frame_size=frame_size,
+        force_sw=True,
+        logger=logger)
+    logger.info(f"Video writer initialized: {writer_type} -> {video1_h264_file}")
+
+    if video_writer is None:
+        logger.error("Failed to initialize H.264 writer, aborting recording")
+        return
+
+    # Setup pre-detection parameters
+    pre_detection_duration = 0  # Seconds
+    pre_detection_buffer = deque(maxlen=int(pre_detection_duration*fpsw))  # Adjust buffer size if needed
+    processed_timestamps = set()  # Use a set for fast lookups
+
+    # setup Post detection
+    max_post_detection_duration = 0  # sec
+    logger.info(f"max_duration,{max_duration}, FPS={fpsw},"
+                f"pre_detection_duration = {pre_detection_duration}, "
+                f"max_post_detection_duration={max_post_detection_duration}")
+    number_of_post_frames = int(fpsw * max_post_detection_duration)  # Initial setting, to record after detection
+
+    # Compute scaling factors
+    inference_width, inference_height = 640, 480  # Since you resize before inference
+    scale_x = crop_width / inference_width
+    scale_y = crop_height / inference_height
+    aspect_crop = crop_width / crop_height
+    aspect_infer = inference_width / inference_height
+    logger.debug(f"Crop aspect: {aspect_crop:.2f}, Inference aspect: {aspect_infer:.2f}")
+    logger.debug(f"inference_width, inference_height = {inference_width, inference_height}")
+    logger.debug(f"crop_width, crop_height = {crop_width, crop_height}")
+    logger.debug(f"scale_x = {scale_x}, scale_y = {scale_y}")
+
+    # Base scale text size and thickness
+    base_fontScale = 0.9  # Default font size at 640x480
+    base_thickness = 2  # Default thickness at 640x480
+    scale_factor = (scale_x + scale_y) / 2  # Average scale factor
+    fontScale = max(base_fontScale * scale_factor, 0.6)  # Prevent too small text
+    thickness = max(int(base_thickness * scale_factor), 1)  # Prevent too thin lines
+    font = cv2.FONT_HERSHEY_DUPLEX
+    # (x, y) → OpenCV cv2.putText expects the bottom-left corner of the text string.
+    # x = 50 → fixed horizontal offset, i.e. always 50 pixels from the left edge of the frame
+    # y = max(50, frame_height - 100) → vertical position
+    origin = (40, int(frame.shape[0] * 0.90))  # Bottom-left corner
+    colour = (0, 255, 0)  # Green text
+    last_written_id = -1   # keep track of last written frame
+
+    # MAIN LOOP IN finish_recording
+    while True:
+        try:
+            if stop_event.is_set():
+                logger.info("stop event set, break recording loop")
+                break
+            frame_counter += 1  # Increment the frame counter
+            # Capture a frame from the camera
             frame = camera.capture_array()
             if frame is None:
                 logger.error("CAPTURE: frame is None, skipping")
-                time.sleep(1/fps)
-                return
-        except Exception as e:
-            logger.error(f"Exception occurred while capturing the first frame: {e}", exc_info=True)
-            return
-
-        # Confirm resolution before proceeding
-        try:
-            frame_size = (frame.shape[1], frame.shape[0])
-            time.sleep(0.5)  # Add a short delay to ensure the camera is ready
-            logger.info(f"Camera frame size before recording: {frame_size}")
-        except Exception as e:
-            logger.error(f"Exception occurred while accessing frame size: {e}", exc_info=True)
-            return
-
-        # --- CROP DATA FOR INFERENCE ---
-        try:
-            logger.debug("Calculating crop data for inference only.")
-
-            # Full camera resolution
-            frame_height, frame_width = frame.shape[:2]
-            camera_frame_size = (frame_width, frame_height)
-
-            shift_offset = 100  # horizontal offset for crop -> right part
-            x_start = max((frame_width - crop_width) // 2 + shift_offset, 50)
-            y_start = max((frame_height - crop_height) // 2, 0)
-
-            if camera_frame_size != (1920, 1080):
-                logger.error(f"Resolution mismatch! Expected (1920, 1080) but got {camera_frame_size}.")
-            else:
-                logger.debug("Resolution matches expected values.")
-
-            logger.debug(f"Frame size used to crop for inference: {crop_width}x{crop_height}")
-
-        except Exception as e:
-            logger.error(f"Unhandled exception occurred during crop setup: {e}", exc_info=True)
-            return
-
-        # Set the camera to the desired resolution and frame rate
-        fpsw = fps
-        logger.debug(f"FPS set to {fpsw}, proceeding to load YOLOv5 model.")
-
-        # LOAD YOLOv5 MODEL
-        try:
-            result_queue = queue.Queue()  # Create a queue to hold the result
-            load_thread = threading.Thread(target=load_model_with_timeout, args=(result_queue,))
-            load_thread.start()
-            load_thread.join(timeout=60)  # Wait for up to 60 seconds
-        except Exception as e:
-            logger.error(f"Unhandled exception occurred load_thread: {e}", exc_info=True)
-            return
-
-        if not load_thread.is_alive():
-            try:
-                result = result_queue.get_nowait()  # Get the result from the queue
-                if isinstance(result, Exception):
-                    logger.error("YOLOv5 model loading failed with an exception.")
-                    return
-                model = result  # Successfully loaded model
-                logger.debug("YOLOv5 model loaded successfully.")
-            except queue.Empty:
-                logger.error("YOLOv5 model loading failed: No result returned.")
-                return
-        else:
-            logger.error("YOLOv5 model loading timed out.")
-            load_thread.join()  # Ensure the thread is cleaned up
-            return
-
-        # Filter for 'boat' class (COCO ID for 'boat' is 8)
-        model.classes = [8]
-
-        # SETUP VIDEO WRITER
-        video1_h264_file = os.path.join(video_path, "video1.h264")
-        video_writer, writer_type = get_h264_writer(
-            video1_h264_file,
-            fps=fps,
-            frame_size=frame_size,
-            force_sw=True,
-            logger=logger)
-        logger.info(f"Video writer initialized: {writer_type} -> {video1_h264_file}")
-
-        if video_writer is None:
-            logger.error("Failed to initialize H.264 writer, aborting recording")
-            return
-
-        # Setup pre-detection parameters
-        pre_detection_duration = 0  # Seconds
-        pre_detection_buffer = deque(maxlen=int(pre_detection_duration*fpsw))  # Adjust buffer size if needed
-        processed_timestamps = set()  # Use a set for fast lookups
-
-        # setup Post detection
-        max_post_detection_duration = 0  # sec
-        logger.info(f"max_duration,{max_duration}, FPS={fpsw},"
-                    f"pre_detection_duration = {pre_detection_duration}, "
-                    f"max_post_detection_duration={max_post_detection_duration}")
-        number_of_post_frames = int(fpsw * max_post_detection_duration)  # Initial setting, to record after detection
-
-        # Compute scaling factors
-        inference_width, inference_height = 640, 480  # Since you resize before inference
-        scale_x = crop_width / inference_width
-        scale_y = crop_height / inference_height
-        aspect_crop = crop_width / crop_height
-        aspect_infer = inference_width / inference_height
-        logger.debug(f"Crop aspect: {aspect_crop:.2f}, Inference aspect: {aspect_infer:.2f}")
-        logger.debug(f"inference_width, inference_height = {inference_width, inference_height}")
-        logger.debug(f"crop_width, crop_height = {crop_width, crop_height}")
-        logger.debug(f"scale_x = {scale_x}, scale_y = {scale_y}")
-
-        # Base scale text size and thickness
-        base_fontScale = 0.9  # Default font size at 640x480
-        base_thickness = 2  # Default thickness at 640x480
-        scale_factor = (scale_x + scale_y) / 2  # Average scale factor
-        fontScale = max(base_fontScale * scale_factor, 0.6)  # Prevent too small text
-        thickness = max(int(base_thickness * scale_factor), 1)  # Prevent too thin lines
-        font = cv2.FONT_HERSHEY_DUPLEX
-        # (x, y) → OpenCV cv2.putText expects the bottom-left corner of the text string.
-        # x = 50 → fixed horizontal offset, i.e. always 50 pixels from the left edge of the frame
-        # y = max(50, frame_height - 100) → vertical position
-        origin = (40, int(frame.shape[0] * 0.90))  # Bottom-left corner
-        colour = (0, 255, 0)  # Green text
-        last_written_id = -1   # keep track of last written frame
-
-        # MAIN LOOP IN finish_recording
-        while True:
-            if stop_event.is_set():
-                break
-            # Capture a frame from the camera
-            try:
-                frame = camera.capture_array()
-                capture_timestamp = datetime.now()
-            except Exception as e:
-                logger.error(f"Failed to capture frame: {e}")
-                continue  # Skips this iteration but keeps running the loop
-
-            if stop_event.is_set():
-                break
-            frame_counter += 1  # Increment the frame counter
+                continue
+            capture_timestamp = datetime.now()
+        
 
             # --- PRE-DETECTION BUFFER ---
             if pre_detection_duration != 0 and capture_timestamp not in processed_timestamps:
@@ -400,7 +393,6 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
 
                             # --- LOGGING ---
                             # Log every N frames to avoid flooding
-                            LOG_FRAME_THROTTLE = 10
                             if frame_counter % LOG_FRAME_THROTTLE == 0:
                                 logger.info(f"Boat detected in frame {frame_counter} with conf {confidence:.2f}")
 
@@ -453,30 +445,33 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
                         number_of_post_frames -= 1
                         logger.debug(f"FRAME: post-detection written @ {capture_timestamp.strftime('%H:%M:%S')} (countdown={number_of_post_frames})")
 
-            # Check if recording should stop
-            time_now = dt.datetime.now()
-            elapsed_time = (time_now - start_time_dt).total_seconds()
-            if elapsed_time >= max_duration:
-                logger.debug(f"STOP: max duration reached ({elapsed_time:.1f}s)")
-                stop_event.set()
-
-        # ---ENSURE RELEASE OUTSIDE LOOP ---
-        logger.info('Video1 recording stopped')
-        try:
-            if video_writer is not None:
-                video_writer.release()
-                video_writer = None
-                logger.info(f"Video1 H.264 writer released: {video1_h264_file}")
         except Exception as e:
-            logger.error(f"Error releasing video_writer: {e}")
-        # Remux
-        video1_mp4_file = os.path.join(video_path, "video1.mp4")
-        logger.info("Calling process_video for %s → %s", video1_h264_file, video1_mp4_file)
-        process_video(video_path, "video1.h264", "video1.mp4", mode="remux")
-        logger.info(f"Video1 remuxed to MP4: {video1_mp4_file}")
-        return
+            logger.error(f"Unhandled error in recording loop: {e}", exc_info=True)
+            continue  # skip this iteration
+
+        # Check if recording should stop
+        time_now = dt.datetime.now()
+        elapsed_time = (time_now - start_time_dt).total_seconds()
+        if elapsed_time >= max_duration:
+            logger.debug(f"STOP: max duration reached ({elapsed_time:.1f}s)")
+            stop_event.set()
+
+    # ---ENSURE RELEASE OUTSIDE LOOP ---
+    logger.info('Video1 recording stopped')
+    try:
+        if video_writer is not None:
+            video_writer.release()
+            video_writer = None
+            logger.info(f"Video1 H.264 writer released: {video1_h264_file}")
     except Exception as e:
-        logger.error(f"Error in finish_recording: {e}")
+        logger.error(f"Error releasing video_writer: {e}")
+    # Remux
+    video1_mp4_file = os.path.join(video_path, "video1.mp4")
+    logger.info("Calling process_video for %s → %s", video1_h264_file, video1_mp4_file)
+    process_video(video_path, "video1.h264", "video1.mp4", mode="remux")
+    logger.info(f"Video1 remuxed to MP4: {video1_mp4_file}")
+    return
+
 
 def stop_listen_thread():
     global listening
