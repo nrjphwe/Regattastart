@@ -420,11 +420,9 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
 
                     # Write current frame (with detection)
                     if frame_counter > last_written_id:
-                        detected_frame = frame.copy()  # preserve the bounding box drawing
                         cv2.putText(frame, capture_timestamp.strftime("%Y-%m-%d %H:%M:%S"), origin,
                                     font, fontScale, colour, thickness)
-                        # text_rectangle(detected_frame, capture_timestamp.strftime("%Y-%m-%d %H:%M:%S"), origin)
-                        video_writer.write(detected_frame)
+                        video_writer.write(frame)
                         last_written_id = frame_counter
                         logger.debug(f"Current FRAME @ {capture_timestamp:%H:%M:%S} (framecounter={frame_counter})")
 
@@ -436,7 +434,6 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
                     if frame_counter > last_written_id:
                         cv2.putText(frame, f"POST {capture_timestamp:%Y-%m-%d %H:%M:%S}", origin,
                                     font, fontScale, colour, thickness)
-                        # text_rectangle(frame, f"POST {capture_timestamp:%Y-%m-%d %H:%M:%S}", origin)
                         video_writer.write(frame)
                         last_written_id = frame_counter
                         number_of_post_frames -= 1
