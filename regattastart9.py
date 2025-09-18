@@ -448,7 +448,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
             if elapsed_time >= max_duration:
                 logger.debug(f"STOP: max duration reached ({elapsed_time:.1f}s)")
                 stop_event.set()
-    finally: 
+    finally:
         # ---ENSURE RELEASE OUTSIDE LOOP ---
         logger.info('Video1 recording stopped')
         try:
@@ -497,7 +497,6 @@ def start_watchdog_thread(heartbeat_file="/tmp/regattastart.heartbeat", interval
     t = threading.Thread(target=wd_thread, daemon=True)
     t.start()
     return t
-
 
 
 def main():
