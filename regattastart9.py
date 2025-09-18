@@ -411,10 +411,11 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
                         last_written_id = buf_id
                         logger.debug(f"PRE FRAME @ {capture_timestamp:%H:%M:%S} (pre_detection_buffer={pre_detection_buffer})")
 
-                # Write current frame
+                # Write current frame (with detection)
                 if frame_counter > last_written_id:
-                    text_rectangle(frame, capture_timestamp.strftime("%Y-%m-%d %H:%M:%S"), origin)
-                    video_writer.write(frame)
+                    detected_frame = frame.copy()  # preserve the bounding box drawing
+                    text_rectangle(detected_frame, capture_timestamp.strftime("%Y-%m-%d %H:%M:%S"), origin)
+                    video_writer.write(detected_frame)
                     last_written_id = frame_counter
                     logger.debug(f"Current FRAME @ {capture_timestamp:%H:%M:%S} (framecounter={frame_counter})")
 
