@@ -409,12 +409,14 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
                         text_rectangle(buf_frame, f"PRE {buf_ts:%Y-%m-%d %H:%M:%S}", origin)
                         video_writer.write(buf_frame)
                         last_written_id = buf_id
+                        logger.debug(f"PRE FRAME @ {capture_timestamp:%H:%M:%S} (pre_detection_buffer={pre_detection_buffer})")
 
                 # Write current frame
                 if frame_counter > last_written_id:
                     text_rectangle(frame, capture_timestamp.strftime("%Y-%m-%d %H:%M:%S"), origin)
                     video_writer.write(frame)
                     last_written_id = frame_counter
+                    logger.debug(f"Current FRAME @ {capture_timestamp:%H:%M:%S} (framecounter={frame_counter})")
 
                 # Reset post-detection counter
                 number_of_post_frames = int(max_post_detection_duration * fpsw)
