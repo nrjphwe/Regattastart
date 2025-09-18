@@ -466,24 +466,38 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
         return
 
 
-def start_watchdog(timeout=10):
+import threading
+import time
+import os
+import logging
+
+logger = logging.getLogger(__name__)
+
+def start_watchdog_thread(heartbeat_file="/tmp/regattastart.heartbeat", interval=5):
     """
-    Simple watchdog thread: writes to /dev/watchdog periodically.
-    Pi will reset if the system hangs for longer than `timeout` seconds.
+    Starts a thread that updates a heartbeat file periodically.
+    The system watchdog daemon can monitor this file and reset the Pi if it stops updating.
+    
+    Args:
+        heartbeat_file: Path to heartbeat file watched by watchdog daemon.
+        interval: Time in seconds between updates.
     """
     def wd_thread():
-        try:
-            with open("/dev/watchdog", "wb") as w:
-                while not stop_event.is_set():
-                    w.write(b'\0')
-                    w.flush()
-                    time.sleep(timeout / 2)
-        except Exception as e:
-            logger.warning(f"Watchdog thread stopped: {e}")
+        logger.info(f"Watchdog thread started, updating {heartbeat_file} every {interval}s")
+        while not stop_event.is_set():
+            try:
+                # Update heartbeat file with current timestamp
+                with open(heartbeat_file, "w") as f:
+                    f.write(str(time.time()))
+                time.sleep(interval)
+            except Exception as e:
+                logger.warning(f"Watchdog thread exception: {e}")
+                time.sleep(interval)
 
     t = threading.Thread(target=wd_thread, daemon=True)
     t.start()
     return t
+
 
 
 def main():
