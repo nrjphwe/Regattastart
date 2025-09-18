@@ -463,6 +463,26 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
         return
 
 
+def start_watchdog(timeout=10):
+    """
+    Simple watchdog thread: writes to /dev/watchdog periodically.
+    Pi will reset if the system hangs for longer than `timeout` seconds.
+    """
+    def wd_thread():
+        try:
+            with open("/dev/watchdog", "wb") as w:
+                while not stop_event.is_set():
+                    w.write(b'\0')
+                    w.flush()
+                    time.sleep(timeout / 2)
+        except Exception as e:
+            logger.warning(f"Watchdog thread stopped: {e}")
+
+    t = threading.Thread(target=wd_thread, daemon=True)
+    t.start()
+    return t
+
+
 def main():
     camera = None
 
@@ -513,6 +533,10 @@ def main():
         listen_thread = threading.Thread(target=listen_for_messages, args=(stop_event,), daemon=True)
         listen_thread.start()
 
+        # --- Start watchdog ---
+        wd_thread = start_watchdog(timeout=15)  # adjust timeout as needed
+        logger.info("Watchdog thread started")
+
         # --- Start video0 recording & start sequences ---
         start_video_recording(camera, video_path, "video0.h264", resolution=(1640,1232), bitrate=4000000)
         start_sequence(camera, start_time_dt, num_starts, dur_between_starts, photo_path)
@@ -548,6 +572,9 @@ def main():
                 logger.warning("listen_thread did not stop within timeout.")
             else:
                 logger.info("listen_thread stopped cleanly.")
+        if wd_thread:
+            wd_thread.join(timeout=1)
+            logger.info("Watchdog thread stopped cleanly.")
         gc.collect()
         logger.info("Cleanup complete")
 
