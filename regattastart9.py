@@ -54,8 +54,9 @@ log_path = '/var/www/html/'
 video_path = '/var/www/html/images/'
 photo_path = '/var/www/html/images/'
 crop_width, crop_height = 1440, 1080  # Crop size for inference
-listen_thread = None   # placeholder for the listener thread
 stop_event = threading.Event()
+listen_thread = None   # placeholder for the listener thread
+wd_thread = None
 
 cpu_model = get_cpu_model()
 logger.info("="*60)
@@ -501,7 +502,7 @@ def start_watchdog_thread(heartbeat_file="/tmp/regattastart.heartbeat", interval
 
 def main():
     camera = None
-
+    global stop_event, listen_thread, wd_thread
     try:
         # --- Camera setup ---
         camera = setup_camera()  # choose resolution internally
