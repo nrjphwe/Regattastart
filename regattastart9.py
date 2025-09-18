@@ -54,7 +54,7 @@ log_path = '/var/www/html/'
 video_path = '/var/www/html/images/'
 photo_path = '/var/www/html/images/'
 crop_width, crop_height = 1440, 1080  # Crop size for inference
-listening = True  # Define the listening variable
+listen_thread = None   # placeholder for the listener thread
 stop_event = threading.Event()
 
 cpu_model = get_cpu_model()
@@ -70,14 +70,18 @@ with open('/var/www/html/status.txt', 'w') as status_file:
 
 
 def stop_recording():
+    global listen_thread
     logger.info("stop_recording called. Stopping recording early.")
     stop_event.set()
-    listening = False  # exit listen_for_messages loop
-    logger.debug(f"listening = {listening}")
+
+    # Wait for the listening thread to exit
+    if listen_thread is not None and listen_thread.is_alive():
+        logger.info("Waiting for listen_thread to exit...")
+        listen_thread.join(timeout=1.0)
+        logger.info("listen_thread has exited.")
 
 
 def listen_for_messages(stop_event, timeout=0.1):
-    # global listening  # Use global flag
     pipe_path = '/var/www/html/tmp/stop_recording_pipe'
     logger.info("listen_for_messages: starting")
     logger.info(f"Pipe path = {pipe_path}")
@@ -329,146 +333,138 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
     last_written_id = -1   # keep track of last written frame
 
     # MAIN LOOP IN finish_recording
-    while True:
+    try: 
+        while True:
+            try:
+                if stop_event.is_set():
+                    logger.info("stop event set, break recording loop")
+                    break
+
+                frame_counter += 1  # Increment the frame counter
+                # Capture a frame from the camera
+                frame = camera.capture_array()
+                if frame is None:
+                    logger.error("CAPTURE: frame is None, skipping")
+                    continue
+
+                frame_height, frame_width = frame.shape[:2]
+                # --- TIMESTAMP ---
+                capture_timestamp = datetime.now()
+
+                # Always-record mode (for testing smoothness & timing)
+                if write_all_frames:
+                    if frame_counter > last_written_id:
+                        text_rectangle(frame, capture_timestamp.strftime("%Y-%m-%d %H:%M:%S"), origin)
+                        video_writer.write(frame)
+                        last_written_id = frame_counter
+                    continue
+
+                # Store in pre-detection buffer
+                if pre_detection_duration > 0:
+                    pre_detection_buffer.append((frame_counter, frame.copy(), capture_timestamp))
+
+                boat_in_current_frame = False
+
+                # --- INFERENCE ON EVERY 5TH FRAME ---
+                if frame_counter % 5 == 0:
+                    # Crop region of interest
+                    cropped_frame = frame[y_start:y_start + crop_height, x_start:x_start + crop_width]
+                    resized_frame = cv2.resize(cropped_frame, (inference_width, inference_height))
+                    input_tensor = prepare_input(resized_frame, device='cpu')
+
+                    # Run YOLOv5 inference
+                    results = model(input_tensor)  # DetectMultiBackend returns list-of-tensors
+                    detections = non_max_suppression(results, conf_thres=0.25, iou_thres=0.45)[0]
+
+                    if detections is not None and len(detections):
+                        for *xyxy, conf, cls in detections:
+                            confidence = float(conf)
+                            class_name = model.names[int(cls)]
+                            if confidence > DETECTION_CONF_THRESHOLD and class_name == 'boat':
+                                boat_in_current_frame = True
+                                x1, y1, x2, y2 = map(int, xyxy)
+                                # Scale coordinates back to original frame
+                                x1 = int(x1 * scale_x) + x_start
+                                y1 = int(y1 * scale_y) + y_start
+                                x2 = int(x2 * scale_x) + x_start
+                                y2 = int(y2 * scale_y) + y_start
+
+                                # Draw bounding box
+                                cv2.rectangle(frame, (x1, y1), (x2, y2), colour, thickness)
+                                # Draw confidence
+                                cv2.putText(frame, f"{confidence:.2f}", (x1, y1 - 10), 
+                                            font, 0.7, (0, 255, 0), 2)
+                                # Draw timestamp below box
+                                y_text = min(y2 + 50, int(frame_height * 0.92))  # clamp so text does not go outside
+                                detected_timestamp = capture_timestamp.strftime("%H:%M:%S")
+                                cv2.putText(frame, detected_timestamp, (x1, y_text),
+                                            font, fontScale, colour, thickness)
+
+                                # --- LOGGING ---
+                                # Log every N frames to avoid flooding
+                                if frame_counter % LOG_FRAME_THROTTLE == 0:
+                                    logger.info(f"Boat detected in frame {frame_counter} with conf {confidence:.2f}")
+
+                # -- WRITE VIDEO ---
+                if boat_in_current_frame:
+                    # Flush pre-buffer
+                    while pre_detection_buffer:
+                        buf_id, buf_frame, buf_ts = pre_detection_buffer.popleft()
+                        if buf_id > last_written_id:
+                            text_rectangle(buf_frame, f"PRE {buf_ts:%Y-%m-%d %H:%M:%S}", origin)
+                            video_writer.write(buf_frame)
+                            last_written_id = buf_id
+                            logger.debug(f"PRE FRAME @ {capture_timestamp:%H:%M:%S} (pre_detection_buffer={pre_detection_buffer})")
+
+                    # Write current frame (with detection)
+                    if frame_counter > last_written_id:
+                        detected_frame = frame.copy()  # preserve the bounding box drawing
+                        text_rectangle(detected_frame, capture_timestamp.strftime("%Y-%m-%d %H:%M:%S"), origin)
+                        video_writer.write(detected_frame)
+                        last_written_id = frame_counter
+                        logger.debug(f"Current FRAME @ {capture_timestamp:%H:%M:%S} (framecounter={frame_counter})")
+
+                    # Reset post-detection counter
+                    number_of_post_frames = int(max_post_detection_duration * fpsw)
+
+                elif number_of_post_frames > 0:
+                    # Write post frames
+                    if frame_counter > last_written_id:
+                        text_rectangle(frame, f"POST {capture_timestamp:%Y-%m-%d %H:%M:%S}", origin)
+                        video_writer.write(frame)
+                        last_written_id = frame_counter
+                        number_of_post_frames -= 1
+                    logger.debug(f"FRAME: post-detection written @ {capture_timestamp:%H:%M:%S} (countdown={number_of_post_frames})")
+
+            except Exception as e:
+                logger.error(f"Unhandled error in recording loop: {e}", exc_info=True)
+                continue  # skip this iteration
+
+            # Stop condition
+            elapsed_time = (datetime.now() - start_time_dt).total_seconds()
+            if elapsed_time >= max_duration:
+                logger.debug(f"STOP: max duration reached ({elapsed_time:.1f}s)")
+                stop_event.set()
+    finally: 
+        # ---ENSURE RELEASE OUTSIDE LOOP ---
+        logger.info('Video1 recording stopped')
         try:
-            if stop_event.is_set():
-                logger.info("stop event set, break recording loop")
-                break
-
-            frame_counter += 1  # Increment the frame counter
-            # Capture a frame from the camera
-            frame = camera.capture_array()
-            if frame is None:
-                logger.error("CAPTURE: frame is None, skipping")
-                continue
-
-            frame_height, frame_width = frame.shape[:2]
-            # --- TIMESTAMP ---
-            capture_timestamp = datetime.now()
-
-            # Always-record mode (for testing smoothness & timing)
-            if write_all_frames:
-                if frame_counter > last_written_id:
-                    text_rectangle(frame, capture_timestamp.strftime("%Y-%m-%d %H:%M:%S"), origin)
-                    video_writer.write(frame)
-                    last_written_id = frame_counter
-                continue
-
-            # Store in pre-detection buffer
-            if pre_detection_duration > 0:
-                pre_detection_buffer.append((frame_counter, frame.copy(), capture_timestamp))
-
-            boat_in_current_frame = False
-
-            # --- INFERENCE ON EVERY 5TH FRAME ---
-            if frame_counter % 5 == 0:
-                # Crop region of interest
-                cropped_frame = frame[y_start:y_start + crop_height, x_start:x_start + crop_width]
-                resized_frame = cv2.resize(cropped_frame, (inference_width, inference_height))
-                input_tensor = prepare_input(resized_frame, device='cpu')
-
-                # Run YOLOv5 inference
-                results = model(input_tensor)  # DetectMultiBackend returns list-of-tensors
-                detections = non_max_suppression(results, conf_thres=0.25, iou_thres=0.45)[0]
-
-                if detections is not None and len(detections):
-                    for *xyxy, conf, cls in detections:
-                        confidence = float(conf)
-                        class_name = model.names[int(cls)]
-                        if confidence > DETECTION_CONF_THRESHOLD and class_name == 'boat':
-                            boat_in_current_frame = True
-                            x1, y1, x2, y2 = map(int, xyxy)
-                            # Scale coordinates back to original frame
-                            x1 = int(x1 * scale_x) + x_start
-                            y1 = int(y1 * scale_y) + y_start
-                            x2 = int(x2 * scale_x) + x_start
-                            y2 = int(y2 * scale_y) + y_start
-
-                            # Draw bounding box
-                            cv2.rectangle(frame, (x1, y1), (x2, y2), colour, thickness)
-                            # Draw confidence
-                            cv2.putText(frame, f"{confidence:.2f}", (x1, y1 - 10), 
-                                        font, 0.7, (0, 255, 0), 2)
-                            # Draw timestamp below box
-                            y_text = min(y2 + 50, int(frame_height * 0.92))  # clamp so text does not go outside
-                            detected_timestamp = capture_timestamp.strftime("%H:%M:%S")
-                            cv2.putText(frame, detected_timestamp, (x1, y_text),
-                                        font, fontScale, colour, thickness)
-
-                            # --- LOGGING ---
-                            # Log every N frames to avoid flooding
-                            if frame_counter % LOG_FRAME_THROTTLE == 0:
-                                logger.info(f"Boat detected in frame {frame_counter} with conf {confidence:.2f}")
-
-            # -- WRITE VIDEO ---
-            if boat_in_current_frame:
-                # Flush pre-buffer
-                while pre_detection_buffer:
-                    buf_id, buf_frame, buf_ts = pre_detection_buffer.popleft()
-                    if buf_id > last_written_id:
-                        text_rectangle(buf_frame, f"PRE {buf_ts:%Y-%m-%d %H:%M:%S}", origin)
-                        video_writer.write(buf_frame)
-                        last_written_id = buf_id
-                        logger.debug(f"PRE FRAME @ {capture_timestamp:%H:%M:%S} (pre_detection_buffer={pre_detection_buffer})")
-
-                # Write current frame (with detection)
-                if frame_counter > last_written_id:
-                    detected_frame = frame.copy()  # preserve the bounding box drawing
-                    text_rectangle(detected_frame, capture_timestamp.strftime("%Y-%m-%d %H:%M:%S"), origin)
-                    video_writer.write(detected_frame)
-                    last_written_id = frame_counter
-                    logger.debug(f"Current FRAME @ {capture_timestamp:%H:%M:%S} (framecounter={frame_counter})")
-
-                # Reset post-detection counter
-                number_of_post_frames = int(max_post_detection_duration * fpsw)
-
-            elif number_of_post_frames > 0:
-                # Write post frames
-                if frame_counter > last_written_id:
-                    text_rectangle(frame, f"POST {capture_timestamp:%Y-%m-%d %H:%M:%S}", origin)
-                    video_writer.write(frame)
-                    last_written_id = frame_counter
-                    number_of_post_frames -= 1
-                logger.debug(f"FRAME: post-detection written @ {capture_timestamp:%H:%M:%S} (countdown={number_of_post_frames})")
-
+            if video_writer is not None:
+                video_writer.release()
+                video_writer = None
+                logger.info(f"Video1 H.264 writer released: {video1_h264_file}")
         except Exception as e:
-            logger.error(f"Unhandled error in recording loop: {e}", exc_info=True)
-            continue  # skip this iteration
-
-        # Stop condition
-        elapsed_time = (datetime.now() - start_time_dt).total_seconds()
-        if elapsed_time >= max_duration:
-            logger.debug(f"STOP: max duration reached ({elapsed_time:.1f}s)")
-            stop_event.set()
-
-    # ---ENSURE RELEASE OUTSIDE LOOP ---
-    logger.info('Video1 recording stopped')
-    try:
-        if video_writer is not None:
-            video_writer.release()
-            video_writer = None
-            logger.info(f"Video1 H.264 writer released: {video1_h264_file}")
-    except Exception as e:
-        logger.error(f"Error releasing video_writer: {e}")
-    # Remux
-    video1_mp4_file = os.path.join(video_path, "video1.mp4")
-    logger.info("Calling process_video for %s → %s", video1_h264_file, video1_mp4_file)
-    process_video(video_path, "video1.h264", "video1.mp4", mode="remux")
-    logger.info(f"Video1 remuxed to MP4: {video1_mp4_file}")
-    return
-
-
-def stop_listen_thread():
-    global listening
-    listening = False
-    logger.info("stop_listening thread called: listening set to False")
+            logger.error(f"Error releasing video_writer: {e}")
+        # Remux
+        video1_mp4_file = os.path.join(video_path, "video1.mp4")
+        logger.info("Calling process_video for %s → %s", video1_h264_file, video1_mp4_file)
+        process_video(video_path, "video1.h264", "video1.mp4", mode="remux")
+        logger.info(f"Video1 remuxed to MP4: {video1_mp4_file}")
+        return
 
 
 def main():
-    # stop_event = threading.Event()
-    global listening  # Declare listening as global
     camera = None
-    listen_thread = None  # Initialize listen_thread variable
 
     try:
         # --- Camera setup ---
@@ -513,6 +509,7 @@ def main():
             time.sleep(1)
 
         # --- Start listening thread ---
+        global listen_thread
         listen_thread = threading.Thread(target=listen_for_messages, args=(stop_event,), daemon=True)
         listen_thread.start()
 
@@ -524,10 +521,11 @@ def main():
         while dt.datetime.now() < end_time:
             time.sleep(0.2)
 
+        # VIDEO0 RECORDING STOP & PROCESS
         stop_video_recording(camera)
         process_video(video_path, "video0.h264", "video0.mp4", frame_rate=30, resolution=(1640,1232))
 
-        # --- Finish recording & process videos ---
+        # --- VIDEO1, Finish recording & process videos ---
         finish_recording(camera, video_path, num_starts, video_end, start_time_dt, fps)
 
         # --- Write status --
@@ -543,6 +541,7 @@ def main():
         return 1
     finally:
         logger.info("Main finally: cleanup")
+        stop_event.set()  # ensure listener and recording exit
         if listen_thread:
             listen_thread.join(timeout=2)
             if listen_thread.is_alive():
