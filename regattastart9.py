@@ -446,9 +446,6 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
 
             # Stop condition
             elapsed_time = (datetime.now() - start_time_dt).total_seconds()
-            #if elapsed_time >= max_duration:
-            #    logger.debug(f"STOP: max duration reached ({elapsed_time:.1f}s)")
-            #    stop_event.set()
 
             if stop_event.is_set() or elapsed_time >= max_duration:
                 logger.debug(f"STOP: stop_event set or max duration reached ({elapsed_time:.1f}s)")
