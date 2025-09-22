@@ -446,9 +446,13 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
 
             # Stop condition
             elapsed_time = (datetime.now() - start_time_dt).total_seconds()
-            if elapsed_time >= max_duration:
-                logger.debug(f"STOP: max duration reached ({elapsed_time:.1f}s)")
-                stop_event.set()
+            #if elapsed_time >= max_duration:
+            #    logger.debug(f"STOP: max duration reached ({elapsed_time:.1f}s)")
+            #    stop_event.set()
+
+            if stop_event.is_set() or elapsed_time >= max_duration:
+                logger.debug(f"STOP: stop_event set or max duration reached ({elapsed_time:.1f}s)")
+                break
     finally:
         # ---ENSURE RELEASE OUTSIDE LOOP ---
         logger.info('Video1 recording stopped')
@@ -465,39 +469,6 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
         process_video(video_path, "video1.h264", "video1.mp4", mode="remux")
         logger.info(f"Video1 remuxed to MP4: {video1_mp4_file}")
         return
-
-
-import threading
-import time
-import os
-import logging
-
-logger = logging.getLogger(__name__)
-
-def start_watchdog_thread(heartbeat_file="/tmp/regattastart.heartbeat", interval=5):
-    """
-    Starts a thread that updates a heartbeat file periodically.
-    The system watchdog daemon can monitor this file and reset the Pi if it stops updating.
-    
-    Args:
-        heartbeat_file: Path to heartbeat file watched by watchdog daemon.
-        interval: Time in seconds between updates.
-    """
-    def wd_thread():
-        logger.info(f"Watchdog thread started, updating {heartbeat_file} every {interval}s")
-        while not stop_event.is_set():
-            try:
-                # Update heartbeat file with current timestamp
-                with open(heartbeat_file, "w") as f:
-                    f.write(str(time.time()))
-                time.sleep(interval)
-            except Exception as e:
-                logger.warning(f"Watchdog thread exception: {e}")
-                time.sleep(interval)
-
-    t = threading.Thread(target=wd_thread, daemon=True)
-    t.start()
-    return t
 
 
 def main():
@@ -551,10 +522,10 @@ def main():
         listen_thread.start()
 
         # --- Start watchdog ---
-        stop_event = threading.Event()
-        wd_thread = start_watchdog_thread(heartbeat_file="/tmp/regattastart.heartbeat", interval=5)
+        # stop_event = threading.Event()
+        # wd_thread = start_watchdog_thread(heartbeat_file="/tmp/regattastart.heartbeat", interval=5)
         # wd_thread = start_watchdog(timeout=15)  # adjust timeout as needed
-        logger.info("Watchdog thread started")
+        # logger.info("Watchdog thread started")
 
         # --- Start video0 recording & start sequences ---
         start_video_recording(camera, video_path, "video0.h264", resolution=(1640,1232), bitrate=4000000)
