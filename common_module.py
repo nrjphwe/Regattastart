@@ -302,7 +302,7 @@ class FFmpegVideoWriter:
                 ffmpeg_cmd,
                 stdin=subprocess.PIPE,
                 stdout=subprocess.DEVNULL,
-                stderr=subprocess.PIPE
+                stderr=subprocess.PIPE,
             )
             return True
         except Exception as e:
