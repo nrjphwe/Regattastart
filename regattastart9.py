@@ -298,8 +298,8 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
         return
 
     # CONFIGURE DETECTION LOGIC
-    pre_detection_duration = 2  # Seconds
-    max_post_detection_duration = 2  # sec
+    pre_detection_duration = 1  # Seconds
+    max_post_detection_duration = 1  # sec
 
     pre_detection_buffer = deque(maxlen=int(pre_detection_duration * fpsw))  # Adjust buffer size if needed
     number_of_post_frames = 0
@@ -345,6 +345,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
                 # Capture a frame from the camera
                 frame = camera.capture_array()
                 if frame is None:
+                    time.sleep(1/fps)
                     logger.error("CAPTURE: frame is None, skipping")
                     continue
 
@@ -367,12 +368,12 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
                 boat_in_current_frame = False
 
                 # --- INFERENCE ON EVERY 5TH FRAME ---
-                if frame_counter % 5 == 0:
-                    # Crop region of interest
-                    cropped_frame = frame[y_start:y_start + crop_height, x_start:x_start + crop_width]
-                    resized_frame = cv2.resize(cropped_frame, (inference_width, inference_height))
-                    input_tensor = prepare_input(resized_frame, device='cpu')
+                # Crop region of interest
+                cropped_frame = frame[y_start:y_start + crop_height, x_start:x_start + crop_width]
+                resized_frame = cv2.resize(cropped_frame, (inference_width, inference_height))
+                input_tensor = prepare_input(resized_frame, device='cpu')
 
+                if frame_counter % 5 == 0:
                     # Run YOLOv5 inference
                     results = model(input_tensor)  # DetectMultiBackend returns list-of-tensors
                     detections = non_max_suppression(results, conf_thres=0.25, iou_thres=0.45)[0]
@@ -547,7 +548,8 @@ def main():
 
         # VIDEO0 RECORDING STOP & PROCESS
         stop_video_recording(camera)
-        process_video(video_path, "video0.h264", "video0.mp4", frame_rate=30, resolution=(1640,1232))
+        # process_video(video_path, "video0.h264", "video0.mp4", frame_rate=30, resolution=(1640,1232))
+        process_video(video_path, "video0.h264", "video0.mp4", mode="remux")
 
         # --- VIDEO1, Finish recording & process videos ---
         finish_recording(camera, video_path, num_starts, video_end, start_time_dt, fps)
