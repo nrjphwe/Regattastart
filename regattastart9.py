@@ -453,6 +453,16 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
     finally:
         # ---ENSURE RELEASE OUTSIDE LOOP ---
         logger.info('Video1 recording stopped')
+        # Stop camera cleanly
+        try:
+            if camera is not None:
+                logger.info("Stopping camera after recording loop")
+                camera.stop()
+                camera = None
+        except Exception as e:
+            logger.error(f"Error stopping camera: {e}")
+
+        # Release video writer
         try:
             if video_writer is not None:
                 video_writer.release()
@@ -460,12 +470,15 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
                 logger.info(f"Video1 H.264 writer released: {video1_h264_file}")
         except Exception as e:
             logger.error(f"Error releasing video_writer: {e}")
-        # Remux
+
+        # Remux H264 → MP4
         video1_mp4_file = os.path.join(video_path, "video1.mp4")
-        logger.info("Calling process_video for %s → %s", video1_h264_file, video1_mp4_file)
-        process_video(video_path, "video1.h264", "video1.mp4", mode="remux")
-        logger.info(f"Video1 remuxed to MP4: {video1_mp4_file}")
-        return
+        try:
+            logger.info("Calling process_video for %s → %s", video1_h264_file, video1_mp4_file)
+            process_video(video_path, "video1.h264", "video1.mp4", mode="remux")
+            logger.info(f"Video1 remuxed to MP4: {video1_mp4_file}")
+        except Exception as e:
+            logger.error(f"Error during remux: {e}")
 
 
 def main():
