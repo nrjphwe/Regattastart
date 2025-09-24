@@ -286,8 +286,10 @@ class FFmpegVideoWriter:
         width, height = self.frame_size
         codec = "h264_v4l2m2m" if hw else "libx264"
         ffmpeg_cmd = [
-            "ffmpeg", "-y", "-f", "rawvideo", "-pix_fmt", "bgr24",
-            "-s", f"{width}x{height}", "-r", str(self.fps), "-i", "-", "-an"
+            "ffmpeg", "-y", "-fflags", "+genpts", 
+            "-f", "rawvideo", "-pix_fmt", "bgr24",
+            "-s", f"{width}x{height}", "-r", str(self.fps), 
+            "-i", "-", "-an"
         ]
 
         if hw:
