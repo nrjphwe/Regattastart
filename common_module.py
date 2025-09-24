@@ -293,9 +293,9 @@ class FFmpegVideoWriter:
         ]
 
         if hw:
-            ffmpeg_cmd += ["-vf", "format=nv12", "-c:v", codec, "-b:v", "4M"]
+            ffmpeg_cmd += ["-vf", "format=nv12", "-c:v", codec, "-b:v", "2M"]
         else:
-            ffmpeg_cmd += ["-c:v", codec, "-preset", "fast", "-crf", "23"]
+            ffmpeg_cmd += ["-c:v", codec, "-preset", "-preset ultrafast", "-crf", "23"]
 
         ffmpeg_cmd += ["-pix_fmt", "yuv420p", "-movflags", "+faststart", self.filename]
 
