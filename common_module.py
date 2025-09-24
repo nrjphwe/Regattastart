@@ -323,6 +323,7 @@ class FFmpegVideoWriter:
 
         try:
             self.proc.stdin.write(frame.tobytes())
+            self.proc.stdin.flush()
         except Exception as e:
             err = self.proc.stderr.read().decode(errors="ignore") if self.proc.stderr else ""
             if self.logger:
