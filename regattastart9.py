@@ -352,11 +352,11 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
                 frame_height, frame_width = frame.shape[:2]
                 # --- TIMESTAMP ---
                 capture_timestamp = datetime.now()
+                text_rectangle(frame, capture_timestamp.strftime("%Y-%m-%d %H:%M:%S"), origin)
 
                 # Always-record mode (for testing smoothness & timing)
                 if write_all_frames:
                     if frame_counter > last_written_id:
-                        text_rectangle(frame, capture_timestamp.strftime("%Y-%m-%d %H:%M:%S"), origin)
                         video_writer.write(frame)
                         last_written_id = frame_counter
                     continue
@@ -413,6 +413,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
                     while pre_detection_buffer:
                         buf_id, buf_frame, buf_ts = pre_detection_buffer.popleft()
                         if buf_id > last_written_id:
+                            cv2.rectangle(frame, (x1, y1), (x2, y2), colour, thickness)
                             cv2.putText(buf_frame, f"PRE {buf_ts:%Y-%m-%d %H:%M:%S}", origin,
                                         font, fontScale, colour, thickness)
                             # text_rectangle(buf_frame, f"PRE {buf_ts:%Y-%m-%d %H:%M:%S}", origin)
@@ -422,6 +423,10 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
 
                     # Write current frame (with detection)
                     if frame_counter > last_written_id:
+                        cv2.rectangle(frame, (x1, y1), (x2, y2), colour, thickness)
+                        # Draw confidence
+                        cv2.putText(frame, f"{confidence:.2f}", (x1, y1 - 10), 
+                                    font, 0.7, (0, 255, 0), 2)
                         cv2.putText(frame, capture_timestamp.strftime("%Y-%m-%d %H:%M:%S"), origin,
                                     font, fontScale, colour, thickness)
                         video_writer.write(frame)
@@ -434,6 +439,9 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
                 elif number_of_post_frames > 0:
                     # Write post frames
                     if frame_counter > last_written_id:
+                        cv2.rectangle(frame, (x1, y1), (x2, y2), colour, thickness)
+                        cv2.putText(frame, f"{confidence:.2f}", (x1, y1 - 10), 
+                                    font, 0.7, (0, 255, 0), 2)
                         cv2.putText(frame, f"POST {capture_timestamp:%Y-%m-%d %H:%M:%S}", origin,
                                     font, fontScale, colour, thickness)
                         video_writer.write(frame)
