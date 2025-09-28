@@ -391,11 +391,13 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
                                 x2 = int(x2 * scale_x) + x_start
                                 y2 = int(y2 * scale_y) + y_start
 
+                                detections_for_frame.append((x1, y1, x2, y2, confidence))
+
                                 # Draw bounding box
-                                cv2.rectangle(frame, (x1, y1), (x2, y2), colour, thickness)
+                                # cv2.rectangle(frame, (x1, y1), (x2, y2), colour, thickness)
                                 # Draw confidence
-                                cv2.putText(frame, f"{confidence:.2f}", (x1, y1 - 10), 
-                                            font, 0.7, (0, 255, 0), 2)
+                                # cv2.putText(frame, f"{confidence:.2f}", (x1, y1 - 10), 
+                                #             font, 0.7, (0, 255, 0), 2)
                                 # Draw timestamp below box
                                 # y_text = min(y2 + 50, int(frame_height * 0.92))  # clamp so text does not go outside
                                 # detected_timestamp = capture_timestamp.strftime("%H:%M:%S")
@@ -424,10 +426,11 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
 
                     # Write current frame (with detection)
                     if frame_counter > last_written_id:
-                        # Draw rectangle + confidence
-                        cv2.rectangle(frame, (x1, y1), (x2, y2), colour, thickness)
-                        cv2.putText(frame, f"{confidence:.2f}", (x1, y1 - 10),
-                                    font, 0.7, (0, 255, 0), 2)
+                        # Draw all detections for this frame
+                        for (x1, y1, x2, y2, confidence) in detections_for_frame:
+                            cv2.rectangle(frame, (x1, y1), (x2, y2), colour, thickness)
+                            cv2.putText(frame, f"{confidence:.2f}", (x1, y1 - 10),
+                                        font, 0.7, (0, 255, 0), 2)
 
                         # Timestamp (always added last so it stays visible)
                         label = capture_timestamp.strftime("%Y-%m-%d %H:%M:%S")
