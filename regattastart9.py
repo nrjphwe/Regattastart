@@ -413,7 +413,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
                     while pre_detection_buffer:
                         buf_id, buf_frame, buf_ts = pre_detection_buffer.popleft()
                         if buf_id > last_written_id:
-                            label = f"PRE {buf_ts:%Y-%m-%d %H:%M:%S}"
+                            label = f" PRE {buf_ts:%Y-%m-%d %H:%M:%S}"
                             text_rectangle(buf_frame, label, origin)
                             video_writer.write(buf_frame)
                             last_written_id = buf_id
