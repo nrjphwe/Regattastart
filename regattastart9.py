@@ -298,8 +298,8 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
         return
 
     # CONFIGURE DETECTION LOGIC
-    pre_detection_duration = 1  # Seconds
-    max_post_detection_duration = 1  # sec
+    pre_detection_duration = 0.1  # Seconds
+    max_post_detection_duration = 0.1  # sec
 
     pre_detection_buffer = deque(maxlen=int(pre_detection_duration * fpsw))  # Adjust buffer size if needed
     number_of_post_frames = 0
@@ -331,7 +331,6 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
     # y = max(50, frame_height - 100) → vertical position
     origin = (40, int(frame.shape[0] * 0.90))  # Bottom-left corner
     colour = (0, 255, 0)  # Green text
-    last_written_id = -1   # keep track of last written frame
 
     # MAIN LOOP IN finish_recording
     try:
@@ -377,7 +376,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
                 resized_frame = cv2.resize(cropped_frame, (inference_width, inference_height))
                 input_tensor = prepare_input(resized_frame, device='cpu')
 
-                if frame_counter % 5 == 0:
+                if frame_counter % 4 == 0:
                     # Run YOLOv5 inference
                     results = model(input_tensor)  # DetectMultiBackend returns list-of-tensors
                     detections = non_max_suppression(results, conf_thres=0.25, iou_thres=0.45)[0]
