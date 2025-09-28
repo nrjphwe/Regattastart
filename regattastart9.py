@@ -413,25 +413,25 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
                     while pre_detection_buffer:
                         buf_id, buf_frame, buf_ts = pre_detection_buffer.popleft()
                         if buf_id > last_written_id:
-                            # cv2.rectangle(frame, (x1, y1), (x2, y2), colour, thickness)
-                            cv2.putText(buf_frame, f"PRE {buf_ts:%Y-%m-%d %H:%M:%S}", origin,
-                                        font, fontScale, colour, thickness)
-                            # text_rectangle(buf_frame, f"PRE {buf_ts:%Y-%m-%d %H:%M:%S}", origin)
+                            label = f"PRE {buf_ts:%Y-%m-%d %H:%M:%S}"
+                            text_rectangle(buf_frame, label, origin)
                             video_writer.write(buf_frame)
                             last_written_id = buf_id
-                            logger.debug(f"PRE FRAME @ {capture_timestamp:%H:%M:%S} (pre_detection_buffer={pre_detection_buffer})")
+                            logger.debug(
+                                f"PRE FRAME @ {buf_ts:%H:%M:%S} "
+                                f"(pre_detection_buffer size={len(pre_detection_buffer)})"
+                            )
 
                     # Write current frame (with detection)
                     if frame_counter > last_written_id:
-                        # cv2.rectangle(frame, (x1, y1), (x2, y2), colour, thickness)
-                        # Draw confidence
-                        # cv2.putText(frame, f"{confidence:.2f}", (x1, y1 - 10), 
-                        #            font, 0.7, (0, 255, 0), 2)
-                        cv2.putText(frame, capture_timestamp.strftime("%Y-%m-%d %H:%M:%S"), origin,
-                                    font, fontScale, colour, thickness)
+                        label = capture_timestamp.strftime("%Y-%m-%d %H:%M:%S")
+                        text_rectangle(frame, label, origin)
                         video_writer.write(frame)
                         last_written_id = frame_counter
-                        logger.debug(f"Current FRAME @ {capture_timestamp:%H:%M:%S} (framecounter={frame_counter})")
+                        logger.debug(
+                            f"Current FRAME @ {capture_timestamp:%H:%M:%S} "
+                            f"(framecounter={frame_counter})"
+                        )
 
                     # Reset post-detection counter
                     number_of_post_frames = int(max_post_detection_duration * fpsw)
@@ -439,15 +439,15 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
                 elif number_of_post_frames > 0:
                     # Write post frames
                     if frame_counter > last_written_id:
-                        # cv2.rectangle(frame, (x1, y1), (x2, y2), colour, thickness)
-                        # cv2.putText(frame, f"{confidence:.2f}", (x1, y1 - 10), 
-                        #             font, 0.7, (0, 255, 0), 2)
-                        cv2.putText(frame, f"POST {capture_timestamp:%Y-%m-%d %H:%M:%S}", origin,
-                                    font, fontScale, colour, thickness)
+                        label = f"POST {capture_timestamp:%Y-%m-%d %H:%M:%S}"
+                        text_rectangle(frame, label, origin)
                         video_writer.write(frame)
                         last_written_id = frame_counter
                         number_of_post_frames -= 1
-                    logger.debug(f"FRAME: post-detection written @ {capture_timestamp:%H:%M:%S} (countdown={number_of_post_frames})")
+                    logger.debug(
+                        f"FRAME: post-detection written @ {capture_timestamp:%H:%M:%S} "
+                        f"(countdown={number_of_post_frames})"
+                    )
 
             except Exception as e:
                 logger.error(f"Unhandled error in recording loop: {e}", exc_info=True)
