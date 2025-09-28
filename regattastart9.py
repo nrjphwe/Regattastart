@@ -413,7 +413,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
                     while pre_detection_buffer:
                         buf_id, buf_frame, buf_ts = pre_detection_buffer.popleft()
                         if buf_id > last_written_id:
-                            #cv2.rectangle(frame, (x1, y1), (x2, y2), colour, thickness)
+                            # cv2.rectangle(frame, (x1, y1), (x2, y2), colour, thickness)
                             cv2.putText(buf_frame, f"PRE {buf_ts:%Y-%m-%d %H:%M:%S}", origin,
                                         font, fontScale, colour, thickness)
                             # text_rectangle(buf_frame, f"PRE {buf_ts:%Y-%m-%d %H:%M:%S}", origin)
