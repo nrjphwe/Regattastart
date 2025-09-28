@@ -424,8 +424,15 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
 
                     # Write current frame (with detection)
                     if frame_counter > last_written_id:
+                        # Draw rectangle + confidence
+                        cv2.rectangle(frame, (x1, y1), (x2, y2), colour, thickness)
+                        cv2.putText(frame, f"{confidence:.2f}", (x1, y1 - 10),
+                                    font, 0.7, (0, 255, 0), 2)
+
+                        # Timestamp (always added last so it stays visible)
                         label = capture_timestamp.strftime("%Y-%m-%d %H:%M:%S")
                         text_rectangle(frame, label, origin)
+
                         video_writer.write(frame)
                         last_written_id = frame_counter
                         logger.debug(
