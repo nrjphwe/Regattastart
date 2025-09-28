@@ -354,6 +354,10 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
                 capture_timestamp = datetime.now()
                 text_rectangle(frame, capture_timestamp.strftime("%Y-%m-%d %H:%M:%S"), origin)
 
+                # Initialize list to store detections for this frame
+                detections_for_frame = []
+                boat_in_current_frame = False
+
                 # Always-record mode (for testing smoothness & timing)
                 if write_all_frames:
                     if frame_counter > last_written_id:
@@ -392,17 +396,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
                                 y2 = int(y2 * scale_y) + y_start
 
                                 detections_for_frame.append((x1, y1, x2, y2, confidence))
-
-                                # Draw bounding box
-                                # cv2.rectangle(frame, (x1, y1), (x2, y2), colour, thickness)
-                                # Draw confidence
-                                # cv2.putText(frame, f"{confidence:.2f}", (x1, y1 - 10), 
-                                #             font, 0.7, (0, 255, 0), 2)
-                                # Draw timestamp below box
-                                # y_text = min(y2 + 50, int(frame_height * 0.92))  # clamp so text does not go outside
-                                # detected_timestamp = capture_timestamp.strftime("%H:%M:%S")
-                                # cv2.putText(frame, detected_timestamp, (x1, y_text),
-                                #          font, fontScale, colour, thickness)
+                                boat_in_current_frame = True
 
                                 # --- LOGGING ---
                                 # Log every N frames to avoid flooding
