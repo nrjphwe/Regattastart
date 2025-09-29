@@ -304,6 +304,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
     pre_detection_buffer = deque(maxlen=int(pre_detection_duration * fpsw))  # Adjust buffer size if needed
     number_of_post_frames = 0
     last_written_id = -1   # ensures frames never go backwards in time
+    detections_for_frame = []
 
     # Optional: record *all* frames for testing
     write_all_frames = False
@@ -331,6 +332,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
     # y = max(50, frame_height - 100) → vertical position
     origin = (40, int(frame.shape[0] * 0.90))  # Bottom-left corner
     colour = (0, 255, 0)  # Green text
+
 
     # MAIN LOOP IN finish_recording
     try:
@@ -370,7 +372,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
 
                 boat_in_current_frame = False
 
-                # --- INFERENCE ON EVERY 5TH FRAME ---
+                # --- INFERENCE ON EVERY 4TH FRAME ---
                 # Crop region of interest
                 cropped_frame = frame[y_start:y_start + crop_height, x_start:x_start + crop_width]
                 resized_frame = cv2.resize(cropped_frame, (inference_width, inference_height))
@@ -380,6 +382,8 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
                     # Run YOLOv5 inference
                     results = model(input_tensor)  # DetectMultiBackend returns list-of-tensors
                     detections = non_max_suppression(results, conf_thres=0.25, iou_thres=0.45)[0]
+
+                    new_detections = []  # temporary holder for this inference step
 
                     if detections is not None and len(detections):
                         for *xyxy, conf, cls in detections:
@@ -394,7 +398,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
                                 x2 = int(x2 * scale_x) + x_start
                                 y2 = int(y2 * scale_y) + y_start
 
-                                detections_for_frame.append((x1, y1, x2, y2, confidence))
+                                new_detections.append((x1, y1, x2, y2, confidence))
                                 boat_in_current_frame = True
 
                                 # --- LOGGING ---
@@ -402,51 +406,55 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
                                 if frame_counter % LOG_FRAME_THROTTLE == 0:
                                     logger.info(f"Boat detected in frame {frame_counter} with conf {confidence:.2f}")
 
+                    # replace detections only on inference frame
+                    detections_for_frame = new_detections
+
+                # --- Check for detections every frame (reuse if needed) ---
+                boat_in_current_frame = False
+                if detections_for_frame:     # 👈 here
+                    boat_in_current_frame = True
+
                 # -- WRITE VIDEO ---
                 if boat_in_current_frame:
-                    # Flush pre-buffer
+                    # --- PRE-FRAMES ---
                     while pre_detection_buffer:
                         buf_id, buf_frame, buf_ts = pre_detection_buffer.popleft()
-                        if buf_id > last_written_id:
-                            label = f" PRE {buf_ts:%Y-%m-%d %H:%M:%S}"
-                            text_rectangle(buf_frame, label, origin)
-                            video_writer.write(buf_frame)
-                            last_written_id = buf_id
-                            logger.debug(
-                                f"PRE FRAME @ {buf_ts:%H:%M:%S} "
-                                f"(pre_detection_buffer size={len(pre_detection_buffer)})"
-                            )
-
-                    # Write current frame (with detection)
-                    if frame_counter > last_written_id:
-                        # Draw all detections for this frame
-                        for (x1, y1, x2, y2, confidence) in detections_for_frame:
-                            cv2.rectangle(frame, (x1, y1), (x2, y2), colour, thickness)
-                            cv2.putText(frame, f"{confidence:.2f}", (x1, y1 - 10),
-                                        font, 0.7, (0, 255, 0), 2)
-
-                        # Timestamp (always added last so it stays visible)
-                        label = capture_timestamp.strftime("%Y-%m-%d %H:%M:%S")
-                        text_rectangle(frame, label, origin)
-
-                        video_writer.write(frame)
-                        last_written_id = frame_counter
+                        label = f" PRE {buf_ts:%Y-%m-%d %H:%M:%S}"
+                        text_rectangle(buf_frame, label, origin)
+                        video_writer.write(buf_frame)
+                        last_written_id = buf_id
                         logger.debug(
-                            f"Current FRAME @ {capture_timestamp:%H:%M:%S} "
-                            f"(framecounter={frame_counter})"
+                            f"PRE FRAME @ {buf_ts:%H:%M:%S} "
+                            f"(pre_detection_buffer size={len(pre_detection_buffer)})"
                         )
+                    # --- CURRENT FRAME ---
+                    for (x1, y1, x2, y2, confidence) in detections_for_frame:
+                        # Draw all detections for this frame
+                        cv2.rectangle(frame, (x1, y1), (x2, y2), colour, thickness)
+                        cv2.putText(frame, f"{confidence:.2f}", (x1, y1 - 10),
+                                    font, 0.7, (0, 255, 0), 2)
+
+                    # Timestamp (always added last so it stays visible)
+                    label = capture_timestamp.strftime("%Y-%m-%d %H:%M:%S")
+                    text_rectangle(frame, label, origin)
+
+                    video_writer.write(frame)
+                    last_written_id = frame_counter
+                    logger.debug(
+                        f"Current FRAME @ {capture_timestamp:%H:%M:%S} "
+                        f"(framecounter={frame_counter})"
+                    )
 
                     # Reset post-detection counter
                     number_of_post_frames = int(max_post_detection_duration * fpsw)
 
+                # --- POST-FRAMES ---
                 elif number_of_post_frames > 0:
-                    # Write post frames
-                    if frame_counter > last_written_id:
-                        label = f"POST {capture_timestamp:%Y-%m-%d %H:%M:%S}"
-                        text_rectangle(frame, label, origin)
-                        video_writer.write(frame)
-                        last_written_id = frame_counter
-                        number_of_post_frames -= 1
+                    label = f"POST {capture_timestamp:%Y-%m-%d %H:%M:%S}"
+                    text_rectangle(frame, label, origin)
+                    video_writer.write(frame)
+                    last_written_id = frame_counter
+                    number_of_post_frames -= 1
                     logger.debug(
                         f"FRAME: post-detection written @ {capture_timestamp:%H:%M:%S} "
                         f"(countdown={number_of_post_frames})"
