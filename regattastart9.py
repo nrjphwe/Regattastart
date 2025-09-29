@@ -298,8 +298,8 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
         return
 
     # CONFIGURE DETECTION LOGIC
-    pre_detection_duration = 0.1  # Seconds
-    max_post_detection_duration = 0.1  # sec
+    pre_detection_duration = 0.5  # Seconds
+    max_post_detection_duration = 0.5  # sec
 
     pre_detection_buffer = deque(maxlen=int(pre_detection_duration * fpsw))  # Adjust buffer size if needed
     number_of_post_frames = 0
@@ -324,7 +324,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
     base_fontScale = 0.9  # Default font size at 640x480
     base_thickness = 2  # Default thickness at 640x480
     scale_factor = (scale_x + scale_y) / 2  # Average scale factor
-    fontScale = max(base_fontScale * scale_factor, 0.6)  # Prevent too small text
+    # fontScale = max(base_fontScale * scale_factor, 0.6)  # Prevent too small text
     thickness = max(int(base_thickness * scale_factor), 1)  # Prevent too thin lines
     font = cv2.FONT_HERSHEY_DUPLEX
     # (x, y) → OpenCV cv2.putText expects the bottom-left corner of the text string.
@@ -332,7 +332,6 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
     # y = max(50, frame_height - 100) → vertical position
     origin = (40, int(frame.shape[0] * 0.90))  # Bottom-left corner
     colour = (0, 255, 0)  # Green text
-
 
     # MAIN LOOP IN finish_recording
     try:
