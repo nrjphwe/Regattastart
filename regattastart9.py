@@ -341,15 +341,15 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
                     logger.info("stop event set, break recording loop")
                     break
 
-                frame_counter += 1  # Increment the frame counter
                 # Capture a frame from the camera
                 frame = camera.capture_array()
                 if frame is None:
                     time.sleep(1/fps)
                     logger.error("CAPTURE: frame is None, skipping")
                     continue
-
+                frame_counter += 1  # Increment the frame counter
                 frame_height, frame_width = frame.shape[:2]
+
                 # --- TIMESTAMP ---
                 capture_timestamp = datetime.now()
                 text_rectangle(frame, capture_timestamp.strftime("%Y-%m-%d %H:%M:%S"), origin)
@@ -406,7 +406,10 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
 
                     # replace detections only on inference frame
                     detections_for_frame = new_detections
+                    last_detections_for_frame = new_detections  # cache results
                     logger.debug(f"detections_for_frame length={len(detections_for_frame)}")
+                else:
+                    frame = last_detections_for_frame  # reuse until next inference
 
                 # --- Check for detections every frame (reuse last until refreshed) ---
                 boat_in_current_frame = bool(detections_for_frame)
