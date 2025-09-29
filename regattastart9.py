@@ -398,7 +398,6 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
                                 y2 = int(y2 * scale_y) + y_start
 
                                 new_detections.append((x1, y1, x2, y2, confidence))
-                                boat_in_current_frame = True
 
                                 # --- LOGGING ---
                                 # Log every N frames to avoid flooding
@@ -407,11 +406,10 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
 
                     # replace detections only on inference frame
                     detections_for_frame = new_detections
+                    logger.debug(f"detections_for_frame length={len(detections_for_frame)}")
 
-                # --- Check for detections every frame (reuse if needed) ---
-                boat_in_current_frame = False
-                if detections_for_frame:     # 👈 here
-                    boat_in_current_frame = True
+                # --- Check for detections every frame (reuse last until refreshed) ---
+                boat_in_current_frame = bool(detections_for_frame)
 
                 # -- WRITE VIDEO ---
                 if boat_in_current_frame:
