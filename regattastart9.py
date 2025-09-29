@@ -409,7 +409,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
                     last_detections_for_frame = new_detections  # cache results
                     logger.debug(f"detections_for_frame length={len(detections_for_frame)}")
                 else:
-                    frame = last_detections_for_frame  # reuse until next inference
+                    detections_for_frame = last_detections_for_frame
 
                 # --- Check for detections every frame (reuse last until refreshed) ---
                 boat_in_current_frame = bool(detections_for_frame)
