@@ -419,7 +419,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
                     # --- PRE-FRAMES ---
                     while pre_detection_buffer:
                         buf_id, buf_frame, buf_ts = pre_detection_buffer.popleft()
-                        label = f" PRE {buf_ts:%Y-%m-%d %H:%M:%S}"
+                        label = f"{buf_ts:%Y-%m-%d %H:%M:%S} PRE"
                         text_rectangle(buf_frame, label, origin)
                         video_writer.write(buf_frame)
                         last_written_id = buf_id
@@ -450,7 +450,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
 
                 # --- POST-FRAMES ---
                 elif number_of_post_frames > 0:
-                    label = f"POST {capture_timestamp:%Y-%m-%d %H:%M:%S}"
+                    label = f"{capture_timestamp:%Y-%m-%d %H:%M:%S} POST"
                     text_rectangle(frame, label, origin)
                     video_writer.write(frame)
                     last_written_id = frame_counter
