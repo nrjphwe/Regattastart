@@ -298,7 +298,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
         return
 
     # CONFIGURE DETECTION LOGIC
-    pre_detection_duration = 0.2  # Seconds
+    pre_detection_duration = 0.1  # Seconds
     max_post_detection_duration = 0.7  # sec
 
     pre_detection_buffer = deque(maxlen=int(pre_detection_duration * fpsw))  # Adjust buffer size if needed
