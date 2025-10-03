@@ -158,7 +158,7 @@ def capture_picture(camera, photo_path, file_name, rotate=False):
 
             # Apply timestamp (reuse the same logic as in apply_timestamp)
             timestamp = time.strftime("%Y-%m-%d %X")
-            origin = (40, int(frame.shape[0] * 0.80))  # Bottom-left corner
+            origin = (40, int(frame.shape[0] * 0.85))  # Bottom-left corner
             text_colour = (255, 0, 0)  # Blue text in BGR, Blue text RGB = (0, 0, 255)
             bg_colour = (200, 200, 200)  # Gray background
             # Use text_rectangle function in common_module to draw timestamp
