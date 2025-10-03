@@ -321,16 +321,16 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
     logger.debug(f"scale_x = {scale_x}, scale_y = {scale_y}")
 
     # Base scale text size and thickness
-    base_fontScale = 0.9  # Default font size at 640x480
+    # base_fontScale = 0.9  # Default font size at 640x480
     base_thickness = 2  # Default thickness at 640x480
     scale_factor = (scale_x + scale_y) / 2  # Average scale factor
     # fontScale = max(base_fontScale * scale_factor, 0.6)  # Prevent too small text
     thickness = max(int(base_thickness * scale_factor), 1)  # Prevent too thin lines
     font = cv2.FONT_HERSHEY_DUPLEX
     # (x, y) → OpenCV cv2.putText expects the bottom-left corner of the text string.
-    # x = 50 → fixed horizontal offset, i.e. always 50 pixels from the left edge of the frame
+    # x = 40 → fixed horizontal offset, i.e. always 40 pixels from the left edge of the frame
     # y = max(50, frame_height - 100) → vertical position
-    origin = (40, int(frame.shape[0] * 0.90))  # Bottom-left corner
+    origin = (40, int(frame.shape[0] * 0.85))  # Bottom-left corner
     colour = (0, 255, 0)  # Green text
 
     # MAIN LOOP IN finish_recording
