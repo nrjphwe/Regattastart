@@ -305,6 +305,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
     number_of_post_frames = 0
     last_written_id = -1   # ensures frames never go backwards in time
     detections_for_frame = []
+    last_detections_for_frame = []  # start empty
 
     # Optional: record *all* frames for testing
     write_all_frames = False
@@ -333,7 +334,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
     origin = (40, int(frame.shape[0] * 0.85))  # Bottom-left corner
     colour = (0, 255, 0)  # Green text
 
-    # MAIN LOOP IN 
+    # MAIN LOOP IN
     try:
         last_frame_time = datetime.now()  # watchdog reference
         while True:
@@ -430,7 +431,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
                     detections_for_frame = last_detections_for_frame
 
                 # --- Check for detections every frame (reuse last until refreshed) ---
-                boat_in_current_frame = bool(detections_for_frame)
+                boat_in_current_frame = bool(last_detections_for_frame)
 
                 # -- WRITE VIDEO ---
                 if boat_in_current_frame:
@@ -449,7 +450,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
                             f"(pre_detection_buffer size={len(pre_detection_buffer)})"
                         )
                     # --- CURRENT FRAME ---
-                    for (x1, y1, x2, y2, confidence) in detections_for_frame:
+                    for (x1, y1, x2, y2, confidence) in last_detections_for_frame:
                         # Draw all detections for this frame
                         cv2.rectangle(frame, (x1, y1), (x2, y2), colour, thickness)
                         cv2.putText(frame, f"{confidence:.2f}", (x1, y1 - 10),
