@@ -48,7 +48,7 @@ warnings.filterwarnings(
     module=".*yolov5_master.models.common*"
 )
 # Parameter data
-fps = 15  # frames per second for video1
+fps = 10  # frames per second for video1
 signal_dur = 0.9  # seconds
 log_path = '/var/www/html/'
 video_path = '/var/www/html/images/'
