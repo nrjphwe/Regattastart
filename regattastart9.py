@@ -377,7 +377,9 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
                 # Always-record mode (for testing smoothness & timing)
                 if write_all_frames:
                     if frame_counter > last_written_id:
-                        video_writer.write(frame)
+                        if not safe_write(video_writer, frame):
+                            logger.error("Breaking loop due to video writer stall")
+                            break
                         last_written_id = frame_counter
                     continue
 
@@ -437,7 +439,10 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
                         buf_id, buf_frame, buf_ts = pre_detection_buffer.popleft()
                         label = f"{buf_ts:%Y-%m-%d %H:%M:%S} PRE"
                         text_rectangle(buf_frame, label, origin)
-                        video_writer.write(buf_frame)
+                        if not safe_write(video_writer, buf_frame):
+                            logger.error("Breaking loop due to video writer stall")
+                            break
+                        # video_writer.write(buf_frame)
                         last_written_id = buf_id
                         logger.debug(
                             f"PRE FRAME @ {buf_ts:%H:%M:%S} "
@@ -454,7 +459,10 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
                     label = capture_timestamp.strftime("%Y-%m-%d %H:%M:%S")
                     text_rectangle(frame, label, origin)
 
-                    video_writer.write(frame)
+                    if not safe_write(video_writer, frame):
+                        logger.error("Breaking loop due to video writer stall")
+                        break
+                    # video_writer.write(frame)
                     last_written_id = frame_counter
                     logger.debug(
                         f"Current FRAME @ {capture_timestamp:%H:%M:%S} "
@@ -468,7 +476,10 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
                 elif number_of_post_frames > 0:
                     label = f"{capture_timestamp:%Y-%m-%d %H:%M:%S} POST"
                     text_rectangle(frame, label, origin)
-                    video_writer.write(frame)
+                    if not safe_write(video_writer, frame):
+                        logger.error("Breaking loop due to video writer stall")
+                        break
+                    # video_writer.write(frame)
                     last_written_id = frame_counter
                     number_of_post_frames -= 1
                     logger.debug(
@@ -515,6 +526,26 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
             logger.info(f"Video1 remuxed to MP4: {video1_mp4_file}")
         except Exception as e:
             logger.error(f"Error during remux: {e}")
+
+
+def safe_write(video_writer, frame, timeout=2.0):
+    """Write a frame with timeout protection."""
+    result = [False]
+
+    def _write():
+        try:
+            video_writer.write(frame)
+            result[0] = True
+        except Exception as e:
+            logger.error(f"Video write failed: {e}")
+
+    t = threading.Thread(target=_write, daemon=True)
+    t.start()
+    t.join(timeout)
+    if t.is_alive():
+        logger.error("Video write timeout — encoder likely stalled")
+        return False
+    return result[0]
 
 
 def main():
