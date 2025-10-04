@@ -333,20 +333,36 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
     origin = (40, int(frame.shape[0] * 0.85))  # Bottom-left corner
     colour = (0, 255, 0)  # Green text
 
-    # MAIN LOOP IN finish_recording
+    # MAIN LOOP IN 
     try:
+        last_frame_time = datetime.now()  # watchdog reference
         while True:
             try:
                 if stop_event.is_set():
                     logger.info("stop event set, break recording loop")
                     break
 
+                # --- WATCHDOG CHECK ---
+                if (datetime.now() - last_frame_time).total_seconds() > 5:
+                    logger.error("Watchdog: no new frame for >5s, breaking loop")
+                    break
+
                 # Capture a frame from the camera
-                frame = camera.capture_array()
-                if frame is None:
-                    time.sleep(1/fps)
-                    logger.error("CAPTURE: frame is None, skipping")
+                try:
+                    frame = camera.capture_array()
+                except Exception as e:
+                    logger.error(f"Camera capture failed: {e}")
+                    time.sleep(1 / fps)
                     continue
+
+                if frame is None or not isinstance(frame, np.ndarray):
+                    logger.error("CAPTURE: invalid frame, skipping")
+                    time.sleep(1 / fps)
+                    continue
+
+                # Success → update watchdog timer
+                last_frame_time = datetime.now()
+
                 frame_counter += 1  # Increment the frame counter
                 frame_height, frame_width = frame.shape[:2]
 
