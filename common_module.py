@@ -24,7 +24,7 @@ THICKNESS = 2  # Thickness of the text annotations
 sensor_size = 1640, 1232  # sensors aspect ratio
 
 # text_colour = (0, 0, 255)  # Blue text in RGB
-# text_colour = (255, 0, 0)  # Blue text in BGR
+text_colour = (255, 0, 0)  # Blue text in BGR
 # bg_colour = (200, 200, 200)  # Light grey background
 
 # GPIO pin numbers for the relay and lamps
@@ -158,18 +158,16 @@ def capture_picture(camera, photo_path, file_name, rotate=False):
 
             # Apply timestamp (reuse the same logic as in apply_timestamp)
             timestamp = time.strftime("%Y-%m-%d %X")
-            origin = (40, int(frame.shape[0] * 0.80))  # Bottom-left corner
+            origin = (40, int(frame.shape[0] * 0.85))  # Bottom-left corner
             text_colour = (255, 0, 0)  # Blue text in BGR, Blue text RGB = (0, 0, 255)
             bg_colour = (200, 200, 200)  # Gray background
             # Use text_rectangle function in common_module to draw timestamp
             text_rectangle(frame, timestamp, origin, text_colour, bg_colour)
             if rotate:
                 frame = cv2.rotate(frame, cv2.ROTATE_180)
-
             resized_for_display = letterbox(frame, (1280, 960))
             cv2.imwrite(os.path.join(photo_path, file_name), resized_for_display)
             logger.debug(f"Saved resized_for_display size: {resized_for_display.shape}")
-            # cv2.imwrite(os.path.join(photo_path, file_name), frame)
         request.release()
         logger.info(f'Captured picture: {file_name}')
     except Exception as e:
@@ -183,7 +181,6 @@ def text_rectangle(frame, text, origin, text_colour=(255, 0, 0), bg_colour=(200,
     OpenCV uses BGR by default, ensure colours are set in BGR format
     """
     try:
-
         # Calculate text size
         text_size = cv2.getTextSize(text, font, font_scale, thickness)[0]
         text_width, text_height = text_size
@@ -212,7 +209,7 @@ def apply_timestamp(request):
                 logger.error("apply_timestamp: Frame is None or empty!")
                 return
             # Define text position
-            origin = (40, int(frame.shape[0] * 0.80))  # Bottom-left corner
+            origin = (40, int(frame.shape[0] * 0.85))  # Bottom-left corner
             text_colour = (0, 0, 255)  # Red text in BGR
             text_rectangle(frame, timestamp, origin, text_colour)
     except Exception as e:
@@ -286,14 +283,16 @@ class FFmpegVideoWriter:
         width, height = self.frame_size
         codec = "h264_v4l2m2m" if hw else "libx264"
         ffmpeg_cmd = [
-            "ffmpeg", "-y", "-f", "rawvideo", "-pix_fmt", "bgr24",
-            "-s", f"{width}x{height}", "-r", str(self.fps), "-i", "-", "-an"
+            "ffmpeg", "-y", "-fflags", "+genpts", 
+            "-f", "rawvideo", "-pix_fmt", "bgr24",
+            "-s", f"{width}x{height}", "-r", str(self.fps), 
+            "-i", "-", "-an"
         ]
 
         if hw:
-            ffmpeg_cmd += ["-vf", "format=nv12", "-c:v", codec, "-b:v", "4M"]
+            ffmpeg_cmd += ["-vf", "format=nv12", "-c:v", codec, "-b:v", "2M"]
         else:
-            ffmpeg_cmd += ["-c:v", codec, "-preset", "fast", "-crf", "23"]
+            ffmpeg_cmd += ["-c:v", codec, "-preset", "ultrafast", "-tune", "zerolatency", "-crf", "28"]
 
         ffmpeg_cmd += ["-pix_fmt", "yuv420p", "-movflags", "+faststart", self.filename]
 
@@ -302,7 +301,7 @@ class FFmpegVideoWriter:
                 ffmpeg_cmd,
                 stdin=subprocess.PIPE,
                 stdout=subprocess.DEVNULL,
-                stderr=subprocess.PIPE
+                stderr=subprocess.PIPE,
             )
             return True
         except Exception as e:
@@ -321,6 +320,7 @@ class FFmpegVideoWriter:
 
         try:
             self.proc.stdin.write(frame.tobytes())
+            self.proc.stdin.flush()
         except Exception as e:
             err = self.proc.stderr.read().decode(errors="ignore") if self.proc.stderr else ""
             if self.logger:

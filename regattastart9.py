@@ -48,14 +48,15 @@ warnings.filterwarnings(
     module=".*yolov5_master.models.common*"
 )
 # Parameter data
-fps = 15  # frames per second for video1
+fps = 10  # frames per second for video1
 signal_dur = 0.9  # seconds
 log_path = '/var/www/html/'
 video_path = '/var/www/html/images/'
 photo_path = '/var/www/html/images/'
 crop_width, crop_height = 1440, 1080  # Crop size for inference
-listening = True  # Define the listening variable
-recording_stopped = False  # Global variable
+stop_event = threading.Event()
+listen_thread = None   # placeholder for the listener thread
+wd_thread = None
 
 cpu_model = get_cpu_model()
 logger.info("="*60)
@@ -70,15 +71,18 @@ with open('/var/www/html/status.txt', 'w') as status_file:
 
 
 def stop_recording():
-    global listening, recording_stopped
+    global listen_thread
     logger.info("stop_recording called. Stopping recording early.")
-    recording_stopped = True
-    listening = False  # exit listen_for_messages loop
-    logger.debug(f"recording_stopped = {recording_stopped}, listening = {listening}")
+    stop_event.set()
+
+    # Wait for the listening thread to exit
+    if listen_thread is not None and listen_thread.is_alive():
+        logger.info("Waiting for listen_thread to exit...")
+        listen_thread.join(timeout=1.0)
+        logger.info("listen_thread has exited.")
 
 
 def listen_for_messages(stop_event, timeout=0.1):
-    global listening  # Use global flag
     pipe_path = '/var/www/html/tmp/stop_recording_pipe'
     logger.info("listen_for_messages: starting")
     logger.info(f"Pipe path = {pipe_path}")
@@ -103,8 +107,8 @@ def listen_for_messages(stop_event, timeout=0.1):
                     message = fifo.readline().strip()
                     logger.debug(f"Message received from pipe: {message}")
                     if message == 'stop_recording':
-                        stop_recording()
-                        logger.info("Message == stop_recording")
+                        logger.info("Message == stop_recording → setting stop_event")
+                        stop_event.set()   # unified stop signal
                         break  # Exit the loop when stop_recording received
         except Exception as e:
             logger.error(f"Error in listen_for_messages: {e}", exc_info=True)
@@ -174,7 +178,6 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
     # config
     DETECTION_CONF_THRESHOLD = 0.5
     LOG_FRAME_THROTTLE = 10  # log every N frames when boat found
-    global recording_stopped
     confidence = 0.0  # Initial value
     class_name = ""  # Initial value
     frame_counter = 0  # Initialize a frame counter
@@ -251,7 +254,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
     fpsw = fps
     logger.debug(f"FPS set to {fpsw}, proceeding to load YOLOv5 model.")
 
-    # Load the pre-trained YOLOv5 model (e.g., yolov5s)
+    # LOAD YOLOv5 MODEL
     try:
         result_queue = queue.Queue()  # Create a queue to hold the result
         load_thread = threading.Thread(target=load_model_with_timeout, args=(result_queue,))
@@ -277,13 +280,9 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
         load_thread.join()  # Ensure the thread is cleaned up
         return
 
-    # Continue with the rest of the `finish_recording` logic
-    logger.debug("After loading YOLOv5 model.")
-
     # Filter for 'boat' class (COCO ID for 'boat' is 8)
     model.classes = [8]
 
-    # SETUP VIDEO WRITER
     # SETUP VIDEO WRITER
     video1_h264_file = os.path.join(video_path, "video1.h264")
     video_writer, writer_type = get_h264_writer(
@@ -298,17 +297,18 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
         logger.error("Failed to initialize H.264 writer, aborting recording")
         return
 
-    # Setup pre-detection parameters
-    pre_detection_duration = 0  # Seconds
-    pre_detection_buffer = deque(maxlen=int(pre_detection_duration*fpsw))  # Adjust buffer size if needed
-    processed_timestamps = set()  # Use a set for fast lookups
+    # CONFIGURE DETECTION LOGIC
+    pre_detection_duration = 0.5  # Seconds
+    max_post_detection_duration = 1  # sec
 
-    # setup Post detection
-    max_post_detection_duration = 0  # sec
-    logger.info(f"max_duration,{max_duration}, FPS={fpsw},"
-                f"pre_detection_duration = {pre_detection_duration}, "
-                f"max_post_detection_duration={max_post_detection_duration}")
-    number_of_post_frames = int(fpsw * max_post_detection_duration)  # Initial setting, to record after detection
+    pre_detection_buffer = deque(maxlen=int(pre_detection_duration * fpsw))  # Adjust buffer size if needed
+    number_of_post_frames = 0
+    last_written_id = -1   # ensures frames never go backwards in time
+    detections_for_frame = []
+    last_detections_for_frame = []  # start empty
+
+    # Optional: record *all* frames for testing
+    write_all_frames = False
 
     # Compute scaling factors
     inference_width, inference_height = 640, 480  # Since you resize before inference
@@ -322,152 +322,201 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
     logger.debug(f"scale_x = {scale_x}, scale_y = {scale_y}")
 
     # Base scale text size and thickness
-    base_fontScale = 0.9  # Default font size at 640x480
+    # base_fontScale = 0.9  # Default font size at 640x480
     base_thickness = 2  # Default thickness at 640x480
     scale_factor = (scale_x + scale_y) / 2  # Average scale factor
-    fontScale = max(base_fontScale * scale_factor, 0.6)  # Prevent too small text
+    # fontScale = max(base_fontScale * scale_factor, 0.6)  # Prevent too small text
     thickness = max(int(base_thickness * scale_factor), 1)  # Prevent too thin lines
     font = cv2.FONT_HERSHEY_DUPLEX
     # (x, y) → OpenCV cv2.putText expects the bottom-left corner of the text string.
-    # x = 50 → fixed horizontal offset, i.e. always 50 pixels from the left edge of the frame
+    # x = 40 → fixed horizontal offset, i.e. always 40 pixels from the left edge of the frame
     # y = max(50, frame_height - 100) → vertical position
-    origin = (40, int(frame.shape[0] * 0.90))  # Bottom-left corner
+    origin = (40, int(frame.shape[0] * 0.85))  # Bottom-left corner
     colour = (0, 255, 0)  # Green text
-    last_written_id = -1   # keep track of last written frame
 
-    # MAIN LOOP
-    while not recording_stopped:
-        frame_counter += 1  # Increment the frame counter
-        # Capture a frame from the camera
-        try:
-            frame = camera.capture_array()
-            if frame is None:
-                logger.error("CAPTURE: frame is None, skipping")
-                continue
-            capture_timestamp = datetime.now()
-        except Exception as e:
-            logger.error(f"Failed to capture frame: {e}")
-            continue  # Skips this iteration but keeps running the loop
+    # MAIN LOOP IN
+    try:
+        last_frame_time = datetime.now()  # watchdog reference
+        while True:
+            frame_written = False
+            try:
+                if stop_event.is_set():
+                    logger.info("stop event set, break recording loop")
+                    break
 
-        # --- PRE-DETECTION BUFFER ---
-        if pre_detection_duration != 0 and capture_timestamp not in processed_timestamps:
-            # Add frame to buffer and record its timestamp
-            pre_detection_buffer.append((frame.copy(), capture_timestamp))
-            processed_timestamps.add(capture_timestamp)
+                # --- WATCHDOG CHECK ---
+                if (datetime.now() - last_frame_time).total_seconds() > 5:
+                    logger.error("Watchdog: no new frame for >5s, breaking loop")
+                    break
 
-            # Trim processed_timestamps only when necessary
-            if len(processed_timestamps) > pre_detection_buffer.maxlen:
-                # Keep only the most recent N entries
-                processed_timestamps = set(
-                    list(processed_timestamps)[-pre_detection_buffer.maxlen:]
-                )
-                logger.debug(f"Trimmed processed_timestamps to {len(processed_timestamps)} entries")
-            if frame_counter % 20 == 0:
-                cleanup_processed_timestamps(processed_timestamps)
+                # Capture a frame from the camera
+                try:
+                    frame = camera.capture_array()
+                except Exception as e:
+                    logger.error(f"Camera capture failed: {e}")
+                    time.sleep(1 / fps)
+                    continue
 
-        boat_in_current_frame = False   # Reset per frame
-        # --- INFERENCE ON EVERY 5TH FRAME ---
-        if frame_counter % 5 == 0:
-            # Crop region of interest
-            cropped_frame = frame[y_start:y_start + crop_height, x_start:x_start + crop_width]
-            resized_frame = cv2.resize(cropped_frame, (inference_width, inference_height))
-            input_tensor = prepare_input(resized_frame, device='cpu')
+                if frame is None or not isinstance(frame, np.ndarray):
+                    logger.error("CAPTURE: invalid frame, skipping")
+                    time.sleep(1 / fps)
+                    continue
 
-            # Run YOLOv5 inference
-            results = model(input_tensor)  # DetectMultiBackend returns list-of-tensors
-            detections = non_max_suppression(results, conf_thres=0.25, iou_thres=0.45)[0]
+                # Success → update watchdog timer
+                last_frame_time = datetime.now()
 
-            if detections is not None and len(detections):
-                for *xyxy, conf, cls in detections:
-                    confidence = float(conf)
-                    class_name = model.names[int(cls)]
-                    if confidence > DETECTION_CONF_THRESHOLD and class_name == 'boat':
-                        boat_in_current_frame = True
-                        x1, y1, x2, y2 = map(int, xyxy)
-                        # Scale coordinates back to original frame
-                        x1 = int(x1 * scale_x) + x_start
-                        y1 = int(y1 * scale_y) + y_start
-                        x2 = int(x2 * scale_x) + x_start
-                        y2 = int(y2 * scale_y) + y_start
+                frame_counter += 1  # Increment the frame counter
+                frame_height, frame_width = frame.shape[:2]
 
-                        # Draw bounding box
-                        cv2.rectangle(frame, (x1, y1), (x2, y2), colour, thickness)
-                        # Draw confidence
-                        cv2.putText(frame, f"{confidence:.2f}", (x1, y1 - 10), 
-                                    font, 0.7, (0, 255, 0), 2)
-                        # Draw timestamp below box
-                        y_text = min(y2 + 50, int(frame_height * 0.92))  # clamp so text does not go outside
-                        detected_timestamp = capture_timestamp.strftime("%H:%M:%S")
-                        cv2.putText(frame, detected_timestamp, (x1, y_text),
-                                    font, fontScale, colour, thickness)
+                # --- TIMESTAMP ---
+                capture_timestamp = datetime.now()
+                text_rectangle(frame, capture_timestamp.strftime("%Y-%m-%d %H:%M:%S"), origin)
 
-                        # --- LOGGING ---
-                        # Log every N frames to avoid flooding
-                        LOG_FRAME_THROTTLE = 10
-                        if boat_in_current_frame and (frame_counter % LOG_FRAME_THROTTLE == 0):
-                            logger.info(f"Boat detected in frame {frame_counter} with conf {confidence:.2f}")
+                # Initialize list to store detections for this frame
+                detections_for_frame = []
+                boat_in_current_frame = False
 
-        # -- WRITE VIDEO ---
-        if boat_in_current_frame:
-            # Flush pre-detection buffer
-            while pre_detection_buffer:
-                buf_frame, buf_ts = pre_detection_buffer.popleft()
-                if buf_frame is not None:
-                    if buf_frame.shape[1] != camera_frame_size[0] or buf_frame.shape[0] != camera_frame_size[1]:
-                        buf_frame_full = cv2.resize(buf_frame, camera_frame_size)
-                    else:
-                        buf_frame_full = buf_frame
-                    text_rectangle(buf_frame_full, f"PRE {buf_ts:%H:%M:%S}", origin)
-
-                    # write only if newer than last_written_id
+                # Always-record mode (for testing smoothness & timing)
+                if write_all_frames:
                     if frame_counter > last_written_id:
-                        video_writer.write(buf_frame_full)
+                        if not safe_write(video_writer, frame):
+                            logger.error("Breaking loop due to video writer stall")
+                            break
                         last_written_id = frame_counter
+                    continue
 
-            pre_detection_buffer.clear()
+                # Store in pre-detection buffer
+                if pre_detection_duration > 0:
+                    pre_detection_buffer.append((frame_counter, frame.copy(), capture_timestamp))
 
-            # Overlay timestamp on the ORIGINAL full frame (not the cropped inference frame)
-            if frame is not None:
-                if frame.shape[1] != camera_frame_size[0] or frame.shape[0] != camera_frame_size[1]:
-                    frame_full = cv2.resize(frame, camera_frame_size)
+                boat_in_current_frame = False
+
+                # --- INFERENCE ON EVERY 4TH FRAME ---
+                # Crop region of interest
+                cropped_frame = frame[y_start:y_start + crop_height, x_start:x_start + crop_width]
+                resized_frame = cv2.resize(cropped_frame, (inference_width, inference_height))
+                input_tensor = prepare_input(resized_frame, device='cpu')
+
+                if frame_counter % 4 == 0:
+                    # Run YOLOv5 inference
+                    results = model(input_tensor)  # DetectMultiBackend returns list-of-tensors
+                    detections = non_max_suppression(results, conf_thres=0.25, iou_thres=0.45)[0]
+
+                    new_detections = []  # temporary holder for this inference step
+
+                    if detections is not None and len(detections):
+                        for *xyxy, conf, cls in detections:
+                            confidence = float(conf)
+                            class_name = model.names[int(cls)]
+                            if confidence > DETECTION_CONF_THRESHOLD and class_name == 'boat':
+                                boat_in_current_frame = True
+                                x1, y1, x2, y2 = map(int, xyxy)
+                                # Scale coordinates back to original frame
+                                x1 = int(x1 * scale_x) + x_start
+                                y1 = int(y1 * scale_y) + y_start
+                                x2 = int(x2 * scale_x) + x_start
+                                y2 = int(y2 * scale_y) + y_start
+
+                                new_detections.append((x1, y1, x2, y2, confidence))
+
+                                # --- LOGGING ---
+                                # Log every N frames to avoid flooding
+                                if frame_counter % LOG_FRAME_THROTTLE == 0:
+                                    logger.info(f"Boat detected in frame {frame_counter} with conf {confidence:.2f}")
+
+                    # replace detections only on inference frame
+                    detections_for_frame = new_detections
+                    last_detections_for_frame = new_detections  # cache results
+                    logger.debug(f"detections_for_frame length={len(detections_for_frame)}")
                 else:
-                    frame_full = frame
-                text_rectangle(frame_full, capture_timestamp.strftime("%Y-%m-%d, %H:%M:%S"), origin)
+                    detections_for_frame = last_detections_for_frame
+                    logger.debug(f"Reused detections_for_frame length={len(detections_for_frame)}")
 
-                # write only if newer than last_written_id
-                if frame_counter > last_written_id:
-                    video_writer.write(frame_full)
-                    last_written_id = frame_counter
-                    logger.debug(f"FRAME: detection written @ {capture_timestamp.strftime('%H:%M:%S')} with writer_frame_size: {camera_frame_size}")
+                # --- Check for detections every frame (reuse last until refreshed) ---
+                boat_in_current_frame = bool(last_detections_for_frame)
 
-            # Reset post-detection countdown
-            number_of_post_frames = int(max_post_detection_duration * fpsw)
-
-        elif number_of_post_frames > 0:
-            if frame is not None:
-                if frame.shape[1] != camera_frame_size[0] or frame.shape[0] != camera_frame_size[1]:
-                    frame_full = cv2.resize(frame, camera_frame_size)
+                # Detect transitions: from detection → post phase
+                if boat_in_current_frame:
+                    # Active detection → reset post-frame counter
+                    if number_of_post_frames <= 0:
+                        number_of_post_frames = int(max_post_detection_duration * fpsw)
                 else:
-                    frame_full = frame
-                text_rectangle(frame_full, f"POST {capture_timestamp.strftime('%H:%M:%S')}", origin)
+                    # No detection → count down only if previously detecting
+                    if number_of_post_frames > 0:
+                        number_of_post_frames -= 1
 
-                # write only if newer than last_written_id
-                if frame_counter > last_written_id:
-                    video_writer.write(frame_full)
+                frame_written = False
+                # --- DETECTION FRAME ---
+                if boat_in_current_frame and not frame_written:
+                    # --- PRE-FRAMES ---
+                    while pre_detection_buffer:
+                        buf_id, buf_frame, buf_ts = pre_detection_buffer.popleft()
+                        label = f"{buf_ts:%Y-%m-%d %H:%M:%S} PRE"
+                        text_rectangle(buf_frame, label, origin)
+                        if not safe_write(video_writer, buf_frame):
+                            logger.error("Breaking loop due to video writer stall")
+                            break
+                        last_written_id = buf_id
+                        logger.debug(f"PRE FRAME @ {buf_ts:%H:%M:%S}")
+                        frame_written = True
+
+                    # --- CURRENT FRAME ---
+                    for (x1, y1, x2, y2, confidence) in last_detections_for_frame:
+                        cv2.rectangle(frame, (x1, y1), (x2, y2), colour, thickness)
+                        cv2.putText(frame, f"{confidence:.2f}", (x1, y1 - 10),
+                                    font, 0.7, (0, 255, 0), 2)
+
+                    label = capture_timestamp.strftime("%Y-%m-%d %H:%M:%S")
+                    text_rectangle(frame, label, origin)
+                    if not safe_write(video_writer, frame):
+                        logger.error("Breaking loop due to video writer stall")
+                        break
                     last_written_id = frame_counter
+                    frame_written = True
+                    logger.debug(f"Current FRAME @ {capture_timestamp:%H:%M:%S} (frame={frame_counter})")
+
+                # --- POST-DETECTION FRAMES ---
+                elif number_of_post_frames > 0 and not frame_written:
+                    label = f"{capture_timestamp:%Y-%m-%d %H:%M:%S} POST"
+                    text_rectangle(frame, label, origin)
+                    if not safe_write(video_writer, frame):
+                        logger.error("Breaking loop due to video writer stall")
+                        break
+                    last_written_id = frame_counter
+                    frame_written = True
                     number_of_post_frames -= 1
-                    logger.debug(f"FRAME: post-detection written @ {capture_timestamp.strftime('%H:%M:%S')} (countdown={number_of_post_frames})")
+                    logger.debug(
+                        f"FRAME: post-detection written @ {capture_timestamp:%H:%M:%S} "
+                        f"(countdown={number_of_post_frames})"
+                    )
 
-        # Check if recording should stop
-        time_now = dt.datetime.now()
-        elapsed_time = (time_now - start_time_dt).total_seconds()
-        if elapsed_time >= max_duration:
-            logger.debug(f"STOP: max duration reached ({elapsed_time:.1f}s)")
-            recording_stopped = True
+                # --- NO WRITING OTHERWISE ---
+                if not frame_written:
+                    logger.debug(f"Frame {frame_counter} skipped (no detection, no post frames active)")
 
-    # ---ENSURE RELEASE OUTSIDE LOOP ---
-    if recording_stopped:
+            except Exception as e:
+                logger.error(f"Unhandled error in recording loop: {e}", exc_info=True)
+                continue  # skip this iteration
+
+            # Stop condition
+            elapsed_time = (datetime.now() - start_time_dt).total_seconds()
+
+            if stop_event.is_set() or elapsed_time >= max_duration:
+                logger.debug(f"STOP: stop_event set or max duration reached ({elapsed_time:.1f}s)")
+                break
+    finally:
+        # ---ENSURE RELEASE OUTSIDE LOOP ---
         logger.info('Video1 recording stopped')
+        # Stop camera cleanly
+        try:
+            if camera is not None:
+                logger.info("Stopping camera after recording loop")
+                camera.stop()
+                camera = None
+        except Exception as e:
+            logger.error(f"Error stopping camera: {e}")
+
+        # Release video writer
         try:
             if video_writer is not None:
                 video_writer.release()
@@ -475,25 +524,40 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
                 logger.info(f"Video1 H.264 writer released: {video1_h264_file}")
         except Exception as e:
             logger.error(f"Error releasing video_writer: {e}")
-    # Remux
-    video1_mp4_file = os.path.join(video_path, "video1.mp4")
-    process_video(video_path, "video1.h264", "video1.mp4", mode="remux")
-    logger.info(f"Video1 remuxed to MP4: {video1_mp4_file}")
-    return
+
+        # Remux H264 → MP4
+        video1_mp4_file = os.path.join(video_path, "video1.mp4")
+        try:
+            logger.info("Calling process_video for %s → %s", video1_h264_file, video1_mp4_file)
+            process_video(video_path, "video1.h264", "video1.mp4", mode="remux")
+            logger.info(f"Video1 remuxed to MP4: {video1_mp4_file}")
+        except Exception as e:
+            logger.error(f"Error during remux: {e}")
 
 
-def stop_listen_thread():
-    global listening
-    listening = False
-    logger.info("stop_listening thread called: listening set to False")
+def safe_write(video_writer, frame, timeout=2.0):
+    """Write a frame with timeout protection."""
+    result = [False]
+
+    def _write():
+        try:
+            video_writer.write(frame)
+            result[0] = True
+        except Exception as e:
+            logger.error(f"Video write failed: {e}")
+
+    t = threading.Thread(target=_write, daemon=True)
+    t.start()
+    t.join(timeout)
+    if t.is_alive():
+        logger.error("Video write timeout — encoder likely stalled")
+        return False
+    return result[0]
 
 
 def main():
-    stop_event = threading.Event()
-    global listening  # Declare listening as global
     camera = None
-    listen_thread = None  # Initialize listen_thread variable
-
+    global stop_event, listen_thread, wd_thread
     try:
         # --- Camera setup ---
         camera = setup_camera()  # choose resolution internally
@@ -514,9 +578,15 @@ def main():
         start_time_str = str(form_data["start_time"])  # this is the first start
         dur_between_starts = int(form_data["dur_between_starts"])
 
-        # Parse into datetime for today's date
-        start_time_dt = dt.datetime.combine(dt.date.today(),
-                                            dt.datetime.strptime(start_time_str, "%H:%M").time())
+        today = dt.date.today()
+        start_time_today = dt.datetime.combine(today, dt.datetime.strptime(start_time_str, "%H:%M").time())
+
+        # If start_time has already passed today, schedule for tomorrow
+        if start_time_today < dt.datetime.now():
+            start_time_dt = start_time_today + dt.timedelta(days=1)
+        else:
+            start_time_dt = start_time_today
+
         t5min_warning = start_time_dt - dt.timedelta(minutes=5)  # time to start start-machine.
         # wd = dt.datetime.today().strftime("%A")
 
@@ -531,8 +601,15 @@ def main():
             time.sleep(1)
 
         # --- Start listening thread ---
+        global listen_thread
         listen_thread = threading.Thread(target=listen_for_messages, args=(stop_event,), daemon=True)
         listen_thread.start()
+
+        # --- Start watchdog ---
+        # stop_event = threading.Event()
+        # wd_thread = start_watchdog_thread(heartbeat_file="/tmp/regattastart.heartbeat", interval=5)
+        # wd_thread = start_watchdog(timeout=15)  # adjust timeout as needed
+        # logger.info("Watchdog thread started")
 
         # --- Start video0 recording & start sequences ---
         start_video_recording(camera, video_path, "video0.h264", resolution=(1640,1232), bitrate=4000000)
@@ -542,10 +619,12 @@ def main():
         while dt.datetime.now() < end_time:
             time.sleep(0.2)
 
+        # VIDEO0 RECORDING STOP & PROCESS
         stop_video_recording(camera)
-        process_video(video_path, "video0.h264", "video0.mp4", frame_rate=30, resolution=(1640,1232))
+        # process_video(video_path, "video0.h264", "video0.mp4", frame_rate=30, resolution=(1640,1232))
+        process_video(video_path, "video0.h264", "video0.mp4", mode="remux")
 
-        # --- Finish recording & process videos ---
+        # --- VIDEO1, Finish recording & process videos ---
         finish_recording(camera, video_path, num_starts, video_end, start_time_dt, fps)
 
         # --- Write status --
@@ -561,16 +640,16 @@ def main():
         return 1
     finally:
         logger.info("Main finally: cleanup")
-        stop_event.set()
+        stop_event.set()  # ensure listener and recording exit
         if listen_thread:
-
             listen_thread.join(timeout=2)
             if listen_thread.is_alive():
                 logger.warning("listen_thread did not stop within timeout.")
             else:
                 logger.info("listen_thread stopped cleanly.")
-
-        clean_exit(camera)
+        if wd_thread:
+            wd_thread.join(timeout=1)
+            logger.info("Watchdog thread stopped cleanly.")
         gc.collect()
         logger.info("Cleanup complete")
 
