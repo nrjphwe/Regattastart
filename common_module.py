@@ -159,17 +159,15 @@ def capture_picture(camera, photo_path, file_name, rotate=False):
             # Apply timestamp (reuse the same logic as in apply_timestamp)
             timestamp = time.strftime("%Y-%m-%d %X")
             origin = (40, int(frame.shape[0] * 0.85))  # Bottom-left corner
-            text_colour = (255, 0, 0)  # Blue text in BGR, Blue text RGB = (0, 0, 255)
-            bg_colour = (200, 200, 200)  # Gray background
+            # text_colour = (255, 0, 0)  # Blue text in BGR, Blue text RGB = (0, 0, 255)
+            # bg_colour = (200, 200, 200)  # Gray background
             # Use text_rectangle function in common_module to draw timestamp
             text_rectangle(frame, timestamp, origin, text_colour, bg_colour)
             if rotate:
                 frame = cv2.rotate(frame, cv2.ROTATE_180)
-
             resized_for_display = letterbox(frame, (1280, 960))
             cv2.imwrite(os.path.join(photo_path, file_name), resized_for_display)
             logger.debug(f"Saved resized_for_display size: {resized_for_display.shape}")
-            # cv2.imwrite(os.path.join(photo_path, file_name), frame)
         request.release()
         logger.info(f'Captured picture: {file_name}')
     except Exception as e:
@@ -183,7 +181,6 @@ def text_rectangle(frame, text, origin, text_colour=(255, 0, 0), bg_colour=(200,
     OpenCV uses BGR by default, ensure colours are set in BGR format
     """
     try:
-
         # Calculate text size
         text_size = cv2.getTextSize(text, font, font_scale, thickness)[0]
         text_width, text_height = text_size
@@ -212,7 +209,7 @@ def apply_timestamp(request):
                 logger.error("apply_timestamp: Frame is None or empty!")
                 return
             # Define text position
-            origin = (40, int(frame.shape[0] * 0.80))  # Bottom-left corner
+            origin = (40, int(frame.shape[0] * 0.85))  # Bottom-left corner
             text_colour = (0, 0, 255)  # Red text in BGR
             text_rectangle(frame, timestamp, origin, text_colour)
     except Exception as e:
