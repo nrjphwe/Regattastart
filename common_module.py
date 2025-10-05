@@ -24,7 +24,7 @@ THICKNESS = 2  # Thickness of the text annotations
 sensor_size = 1640, 1232  # sensors aspect ratio
 
 # text_colour = (0, 0, 255)  # Blue text in RGB
-# text_colour = (255, 0, 0)  # Blue text in BGR
+text_colour = (255, 0, 0)  # Blue text in BGR
 # bg_colour = (200, 200, 200)  # Light grey background
 
 # GPIO pin numbers for the relay and lamps
@@ -159,8 +159,8 @@ def capture_picture(camera, photo_path, file_name, rotate=False):
             # Apply timestamp (reuse the same logic as in apply_timestamp)
             timestamp = time.strftime("%Y-%m-%d %X")
             origin = (40, int(frame.shape[0] * 0.85))  # Bottom-left corner
-            # text_colour = (255, 0, 0)  # Blue text in BGR, Blue text RGB = (0, 0, 255)
-            # bg_colour = (200, 200, 200)  # Gray background
+            text_colour = (255, 0, 0)  # Blue text in BGR, Blue text RGB = (0, 0, 255)
+            bg_colour = (200, 200, 200)  # Gray background
             # Use text_rectangle function in common_module to draw timestamp
             text_rectangle(frame, timestamp, origin, text_colour, bg_colour)
             if rotate:
