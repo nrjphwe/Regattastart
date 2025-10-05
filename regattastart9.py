@@ -338,6 +338,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
     try:
         last_frame_time = datetime.now()  # watchdog reference
         while True:
+            frame_written = False
             try:
                 if stop_event.is_set():
                     logger.info("stop event set, break recording loop")
@@ -434,8 +435,19 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
                 # --- Check for detections every frame (reuse last until refreshed) ---
                 boat_in_current_frame = bool(last_detections_for_frame)
 
-                # -- WRITE VIDEO ---
+                # Detect transitions: from detection → post phase
                 if boat_in_current_frame:
+                    # Active detection → reset post-frame counter
+                    if number_of_post_frames <= 0:
+                        number_of_post_frames = int(max_post_detection_duration * fpsw)
+                else:
+                    # No detection → count down only if previously detecting
+                    if number_of_post_frames > 0:
+                        number_of_post_frames -= 1
+
+                frame_written = False
+                # --- DETECTION FRAME ---
+                if boat_in_current_frame and not frame_written:
                     # --- PRE-FRAMES ---
                     while pre_detection_buffer:
                         buf_id, buf_frame, buf_ts = pre_detection_buffer.popleft()
@@ -444,50 +456,43 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
                         if not safe_write(video_writer, buf_frame):
                             logger.error("Breaking loop due to video writer stall")
                             break
-                        # video_writer.write(buf_frame)
                         last_written_id = buf_id
-                        logger.debug(
-                            f"PRE FRAME @ {buf_ts:%H:%M:%S} "
-                            f"(pre_detection_buffer size={len(pre_detection_buffer)})"
-                        )
+                        logger.debug(f"PRE FRAME @ {buf_ts:%H:%M:%S}")
+                        frame_written = True
+
                     # --- CURRENT FRAME ---
                     for (x1, y1, x2, y2, confidence) in last_detections_for_frame:
-                        # Draw all detections for this frame
                         cv2.rectangle(frame, (x1, y1), (x2, y2), colour, thickness)
                         cv2.putText(frame, f"{confidence:.2f}", (x1, y1 - 10),
                                     font, 0.7, (0, 255, 0), 2)
 
-                    # Timestamp (always added last so it stays visible)
                     label = capture_timestamp.strftime("%Y-%m-%d %H:%M:%S")
                     text_rectangle(frame, label, origin)
-
                     if not safe_write(video_writer, frame):
                         logger.error("Breaking loop due to video writer stall")
                         break
-                    # video_writer.write(frame)
                     last_written_id = frame_counter
-                    logger.debug(
-                        f"Current FRAME @ {capture_timestamp:%H:%M:%S} "
-                        f"(framecounter={frame_counter})"
-                    )
+                    frame_written = True
+                    logger.debug(f"Current FRAME @ {capture_timestamp:%H:%M:%S} (frame={frame_counter})")
 
-                    # Reset post-detection counter
-                    number_of_post_frames = int(max_post_detection_duration * fpsw)
-
-                # --- POST-FRAMES ---
-                elif number_of_post_frames > 0:
+                # --- POST-DETECTION FRAMES ---
+                elif number_of_post_frames > 0 and not frame_written:
                     label = f"{capture_timestamp:%Y-%m-%d %H:%M:%S} POST"
                     text_rectangle(frame, label, origin)
                     if not safe_write(video_writer, frame):
                         logger.error("Breaking loop due to video writer stall")
                         break
-                    # video_writer.write(frame)
                     last_written_id = frame_counter
+                    frame_written = True
                     number_of_post_frames -= 1
                     logger.debug(
                         f"FRAME: post-detection written @ {capture_timestamp:%H:%M:%S} "
                         f"(countdown={number_of_post_frames})"
                     )
+
+                # --- NO WRITING OTHERWISE ---
+                if not frame_written:
+                    logger.debug(f"Frame {frame_counter} skipped (no detection, no post frames active)")
 
             except Exception as e:
                 logger.error(f"Unhandled error in recording loop: {e}", exc_info=True)
