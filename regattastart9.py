@@ -35,7 +35,6 @@ import warnings
 import queue
 import site
 import gc
-import atexit
 import sys
 sys.path.append('/home/pi/yolov5')  # Adjust as needed
 logger.info(f"Running with Python: {sys.executable}")
@@ -307,7 +306,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
     detections_for_frame = []
     last_detections_for_frame = []  # start empty
     in_detection_sequence = False
-    frame_written = False   
+    frame_written = False
 
     # Optional: record *all* frames for testing
     write_all_frames = False
