@@ -217,7 +217,6 @@ def apply_timestamp(request):
 
 
 def restart_camera(camera, resolution=(1640, 1232), fps=15):
-    time.sleep(2)  # Ensure the camera is fully released
     try:
         if camera is not None:
             camera.stop()
@@ -227,7 +226,6 @@ def restart_camera(camera, resolution=(1640, 1232), fps=15):
 
         camera = Picamera2()
         logger.info("New Picamera2 instance created.")
-        time.sleep(2)
 
         # List available sensor modes
         sensor_modes = camera.sensor_modes
@@ -245,9 +243,9 @@ def restart_camera(camera, resolution=(1640, 1232), fps=15):
             transform=Transform(hflip=True, vflip=True),
             colour_space=ColorSpace.Srgb()  # OR ColorSpace.Sycc()
         )
-        camera.set_controls({"FrameRate": fps})
         logger.debug(f"Config before applying: {config}")
         camera.configure(config)
+        camera.set_controls({"FrameRate": fps})
 
         camera.start()
         logger.info(f"Camera restarted with best mode resolution {best_mode['size']} and FPS: {fps}.")
