@@ -213,13 +213,13 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
             temp = get_cpu_temp()
             throttle = get_throttle_status()
             logger.info(f"Temp={temp:.1f}°C Throttle=0x{throttle:x} FPS={fps}")
-
-            if temp and temp > 82:
-                fps = max(5, fps - 2)   # lower FPS gradually
-                logger.warning(f"High temp {temp:.1f}°C → reducing FPS to {fps}")
-            elif temp and temp < 70 and fps < 15:
-                fps += 1
-                logger.info(f"Cooler now {temp:.1f}°C → increasing FPS to {fps}")
+            if temp is not None:
+                if temp and temp > 82:
+                    fps = max(5, fps - 2)   # lower FPS gradually
+                    logger.warning(f"High temp {temp:.1f}°C → reducing FPS to {fps}")
+                elif temp and temp < 70 and fps < 15:
+                    fps += 1
+                    logger.info(f"Cooler now {temp:.1f}°C → increasing FPS to {fps}")
 
             last_adjustment = time.time()
 
