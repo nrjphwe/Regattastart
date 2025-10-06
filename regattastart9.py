@@ -192,22 +192,6 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
     camera = restart_camera(camera, resolution=(1920, 1080), fps=fps)
 
     while True:
-        # --- Every 30 seconds, check system load ---
-        if time.time() - last_adjustment > 30:
-            temp = get_cpu_temp()
-            throttle = get_throttle_status()
-            logger.info(f"Temp={temp:.1f}°C Throttle=0x{throttle:x} FPS={fps}")
-            if temp is not None:
-                if temp and temp > 82:
-                    fps = max(5, fps - 2)   # lower FPS gradually
-                    logger.warning(f"High temp {temp:.1f}°C → reducing FPS to {fps}")
-                elif temp and temp < 70 and fps < 15:
-                    fps += 1
-                    logger.info(f"Cooler now {temp:.1f}°C → increasing FPS to {fps}")
-
-            last_adjustment = time.time()
-
-
         if stop_event.is_set():
             logger.info("Stop event set, breaking loop")
             break
@@ -339,6 +323,21 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
         try:
             last_frame_time = datetime.now()  # watchdog reference
             while True:
+                # --- Every 30 seconds, check system load ---
+                if time.time() - last_adjustment > 30:
+                    temp = get_cpu_temp()
+                    throttle = get_throttle_status()
+                    logger.info(f"Temp={temp:.1f}°C Throttle=0x{throttle:x} FPS={fps}")
+                    if temp is not None:
+                        if temp and temp > 82:
+                            fps = max(5, fps - 2)   # lower FPS gradually
+                            logger.warning(f"High temp {temp:.1f}°C → reducing FPS to {fps}")
+                        elif temp and temp < 70 and fps < 15:
+                            fps += 1
+                            logger.info(f"Cooler now {temp:.1f}°C → increasing FPS to {fps}")
+
+                    last_adjustment = time.time()
+
                 frame_written = False
                 try:
                     if stop_event.is_set():
