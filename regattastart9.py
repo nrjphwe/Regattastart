@@ -319,6 +319,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
         origin = (40, int(frame.shape[0] * 0.85))  # Bottom-left corner
         colour = (0, 255, 0)  # Green text
 
+        stall_detected = False
         # MAIN LOOP IN
         try:
             last_frame_time = datetime.now()  # watchdog reference
@@ -458,6 +459,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
                                 text_rectangle(buf_frame, label, origin)
                                 if not safe_write(video_writer, buf_frame):
                                     logger.error("Breaking loop due to video writer stall")
+                                    stall_detected = True
                                     break
                                 last_written_id = buf_id
                             in_detection_sequence = True
@@ -472,6 +474,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
                         text_rectangle(frame, label, origin)
                         if not safe_write(video_writer, frame):
                             logger.error("Breaking loop due to video writer stall")
+                            stall_detected = True
                             break
                         last_written_id = frame_counter
                         frame_written = True
@@ -484,6 +487,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
                         text_rectangle(frame, label, origin)
                         if not safe_write(video_writer, frame):
                             logger.error("Breaking loop due to video writer stall")
+                            stall_detected = True
                             break
                         last_written_id = frame_counter
                         frame_written = True
@@ -538,7 +542,10 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
             # Remux H264 → MP4
             video1_mp4_file = os.path.join(video_path, "video1.mp4")
             try:
-                logger.info("Calling process_video for %s → %s", video1_h264_file, video1_mp4_file)
+                if stall_detected:
+                    logger.warning("Video writer stall detected → attempting immediate remux of partial file")
+                else:
+                    logger.info("Normal stop → remuxing video")
                 process_video(video_path, "video1.h264", "video1.mp4", mode="remux")
                 logger.info(f"Video1 remuxed to MP4: {video1_mp4_file}")
             except Exception as e:
