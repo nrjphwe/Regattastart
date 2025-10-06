@@ -188,24 +188,8 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
     max_duration = (video_end + (num_starts-1)*5) * 60
     logger.debug(f"Video1, max recording duration: {max_duration} seconds")
 
-    # Ensure the camera is stopped before reconfiguring
-    try:
-        if camera is not None:
-            logger.info("Stopping the camera before reconfiguring.")
-            camera.stop()
-        else:
-            logger.warning("Camera was already None before restart.")
-
-    except Exception as e:
-        logger.error(f"Error while stopping camera: {e}")
-        return
-
+    # RESTART CAMERA
     camera = restart_camera(camera, resolution=(1920, 1080), fps=fps)
-
-    # Confirm cam is initialized
-    if camera is None:
-        logger.error("CAMERA RESTART: failed, exiting.")
-        return  # Prevents crashing if camera restart fails
 
     while True:
         # --- Every 30 seconds, check system load ---
@@ -223,10 +207,15 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
 
             last_adjustment = time.time()
 
+
+        if stop_event.is_set():
+            logger.info("Stop event set, breaking loop")
+            break
         # --- Capture and process frame ---
+        if camera is None:
+            logger.warning("Camera is None, skipping frame capture")
+            break  # exit the loop cleanly
         frame = camera.capture_array()
-        if frame is None:
-            continue
 
         # Confirm resolution before proceeding
         try:
