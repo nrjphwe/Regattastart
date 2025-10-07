@@ -1,7 +1,7 @@
 #!/home/pi/yolov5_env/bin/python
+import cv2
 import os
-import subprocess
-import time
+import subprocess, threading, time
 import datetime as dt
 import logging
 import logging.config
@@ -10,8 +10,8 @@ from libcamera import ColorSpace
 from picamera2 import Picamera2, MappedArray
 from picamera2.encoders import H264Encoder
 import RPi.GPIO as GPIO
-import cv2
 import lgpio
+from queue import Queue, Full, Empty
 
 # Initialize global variables
 logger = None
@@ -257,7 +257,12 @@ def restart_camera(camera, resolution=(1640, 1232), fps=15):
 
 
 class FFmpegVideoWriter:
-    """Wraps an FFmpeg subprocess for H.264 encoding, preferring hardware with fallback to software."""
+    """
+    Non-blocking ffmpeg video writer using a background thread and queue.
+    Avoids stalls when ffmpeg lags behind.
+    Wraps an FFmpeg subprocess for H.264 encoding, preferring hardware with
+    fallback to software.
+    """
     def __init__(self, filename, fps, frame_size, force_sw=False, logger=None):
         self.filename = filename
         self.fps = fps
@@ -265,6 +270,8 @@ class FFmpegVideoWriter:
         self.proc = None
         self.hw_enabled = False
         self.logger = logger  # store logger
+        self.queue = Queue(maxsize=20)  # adjustable buffer
+        self.stop_event = threading.Event()
 
         # Try hardware first unless forced software
         if not force_sw and self._start_ffmpeg(hw=True):
@@ -277,13 +284,18 @@ class FFmpegVideoWriter:
             if not self._start_ffmpeg(hw=False):
                 raise RuntimeError("Failed to start FFmpeg (hw and sw both failed).")
 
+        # Start background writer thread
+        self.thread = threading.Thread(target=self._writer_loop, daemon=True)
+        self.thread.start()
+
+    # -------------------------------------------------
     def _start_ffmpeg(self, hw=True):
         width, height = self.frame_size
         codec = "h264_v4l2m2m" if hw else "libx264"
         ffmpeg_cmd = [
             "ffmpeg", "-y", "-fflags", "+genpts", 
             "-f", "rawvideo", "-pix_fmt", "bgr24",
-            "-s", f"{width}x{height}", "-r", str(self.fps), 
+            "-s", f"{width}x{height}", "-r", str(self.fps),
             "-i", "-", "-an"
         ]
 
@@ -300,15 +312,30 @@ class FFmpegVideoWriter:
                 stdin=subprocess.PIPE,
                 stdout=subprocess.DEVNULL,
                 stderr=subprocess.PIPE,
+                bufsize=10**6,
             )
+
+            # Monitor ffmpeg stderr (optional)
+            threading.Thread(target=self._read_stderr, daemon=True).start()
             return True
+
         except Exception as e:
             if self.logger:
                 self.logger.error(f"[FFmpegVideoWriter] Failed to start FFmpeg ({codec}): {e}")
             return False
 
+    # -------------------------------------------------
+    def _read_stderr(self):
+        if not self.proc or not self.proc.stderr:
+            return
+        for line in self.proc.stderr:
+            if self.logger and ("frame=" in line or "error" in line.lower()):
+                self.logger.debug(f"[FFmpeg] {line.strip()}")
+
+    # -------------------------------------------------
     def write(self, frame):
-        if not self.proc:
+        """Enqueue a frame for background writing (non-blocking)."""
+        if not self.proc or self.proc.poll() is not None:
             return
 
         h, w = frame.shape[:2]
@@ -317,15 +344,42 @@ class FFmpegVideoWriter:
             frame = cv2.resize(frame, (exp_w, exp_h))
 
         try:
-            self.proc.stdin.write(frame.tobytes())
-            self.proc.stdin.flush()
-        except Exception as e:
-            err = self.proc.stderr.read().decode(errors="ignore") if self.proc.stderr else ""
+            self.queue.put_nowait(frame.copy())
+        except Full:
             if self.logger:
-                self.logger.error(f"[FFmpegVideoWriter] Error writing frame: {e}\nFFmpeg stderr:\n{err}")
-            self.release()
+                self.logger.warning("[FFmpegVideoWriter] Frame queue full, dropping frame")
 
+    # -------------------------------------------------
+    def _writer_loop(self):
+        """Background thread that feeds frames into ffmpeg stdin."""
+        while not self.stop_event.is_set():
+            try:
+                frame = self.queue.get(timeout=1)
+            except Empty:
+                continue
+
+            if frame is None:
+                break  # sentinel to exit cleanly
+
+            try:
+                self.proc.stdin.write(frame.tobytes())
+            except Exception as e:
+                if self.logger:
+                    self.logger.error(f"[FFmpegVideoWriter] Write error: {e}")
+                break
+
+    # -------------------------------------------------
     def release(self):
+        """Stop writing and close ffmpeg cleanly."""
+        self.stop_event.set()
+        try:
+            self.queue.put_nowait(None)
+        except Full:
+            pass
+
+        if self.thread.is_alive():
+            self.thread.join(timeout=2)
+
         if self.proc:
             try:
                 if self.proc.stdin:
@@ -334,7 +388,7 @@ class FFmpegVideoWriter:
                 if self.proc.stderr:
                     err = self.proc.stderr.read().decode(errors="ignore")
                     if err.strip() and self.logger:
-                        self.logger.error(f"[FFmpegVideoWriter] FFmpeg final log:\n{err}")
+                        self.logger.debug(f"[FFmpegVideoWriter] FFmpeg final log:\n{err}")
             except Exception as e:
                 if self.logger:
                     self.logger.error(f"[FFmpegVideoWriter] Error releasing FFmpeg: {e}")
