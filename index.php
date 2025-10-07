@@ -517,18 +517,14 @@
         var xhr = new XMLHttpRequest();
         xhr.open('GET', '/status.txt', true);
         xhr.onreadystatechange = function() {
-            if (xhr.readyState === 4 && xhr.status === 200) {
-                var status = xhr.responseText.trim();
-                if (status === 'complete') {
-                    console.log("Video complete! Reloading page...");
-                    location.reload();  // Refresh to show video1.mp4
-                } else {
-                    // Not complete yet: check again after 2 seconds
-                    setTimeout(checkVideoStatus, 2000);
-                }
-            } else if (xhr.readyState === 4) {
-                // HTTP error: retry
-                setTimeout(checkVideoStatus, 2000);
+            if (xhr.status === 200 && xhr.responseText.trim() === "complete") {
+                console.log("Video complete! Waiting 5s before reload...");
+                setTimeout(() => {
+                    console.log("Reloading page now...");
+                    // Scroll to bottom after reload
+                    sessionStorage.setItem("scrollToBottom", "true");
+                    location.reload();
+                }, 5000); // wait 5 seconds to ensure MP4 file is written
             }
         };
         xhr.send();
@@ -578,6 +574,13 @@
         var newTime = Math.max(0, Math.min(video.duration || Infinity, video.currentTime + step * frameTime));
         video.currentTime = newTime;
     }
+    // After reload, scroll back down if needed
+    window.addEventListener("load", function() {
+        if (sessionStorage.getItem("scrollToBottom") === "true") {
+            sessionStorage.removeItem("scrollToBottom");
+            window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+        }
+    });
     </script>
 </body>
 </html>
