@@ -558,7 +558,7 @@
 
     // Case 2: Automatic stop — start polling anyway after load
     window.addEventListener('load', function () {
-        // start polling immediately (every 2 seconds)
+        // start polling immediately (every 10 seconds)
         startPollingIfNeeded();
     });
     </script>
