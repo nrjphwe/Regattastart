@@ -534,24 +534,33 @@
         xhr.send();
     }
 
-    // Start polling only if Stop Recording button was pressed
+    // --- Universal Polling Logic ---
+    // Works for both manual and automatic stop
+
     var stopPressedInput = document.getElementById("stopRecordingPressed");
     var stopButton = document.getElementById("stopRecordingButton");
 
-    if (stopPressedInput && stopPressedInput.value === "1") {
-        console.log("Stop Recording pressed earlier, starting to poll for video completion...");
+    function startPollingIfNeeded() {
+        console.log("Starting video status polling...");
         checkVideoStatus();
     }
 
+    // Case 1: User pressed Stop Recording
     if (stopButton && stopPressedInput) {
-        stopButton.addEventListener('click', function(e) {
-            e.preventDefault(); // prevent immediate form submit
+        stopButton.addEventListener('click', function (e) {
+            e.preventDefault();
             stopPressedInput.value = "1";
             console.log("Stop Recording button clicked: stopRecordingPressed=1");
-            // Now submit the form manually
             stopButton.closest("form").submit();
+            startPollingIfNeeded();
         });
     }
+
+    // Case 2: Automatic stop — start polling anyway after load
+    window.addEventListener('load', function () {
+        // start polling immediately (every 2 seconds)
+        startPollingIfNeeded();
+    });
     </script>
     <?php endif; ?>
     <script>
