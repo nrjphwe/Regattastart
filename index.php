@@ -460,7 +460,7 @@
                     }
                     } else {
                         // check again in 2 seconds
-                        setTimeout(pollVideoStatus, 2000);
+                        setTimeout(pollVideoStatus, 10000);
                     }
                 } else if (xhr.readyState === 4) {
                     // HTTP error: try again
