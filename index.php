@@ -513,26 +513,32 @@
     <!-- JavaScript: Poll for video1 completion (only for regattastart9/10) -->
     <?php if ($num_video == 1): ?>
     <script>
+    // --- Universal Polling Logic ---
+    // Works for both manual and automatic stop
+
+    var stopPressedInput = document.getElementById("stopRecordingPressed");
+    var stopButton = document.getElementById("stopRecordingButton");
+
     function checkVideoStatus() {
         var xhr = new XMLHttpRequest();
-        xhr.open('GET', '/status.txt?rand=' + Math.random(), true); // prevent caching
+        xhr.open('GET', '/status.txt?rand=' + Math.random(), true); // cache-buster
         xhr.onreadystatechange = function() {
             if (xhr.readyState === 4) {
                 if (xhr.status === 200) {
                     var status = xhr.responseText.trim();
-                    if (status === "complete") {
+                    if (status === 'complete') {
                         console.log("Video complete! Waiting 5s before reload...");
                         setTimeout(() => {
                             console.log("Reloading page now...");
                             sessionStorage.setItem("scrollToBottom", "true");
                             location.reload();
-                        }, 5000); // 5s wait to ensure MP4 file is written
+                        }, 5000); // small delay to ensure file is ready
                     } else {
-                        // Not complete yet: poll again after 2 seconds
+                        // Not complete yet → poll again after 2 seconds
                         setTimeout(checkVideoStatus, 2000);
                     }
                 } else {
-                    // HTTP error: try again in 2 seconds
+                    // HTTP error → try again after 2 seconds
                     setTimeout(checkVideoStatus, 2000);
                 }
             }
@@ -540,38 +546,28 @@
         xhr.send();
     }
 
-
-    // --- Universal Polling Logic ---
-    // Works for both manual and automatic stop
-
-    var stopPressedInput = document.getElementById("stopRecordingPressed");
-    var stopButton = document.getElementById("stopRecordingButton");
-
     function startPollingIfNeeded() {
         console.log("Starting video status polling...");
         checkVideoStatus();
     }
 
     // Case 1: User pressed Stop Recording
-    var stopPressedInput = document.getElementById("stopRecordingPressed");
-    var stopButton = document.getElementById("stopRecordingButton");
     if (stopButton && stopPressedInput) {
         stopButton.addEventListener('click', function (e) {
             e.preventDefault();
             stopPressedInput.value = "1";
             console.log("Stop Recording button clicked: stopRecordingPressed=1");
             stopButton.closest("form").submit();
-            checkVideoStatus(); // start polling after manual stop
+            startPollingIfNeeded();
         });
     }
 
     // Case 2: Automatic stop — start polling on page load
     window.addEventListener('load', function () {
-        // Only start polling if video1 may exist (e.g., $num_video == 1 in PHP)
-        checkVideoStatus();
+        startPollingIfNeeded();
     });
 
-    // After reload, scroll smoothly to bottom if needed
+    // Scroll to bottom after reload if needed
     window.addEventListener("load", function() {
         if (sessionStorage.getItem("scrollToBottom") === "true") {
             sessionStorage.removeItem("scrollToBottom");
