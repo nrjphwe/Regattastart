@@ -400,6 +400,7 @@
                         echo '<div id="videoStatusDiv">
                             <p id="statusText" style="font-size:18px;color:#555;">Video being created...</p>
                         </div>';
+
                     } elseif ($videoComplete && file_exists($video1File) && filesize($video1File) > 1000) {
                         // Case 4: Video complete, show player
                         echo '<h3>Finish video (video1.mp4)</h3>';
@@ -437,9 +438,9 @@
                 }
 
                 echo '</div>'; // close pale-red panel always here
-
             }
         ?>
+        <!--  JavaScript to poll for video1 completion (only for regattastart9/10) --> 
         <script>
             <?php if ($num_video == 1 && ($stopRecordingPressed && !$videoComplete)): ?>
             // JavaScript to poll for video1 completion (only for regattastart9/10)
@@ -512,69 +513,64 @@
     </script>
     <!-- JavaScript: Poll for video1 completion (only for regattastart9/10) -->
     <?php if ($num_video == 1): ?>
-    <script>
-        // --- Universal Polling Logic ---
-        // Works for both manual and automatic stop
+        <script>
+            // --- Universal Polling Logic ---
+            // Works for both manual and automatic stop
 
-        var stopPressedInput = document.getElementById("stopRecordingPressed");
-        var stopButton = document.getElementById("stopRecordingButton");
+            var stopPressedInput = document.getElementById("stopRecordingPressed");
+            var stopButton = document.getElementById("stopRecordingButton");
 
-        function checkVideoStatus() {
-            var xhr = new XMLHttpRequest();
-            xhr.open('GET', '/status.txt?rand=' + Math.random(), true); // cache-buster
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState === 4) {
-                    if (xhr.status === 200) {
+            function checkVideoStatus() {
+                var xhr = new XMLHttpRequest();
+                xhr.open('GET', '/status.txt', true);
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState === 4 && xhr.status === 200) {
                         var status = xhr.responseText.trim();
                         if (status === 'complete') {
-                            console.log("Video complete! Waiting 5s before reload...");
-                            setTimeout(() => {
-                                console.log("Reloading page now...");
-                                sessionStorage.setItem("scrollToBottom", "true");
-                                location.reload();
-                            }, 5000); // small delay to ensure file is ready
+                            console.log("Video complete! Reloading page...");
+                            sessionStorage.setItem("scrollToBottom", "true");
+                            location.reload();
                         } else {
-                            // Not complete yet → poll again after 2 seconds
-                            setTimeout(checkVideoStatus, 2000);
+                            setTimeout(checkVideoStatus, 2000); // retry
                         }
-                    } else {
-                        // HTTP error → try again after 2 seconds
-                        setTimeout(checkVideoStatus, 2000);
                     }
-                }
-            };
-            xhr.send();
-        }
+                };
+                xhr.send();
+            }
+            // Start polling automatically after load
+            window.addEventListener('load', function () {
+                checkVideoStatus();
+            });
 
-        function startPollingIfNeeded() {
-            console.log("Starting video status polling...");
-            checkVideoStatus();
-        }
+            function startPollingIfNeeded() {
+                console.log("Starting video status polling...");
+                checkVideoStatus();
+            }
 
-        // Case 1: User pressed Stop Recording
-        if (stopButton && stopPressedInput) {
-            stopButton.addEventListener('click', function (e) {
-                e.preventDefault();
-                stopPressedInput.value = "1";
-                console.log("Stop Recording button clicked: stopRecordingPressed=1");
-                stopButton.closest("form").submit();
+            // Case 1: User pressed Stop Recording
+            if (stopButton && stopPressedInput) {
+                stopButton.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    stopPressedInput.value = "1";
+                    console.log("Stop Recording button clicked: stopRecordingPressed=1");
+                    stopButton.closest("form").submit();
+                    startPollingIfNeeded();
+                });
+            }
+
+            // Case 2: Automatic stop — start polling on page load
+            window.addEventListener('load', function () {
                 startPollingIfNeeded();
             });
-        }
 
-        // Case 2: Automatic stop — start polling on page load
-        window.addEventListener('load', function () {
-            startPollingIfNeeded();
-        });
-
-        // Scroll to bottom after reload if needed
-        window.addEventListener("load", function() {
-            if (sessionStorage.getItem("scrollToBottom") === "true") {
-                sessionStorage.removeItem("scrollToBottom");
-                window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
-            }
-        });
-    </script>
+            // Scroll to bottom after reload if needed
+            window.addEventListener("load", function() {
+                if (sessionStorage.getItem("scrollToBottom") === "true") {
+                    sessionStorage.removeItem("scrollToBottom");
+                    window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+                }
+            });
+        </script>
     <?php endif; ?>
     <script>
         function stepFrame(videoNum, step) {
