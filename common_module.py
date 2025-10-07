@@ -271,7 +271,7 @@ class FFmpegVideoWriter:
 
         self.proc = None
         self.hw_enabled = False
-        self.queue = Queue(maxsize=20)
+        self.queue = Queue(maxsize=100)
         self.stop_event = threading.Event()
         self.lock = threading.Lock()
 
