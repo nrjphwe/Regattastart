@@ -383,40 +383,25 @@
                     // --- Regattastart9/10 (only one video expected) ---
                     $stopRecordingPressed = $_SESSION['stopRecordingPressed'] ?? false;
                     $status_file = '/var/www/html/status.txt';
-                    $videoComplete = file_exists($status_file) && trim(file_get_contents($status_file)) === 'complete';
                     $video1File = 'images/video1.mp4';
+                    $videoComplete = file_exists('/var/www/html/status.txt') &&
+                                    trim(file_get_contents('/var/www/html/status.txt')) === 'complete';
 
-                    if (!$stopRecordingPressed) {
-                        // Case 2: Recording ongoing, before stop pressed
-                        echo '<form id="stopRecordingForm" method="post">
-                                <input type="hidden" name="stop_recording" value="true">
-                                <input type="hidden" id="stopRecordingPressed" name="stopRecordingPressed" value="0">
-                                <input type="submit" id="stopRecordingButton" value="Stop Recording">
-                            </form>';
-                        echo '<p style="font-size:18px;color:#555;">Recording in progress...</p>';
-
-                    } elseif ($stopRecordingPressed && !$videoComplete) {
-                        // Case 3: Stop pressed, waiting for processing
-                        echo '<div id="videoStatusDiv">
-                            <p id="statusText" style="font-size:18px;color:#555;">Video being created...</p>
-                        </div>';
-
-                    } elseif ($videoComplete && file_exists($video1File) && filesize($video1File) > 1000) {
-                        // Case 4: Video complete, show player
+                    // Show video1 if complete, regardless of manual stop
+                    if ($videoComplete && file_exists($video1File) && filesize($video1File) > 1000) {
                         echo '<h3>Finish video (video1.mp4)</h3>';
-                        // include a data-fps attribute so JS can use a sane frame time (adjust if you know FPS)
                         echo '<video id="video1" data-fps="25" width="640" height="480" controls>
                                 <source src="' . $video1File . '" type="video/mp4">
                             </video>';
-                        // Buttons must be outside the <video> element
                         echo '<div>
                                 <button type="button" onclick="stepFrame(1, -1)">Previous Frame</button>
                                 <button type="button" onclick="stepFrame(1, 1)">Next Frame</button>
                             </div>';
                     } else {
-                        // Fallback if file missing or too small
-                        echo '<p style="font-size:18px;color:#555;">Recording finished, but no valid video produced.</p>';
+                        // Polling only if video is not yet complete
+                        echo '<p style="font-size:18px;color:#555;">Recording finished, video is being created...</p>';
                     }
+
 
                 } else {
                     // --- Regattastart6 (multiple videos) ---
