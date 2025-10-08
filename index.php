@@ -393,7 +393,7 @@
                             <p id="statusText" style="font-size:18px;color:#555;">Video being created...</p>
                         </div>';
 
-                    else if (!$stopRecordingPressed)  {
+                    } else if (!$stopRecordingPressed)  {
                         // Case 2: Recording ongoing, before stop pressed
                         if ($videoComplete && file_exists($video1File) && filesize($video1File) > 1000) {
                             // Case Video complete, show player
