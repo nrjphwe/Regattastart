@@ -403,16 +403,19 @@
 
                     // Show video1 if complete, regardless of manual stop
                     } elseif ($videoComplete && file_exists($video1File) && filesize($video1File) > 1000) {
+                        // Case 4: Video complete, show player
                         echo '<h3>Finish video (video1.mp4)</h3>';
+                        // include a data-fps attribute so JS can use a sane frame time (adjust if you know FPS)
                         echo '<video id="video1" data-fps="25" width="640" height="480" controls>
                                 <source src="' . $video1File . '" type="video/mp4">
                             </video>';
+                        // Buttons must be outside the <video> element
                         echo '<div>
                                 <button type="button" onclick="stepFrame(1, -1)">Previous Frame</button>
                                 <button type="button" onclick="stepFrame(1, 1)">Next Frame</button>
                             </div>';
                     } else {
-                        // Polling only if video is not yet complete
+                        // Fallback if file missing or too small
                         echo '<p style="font-size:18px;color:#555;">Recording finished, video is being created...</p>';
                     }
 
