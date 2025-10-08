@@ -381,7 +381,7 @@
                 echo '<div class="w3-panel w3-pale-red" style="text-align:center; padding:20px;">';
                 if ($num_video == 1) {
                     // --- Regattastart9/10 (only one video expected) ---
-                    $stopRecordingPressed = $_SESSION['stopRecordingPressed'] ?? false;
+                    //$stopRecordingPressed = $_SESSION['stopRecordingPressed'] ?? false;
                     $status_file = '/var/www/html/status.txt';
                     $video1File = 'images/video1.mp4';
                     $videoComplete = file_exists('/var/www/html/status.txt') &&
