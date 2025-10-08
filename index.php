@@ -424,41 +424,6 @@
                 echo '</div>'; // close pale-red panel always here
             }
         ?>
-        <!--  JavaScript to poll for video1 completion (only for regattastart9/10) --> 
-        <script>
-            <?php if ($num_video == 1 && ($stopRecordingPressed && !$videoComplete)): ?>
-                // JavaScript to poll for video1 completion (only for regattastart9/10)
-                function pollVideoStatus() {
-                    var xhr = new XMLHttpRequest();
-                    xhr.open('GET', '/status.txt?rand=' + Math.random(), true); // cache-buster
-                    xhr.onreadystatechange = function() {
-                        if (xhr.readyState === 4 && xhr.status === 200) {
-                            var status = xhr.responseText.trim();
-                            if (status === 'complete') {
-                                // Replace the placeholder with the video
-                                var div = document.getElementById('videoStatusDiv');
-                                if (div) {
-                                div.innerHTML = '<h3>Finish video (video1.mp4)</h3>' +
-                                                '<video id="video1" width="640" height="480" controls>' +
-                                                '<source src="images/video1.mp4" type="video/mp4">' +
-                                                '</video>';
-                            }
-                            } else {
-                                // check again in 2 seconds
-                                setTimeout(pollVideoStatus, 2000);
-                            }
-                        } else if (xhr.readyState === 4) {
-                            // HTTP error: try again
-                            setTimeout(pollVideoStatus, 10000);
-                        }
-                    };
-                    xhr.send();
-                }
-
-                // Start polling automatically
-                pollVideoStatus();
-            <?php endif; ?>
-        </script>
     </main>
     <!-- footer -->
     <div style="text-align: center;" class="w3-panel w3-grey">
