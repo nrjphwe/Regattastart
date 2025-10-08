@@ -373,8 +373,7 @@
                 }
             ?>
         </div>
-        <!-- Display of video1 when it is available in w3-pale-red section -->
-        <!-- PHP script to display video1 area (red panel) -->
+        <!-- PHP Script to display video1 when available in w3-pale-red section -->
         <?php
             if ($video0Exists) 
                 {
@@ -428,36 +427,36 @@
         <!--  JavaScript to poll for video1 completion (only for regattastart9/10) --> 
         <script>
             <?php if ($num_video == 1 && ($stopRecordingPressed && !$videoComplete)): ?>
-            // JavaScript to poll for video1 completion (only for regattastart9/10)
-            function pollVideoStatus() {
-                var xhr = new XMLHttpRequest();
-                xhr.open('GET', '/status.txt?rand=' + Math.random(), true); // cache-buster
-                xhr.onreadystatechange = function() {
-                    if (xhr.readyState === 4 && xhr.status === 200) {
-                        var status = xhr.responseText.trim();
-                        if (status === 'complete') {
-                            // Replace the placeholder with the video
-                            var div = document.getElementById('videoStatusDiv');
-                            if (div) {
-                            div.innerHTML = '<h3>Finish video (video1.mp4)</h3>' +
-                                            '<video id="video1" width="640" height="480" controls>' +
-                                            '<source src="images/video1.mp4" type="video/mp4">' +
-                                            '</video>';
+                // JavaScript to poll for video1 completion (only for regattastart9/10)
+                function pollVideoStatus() {
+                    var xhr = new XMLHttpRequest();
+                    xhr.open('GET', '/status.txt?rand=' + Math.random(), true); // cache-buster
+                    xhr.onreadystatechange = function() {
+                        if (xhr.readyState === 4 && xhr.status === 200) {
+                            var status = xhr.responseText.trim();
+                            if (status === 'complete') {
+                                // Replace the placeholder with the video
+                                var div = document.getElementById('videoStatusDiv');
+                                if (div) {
+                                div.innerHTML = '<h3>Finish video (video1.mp4)</h3>' +
+                                                '<video id="video1" width="640" height="480" controls>' +
+                                                '<source src="images/video1.mp4" type="video/mp4">' +
+                                                '</video>';
+                            }
+                            } else {
+                                // check again in 2 seconds
+                                setTimeout(pollVideoStatus, 2000);
+                            }
+                        } else if (xhr.readyState === 4) {
+                            // HTTP error: try again
+                            setTimeout(pollVideoStatus, 10000);
                         }
-                        } else {
-                            // check again in 2 seconds
-                            setTimeout(pollVideoStatus, 2000);
-                        }
-                    } else if (xhr.readyState === 4) {
-                        // HTTP error: try again
-                        setTimeout(pollVideoStatus, 10000);
-                    }
-                };
-                xhr.send();
-            }
+                    };
+                    xhr.send();
+                }
 
-            // Start polling automatically
-            pollVideoStatus();
+                // Start polling automatically
+                pollVideoStatus();
             <?php endif; ?>
         </script>
     </main>
@@ -478,107 +477,77 @@
             echo " Time now: " .date("H:i:s");
         ?> 
     </div>
-    <!-- JavaScript to step frames in videos -->
-    <script> // function to step frames 
-        function stepFrame(videoNum, step) {
-            var video = document.getElementById('video' + videoNum);
-            if (video) {
-                video.pause();
-                video.currentTime += step * (1 / video.playbackRate/5); // 
-            }
-        }
-    </script>
-    <!-- JavaScript to refresh the page after the "Refresh" button was pressed -->
+    <!-- === JavaScript poll video1, refresh, relaod and step ) === -->
     <script>
-        function refreshThePage() {
-                setTimeout(function() {
-                    location.reload();
-                }, 1000); // 1 sec
-            }
-    </script>
-    <!-- JavaScript: Poll for video1 completion (only for regattastart9/10) -->
-    <?php if ($num_video == 1): ?>
-        <script>
-            // --- Universal Polling Logic ---
-            // Works for both manual and automatic stop
+        const video1Exists = <?php echo json_encode($video1Exists); ?>;
 
-            var stopPressedInput = document.getElementById("stopRecordingPressed");
-            var stopButton = document.getElementById("stopRecordingButton");
-
-            function checkVideoStatus() {
-                var xhr = new XMLHttpRequest();
-                xhr.open('GET', '/status.txt', true);
-                xhr.onreadystatechange = function() {
-                    if (xhr.readyState === 4 && xhr.status === 200) {
-                        var status = xhr.responseText.trim();
-                        if (status === 'complete') {
-                            console.log("Video complete! Reloading page...");
-                            sessionStorage.setItem("scrollToBottom", "true");
-                            location.reload();
-                        } else {
-                            setTimeout(checkVideoStatus, 2000); // retry
-                        }
-                    }
-                };
-                xhr.send();
-            }
-            // Start polling automatically after load
-            window.addEventListener('load', function () {
-                checkVideoStatus();
-            });
-
-            function startPollingIfNeeded() {
-                console.log("Starting video status polling...");
-                checkVideoStatus();
-            }
-
-            // Case 1: User pressed Stop Recording
-            if (stopButton && stopPressedInput) {
-                stopButton.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    stopPressedInput.value = "1";
-                    console.log("Stop Recording button clicked: stopRecordingPressed=1");
-                    stopButton.closest("form").submit();
-                    startPollingIfNeeded();
-                });
-            }
-
-            // Case 2: Automatic stop — start polling on page load
-            window.addEventListener('load', function () {
-                startPollingIfNeeded();
-            });
-
-            // Scroll to bottom after reload if needed
-            window.addEventListener("load", function() {
-                if (sessionStorage.getItem("scrollToBottom") === "true") {
-                    sessionStorage.removeItem("scrollToBottom");
-                    window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
-                }
-            });
-        </script>
-    <?php endif; ?>
-    <script>
-        function stepFrame(videoNum, step) {
-            var video = document.getElementById('video' + videoNum);
-            if (!video) return;
-            video.pause();
-
-            // read data-fps attribute if present, otherwise fallback to 25
-            var fps = parseFloat(video.getAttribute('data-fps')) || 25;
-            if (!isFinite(fps) || fps <= 0) fps = 25;
-            var frameTime = 1 / fps;
-
-            // step and clamp to 0..duration
-            var newTime = Math.max(0, Math.min(video.duration || Infinity, video.currentTime + step * frameTime));
-            video.currentTime = newTime;
-        }
-        // After reload, scroll back down if needed
-        window.addEventListener("load", function() {
+        // --- Helper: scroll to bottom after reload ---
+        window.addEventListener("load", () => {
             if (sessionStorage.getItem("scrollToBottom") === "true") {
                 sessionStorage.removeItem("scrollToBottom");
                 window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
             }
         });
+
+        // --- Helper: reload the page and keep scroll ---
+        function reloadToBottom() {
+            sessionStorage.setItem("scrollToBottom", "true");
+            location.reload(true);
+        }
+
+        // --- Step-frame function (used by video controls) ---
+        function stepFrame(videoNum, step) {
+            const video = document.getElementById("video" + videoNum);
+            if (!video) return;
+            video.pause();
+            const fps = parseFloat(video.getAttribute("data-fps")) || 25;
+            const frameTime = 1 / fps;
+            video.currentTime = Math.max(0, Math.min(video.duration || Infinity, video.currentTime + step * frameTime));
+        }
+
+        // --- Refresh button ---
+        function refreshThePage() {
+            setTimeout(reloadToBottom, 1000);
+        }
+
+        // --- Poll for video1 completion (for regattastart9/10) ---
+        function checkVideoCompletion() {
+            fetch("/status.txt?rand=" + Math.random(), { cache: "no-store" })
+                .then(r => r.text())
+                .then(text => {
+                    const status = text.trim();
+                    if (status === "complete") {
+                        console.log("✅ Video complete — reload in 5s");
+                        setTimeout(reloadToBottom, 5000);
+                    } else {
+                        console.log("⏳ Not ready yet, retrying in 30s...");
+                        setTimeout(checkVideoCompletion, 30000);
+                    }
+                })
+                .catch(err => {
+                    console.error("Error checking video completion:", err);
+                    setTimeout(checkVideoCompletion, 60000);
+                });
+        }
+
+        // --- Start polling automatically if video1 doesn’t exist ---
+        if (!video1Exists) {
+            console.log("Video1 not found — starting polling loop");
+            setTimeout(checkVideoCompletion, 15000); // first check after 15s
+        }
+
+        // --- Optional: handle manual stop button (if present) ---
+        const stopButton = document.getElementById("stopRecordingButton");
+        const stopInput = document.getElementById("stopRecordingPressed");
+        if (stopButton && stopInput) {
+            stopButton.addEventListener("click", e => {
+                e.preventDefault();
+                stopInput.value = "1";
+                console.log("🛑 Stop Recording pressed — starting status polling");
+                stopButton.closest("form").submit();
+                setTimeout(checkVideoCompletion, 20000);
+            });
+        }
     </script>
 </body>
 </html>
