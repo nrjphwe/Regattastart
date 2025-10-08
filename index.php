@@ -482,7 +482,7 @@
 
         // --- Refresh button ---
         function refreshThePage() {
-            setTimeout(reloadToBottom, 1000);
+            setTimeout(refreshThePage, 1000);
         }
 
         // --- Poll for video1 completion (for regattastart9/10) ---
@@ -493,7 +493,7 @@
                     const status = text.trim();
                     if (status === "complete") {
                         console.log("✅ Video complete — reload in 5s");
-                        setTimeout(reloadToBottom, 5000);
+                        setTimeout(checkVideoCompletion, 5000);
                     } else {
                         console.log("⏳ Not ready yet, retrying in 30s...");
                         setTimeout(checkVideoCompletion, 30000);
