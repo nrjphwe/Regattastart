@@ -386,6 +386,17 @@
                     $videoComplete = file_exists('/var/www/html/status.txt') &&
                                     trim(file_get_contents('/var/www/html/status.txt')) === 'complete';
 
+                    if (!$stopRecordingPressed) {
+                    // Case 2: Recording ongoing, before stop pressed
+                    echo '<form id="stopRecordingForm" method="post">
+                            <input type="hidden" name="stop_recording" value="true">
+                            <input type="hidden" id="stopRecordingPressed" name="stopRecordingPressed" value="0">
+                            <input type="submit" id="stopRecordingButton" value="Stop Recording">
+                        </form>';
+                    echo '<p style="font-size:18px;color:#555;">Recording in progress...</p>';
+
+
+
                     // Show video1 if complete, regardless of manual stop
                     if ($videoComplete && file_exists($video1File) && filesize($video1File) > 1000) {
                         echo '<h3>Finish video (video1.mp4)</h3>';
