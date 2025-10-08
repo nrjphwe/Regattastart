@@ -184,25 +184,26 @@
     ?>
     <!-- Header content -->
     <header>
-    <div style="text-align: center;">
-        <div class="w3-container w3-blue w3-text-white">
-            <h1> Regattastart  </h1>
-        </div>
-    </div>
+        <!-- Title -->
         <div style="text-align: center;">
-            <?php
-                echo "     Version: " . APP_VERSION . "<br><p></p>"; 
-            ?>
-        </div>
-        <div style="text-align: center;">
-            <div id="image-container">
-                <!-- Your image elements will be added here dynamically -->
+            <div class="w3-container w3-blue w3-text-white">
+                <h1> Regattastart  </h1>
             </div>
         </div>
+            <div style="text-align: center;">
+                <?php
+                    echo "     Version: " . APP_VERSION . "<br><p></p>"; 
+                ?>
+            </div>
+            <div style="text-align: center;">
+                <div id="image-container">
+                    <!-- Your image elements will be added here dynamically -->
+                </div>
+            </div>
     </header>
     <!-- Here is our page's main content -->
     <main>
-        <!-- Button Container -->
+        <!-- Top 3 button container -->
         <div class="button-container">
             <!-- Link to index6 -->
             <button class="w3-button w3-border w3-large w3-round-large w3-hover-grey w3-blue">
@@ -223,13 +224,14 @@
                 </a>
             </button>
         </div>
-        <!-- header text -->
+        <!-- Bilder tagna vid varje signal innan 1a start  -->
         <div style="text-align: center;" class="w3-panel w3-pale-blue">
             <h3> Bilder tagna vid varje signal innan 1a start </h3>
+        <!-- refresh button -->
         </div>
-        <div style="text-align: center;" class="w3-panel w3-pale-grey">
-            <button type="button" class="w3-button w3-round-large w3-khaki w3-hover-red" onclick="return refreshThePage()">Refresh page</button>
-        </div> 
+            <div style="text-align: center;" class="w3-panel w3-pale-grey">
+                <button type="button" class="w3-button w3-round-large w3-khaki w3-hover-red" onclick="return refreshThePage()">Refresh page</button>
+            </div> 
         <!-- Display pictures for the 1st start  -->
         <div style="text-align: center;">
             <?php
@@ -375,8 +377,7 @@
         </div>
         <!-- PHP Script to display video1 when available in w3-pale-red section -->
         <?php
-            if ($video0Exists) 
-                {
+            if ($video0Exists) {
                 echo '<div class="w3-panel w3-pale-red" style="text-align:center; padding:20px;">';
                 if ($num_video == 1) {
                     // --- Regattastart9/10 (only one video expected) ---
@@ -386,37 +387,36 @@
                     $videoComplete = file_exists('/var/www/html/status.txt') &&
                                     trim(file_get_contents('/var/www/html/status.txt')) === 'complete';
 
-                    if (!$stopRecordingPressed) {
-                        // Case 2: Recording ongoing, before stop pressed
-                        echo '<form id="stopRecordingForm" method="post">
-                                <input type="hidden" name="stop_recording" value="true">
-                                <input type="hidden" id="stopRecordingPressed" name="stopRecordingPressed" value="0">
-                                <input type="submit" id="stopRecordingButton" value="Stop Recording">
-                            </form>';
-                        echo '<p style="font-size:18px;color:#555;">Recording in progress...</p>';
-
-                    } elseif ($stopRecordingPressed && !$videoComplete) {
-                        // Case 3: Stop pressed, waiting for processing
+                    if ($stopRecordingPressed && !$videoComplete) {
+                        // Case 1: Stop pressed, waiting for processing
                         echo '<div id="videoStatusDiv">
                             <p id="statusText" style="font-size:18px;color:#555;">Video being created...</p>
                         </div>';
 
-                    // Show video1 if complete, regardless of manual stop
-                    } elseif ($videoComplete && file_exists($video1File) && filesize($video1File) > 1000) {
-                        // Case 4: Video complete, show player
-                        echo '<h3>Finish video (video1.mp4)</h3>';
-                        // include a data-fps attribute so JS can use a sane frame time (adjust if you know FPS)
-                        echo '<video id="video1" data-fps="25" width="640" height="480" controls>
-                                <source src="' . $video1File . '" type="video/mp4">
-                            </video>';
-                        // Buttons must be outside the <video> element
-                        echo '<div>
-                                <button type="button" onclick="stepFrame(1, -1)">Previous Frame</button>
-                                <button type="button" onclick="stepFrame(1, 1)">Next Frame</button>
-                            </div>';
-                    } else {
+                    else if (!$stopRecordingPressed)  {
+                        // Case 2: Recording ongoing, before stop pressed
+                        if ($videoComplete && file_exists($video1File) && filesize($video1File) > 1000) {
+                            // Case Video complete, show player
+                            echo '<h3>Finish video (video1.mp4)</h3>';
+                            // include a data-fps attribute so JS can use a sane frame time (adjust if you know FPS)
+                            echo '<video id="video1" data-fps="25" width="640" height="480" controls>
+                                    <source src="' . $video1File . '" type="video/mp4">
+                                </video>';
+                            // Buttons must be outside the <video> element
+                            echo '<div>
+                                    <button type="button" onclick="stepFrame(1, -1)">Previous Frame</button>
+                                    <button type="button" onclick="stepFrame(1, 1)">Next Frame</button>
+                                </div>';
+                        } else {
+                            echo '<form id="stopRecordingForm" method="post">
+                                    <input type="hidden" name="stop_recording" value="true">
+                                    <input type="hidden" id="stopRecordingPressed" name="stopRecordingPressed" value="0">
+                                    <input type="submit" id="stopRecordingButton" value="Stop Recording">
+                                </form>';
+                            echo '<p style="font-size:18px;color:#555;">Recording in progress...</p>';
                         // Fallback if file missing or too small
                         echo '<p style="font-size:18px;color:#555;">Recording finished, video is being created...</p>';
+                        }
                     }
 
 
@@ -438,7 +438,6 @@
                         }
                     }
                 }
-
                 echo '</div>'; // close pale-red panel always here
             }
         ?>
@@ -460,10 +459,9 @@
             echo " Time now: " .date("H:i:s");
         ?> 
     </div>
-    <!-- === JavaScript poll video1, refresh, relaod and step ) === -->
+    <!-- === JavaScript poll video1, refresh, reload and step ) === -->
     <script>
         const video1Exists = <?php echo json_encode($video1Exists); ?>;
-
         // --- Helper: scroll to bottom after reload ---
         window.addEventListener("load", () => {
             if (sessionStorage.getItem("scrollToBottom") === "true") {
@@ -471,12 +469,6 @@
                 window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
             }
         });
-
-        // --- Helper: reload the page and keep scroll ---
-        function reloadToBottom() {
-            sessionStorage.setItem("scrollToBottom", "true");
-            location.reload(true);
-        }
 
         // --- Step-frame function (used by video controls) ---
         function stepFrame(videoNum, step) {
