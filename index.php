@@ -398,7 +398,7 @@
 
 
                     // Show video1 if complete, regardless of manual stop
-                    if ($videoComplete && file_exists($video1File) && filesize($video1File) > 1000) {
+                    } elseif ($videoComplete && file_exists($video1File) && filesize($video1File) > 1000) {
                         echo '<h3>Finish video (video1.mp4)</h3>';
                         echo '<video id="video1" data-fps="25" width="640" height="480" controls>
                                 <source src="' . $video1File . '" type="video/mp4">
