@@ -677,7 +677,7 @@ def main():
         if listen_thread:
             listen_thread.join(timeout=2)
             if listen_thread.is_alive():
-                logger.warning("listen_thread did not stop within timeout.")
+                logger.warning("listen_thread did not stop manually, within timeout.")
             else:
                 logger.info("listen_thread stopped cleanly.")
         if wd_thread:
