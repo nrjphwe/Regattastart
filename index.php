@@ -492,8 +492,10 @@
                 .then(text => {
                     const status = text.trim();
                     if (status === "complete") {
-                        console.log("✅ Video complete — reload in 5s");
-                        setTimeout(checkVideoCompletion, 5000);
+                        console.log("✅ Video complete — reloading page now!");
+                        // --- The actual command to refresh the page ---
+                        window.location.reload(); 
+                        return; // Stop the polling loop
                     } else {
                         console.log("⏳ Not ready yet, retrying in 30s...");
                         setTimeout(checkVideoCompletion, 30000);
