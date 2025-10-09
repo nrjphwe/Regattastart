@@ -485,7 +485,10 @@
             setTimeout(refreshThePage, 1000);
         }
 
-        // --- Poll for video1 completion (for regattastart9/10) ---
+        // New interval: 3 to 5 seconds
+        const RETRY_INTERVAL_MS = 3000; 
+
+        // --- Poll for video1 completion ---
         function checkVideoCompletion() {
             fetch("/status.txt?rand=" + Math.random(), { cache: "no-store" })
                 .then(r => r.text())
@@ -493,15 +496,16 @@
                     const status = text.trim();
                     if (status === "complete") {
                         console.log("✅ Video complete — reloading page now!");
-                        // --- The actual command to refresh the page ---
+                        // ACTION: Reload the page immediately once complete
                         window.location.reload(); 
-                        return; // Stop the polling loop
                     } else {
-                        console.log("⏳ Not ready yet, retrying in 30s...");
-                        setTimeout(checkVideoCompletion, 30000);
+                        console.log("⏳ Not ready yet, retrying in " + (RETRY_INTERVAL_MS / 1000) + "s...");
+                        // Use the faster retry interval
+                        setTimeout(checkVideoCompletion, RETRY_INTERVAL_MS); 
                     }
                 })
                 .catch(err => {
+                    // Keep the error delay long, as errors suggest a server issue.
                     console.error("Error checking video completion:", err);
                     setTimeout(checkVideoCompletion, 60000);
                 });
@@ -510,7 +514,7 @@
         // --- Start polling automatically if video1 doesn’t exist ---
         if (!video1Exists) {
             console.log("Video1 not found — starting polling loop");
-            setTimeout(checkVideoCompletion, 15000); // first check after 15s
+            setTimeout(checkVideoCompletion, 2000); // first check after 15s
         }
 
         // --- Optional: handle manual stop button (if present) ---
