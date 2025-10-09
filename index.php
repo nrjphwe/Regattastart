@@ -391,7 +391,7 @@
                         // case 1: recording ongoing, stop recording not pressed and video not complete
                         if (!$videoComplete) {
                             echo '<form id="stopRecordingForm" method="post">
-                                    // <input type="hidden" name="stop_recording" value="true">
+                                    <input type="hidden" name="stop_recording" value="true">
                                     <input type="hidden" id="stopRecordingPressed" name="stopRecordingPressed" value="0">
                                     <input type="submit" id="stopRecordingButton" value="Stop Recording">
                                 </form>';
@@ -411,7 +411,7 @@
                                     <button type="button" onclick="stepFrame(1, 1)">Next Frame</button>
                                 </div>';
                         }
-                    } else {  // ($stopRecordingPressed)
+                    } else {  // --- stopRecordingPressed) ---
                         if(!$videoComplete) {
                             // Case 3: Stop pressed, waiting for processing
                             echo '<div id="videoStatusDiv">
