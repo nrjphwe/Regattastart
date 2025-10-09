@@ -121,7 +121,7 @@
     </style>
 </head>
 <body onload="showPlaceholder()">
-    // Print session data on top of page
+    <!--Print session data on top of page -->
     <?php
         // Print data on top of page
         echo "<p style='font-size:12px'>";
@@ -472,7 +472,7 @@
             echo " Time now: " .date("H:i:s");
         ?> 
     </div>
-    <!-- === JavaScript poll video1, refresh, reload and step ) === -->
+    <!--- JavaScript poll video1, refresh, reload and step ) -->
     <script>
         const video1Exists = <?php echo json_encode($video1Exists); ?>;
         // --- Helper: scroll to bottom after reload ---
