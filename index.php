@@ -408,16 +408,18 @@
                                     <button type="button" onclick="stepFrame(1, 1)">Next Frame</button>
                                 </div>';
                         } else {
+                            // stop recording not pressed and video not complete
                             echo '<form id="stopRecordingForm" method="post">
-                                    <input type="hidden" name="stop_recording" value="true">
+                                    // <input type="hidden" name="stop_recording" value="true">
                                     <input type="hidden" id="stopRecordingPressed" name="stopRecordingPressed" value="0">
                                     <input type="submit" id="stopRecordingButton" value="Stop Recording">
                                 </form>';
                             echo '<p style="font-size:18px;color:#555;">Recording in progress...</p>';
-                        // Fallback if file missing or too small
-                        echo '<p style="font-size:18px;color:#555;">Recording finished, video is being created...</p>';
-                        }
+                    
+                    // Fallback if file missing or too small
+                    echo '<p style="font-size:18px;color:#555;">Recording finished, video is being created...</p>';
                     }
+                }
 
 
                 } else {
