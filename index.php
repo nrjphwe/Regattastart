@@ -227,11 +227,11 @@
         <!-- Bilder tagna vid varje signal innan 1a start  -->
         <div style="text-align: center;" class="w3-panel w3-pale-blue">
             <h3> Bilder tagna vid varje signal innan 1a start </h3>
-        <!-- refresh button -->
         </div>
-            <div style="text-align: center;" class="w3-panel w3-pale-grey">
-                <button type="button" class="w3-button w3-round-large w3-khaki w3-hover-red" onclick="return refreshThePage()">Refresh page</button>
-            </div> 
+        <!-- refresh button -->
+        <div style="text-align: center;" class="w3-panel w3-pale-grey">
+            <button type="button" class="w3-button w3-round-large w3-khaki w3-hover-red" onclick="return refreshThePage()">Refresh page</button>
+        </div> 
         <!-- Display pictures for the 1st start  -->
         <div style="text-align: center;">
             <?php
@@ -482,7 +482,10 @@
 
         // --- Refresh button ---
         function refreshThePage() {
-            setTimeout(refreshThePage, 1000);
+            // This command immediately reloads the entire page from the server.
+            // Use true to force a full reload, ignoring the browser's cache.
+            window.location.reload(true); 
+            // You no longer need the setTimeout line.
         }
 
         // New interval: 3 to 5 seconds
