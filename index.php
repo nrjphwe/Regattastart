@@ -387,14 +387,17 @@
                     $videoComplete = file_exists('/var/www/html/status.txt') &&
                                     trim(file_get_contents('/var/www/html/status.txt')) === 'complete';
 
-                    if ($stopRecordingPressed && !$videoComplete) {
-                        // Case 1: Stop pressed, waiting for processing
-                        echo '<div id="videoStatusDiv">
-                            <p id="statusText" style="font-size:18px;color:#555;">Video being created...</p>
-                        </div>';
-
-                    } else if (!$stopRecordingPressed)  {
-                        // Case 2: Recording ongoing, before stop pressed
+                    if (!$stopRecordingPressed)  {
+                        // case 1: recording ongoing, stop recording not pressed and video not complete
+                        if (!$videoComplete) {
+                            echo '<form id="stopRecordingForm" method="post">
+                                    // <input type="hidden" name="stop_recording" value="true">
+                                    <input type="hidden" id="stopRecordingPressed" name="stopRecordingPressed" value="0">
+                                    <input type="submit" id="stopRecordingButton" value="Stop Recording">
+                                </form>';
+                            echo '<p style="font-size:18px;color:#555;">Recording in progress...</p>';
+                        }
+                        // Case 2: Recording completed by timeout (buttin not pressed)
                         if ($videoComplete && file_exists($video1File) && filesize($video1File) > 1000) {
                             // Case Video complete, show player
                             echo '<h3>Finish video (video1.mp4)</h3>';
@@ -407,17 +410,28 @@
                                     <button type="button" onclick="stepFrame(1, -1)">Previous Frame</button>
                                     <button type="button" onclick="stepFrame(1, 1)">Next Frame</button>
                                 </div>';
-                        } else {
-                            // stop recording not pressed and video not complete
-                            echo '<form id="stopRecordingForm" method="post">
-                                    // <input type="hidden" name="stop_recording" value="true">
-                                    <input type="hidden" id="stopRecordingPressed" name="stopRecordingPressed" value="0">
-                                    <input type="submit" id="stopRecordingButton" value="Stop Recording">
-                                </form>';
-                            echo '<p style="font-size:18px;color:#555;">Recording in progress...</p>';
-                    
-                    // Fallback if file missing or too small
-                    echo '<p style="font-size:18px;color:#555;">Recording finished, video is being created...</p>';
+                        }
+                    } else {  // ($stopRecordingPressed)
+                        if(!$videoComplete) {
+                            // Case 3: Stop pressed, waiting for processing
+                            echo '<div id="videoStatusDiv">
+                                <p id="statusText" style="font-size:18px;color:#555;">Video being created...</p>
+                            </div>';
+                        } elseif (file_exists($video1File) && filesize($video1File) > 1000) {
+                            // Case 4: Stop pressed, video complete, show player
+                            echo '<h3>Finish video (video1.mp4)</h3>';
+                            echo '<video id="video1" data-fps="25" width="640" height="480" controls>
+                                    <source src="' . $video1File . '" type="video/mp4">
+                                </video>';
+                            echo '<div>
+                                    <button type="button" onclick="stepFrame(1, -1)">Previous Frame</button>
+                                    <button type="button" onclick="stepFrame(1, 1)">Next Frame</button>
+                                </div>';
+                        }  else {
+                            // Case 5: Stop pressed, but no boats detected video1.mp4 missing or incomplete
+                            echo '<p style="font-size:18px;color:#555;">No boats detected,
+                            Video not available or incomplete.</p>'; 
+                        }
                     }
                 }
 
