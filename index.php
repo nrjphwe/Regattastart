@@ -427,15 +427,12 @@
                                     <button type="button" onclick="stepFrame(1, -1)">Previous Frame</button>
                                     <button type="button" onclick="stepFrame(1, 1)">Next Frame</button>
                                 </div>';
-                        }  else {
+                        } else {
                             // Case 5: Stop pressed, but no boats detected video1.mp4 missing or incomplete
                             echo '<p style="font-size:18px;color:#555;">No boats detected,
                             Video not available or incomplete.</p>'; 
                         }
                     }
-                }
-
-
                 } else {
                     // --- Regattastart6 (multiple videos) ---
                     for ($x = 1; $x <= $num_video; $x++) {
