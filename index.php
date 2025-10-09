@@ -31,7 +31,6 @@
     // print_r($_POST);
     // echo "<br/>";
 ?>
-
 <?php
     include_once 'functions.php';
     // Check if video0.mp4 or video1.mp4 exists and their sizes
@@ -122,8 +121,9 @@
     </style>
 </head>
 <body onload="showPlaceholder()">
+    // Print session data on top of page
     <?php
-        // Print session data on top of page
+        // Print data on top of page
         echo "<p style='font-size:12px'>";
         echo " First start at: " . $start_time;
         echo ", Number of starts= $num_starts";
@@ -342,7 +342,7 @@
                 }
             ?>
         </div>
-        <!-- Display of video0 when it is available -->
+        <!-- Display video0 when it is available -->
         <div style="text-align: center;" class="w3-panel w3-pale-blue">
             <?php
                 // check if 1 or 2 starts
