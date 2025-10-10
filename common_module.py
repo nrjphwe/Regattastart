@@ -1,7 +1,7 @@
 #!/home/pi/yolov5_env/bin/python
+import cv2
 import os
-import subprocess
-import time
+import subprocess, threading, time
 import datetime as dt
 import logging
 import logging.config
@@ -10,8 +10,8 @@ from libcamera import ColorSpace
 from picamera2 import Picamera2, MappedArray
 from picamera2.encoders import H264Encoder
 import RPi.GPIO as GPIO
-import cv2
 import lgpio
+from queue import Queue, Full, Empty
 
 # Initialize global variables
 logger = None
@@ -217,7 +217,6 @@ def apply_timestamp(request):
 
 
 def restart_camera(camera, resolution=(1640, 1232), fps=15):
-    time.sleep(2)  # Ensure the camera is fully released
     try:
         if camera is not None:
             camera.stop()
@@ -227,7 +226,6 @@ def restart_camera(camera, resolution=(1640, 1232), fps=15):
 
         camera = Picamera2()
         logger.info("New Picamera2 instance created.")
-        time.sleep(2)
 
         # List available sensor modes
         sensor_modes = camera.sensor_modes
@@ -245,9 +243,9 @@ def restart_camera(camera, resolution=(1640, 1232), fps=15):
             transform=Transform(hflip=True, vflip=True),
             colour_space=ColorSpace.Srgb()  # OR ColorSpace.Sycc()
         )
-        camera.set_controls({"FrameRate": fps})
         logger.debug(f"Config before applying: {config}")
         camera.configure(config)
+        camera.set_controls({"FrameRate": fps})
 
         camera.start()
         logger.info(f"Camera restarted with best mode resolution {best_mode['size']} and FPS: {fps}.")
@@ -259,40 +257,61 @@ def restart_camera(camera, resolution=(1640, 1232), fps=15):
 
 
 class FFmpegVideoWriter:
-    """Wraps an FFmpeg subprocess for H.264 encoding, preferring hardware with fallback to software."""
+    """
+    Non-blocking ffmpeg video writer using background thread and queue.
+    Automatically restarts ffmpeg if it crashes or stalls.
+    """
+
     def __init__(self, filename, fps, frame_size, force_sw=False, logger=None):
         self.filename = filename
         self.fps = fps
         self.frame_size = frame_size
+        self.force_sw = force_sw
+        self.logger = logger
+
         self.proc = None
         self.hw_enabled = False
-        self.logger = logger  # store logger
+        self.queue = Queue(maxsize=100)
+        self.stop_event = threading.Event()
+        self.lock = threading.Lock()
 
-        # Try hardware first unless forced software
-        if not force_sw and self._start_ffmpeg(hw=True):
+        # Start ffmpeg process
+        self._start_ffmpeg_with_fallback()
+
+        # Start background writer thread
+        self.thread = threading.Thread(target=self._writer_loop, daemon=True)
+        self.thread.start()
+
+    # -------------------------------------------------------------------
+    def _start_ffmpeg_with_fallback(self):
+        """Try hardware first, then software encoder if needed."""
+        if not self.force_sw and self._start_ffmpeg(hw=True):
             self.hw_enabled = True
             if self.logger:
-                self.logger.info(f"[FFmpegVideoWriter] Started hardware H.264 (v4l2m2m) for {filename}")
+                self.logger.info(f"[FFmpegVideoWriter] Started hardware H.264 (v4l2m2m) for {self.filename}")
         else:
             if self.logger:
-                self.logger.info(f"[FFmpegVideoWriter] Using software H.264 (libx264) for {filename}")
+                self.logger.info(f"[FFmpegVideoWriter] Using software H.264 (libx264) for {self.filename}")
             if not self._start_ffmpeg(hw=False):
                 raise RuntimeError("Failed to start FFmpeg (hw and sw both failed).")
 
+    # -------------------------------------------------------------------
     def _start_ffmpeg(self, hw=True):
         width, height = self.frame_size
         codec = "h264_v4l2m2m" if hw else "libx264"
+
         ffmpeg_cmd = [
-            "ffmpeg", "-y", "-fflags", "+genpts", 
+            "ffmpeg", "-y", "-fflags", "+genpts",
             "-f", "rawvideo", "-pix_fmt", "bgr24",
-            "-s", f"{width}x{height}", "-r", str(self.fps), 
+            "-s", f"{width}x{height}", "-r", str(self.fps),
             "-i", "-", "-an"
         ]
 
         if hw:
             ffmpeg_cmd += ["-vf", "format=nv12", "-c:v", codec, "-b:v", "2M"]
         else:
-            ffmpeg_cmd += ["-c:v", codec, "-preset", "ultrafast", "-tune", "zerolatency", "-crf", "28"]
+            ffmpeg_cmd += ["-c:v", codec, "-preset", "ultrafast",
+                           "-tune", "zerolatency", "-crf", "28"]
 
         ffmpeg_cmd += ["-pix_fmt", "yuv420p", "-movflags", "+faststart", self.filename]
 
@@ -302,16 +321,46 @@ class FFmpegVideoWriter:
                 stdin=subprocess.PIPE,
                 stdout=subprocess.DEVNULL,
                 stderr=subprocess.PIPE,
+                bufsize=10**6,
             )
+            # Monitor stderr for debug info
+            threading.Thread(target=self._read_stderr, daemon=True).start()
             return True
         except Exception as e:
             if self.logger:
                 self.logger.error(f"[FFmpegVideoWriter] Failed to start FFmpeg ({codec}): {e}")
             return False
 
-    def write(self, frame):
-        if not self.proc:
+    # -------------------------------------------------------------------
+    def _read_stderr(self):
+        """Read ffmpeg stderr for debugging."""
+        if not self.proc or not self.proc.stderr:
             return
+        for line in self.proc.stderr:
+            text = line.decode(errors="ignore").strip()
+            if self.logger and text:
+                if "error" in text.lower() or "frame=" in text:
+                    self.logger.debug(f"[FFmpeg] {text}")
+
+    # -------------------------------------------------------------------
+    def _restart_ffmpeg(self):
+        """Restart ffmpeg process if it has died."""
+        with self.lock:
+            if self.proc and self.proc.poll() is None:
+                return  # still alive
+            if self.logger:
+                self.logger.warning("[FFmpegVideoWriter] Restarting ffmpeg encoder due to crash/stall...")
+            try:
+                self._start_ffmpeg_with_fallback()
+            except Exception as e:
+                if self.logger:
+                    self.logger.error(f"[FFmpegVideoWriter] Restart failed: {e}")
+
+    # -------------------------------------------------------------------
+    def write(self, frame):
+        """Enqueue frame for non-blocking write."""
+        if self.proc is None or self.proc.poll() is not None:
+            self._restart_ffmpeg()
 
         h, w = frame.shape[:2]
         exp_w, exp_h = self.frame_size
@@ -319,15 +368,48 @@ class FFmpegVideoWriter:
             frame = cv2.resize(frame, (exp_w, exp_h))
 
         try:
-            self.proc.stdin.write(frame.tobytes())
-            self.proc.stdin.flush()
-        except Exception as e:
-            err = self.proc.stderr.read().decode(errors="ignore") if self.proc.stderr else ""
+            self.queue.put_nowait(frame.copy())
+        except Full:
             if self.logger:
-                self.logger.error(f"[FFmpegVideoWriter] Error writing frame: {e}\nFFmpeg stderr:\n{err}")
-            self.release()
+                self.logger.warning("[FFmpegVideoWriter] Frame queue full, dropping frame")
 
+    # -------------------------------------------------------------------
+    def _writer_loop(self):
+        """Background writer thread that pushes frames to ffmpeg."""
+        while not self.stop_event.is_set():
+            try:
+                frame = self.queue.get(timeout=1)
+            except Empty:
+                continue
+
+            if frame is None:
+                break
+
+            try:
+                if not self.proc or self.proc.poll() is not None:
+                    self._restart_ffmpeg()
+                self.proc.stdin.write(frame.tobytes())
+            except BrokenPipeError:
+                if self.logger:
+                    self.logger.error("[FFmpegVideoWriter] Broken pipe detected, restarting encoder.")
+                self._restart_ffmpeg()
+            except Exception as e:
+                if self.logger:
+                    self.logger.error(f"[FFmpegVideoWriter] Write error: {e}")
+                self._restart_ffmpeg()
+
+    # -------------------------------------------------------------------
     def release(self):
+        """Stop the writer thread and close ffmpeg cleanly."""
+        self.stop_event.set()
+        try:
+            self.queue.put_nowait(None)
+        except Full:
+            pass
+
+        if self.thread.is_alive():
+            self.thread.join(timeout=3)
+
         if self.proc:
             try:
                 if self.proc.stdin:
@@ -336,10 +418,10 @@ class FFmpegVideoWriter:
                 if self.proc.stderr:
                     err = self.proc.stderr.read().decode(errors="ignore")
                     if err.strip() and self.logger:
-                        self.logger.error(f"[FFmpegVideoWriter] FFmpeg final log:\n{err}")
+                        self.logger.debug(f"[FFmpegVideoWriter] FFmpeg final log:\n{err}")
             except Exception as e:
                 if self.logger:
-                    self.logger.error(f"[FFmpegVideoWriter] Error releasing FFmpeg: {e}")
+                    self.logger.error(f"[FFmpegVideoWriter] Error during release: {e}")
             finally:
                 self.proc = None
 

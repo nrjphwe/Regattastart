@@ -31,7 +31,6 @@
     // print_r($_POST);
     // echo "<br/>";
 ?>
-
 <?php
     include_once 'functions.php';
     // Check if video0.mp4 or video1.mp4 exists and their sizes
@@ -122,8 +121,9 @@
     </style>
 </head>
 <body onload="showPlaceholder()">
+    <!--Print session data on top of page -->
     <?php
-    // Print session data on top of page
+        // Print data on top of page
         echo "<p style='font-size:12px'>";
         echo " First start at: " . $start_time;
         echo ", Number of starts= $num_starts";
@@ -164,7 +164,7 @@
         if (isset($video_end)) {
             // Convert $start_time to minutes
             list($start_hour, $start_minute) = explode(':', $start_time);
-    
+
             // Add video_end (duration after start) and additional 2 minutes
             $video_end_time_minutes = $start_time_minutes + $video_end + 2 + $dur_between_starts * ($num_starts - 1);
 
@@ -184,25 +184,26 @@
     ?>
     <!-- Header content -->
     <header>
-    <div style="text-align: center;">
-        <div class="w3-container w3-blue w3-text-white">
-            <h1> Regattastart  </h1>
-        </div>
-    </div>
+        <!-- Title -->
         <div style="text-align: center;">
-            <?php
-                echo "     Version: " . APP_VERSION . "<br><p></p>"; 
-            ?>
-        </div>
-        <div style="text-align: center;">
-            <div id="image-container">
-                <!-- Your image elements will be added here dynamically -->
+            <div class="w3-container w3-blue w3-text-white">
+                <h1> Regattastart  </h1>
             </div>
         </div>
+            <div style="text-align: center;">
+                <?php
+                    echo "     Version: " . APP_VERSION . "<br><p></p>"; 
+                ?>
+            </div>
+            <div style="text-align: center;">
+                <div id="image-container">
+                    <!-- Your image elements will be added here dynamically -->
+                </div>
+            </div>
     </header>
     <!-- Here is our page's main content -->
     <main>
-        <!-- Button Container -->
+        <!-- Top 3 button container -->
         <div class="button-container">
             <!-- Link to index6 -->
             <button class="w3-button w3-border w3-large w3-round-large w3-hover-grey w3-blue">
@@ -223,10 +224,11 @@
                 </a>
             </button>
         </div>
-        <!-- header text -->
+        <!-- Bilder tagna vid varje signal innan 1a start  -->
         <div style="text-align: center;" class="w3-panel w3-pale-blue">
             <h3> Bilder tagna vid varje signal innan 1a start </h3>
         </div>
+        <!-- refresh button -->
         <div style="text-align: center;" class="w3-panel w3-pale-grey">
             <button type="button" class="w3-button w3-round-large w3-khaki w3-hover-red" onclick="return refreshThePage()">Refresh page</button>
         </div> 
@@ -340,7 +342,7 @@
                 }
             ?>
         </div>
-        <!-- Display of video0 when it is available -->
+        <!-- Display video0 when it is available -->
         <div style="text-align: center;" class="w3-panel w3-pale-blue">
             <?php
                 // check if 1 or 2 starts
@@ -373,107 +375,85 @@
                 }
             ?>
         </div>
-        <!-- Display of video1 when it is available in w3-pale-red section -->
-        <!-- PHP script to display video1 area (red panel) -->
+        <!-- PHP Script to display video1 when available in w3-pale-red section -->
         <?php
-        if ($video0Exists) 
-            {
-            echo '<div class="w3-panel w3-pale-red" style="text-align:center; padding:20px;">';
-            if ($num_video == 1) {
-                // --- Regattastart9/10 (only one video expected) ---
-                $stopRecordingPressed = $_SESSION['stopRecordingPressed'] ?? false;
-                $status_file = '/var/www/html/status.txt';
-                $videoComplete = file_exists($status_file) && trim(file_get_contents($status_file)) === 'complete';
-                $video1File = 'images/video1.mp4';
+            if ($video0Exists) {
+                echo '<div class="w3-panel w3-pale-red" style="text-align:center; padding:20px;">';
+                if ($num_video == 1) {
+                    // --- Regattastart9/10 (only one video expected) ---
+                    //$stopRecordingPressed = $_SESSION['stopRecordingPressed'] ?? false;
+                    $status_file = '/var/www/html/status.txt';
+                    $video1File = 'images/video1.mp4';
+                    $videoComplete = file_exists('/var/www/html/status.txt') &&
+                                    trim(file_get_contents('/var/www/html/status.txt')) === 'complete';
 
-                if (!$stopRecordingPressed) {
-                    // Case 2: Recording ongoing, before stop pressed
-                    echo '<form id="stopRecordingForm" method="post">
-                            <input type="hidden" name="stop_recording" value="true">
-                            <input type="hidden" id="stopRecordingPressed" name="stopRecordingPressed" value="0">
-                            <input type="submit" id="stopRecordingButton" value="Stop Recording">
-                        </form>';
-                    echo '<p style="font-size:18px;color:#555;">Recording in progress...</p>';
-
-                } elseif ($stopRecordingPressed && !$videoComplete) {
-                    // Case 3: Stop pressed, waiting for processing
-                    echo '<div id="videoStatusDiv">
-                        <p id="statusText" style="font-size:18px;color:#555;">Video being created...</p>
-                    </div>';
-                } elseif ($videoComplete && file_exists($video1File) && filesize($video1File) > 1000) {
-                    // Case 4: Video complete, show player
-                    echo '<h3>Finish video (video1.mp4)</h3>';
-                    // include a data-fps attribute so JS can use a sane frame time (adjust if you know FPS)
-                    echo '<video id="video1" data-fps="25" width="640" height="480" controls>
-                            <source src="' . $video1File . '" type="video/mp4">
-                        </video>';
-                    // Buttons must be outside the <video> element
-                    echo '<div>
-                            <button type="button" onclick="stepFrame(1, -1)">Previous Frame</button>
-                            <button type="button" onclick="stepFrame(1, 1)">Next Frame</button>
-                        </div>';
-                } else {
-                    // Fallback if file missing or too small
-                    echo '<p style="font-size:18px;color:#555;">Recording finished, but no valid video produced.</p>';
-                }
-
-            } else {
-                // --- Regattastart6 (multiple videos) ---
-                for ($x = 1; $x <= $num_video; $x++) {
-                    $video_name = "images/video$x.mp4";
-                    if (file_exists($video_name) && filesize($video_name) > 1000) {
-                        echo "<h3>Finish video (video{$x}.mp4)</h3>";
-                        echo '<video id="video' . $x . '" data-fps="25" width="640" height="480" controls>
-                                <source src="' . $video_name . '" type="video/mp4">
-                            </video>';
-                        echo '<div>
-                                <button type="button" onclick="stepFrame(' . $x . ', -1)">Previous Frame</button>
-                                <button type="button" onclick="stepFrame(' . $x . ', 1)">Next Frame</button>
+                    if (!$stopRecordingPressed)  {
+                        // case 1: recording ongoing, stop recording not pressed and video not complete
+                        if (!$videoComplete) {
+                            echo '<form id="stopRecordingForm" method="post">
+                                    <input type="hidden" name="stop_recording" value="true">
+                                    <input type="hidden" id="stopRecordingPressed" name="stopRecordingPressed" value="0">
+                                    <input type="submit" id="stopRecordingButton" value="Stop Recording">
+                                </form>';
+                            echo '<p style="font-size:18px;color:#555;">Recording in progress...</p>';
+                        }
+                        // Case 2: Recording completed by timeout (buttin not pressed)
+                        if ($videoComplete && file_exists($video1File) && filesize($video1File) > 1000) {
+                            // Case Video complete, show player
+                            echo '<h3>Finish video (video1.mp4)</h3>';
+                            // include a data-fps attribute so JS can use a sane frame time (adjust if you know FPS)
+                            echo '<video id="video1" data-fps="25" width="640" height="480" controls>
+                                    <source src="' . $video1File . '" type="video/mp4">
+                                </video>';
+                            // Buttons must be outside the <video> element
+                            echo '<div>
+                                    <button type="button" onclick="stepFrame(1, -1)">Previous Frame</button>
+                                    <button type="button" onclick="stepFrame(1, 1)">Next Frame</button>
+                                </div>';
+                        }
+                    } else {  // --- stopRecordingPressed) ---
+                        if(!$videoComplete) {
+                            // Case 3: Stop pressed, waiting for processing
+                            echo '<div id="videoStatusDiv">
+                                <p id="statusText" style="font-size:18px;color:#555;">Video being created...</p>
                             </div>';
-                    } else {
-                        echo "<p style='font-size:18px;color:#555;'>Video $x not available or incomplete.</p>";
+                        } elseif (file_exists($video1File) && filesize($video1File) > 1000) {
+                            // Case 4: Stop pressed, video complete, show player
+                            echo '<h3>Finish video (video1.mp4)</h3>';
+                            echo '<video id="video1" data-fps="25" width="640" height="480" controls>
+                                    <source src="' . $video1File . '" type="video/mp4">
+                                </video>';
+                            echo '<div>
+                                    <button type="button" onclick="stepFrame(1, -1)">Previous Frame</button>
+                                    <button type="button" onclick="stepFrame(1, 1)">Next Frame</button>
+                                </div>';
+                        } else {
+                            // Case 5: Stop pressed, but no boats detected video1.mp4 missing or incomplete
+                            echo '<p style="font-size:18px;color:#555;">No boats detected,
+                            Video not available or incomplete.</p>'; 
+                        }
+                    }
+                } else {
+                    // --- Regattastart6 (multiple videos) ---
+                    for ($x = 1; $x <= $num_video; $x++) {
+                        $video_name = "images/video$x.mp4";
+                        if (file_exists($video_name) && filesize($video_name) > 1000) {
+                            echo "<h3>Finish video (video{$x}.mp4)</h3>";
+                            echo '<video id="video' . $x . '" data-fps="25" width="640" height="480" controls>
+                                    <source src="' . $video_name . '" type="video/mp4">
+                                </video>';
+                            echo '<div>
+                                    <button type="button" onclick="stepFrame(' . $x . ', -1)">Previous Frame</button>
+                                    <button type="button" onclick="stepFrame(' . $x . ', 1)">Next Frame</button>
+                                </div>';
+                        } else {
+                            echo "<p style='font-size:18px;color:#555;'>Video $x not available or incomplete.</p>";
+                        }
                     }
                 }
+                echo '</div>'; // close pale-red panel always here
             }
-
-            echo '</div>'; // close pale-red panel always here
-
-        }
         ?>
-        <script>
-        <?php if ($num_video == 1 && ($stopRecordingPressed && !$videoComplete)): ?>
-        // JavaScript to poll for video1 completion (only for regattastart9/10)
-        function pollVideoStatus() {
-            var xhr = new XMLHttpRequest();
-            xhr.open('GET', '/status.txt?rand=' + Math.random(), true); // cache-buster
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState === 4 && xhr.status === 200) {
-                    var status = xhr.responseText.trim();
-                    if (status === 'complete') {
-                        // Replace the placeholder with the video
-                        var div = document.getElementById('videoStatusDiv');
-                        if (div) {
-                        div.innerHTML = '<h3>Finish video (video1.mp4)</h3>' +
-                                        '<video id="video1" width="640" height="480" controls>' +
-                                        '<source src="images/video1.mp4" type="video/mp4">' +
-                                        '</video>';
-                    }
-                    } else {
-                        // check again in 2 seconds
-                        setTimeout(pollVideoStatus, 2000);
-                    }
-                } else if (xhr.readyState === 4) {
-                    // HTTP error: try again
-                    setTimeout(pollVideoStatus, 2000);
-                }
-            };
-            xhr.send();
-        }
-
-        // Start polling automatically
-        pollVideoStatus();
-        <?php endif; ?>
-        </script>
     </main>
     <!-- footer -->
     <div style="text-align: center;" class="w3-panel w3-grey">
@@ -492,83 +472,79 @@
             echo " Time now: " .date("H:i:s");
         ?> 
     </div>
-    <!-- JavaScript to step frames in videos -->
-    <script> // function to step frames 
-        function stepFrame(videoNum, step) {
-            var video = document.getElementById('video' + videoNum);
-            if (video) {
-                video.pause();
-                video.currentTime += step * (1 / video.playbackRate/5); // 
-            }
-        }
-    </script>
-    <!-- JavaScript to refresh the page after the "Refresh" button was pressed -->
+    <!--- JavaScript poll video1, refresh, reload and step ) -->
     <script>
-        function refreshThePage() {
-                setTimeout(function() {
-                    location.reload();
-                }, 1000); // 1 sec
+        const video1Exists = <?php echo json_encode($video1Exists); ?>;
+        // --- Helper: scroll to bottom after reload ---
+        window.addEventListener("load", () => {
+            if (sessionStorage.getItem("scrollToBottom") === "true") {
+                sessionStorage.removeItem("scrollToBottom");
+                window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
             }
-    </script>
-    <!-- JavaScript: Poll for video1 completion (only for regattastart9/10) -->
-    <?php if ($num_video == 1): ?>
-    <script>
-    function checkVideoStatus() {
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', '/status.txt', true);
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState === 4 && xhr.status === 200) {
-                var status = xhr.responseText.trim();
-                if (status === 'complete') {
-                    console.log("Video complete! Reloading page...");
-                    location.reload();  // Refresh to show video1.mp4
-                } else {
-                    // Not complete yet: check again after 2 seconds
-                    setTimeout(checkVideoStatus, 2000);
-                }
-            } else if (xhr.readyState === 4) {
-                // HTTP error: retry
-                setTimeout(checkVideoStatus, 2000);
-            }
-        };
-        xhr.send();
-    }
-
-    // Start polling only if Stop Recording button was pressed
-    var stopPressedInput = document.getElementById("stopRecordingPressed");
-    var stopButton = document.getElementById("stopRecordingButton");
-
-    if (stopPressedInput && stopPressedInput.value === "1") {
-        console.log("Stop Recording pressed earlier, starting to poll for video completion...");
-        checkVideoStatus();
-    }
-
-    if (stopButton && stopPressedInput) {
-        stopButton.addEventListener('click', function(e) {
-            e.preventDefault(); // prevent immediate form submit
-            stopPressedInput.value = "1";
-            console.log("Stop Recording button clicked: stopRecordingPressed=1");
-            // Now submit the form manually
-            stopButton.closest("form").submit();
         });
-    }
-    </script>
-    <?php endif; ?>
-    <script>
-    function stepFrame(videoNum, step) {
-        var video = document.getElementById('video' + videoNum);
-        if (!video) return;
-        video.pause();
 
-        // read data-fps attribute if present, otherwise fallback to 25
-        var fps = parseFloat(video.getAttribute('data-fps')) || 25;
-        if (!isFinite(fps) || fps <= 0) fps = 25;
-        var frameTime = 1 / fps;
+        // --- Step-frame function (used by video controls) ---
+        function stepFrame(videoNum, step) {
+            const video = document.getElementById("video" + videoNum);
+            if (!video) return;
+            video.pause();
+            const fps = parseFloat(video.getAttribute("data-fps")) || 25;
+            const frameTime = 1 / fps;
+            video.currentTime = Math.max(0, Math.min(video.duration || Infinity, video.currentTime + step * frameTime));
+        }
 
-        // step and clamp to 0..duration
-        var newTime = Math.max(0, Math.min(video.duration || Infinity, video.currentTime + step * frameTime));
-        video.currentTime = newTime;
-    }
+        // --- Refresh button ---
+        function refreshThePage() {
+            // This command immediately reloads the entire page from the server.
+            // Use true to force a full reload, ignoring the browser's cache.
+            window.location.reload(true); 
+            // You no longer need the setTimeout line.
+        }
+
+        // New interval: 3 to 5 seconds
+        const RETRY_INTERVAL_MS = 3000; 
+
+        // --- Poll for video1 completion ---
+        function checkVideoCompletion() {
+            fetch("/status.txt?rand=" + Math.random(), { cache: "no-store" })
+                .then(r => r.text())
+                .then(text => {
+                    const status = text.trim();
+                    if (status === "complete") {
+                        console.log("✅ Video complete — reloading page now!");
+                        // ACTION: Reload the page immediately once complete
+                        window.location.reload(); 
+                    } else {
+                        console.log("⏳ Not ready yet, retrying in " + (RETRY_INTERVAL_MS / 1000) + "s...");
+                        // Use the faster retry interval
+                        setTimeout(checkVideoCompletion, RETRY_INTERVAL_MS); 
+                    }
+                })
+                .catch(err => {
+                    // Keep the error delay long, as errors suggest a server issue.
+                    console.error("Error checking video completion:", err);
+                    setTimeout(checkVideoCompletion, 60000);
+                });
+        }
+
+        // --- Start polling automatically if video1 doesn’t exist ---
+        if (!video1Exists) {
+            console.log("Video1 not found — starting polling loop");
+            setTimeout(checkVideoCompletion, 2000); // first check after 15s
+        }
+
+        // --- Optional: handle manual stop button (if present) ---
+        const stopButton = document.getElementById("stopRecordingButton");
+        const stopInput = document.getElementById("stopRecordingPressed");
+        if (stopButton && stopInput) {
+            stopButton.addEventListener("click", e => {
+                e.preventDefault();
+                stopInput.value = "1";
+                console.log("🛑 Stop Recording pressed — starting status polling");
+                stopButton.closest("form").submit();
+                setTimeout(checkVideoCompletion, 20000);
+            });
+        }
     </script>
 </body>
 </html>
