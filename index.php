@@ -228,7 +228,7 @@
         <div style="text-align: center;" class="w3-panel w3-pale-blue">
             <h3> Bilder tagna vid varje signal innan 1a start </h3>
         </div>
-        <!-- refresh button -->
+        <!-- Refresh button -->
         <div style="text-align: center;" class="w3-panel w3-pale-grey">
             <button type="button" class="w3-button w3-round-large w3-khaki w3-hover-red" onclick="return refreshThePage()">Refresh page</button>
         </div> 
