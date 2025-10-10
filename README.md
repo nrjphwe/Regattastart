@@ -25,3 +25,6 @@ Setting up wireless networking (Not valid with RPI5 and Bookworm):
 - You will need to define a wpa_supplicant.conf file for your particular wireless network. Put this file in the boot folder, and when the Pi first boots, it will copy that file into the correct location (/etc/wpa_supplicant/wpa_supplicant.conf) in the Linux root file system and use those settings to start up wireless networking.
 
 Temperature during execution with cooler.
+
+The apache-server resides in a Raspberry Pi5 with Bookworm, The web-page index9.php triggers execution of a python script regattastart9.py. The script triggers relays to turn on signals and lamps at the start, then takes pictures and makes videos. The video1 is made through image recognition of sailboats, inference using yolov5. After the video1 is made the index.php page is used to see the resulting time for the sailboats crossing the finish-line, as time is annotated.
+
