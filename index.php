@@ -375,7 +375,7 @@
                 }
             ?>
         </div>
-        <!-- PHP Script to display video1 when available in w3-pale-red section -->
+        <!-- PHP Script to display different text in w3-pale-red section -->
         <?php
             if ($video0Exists) {
                 echo '<div class="w3-panel w3-pale-red" style="text-align:center; padding:20px;">';
@@ -397,36 +397,12 @@
                                 </form>';
                             echo '<p style="font-size:18px;color:#555;">Recording in progress...</p>';
                         }
-                        // Case 2: Recording completed by timeout (buttin not pressed)
-                        if ($videoComplete && file_exists($video1File) && filesize($video1File) > 1000) {
-                            // Case Video complete, show player
-                            echo '<h3>Finish video (video1.mp4)</h3>';
-                            // include a data-fps attribute so JS can use a sane frame time (adjust if you know FPS)
-                            echo '<video id="video1" data-fps="25" width="640" height="480" controls>
-                                    <source src="' . $video1File . '" type="video/mp4">
-                                </video>';
-                            // Buttons must be outside the <video> element
-                            echo '<div>
-                                    <button type="button" onclick="stepFrame(1, -1)">Previous Frame</button>
-                                    <button type="button" onclick="stepFrame(1, 1)">Next Frame</button>
-                                </div>';
-                        }
-                    } else {  // --- stopRecordingPressed) ---
+                    } else {
+                        // Case 3: Stop pressed, waiting for processing
                         if(!$videoComplete) {
-                            // Case 3: Stop pressed, waiting for processing
                             echo '<div id="videoStatusDiv">
                                 <p id="statusText" style="font-size:18px;color:#555;">Video being created...</p>
                             </div>';
-                        } elseif (file_exists($video1File) && filesize($video1File) > 1000) {
-                            // Case 4: Stop pressed, video complete, show player
-                            echo '<h3>Finish video (video1.mp4)</h3>';
-                            echo '<video id="video1" data-fps="25" width="640" height="480" controls>
-                                    <source src="' . $video1File . '" type="video/mp4">
-                                </video>';
-                            echo '<div>
-                                    <button type="button" onclick="stepFrame(1, -1)">Previous Frame</button>
-                                    <button type="button" onclick="stepFrame(1, 1)">Next Frame</button>
-                                </div>';
                         } else {
                             // Case 5: Stop pressed, but no boats detected video1.mp4 missing or incomplete
                             echo '<p style="font-size:18px;color:#555;">No boats detected,
@@ -512,8 +488,23 @@
                     const status = text.trim();
                     if (status === "complete") {
                         console.log("✅ Video complete — reloading page now!");
-                        // ACTION: Reload the page immediately once complete
-                        window.location.reload(); 
+                        // 💡 NEW AJAX CALL: Use jQuery to fetch the video player content
+                        $("#video1-placeholder").load("/get_video1_content.php", function(response, status, xhr) {
+                            if (status == "success") {
+                                console.log("Video content successfully loaded. Polling finished.");
+                                // Optional: Scroll to the new video player for user convenience
+                                window.scrollTo({ top: $("#video1-placeholder").offset().top, behavior: "smooth" });
+                                // 🛑 Polling successfully stopped.
+                            } else {
+                                console.error("Failed to load video content:", xhr.statusText);
+                                // Fallback: If AJAX fails, resort to a full reload
+                                setTimeout(() => window.location.reload(true), 5000); 
+                            }
+                        });
+
+                        // CRUCIAL: Return here to stop the recursive setTimeout loop from running again.
+                        return; 
+
                     } else {
                         console.log("⏳ Not ready yet, retrying in " + (RETRY_INTERVAL_MS / 1000) + "s...");
                         // Use the faster retry interval
