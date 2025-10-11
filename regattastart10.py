@@ -1,5 +1,5 @@
 #!/home/pi/yolov5_env/bin/python
-# after git pull, do: sudo cp regattastart9.py /usr/lib/cgi-bin/
+# after git pull, do: sudo cp regattastart10.py /usr/lib/cgi-bin/
 import os
 from common_module import (
     setup_camera,
