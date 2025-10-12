@@ -27,6 +27,7 @@ import numpy as np  # image recognition
 from libcamera import Transform
 from libcamera import ColorSpace
 from picamera2 import Picamera2
+import pytesseract  # OCR
 import select
 import threading
 import time
@@ -196,7 +197,7 @@ def ocr_worker(input_queue, output_queue, stop_event):
     logger.info("OCR Worker started.")
     # Initialize expensive resources once
     clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
-    pytesseract.pytesseract.tesseract_cmd = '/usr/bin/tesseract' # Ensure Tesseract path is correct
+    pytesseract.pytesseract.tesseract_cmd = '/usr/bin/tesseract'  # Ensure Tesseract path is correct
 
     while not stop_event.is_set():
         try:
@@ -545,7 +546,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
                             # Use the *last_detections_for_frame* which contains the coordinates
                             if last_detections_for_frame:
                                 # Take the first (largest/most confident) boat detection box
-                                box_data = last_detections_for_frame[0][:4] 
+                                box_data = last_detections_for_frame[0][:4]
 
                                 # Put the required data into the queue. frame.copy() is CRITICAL.
                                 try:
@@ -582,16 +583,16 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
                     logger.error(f"Unhandled error in recording loop: {e}", exc_info=True)
                     continue  # skip this iteration
 
-                # === NEW: CHECK OCR RESULTS and LOG ===
+                # === CHECK OCR RESULTS and LOG ===
                 try:
-                    result = ocr_result.get(block=False) # Check for a result immediately
+                    result = ocr_result.get(block=False)  # Check for a result immediately
                     sail_number = result['num']
                     timestamp = result['ts']
                     log_sailnumber_to_csv(sail_number, timestamp)
                     # OPTIONAL: You can draw the recognized number on the current live frame here if desired
                     # ...
                 except queue.Empty:
-                    pass # No result yet, keep going
+                    pass  # No result yet, keep going
 
                 # --- Sleep according to current FPS ---
                 time.sleep(1 / fps)
