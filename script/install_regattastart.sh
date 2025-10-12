@@ -7,6 +7,7 @@ set -x
 cd "$(dirname "$0")/.."
 
 echo "=> Installing regattastart files at CGI-BIN...\n"
+sudo cp -v regattastart10.py /usr/lib/cgi-bin
 sudo cp -v regattastart9.py /usr/lib/cgi-bin
 sudo cp -v regattastart6.py /usr/lib/cgi-bin
 sudo cp -v logging.conf /usr/lib/cgi-bin
@@ -29,6 +30,7 @@ sudo cp -v index.php /var/www/html
 sudo cp -v index6.php /var/www/html
 sudo cp -v index9.php /var/www/html
 sudo cp -v functions.php /var/www/html
+sudo cp -v get_video1_content.php /var/www/html
 sudo cp -v stop_recording.php /var/www/html
 sudo mkdir /var/www/html/tmp
 sudo mkdir /var/www/html/tmp/stop_recording_pipe
