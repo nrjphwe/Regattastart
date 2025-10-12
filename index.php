@@ -489,7 +489,7 @@
 
         // --- Poll for video1 completion ---
         function checkVideoCompletion() {
-            fetch("/status.txt?rand=" + Math.random(), { cache: "no-store" })
+            //fetch("/status.txt?rand=" + Math.random(), { cache: "no-store" })
             fetch("/check_video_completion.php?rand=" + Math.random(), { cache: "no-store" })
                 .then(r => r.text())
                 .then(text => {
