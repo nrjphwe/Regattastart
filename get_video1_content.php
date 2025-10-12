@@ -22,6 +22,7 @@
 
             // --- ONLY output the final completed video block (Cases 2 and 4 from index.php) ---
             if ( ($videoComplete && file_exists($video1File) && filesize($video1File) > 1000) ) {
+                console.log("Show Finish video (video1.mp4)");
                 echo '<h3>Finish video (video1.mp4)</h3>';
                 echo '<video id="video1" data-fps="25" width="640" height="480" controls>
                         <source src="' . $video1File . '" type="video/mp4">
