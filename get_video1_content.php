@@ -9,6 +9,7 @@
     $video0Exists = file_exists("images/video0.mp4") && filesize("images/video0.mp4") > 0;
     $video1Exists = file_exists("images/video1.mp4") && filesize("images/video1.mp4") > 0;
     $stopRecordingPressed = $_SESSION['stopRecordingPressed'] ?? false;
+    $formData = $_SESSION['form_data'] ?? [];
     $num_video = isset($_SESSION['form_data']['num_video']) ? $_SESSION['form_data']['num_video'] : 1;
 
     // 3. Output ONLY the HTML for the video panel (Regattastart9/10 logic)
