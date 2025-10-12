@@ -1,5 +1,5 @@
 #!/home/pi/yolov5_env/bin/python
-# after git pull, do: sudo cp regattastart9.py /usr/lib/cgi-bin/
+# after git pull, do: sudo cp regattastart10.py /usr/lib/cgi-bin/
 import os
 import csv
 from common_module import (
@@ -67,7 +67,7 @@ wd_thread = None
 
 cpu_model = get_cpu_model()
 logger.info("="*60)
-logger.info(f"Starting new regattastart9.py session at {dt.datetime.now()}")
+logger.info(f"Starting new regattastart10.py session at {dt.datetime.now()}")
 logger.info(f"Detected CPU model string: '{cpu_model}'")
 logger.info("="*60)
 
@@ -466,8 +466,8 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
                                         logger.info(f"Boat detected in frame {frame_counter} with conf {confidence:.2f}")
                         # --- END OF INFERENCE ---
                         if boat_in_current_frame and not in_detection_sequence:
-                        # ... flush pre-buffer ...
-                        in_detection_sequence = True
+                            # ... flush pre-buffer ...
+                            in_detection_sequence = True
 
                         # replace detections only on inference frame
                         detections_for_frame = new_detections
