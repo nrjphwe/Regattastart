@@ -375,62 +375,70 @@
                 }
             ?>
         </div>
-        <!-- PHP Script to display different text in w3-pale-red section -->
-        <?php
-            if ($video0Exists) {
-                echo '<div class="w3-panel w3-pale-red" style="text-align:center; padding:20px;">';
-                if ($num_video == 1) {
-                    // --- Regattastart9/10 (only one video expected) ---
-                    //$stopRecordingPressed = $_SESSION['stopRecordingPressed'] ?? false;
-                    $status_file = '/var/www/html/status.txt';
-                    $video1File = 'images/video1.mp4';
-                    $videoComplete = file_exists('/var/www/html/status.txt') &&
-                                    trim(file_get_contents('/var/www/html/status.txt')) === 'complete';
+        <main>
+    <?php
+        // Only run this section if video0 (the start sequence) exists
+        if ($video0Exists) {
+            
+            // This is the target container ID for the AJAX update
+            echo '<div id="video1-placeholder" class="w3-panel w3-pale-red" style="text-align:center; padding:20px;">';
+            
+            // Logic for Regattastart9/10 (single video)
+            if ($num_video == 1) {
+                $status_file = '/var/www/html/status.txt';
+                $video1File = 'images/video1.mp4';
+                $videoComplete = file_exists('/var/www/html/status.txt') &&
+                                trim(file_get_contents('/var/www/html/status.txt')) === 'complete';
 
-                    if (!$stopRecordingPressed)  {
-                        // case 1: recording ongoing, stop recording not pressed and video not complete
-                        if (!$videoComplete) {
-                            echo '<form id="stopRecordingForm" method="post">
-                                    <input type="hidden" name="stop_recording" value="true">
-                                    <input type="hidden" id="stopRecordingPressed" name="stopRecordingPressed" value="0">
-                                    <input type="submit" id="stopRecordingButton" value="Stop Recording">
-                                </form>';
-                            echo '<p style="font-size:18px;color:#555;">Recording in progress...</p>';
-                        }
-                    } else {
-                        // Case 3: Stop pressed, waiting for processing
-                        if(!$videoComplete) {
-                            echo '<div id="videoStatusDiv">
-                                <p id="statusText" style="font-size:18px;color:#555;">Video being created...</p>
-                            </div>';
-                        } else {
-                            // Case 5: Stop pressed, but no boats detected video1.mp4 missing or incomplete
-                            echo '<p style="font-size:18px;color:#555;">No boats detected,
-                            Video not available or incomplete.</p>'; 
-                        }
+                if (!$stopRecordingPressed)  {
+                    // Case 1: recording ongoing (initial state)
+                    if (!$videoComplete) {
+                        echo '<form id="stopRecordingForm" method="post">
+                                <input type="hidden" name="stop_recording" value="true">
+                                <input type="hidden" id="stopRecordingPressed" name="stopRecordingPressed" value="0">
+                                <input type="submit" id="stopRecordingButton" value="Stop Recording">
+                            </form>';
+                        echo '<p style="font-size:18px;color:#555;">Recording in progress...</p>';
                     }
+                    // NOTE: If the script detects $videoComplete here, the JS should have already loaded the player.
                 } else {
-                    // --- Regattastart6 (multiple videos) ---
-                    for ($x = 1; $x <= $num_video; $x++) {
-                        $video_name = "images/video$x.mp4";
-                        if (file_exists($video_name) && filesize($video_name) > 1000) {
-                            echo "<h3>Finish video (video{$x}.mp4)</h3>";
-                            echo '<video id="video' . $x . '" data-fps="25" width="640" height="480" controls>
-                                    <source src="' . $video_name . '" type="video/mp4">
-                                </video>';
-                            echo '<div>
-                                    <button type="button" onclick="stepFrame(' . $x . ', -1)">Previous Frame</button>
-                                    <button type="button" onclick="stepFrame(' . $x . ', 1)">Next Frame</button>
-                                </div>';
-                        } else {
-                            echo "<p style='font-size:18px;color:#555;'>Video $x not available or incomplete.</p>";
-                        }
+                    // Case 3: Stop_recording pressed, waiting for processing
+                    if(!$videoComplete) {
+                        echo '<div id="videoStatusDiv">
+                            <p id="statusText" style="font-size:18px;color:#555;">Video being created...</p>
+                        </div>';
+                    } else {
+                        // Case 5: Stop pressed, but processing finished with failure/no boats (no video player)
+                        echo '<p style="font-size:18px;color:#555;">No boats detected,
+                        Video not available or incomplete.</p>'; 
+                        // The AJAX call will hit get_video1_content.php, which will render this
+                        // same message if the video file is still missing after 'complete' status.
                     }
                 }
-                echo '</div>'; // close pale-red panel always here
+            } else {
+                // --- Regattastart6 (multiple videos) ---
+                // You must keep this logic here if you want to display multiple videos without polling.
+                // If you want to AJAX update these, you'll need another polling/AJAX system.
+                for ($x = 1; $x <= $num_video; $x++) {
+                    $video_name = "images/video$x.mp4";
+                    if (file_exists($video_name) && filesize($video_name) > 1000) {
+                        echo "<h3>Finish video (video{$x}.mp4)</h3>";
+                        echo '<video id="video' . $x . '" data-fps="25" width="640" height="480" controls>
+                                <source src="' . $video_name . '" type="video/mp4">
+                            </video>';
+                        echo '<div>
+                                <button type="button" onclick="stepFrame(' . $x . ', -1)">Previous Frame</button>
+                                <button type="button" onclick="stepFrame(' . $x . ', 1)">Next Frame</button>
+                            </div>';
+                    } else {
+                        echo "<p style='font-size:18px;color:#555;'>Video $x not available or incomplete.</p>";
+                    }
+                }
             }
-        ?>
-    </main>
+            echo '</div>'; // close pale-red panel (now with ID)
+        }
+    ?>
+</main>
     <!-- footer -->
     <div style="text-align: center;" class="w3-panel w3-grey">
         <?php
