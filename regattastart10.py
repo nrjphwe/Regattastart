@@ -180,6 +180,126 @@ def prepare_input(img, device='cpu'):
 
     return img.to(device)
 
+def extract_sail_number(frame, box, clahe):
+    import pytesseract, re
+    x1, y1, x2, y2 = map(int, box)  # YOLO returns float
+    w = x2 - x1
+    h = y2 - y1
+
+    # ---- ROI focus: upper/main sail band, center horizontally ----
+    H_UP = 0.45  # use a bit more of the upper region; adjust if needed
+    W_PAD = 0.18
+    crop_y1 = max(0, y1 - int(0.15 * h))    # allow slightly above
+    crop_y2 = y1 + int(H_UP * h)
+    crop_x1 = x1 + int(W_PAD * w)
+    crop_x2 = x2 - int(W_PAD * w)
+
+    # Ensure coordinates are within bounds
+    crop_y2 = min(crop_y2, frame.shape[0])
+    crop_x2 = min(crop_x2, frame.shape[1])
+    if crop_y2 <= crop_y1 or crop_x2 <= crop_x1:
+        return None
+
+    # Crop region
+    sail_crop = frame[crop_y1:crop_y2, crop_x1:crop_x2]
+
+    # ---- Preprocess: CLAHE -> adaptive thresholds (both polarities) ----
+    gray = cv2.cvtColor(sail_crop, cv2.COLOR_BGR2GRAY)
+    g = clahe.apply(gray)
+
+    # try both normal and inverted binarization
+    def binarize(img, invert=False):
+        if invert:
+            img = cv2.bitwise_not(img)
+        # adaptive mean is robust on textured sails
+        th = cv2.adaptiveThreshold(img, 255, cv2.ADAPTIVE_THRESH_MEAN_C,
+                                   cv2.THRESH_BINARY, 31, 5)
+        # light morphological clean
+        th = cv2.morphologyEx(th, cv2.MORPH_OPEN, np.ones((2,2), np.uint8), iterations=1)
+        return th
+
+    candidates = []
+    for invert in (False, True):
+        th = binarize(g, invert=invert)
+        # also try a slightly tighter crop to remove borders/rigging lines
+        h2, w2 = th.shape[:2]
+        d = max(2, min(h2, w2)//40)
+        th_tight = th[d:h2-d, d:w2-d] if (h2-2*d>20 and w2-2*d>20) else th
+
+        for img in (th, th_tight):
+            # upscale helps Tesseract
+            up = cv2.resize(img, None, fx=2.0, fy=2.0, interpolation=cv2.INTER_CUBIC)
+            cfg = r'--oem 3 --psm 6 -c tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+            txt = pytesseract.image_to_string(up, config=cfg)
+            candidates.append(txt)
+            logger.debug(f"OCR candidate (normal): {txt!r}")
+
+            # also run on a horizontally flipped image to catch mirrored text
+            up_flipped = cv2.flip(up, 1)
+            txt_flip = pytesseract.image_to_string(up_flipped, config=cfg)
+            candidates.append(txt_flip)
+            logger.debug(f"OCR candidate (flipped): {txt_flip!r}")
+
+    # ---- Normalize + score candidates ----
+    def correct_ocr_digits(text):
+        map_ = {"I":"1","l":"1","O":"0","Q":"0","S":"5","Z":"2","B":"8","G":"6","E":"3"}
+        return ''.join(map_.get(c, c) for c in text)
+
+    MIN_DIGITS, MAX_DIGITS = 1, 4
+    best = None
+    best_score = -1
+
+    for raw in candidates:
+        lines = [L.strip().upper() for L in raw.splitlines() if L.strip()]
+        # simple two-line heuristic: SWE line + digits line nearby
+        for i, L in enumerate(lines):
+            if "SWE" in L:
+                # check same line first
+                combined = correct_ocr_digits(L)
+                m = re.search(r'SWE\D*([0-9]{%d,%d})' % (MIN_DIGITS, MAX_DIGITS), combined)
+                if m:
+                    digits = m.group(1)
+                    score = len(digits)  # more digits is better
+                    if score > best_score:
+                        best = f"SWE {digits}"
+                        best_score = score
+                    continue
+                # check following 1–2 lines for digits
+                for j in (1, 2):
+                    if i+j < len(lines):
+                        nxt = correct_ocr_digits(lines[i+j])
+                        m2 = re.search(r'([0-9]{%d,%d})' % (MIN_DIGITS, MAX_DIGITS), nxt)
+                        if m2:
+                            digits = m2.group(1)
+                            score = len(digits)
+                            if score > best_score:
+                                best = f"SWE {digits}"
+                                best_score = score
+
+    # fallback: sometimes only SWE is visible
+    if not best:
+        for raw in candidates:
+            if "SWE" in raw.upper():
+                best = "SWE"
+                best_score = 0
+                break
+    # NEW fallback: plain numeric detection (no SWE seen)
+    if not best:
+        for raw in candidates:
+            lines = [correct_ocr_digits(L.strip().upper()) for L in raw.splitlines() if L.strip()]
+            for L in lines:
+                m = re.search(r'([0-9]{%d,%d})' % (MIN_DIGITS, MAX_DIGITS), L)
+                if m:
+                    digits = m.group(1)
+                    score = len(digits)
+                    if score > best_score:
+                        best = digits
+                        best_score = score
+
+    if best:
+        logger.info(f"Detected sail number: {best}")
+    return best
+
 
 def log_sailnumber_to_csv(sailnumber, ts, csv_file="/var/www/html/sailnumbers.csv"):
     try:
