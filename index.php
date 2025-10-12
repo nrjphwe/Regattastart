@@ -379,10 +379,9 @@
             <?php
                 // Only run this section if video0 (the start sequence) exists
                 if ($video0Exists) {
-                    
                     // This is the target container ID for the AJAX update
                     echo '<div id="video1-placeholder" class="w3-panel w3-pale-red" style="text-align:center; padding:20px;">';
-                    
+
                     // Logic for Regattastart9/10 (single video)
                     if ($num_video == 1) {
                         $status_file = '/var/www/html/status.txt';
@@ -491,6 +490,7 @@
         // --- Poll for video1 completion ---
         function checkVideoCompletion() {
             fetch("/status.txt?rand=" + Math.random(), { cache: "no-store" })
+            fetch("/check_video_completion.php?rand=" + Math.random(), { cache: "no-store" })
                 .then(r => r.text())
                 .then(text => {
                     const status = text.trim();
