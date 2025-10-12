@@ -15,15 +15,15 @@
     // 3. Output ONLY the HTML for the video panel (Regattastart9/10 logic)
     if ($video0Exists) {
         echo '<div class="w3-panel w3-pale-red" style="text-align:center; padding:20px;">';
-        if ($num_video == 1) {
-            $status_file = '/var/www/html/status.txt';
-            $video1File = 'images/video1.mp4';
-            $videoComplete = file_exists('/var/www/html/status.txt') &&
-                            trim(file_get_contents('/var/www/html/status.txt')) === 'complete';
+        // Check for "complete" status
+        $status_file = '/var/www/html/status.txt';
+        $video1File = 'images/video1.mp4';
+        $videoComplete = file_exists($status_file) && trim(file_get_contents($status_file)) === 'complete';
 
-            // --- ONLY output the final completed video block (Cases 2 and 4 from index.php) ---
-            if ( ($videoComplete && file_exists($video1File) && filesize($video1File) > 1000) ) {
-                console.log("Show Finish video (video1.mp4)");
+        // 3. Output ONLY the HTML for the video panel (Case: Video is Complete)
+        if ($num_video == 1) {
+            // --- Output the final completed video block (The AJAX target) ---
+            if ($videoComplete && file_exists($video1File) && filesize($video1File) > 1000) {
                 echo '<h3>Finish video (video1.mp4)</h3>';
                 echo '<video id="video1" data-fps="25" width="640" height="480" controls>
                         <source src="' . $video1File . '" type="video/mp4">
@@ -33,11 +33,10 @@
                         <button type="button" onclick="stepFrame(1, 1)">Next Frame</button>
                     </div>';
             } else {
-                // Output the 'waiting' message if it's still somehow not ready (fallback)
-                echo '<p>Video processing complete, but file not found. Reload manually if needed.</p>';
+                // Output the same 'failure' message as Case 5 in index.php
+                echo '<p style="font-size:18px;color:#555;">No boats detected,
+                Video not available or incomplete.</p>';
             }
         } 
-        // NOTE: You might need to add the Regattastart6 logic here if it's used with this polling method.
-        echo '</div>'; // close pale-red panel
     }
 ?>
