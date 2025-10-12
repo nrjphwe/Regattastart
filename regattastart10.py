@@ -180,6 +180,18 @@ def prepare_input(img, device='cpu'):
     return img.to(device)
 
 
+def log_sailnumber_to_csv(sailnumber, ts, csv_file="/var/www/html/sailnumbers.csv"):
+    try:
+        newfile = not os.path.exists(csv_file)
+        with open(csv_file, "a", newline="") as f:
+            writer = csv.writer(f)
+            if newfile:
+                writer.writerow(["timestamp", "sailnumber"])
+            writer.writerow([ts.strftime("%Y-%m-%d %H:%M:%S"), sailnumber])
+    except Exception as e:
+        logger.error(f"CSV logging failed: {e}")
+
+
 def ocr_worker(input_queue, output_queue, stop_event):
     logger.info("OCR Worker started.")
     # Initialize expensive resources once
