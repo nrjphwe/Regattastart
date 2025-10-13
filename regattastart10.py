@@ -180,6 +180,7 @@ def prepare_input(img, device='cpu'):
 
     return img.to(device)
 
+
 def extract_sail_number(frame, box, clahe):
     import pytesseract, re
     x1, y1, x2, y2 = map(int, box)  # YOLO returns float
@@ -229,7 +230,8 @@ def extract_sail_number(frame, box, clahe):
         for img in (th, th_tight):
             # upscale helps Tesseract
             up = cv2.resize(img, None, fx=2.0, fy=2.0, interpolation=cv2.INTER_CUBIC)
-            cfg = r'--oem 3 --psm 6 -c tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+
+            cfg = r'--oem 3 --psm 8 -c tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
             txt = pytesseract.image_to_string(up, config=cfg)
             candidates.append(txt)
             logger.debug(f"OCR candidate (normal): {txt!r}")
