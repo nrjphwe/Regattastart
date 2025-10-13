@@ -529,7 +529,20 @@
         // --- Start polling automatically if video1 doesn’t exist ---
         if (!video1Exists) {
             console.log("Video1 not found — starting polling loop");
-            setTimeout(checkVideoCompletion, 2000); // first check after 15s
+            setTimeout(checkVideoCompletion, 2000);
+        } 
+        // --- NEW LOGIC: If the video already exists, load the content immediately ---
+        else { 
+            console.log("Video1 file exists. Loading content directly.");
+            // Force the AJAX load to get the video player HTML from the dedicated file
+            $("#video1-placeholder").load("/get_video1_content.php", function(response, status, xhr) {
+                if (status == "success") {
+                    console.log("Initial load successful.");
+                    window.scrollTo({ top: $("#video1-placeholder").offset().top, behavior: "smooth" });
+                } else {
+                    console.error("Failed to load existing video content:", xhr.statusText);
+                }
+            });
         }
 
         // --- Optional: handle manual stop button (if present) ---
