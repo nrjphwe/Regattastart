@@ -536,7 +536,7 @@ def process_video(video_path, input_file, output_file, frame_rate=None, resoluti
 
 
 def setup_gpio():
-    level = lgpio.LG_LEVEL_LOW
+    level = 0  # Initial level LOW
     try:
         # seems like initial value off corresponds to 1
         h = lgpio.gpiochip_open(0)  # Open GPIO chip 0
