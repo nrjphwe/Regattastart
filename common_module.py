@@ -512,25 +512,35 @@ def start_video_recording(camera, video_path, file_name, resolution=(1640, 1232)
     logger.info(f"video_config {video_config}, resolution: {resolution}, bitrate: {bitrate}")
 
     # Set the pre_callback to apply the timestamp AFTER configuration
-    #logger.debug("Setting pre_callback to apply_timestamp")
-    #camera.pre_callback = apply_timestamp
+    # logger.debug("Setting pre_callback to apply_timestamp")
+    # camera.pre_callback = apply_timestamp
 
     # Pre-callback for timestamp overlay
-    def timestamp_callback(frame):
+    def timestamp_callback(request):
         """
-        Apply a single upright timestamp to each video frame.
-        Handles rotation automatically.
+        Pre-callback for video frames: apply timestamp and rotation.
         """
-        # Apply rotation if not done by transform (optional safety)
-        if ROTATE_CAMERA:
-            frame = cv2.rotate(frame, cv2.ROTATE_180)
+        try:
+            with MappedArray(request, "main") as m:
+                frame = m.array
 
-        timestamp = time.strftime("%Y-%m-%d %X")
-        origin = (40, int(frame.shape[0] * 0.85))
-        text_colour = (255, 0, 0)
-        bg_colour = (200, 200, 200)
-        text_rectangle(frame, timestamp, origin, text_colour, bg_colour)
-        return frame
+                # Ensure BGR
+                if frame.shape[-1] == 3:
+                    frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
+
+                # Rotate if needed
+                if ROTATE_CAMERA:
+                    frame = cv2.rotate(frame, cv2.ROTATE_180)
+
+                # Draw timestamp
+                timestamp = time.strftime("%Y-%m-%d %X")
+                origin = (40, int(frame.shape[0] * 0.85))
+                text_colour = (255, 0, 0)
+                bg_colour = (200, 200, 200)
+                text_rectangle(frame, timestamp, origin, text_colour, bg_colour)
+
+        except Exception as e:
+            logger.error(f"Error in timestamp_callback: {e}", exc_info=True)
 
     camera.pre_callback = timestamp_callback
 
