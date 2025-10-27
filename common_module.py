@@ -36,7 +36,6 @@ lamp2 = 21   # for lamp2 to pin 40 right bottom
 # for new startmachine Relay channel 2 input (IN2) green wire
 
 # for new startmachine GND grey wire
-
 """
 Purple GPIO 26 (37)-(38) GPIO 20 blue
 Grey Ground  (39)-(40) GPIO 21 Green
@@ -626,7 +625,7 @@ def start_sequence(camera, first_start_time, num_starts, dur_between_starts, pho
                     if any(k in label for k in ["5_min", "4_min", "1_min", "Start"]):
                         trigger_label = label.split()[0]  # "5_min", "4_min", etc.
                         image_name = f"{i+1}a_start_{trigger_label}.jpg"
-                        capture_picture(camera, photo_path, image_name)
+                        capture_picture(camera, photo_path, image_name, rotate=True)
                         time.sleep(0.1)
                     last_triggered.add((event_time, label))
 
