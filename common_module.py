@@ -487,9 +487,11 @@ def get_h264_writer(video_path, fps, frame_size, force_sw=False, logger=None):
 def start_video_recording(camera, video_path, file_name, resolution=(1640, 1232), bitrate=4000000):
     """
     Start video recording using H264Encoder and with timestamp.
+    Automatically applies 180° rotation based on ROTATE_CAMERA.
     """
     output_file = os.path.join(video_path, file_name)
     logger.debug(f"Will start video rec. output file: {output_file}")
+
     encoder = H264Encoder(bitrate=bitrate)
 
     # Determine rotation transform based on global ROTATE_CAMERA
@@ -510,8 +512,28 @@ def start_video_recording(camera, video_path, file_name, resolution=(1640, 1232)
     logger.info(f"video_config {video_config}, resolution: {resolution}, bitrate: {bitrate}")
 
     # Set the pre_callback to apply the timestamp AFTER configuration
-    logger.debug("Setting pre_callback to apply_timestamp")
-    camera.pre_callback = apply_timestamp
+    #logger.debug("Setting pre_callback to apply_timestamp")
+    #camera.pre_callback = apply_timestamp
+
+    # Pre-callback for timestamp overlay
+    def timestamp_callback(frame):
+        """
+        Apply a single upright timestamp to each video frame.
+        Handles rotation automatically.
+        """
+        # Apply rotation if not done by transform (optional safety)
+        if ROTATE_CAMERA:
+            frame = cv2.rotate(frame, cv2.ROTATE_180)
+
+        timestamp = time.strftime("%Y-%m-%d %X")
+        origin = (40, int(frame.shape[0] * 0.85))
+        text_colour = (255, 0, 0)
+        bg_colour = (200, 200, 200)
+        text_rectangle(frame, timestamp, origin, text_colour, bg_colour)
+        return frame
+
+    camera.pre_callback = timestamp_callback
+
 
     # Start recording
     camera.start_recording(encoder, output_file)
