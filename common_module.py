@@ -496,7 +496,7 @@ def start_video_recording(camera, video_path, file_name, resolution=(1640, 1232)
     # Configure camera for video
     video_config = camera.create_video_configuration(
         main={"size": resolution, "format": "BGR888"},
-        transform=Transform(hflip=True, vflip=True),  # Rotate 180-degree
+        transform=transform,
         controls={"FrameRate": 5}
         )
     camera.configure(video_config)  # Configure before starting recording
