@@ -14,7 +14,7 @@ from common_module import (
     process_video,
     get_cpu_model,
     get_h264_writer,
-    should_rotate_image,
+    ROTATE_CAMERA
 )
 
 # Use a deque to store the most recent frames in memory
@@ -64,9 +64,7 @@ logger.info(f"Starting new regattastart9.py session at {dt.datetime.now()}")
 logger.info(f"Detected CPU model string: '{cpu_model}'")
 logger.info("="*60)
 
-# Detect hardware and rotation flag once at startup
-ROTATE_CAMERA = should_rotate_image()
-logger.info(f"Camera rotation flag set to: {ROTATE_CAMERA}")
+
 
 # reset the contents of the status variable, used for flagging that
 # video1-conversion is complete.
