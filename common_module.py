@@ -96,6 +96,22 @@ def get_cpu_model():
         return "Unknown"
 
 
+def should_rotate_image():
+    model = get_cpu_model().lower()
+    logger.info(f"Detected CPU model: {model}")
+
+    # Adjust based on which system is upside down
+    if "compute module 5" in model or "cm5" in model:
+        logger.info("Detected CM5 — rotating camera output 180°")
+        return True
+    elif "raspberry pi 5" in model:
+        logger.info("Detected Raspberry Pi 5 — no rotation needed")
+        return False
+    else:
+        logger.warning("Unknown CPU model — defaulting to no rotation")
+        return False
+
+
 def remove_picture_files(directory, pattern):
     files = os.listdir(directory)
     for file in files:
@@ -165,7 +181,8 @@ def capture_picture(camera, photo_path, file_name, rotate=False):
             if frame.shape[-1] == 3:  # Assuming 3 channels for RGB/BGR
                 # logger.debug("Converting frame from RGB to BGR")
                 frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
-
+            if rotate:
+                frame = cv2.rotate(frame, cv2.ROTATE_180)
             # Apply timestamp (reuse the same logic as in apply_timestamp)
             timestamp = time.strftime("%Y-%m-%d %X")
             origin = (40, int(frame.shape[0] * 0.85))  # Bottom-left corner
@@ -173,8 +190,7 @@ def capture_picture(camera, photo_path, file_name, rotate=False):
             bg_colour = (200, 200, 200)  # Gray background
             # Use text_rectangle function in common_module to draw timestamp
             text_rectangle(frame, timestamp, origin, text_colour, bg_colour)
-            if rotate:
-                frame = cv2.rotate(frame, cv2.ROTATE_180)
+
             resized_for_display = letterbox(frame, (1280, 960))
             cv2.imwrite(os.path.join(photo_path, file_name), resized_for_display)
             logger.debug(f"Saved resized_for_display size: {resized_for_display.shape}")
