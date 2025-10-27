@@ -290,7 +290,6 @@ def restart_camera(camera, resolution=(1640, 1232), fps=15):
         config = camera.create_video_configuration(
             # main={"size": best_mode["size"], "format": "BGR888"},
             main={"size": best_mode["size"], "format": "RGB888"},
-            transform=Transform(hflip=True, vflip=True),
             colour_space=ColorSpace.Srgb()  # OR ColorSpace.Sycc()
         )
         logger.debug(f"Config before applying: {config}")
@@ -494,18 +493,9 @@ def start_video_recording(camera, video_path, file_name, resolution=(1640, 1232)
 
     encoder = H264Encoder(bitrate=bitrate)
 
-    # Determine rotation transform based on global ROTATE_CAMERA
-    if ROTATE_CAMERA:
-        transform = Transform(hflip=True, vflip=True)  # 180° rotation
-        logger.info("Applying 180° rotation to video frames (ROTATE_CAMERA=True)")
-    else:
-        transform = Transform(hflip=False, vflip=False)
-        logger.info("No rotation applied to video frames (ROTATE_CAMERA=False)")
-
     # Configure camera for video
     video_config = camera.create_video_configuration(
         main={"size": resolution, "format": "BGR888"},
-        transform=transform,
         controls={"FrameRate": 5}
         )
     camera.configure(video_config)  # Configure before starting recording
