@@ -5,6 +5,7 @@ import subprocess, threading, time
 import datetime as dt
 import logging
 import logging.config
+import libcamera
 from libcamera import Transform
 from libcamera import ColorSpace
 from picamera2 import Picamera2, MappedArray
@@ -78,6 +79,10 @@ def setup_logging():
 # Initialize logging immediately when the module is imported
 setup_logging()
 
+# -------------------------
+# Hardware detection
+# -------------------------
+
 
 def get_cpu_model():
     try:
@@ -112,6 +117,11 @@ def should_rotate_image():
         return False
 
 
+#  Set rotation flag once at startup
+ROTATE_CAMERA = should_rotate_image()
+logger.info(f"Camera rotation flag set to: {ROTATE_CAMERA}")
+
+
 def remove_picture_files(directory, pattern):
     files = os.listdir(directory)
     for file in files:
@@ -127,6 +137,10 @@ def remove_video_files(directory, pattern):
             file_path = os.path.join(directory, file)
             os.remove(file_path)
 
+# -------------------------
+# Camera setup
+# -------------------------
+
 
 def setup_camera(resolution=(1640, 1232)):
     global logger  # Explicitly declare logger as global
@@ -135,11 +149,15 @@ def setup_camera(resolution=(1640, 1232)):
         # Stop the camera if it is running (no need to check is_running)
         logger.info("Stopping the camera before reconfiguring.")
         camera.stop()  # Stop the camera if it is running
-        # Configure the camera
+
+        #  Configure the camera
         config = camera.create_still_configuration(
             main={"size": (resolution), "format": "BGR888"},
             colour_space=ColorSpace.Srgb()  # OR ColorSpace.Sycc()
         )
+        if ROTATE_CAMERA:
+            config["transform"] = libcamera.Transform(rotation=180)
+
         camera.configure(config)
         logger.info(f"size: {resolution}, format: BGR888")
         return camera  # Add this line to return the camera object
@@ -190,7 +208,6 @@ def capture_picture(camera, photo_path, file_name, rotate=False):
             bg_colour = (200, 200, 200)  # Gray background
             # Use text_rectangle function in common_module to draw timestamp
             text_rectangle(frame, timestamp, origin, text_colour, bg_colour)
-
             resized_for_display = letterbox(frame, (1280, 960))
             cv2.imwrite(os.path.join(photo_path, file_name), resized_for_display)
             logger.debug(f"Saved resized_for_display size: {resized_for_display.shape}")
@@ -648,27 +665,3 @@ def start_sequence(camera, first_start_time, num_starts, dur_between_starts, pho
             time.sleep(0.1)
         logger.info(f"Start_sequence, End of iteration: {i+1}")
     cleanup_gpio(gpio_handle)  # Clean up GPIO after each iteration
-
-
-def clean_exit(camera=None, video_writer=None):
-    """Release camera, video writer, and log clean shutdown."""
-    logger.info("Clean exit initiated")
-
-    # Stop detection-driven video
-    if video_writer is not None:
-        try:
-            video_writer.release()
-            logger.info("Video1 writer released, file finalized.")
-        except Exception as e:
-            logger.error(f"Error releasing video_writer: {e}")
-
-    # Stop continuous recording (Video0)
-    if camera is not None:
-        try:
-            stop_video_recording(camera)
-            camera.close()
-            logger.info("Camera stopped and closed.")
-        except Exception as e:
-            logger.error(f"Error stopping/closing camera: {e}")
-
-    logger.info("Exiting now.")
