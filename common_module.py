@@ -195,24 +195,31 @@ def capture_picture(camera, photo_path, file_name, rotate=False):
         with MappedArray(request, "main") as m:
             frame = m.array  # Get the frame as a NumPy array
             logger.debug(f"frame shape: {frame.shape} dtype: {frame.dtype}")
+
             # Ensure the frame is in BGR format
             if frame.shape[-1] == 3:  # Assuming 3 channels for RGB/BGR
-                # logger.debug("Converting frame from RGB to BGR")
                 frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
+
+            # Rotate frame first if needed
             if rotate:
                 frame = cv2.rotate(frame, cv2.ROTATE_180)
-            # Apply timestamp (reuse the same logic as in apply_timestamp)
+
+            # Draw timestamp once using text_rectangle
             timestamp = time.strftime("%Y-%m-%d %X")
             origin = (40, int(frame.shape[0] * 0.85))  # Bottom-left corner
             text_colour = (255, 0, 0)  # Blue text in BGR, Blue text RGB = (0, 0, 255)
             bg_colour = (200, 200, 200)  # Gray background
             # Use text_rectangle function in common_module to draw timestamp
             text_rectangle(frame, timestamp, origin, text_colour, bg_colour)
+
+            # Resize for display / saving
             resized_for_display = letterbox(frame, (1280, 960))
             cv2.imwrite(os.path.join(photo_path, file_name), resized_for_display)
             logger.debug(f"Saved resized_for_display size: {resized_for_display.shape}")
+
         request.release()
         logger.info(f'Captured picture: {file_name}')
+
     except Exception as e:
         logger.error(f"Failed to capture picture: {e}", exc_info=True)
 
