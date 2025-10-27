@@ -189,7 +189,7 @@ def letterbox(image, target_size=(640, 480)):
     )
 
 
-def capture_picture(camera, photo_path, file_name, rotate=False):
+def capture_picture(camera, photo_path, file_name):
     try:
         request = camera.capture_request()  # Capture a single request
         with MappedArray(request, "main") as m:
@@ -199,10 +199,6 @@ def capture_picture(camera, photo_path, file_name, rotate=False):
             # Ensure the frame is in BGR format
             if frame.shape[-1] == 3:  # Assuming 3 channels for RGB/BGR
                 frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
-
-            # Rotate frame first if needed
-            if rotate:
-                frame = cv2.rotate(frame, cv2.ROTATE_180)
 
             # Draw timestamp once using text_rectangle
             timestamp = time.strftime("%Y-%m-%d %X")
@@ -519,8 +515,8 @@ def start_video_recording(camera, video_path, file_name, resolution=(1640, 1232)
                     frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
 
                 # Rotate if needed
-                if ROTATE_CAMERA:
-                    frame = cv2.rotate(frame, cv2.ROTATE_180)
+                #if ROTATE_CAMERA:
+                #    frame = cv2.rotate(frame, cv2.ROTATE_180)
 
                 # Draw timestamp
                 timestamp = time.strftime("%Y-%m-%d %X")
@@ -696,7 +692,7 @@ def start_sequence(camera, first_start_time, num_starts, dur_between_starts, pho
                     if any(k in label for k in ["5_min", "4_min", "1_min", "Start"]):
                         trigger_label = label.split()[0]  # "5_min", "4_min", etc.
                         image_name = f"{i+1}a_start_{trigger_label}.jpg"
-                        capture_picture(camera, photo_path, image_name, rotate=True)
+                        capture_picture(camera, photo_path, image_name)
                         time.sleep(0.1)
                     last_triggered.add((event_time, label))
 
