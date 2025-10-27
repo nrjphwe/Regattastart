@@ -544,7 +544,6 @@ def start_video_recording(camera, video_path, file_name, resolution=(1640, 1232)
 
     camera.pre_callback = timestamp_callback
 
-
     # Start recording
     camera.start_recording(encoder, output_file)
     logger.info(f"Started recording video: {output_file}")
