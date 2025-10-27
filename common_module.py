@@ -485,6 +485,15 @@ def start_video_recording(camera, video_path, file_name, resolution=(1640, 1232)
     logger.debug(f"Will start video rec. output file: {output_file}")
     encoder = H264Encoder(bitrate=bitrate)
 
+    # Determine rotation transform based on global ROTATE_CAMERA
+    if ROTATE_CAMERA:
+        transform = Transform(hflip=True, vflip=True)  # 180° rotation
+        logger.info("Applying 180° rotation to video frames (ROTATE_CAMERA=True)")
+    else:
+        transform = Transform(hflip=False, vflip=False)
+        logger.info("No rotation applied to video frames (ROTATE_CAMERA=False)")
+
+    # Configure camera for video
     video_config = camera.create_video_configuration(
         main={"size": resolution, "format": "BGR888"},
         transform=Transform(hflip=True, vflip=True),  # Rotate 180-degree
@@ -492,6 +501,7 @@ def start_video_recording(camera, video_path, file_name, resolution=(1640, 1232)
         )
     camera.configure(video_config)  # Configure before starting recording
     logger.info(f"video_config {video_config}, resolution: {resolution}, bitrate: {bitrate}")
+
     # Set the pre_callback to apply the timestamp AFTER configuration
     logger.debug("Setting pre_callback to apply_timestamp")
     camera.pre_callback = apply_timestamp
