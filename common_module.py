@@ -198,6 +198,7 @@ def capture_picture(camera, photo_path, file_name):
 
             # Ensure the frame is in BGR format
             if frame.shape[-1] == 3:  # Assuming 3 channels for RGB/BGR
+                # Convert to BGR if it's in RGB
                 frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
 
             # Draw timestamp once using text_rectangle
@@ -284,8 +285,8 @@ def restart_camera(camera, resolution=(1640, 1232), fps=15):
         logger.debug(f"Using sensor mode: {best_mode}")
 
         config = camera.create_video_configuration(
-            # main={"size": best_mode["size"], "format": "BGR888"},
-            main={"size": best_mode["size"], "format": "RGB888"},
+            main={"size": best_mode["size"], "format": "BGR888"},
+            # main={"size": best_mode["size"], "format": "RGB888"},
             colour_space=ColorSpace.Srgb()  # OR ColorSpace.Sycc()
         )
         logger.debug(f"Config before applying: {config}")
