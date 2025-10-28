@@ -154,6 +154,7 @@ def setup_camera(resolution=(1640, 1232)):
         transform = Transform(rotation=rotation_degrees)
         logger.info(f"Applying rotation transform: {transform}")
 
+        # Create still configuration
         config = camera.create_still_configuration(
             main={"size": resolution, "format": "RGB888"},
             transform=transform,
