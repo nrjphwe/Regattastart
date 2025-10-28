@@ -154,7 +154,7 @@ def setup_camera(resolution=(1640, 1232)):
             raise RuntimeError("No camera sensor modes detected! Check camera connection.")
         logger.debug(f"Available sensor modes: {camera.sensor_modes}")
 
-        transform = libcamera.Transform(rotation=180 if ROTATE_CAMERA else 0)
+        transform = Transform(rotation=180 if ROTATE_CAMERA else 0)
         logger.info(f"Applying rotation transform: {transform}")
 
         config = camera.create_still_configuration(
