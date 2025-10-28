@@ -156,14 +156,14 @@ def setup_camera(resolution=(1640, 1232)):
 
         #  Configure the camera
         config = camera.create_still_configuration(
-            main={"size": (resolution), "format": "RGR888"},
+            main={"size": (resolution), "format": "RGB888"},
             colour_space=ColorSpace.Srgb()  # OR ColorSpace.Sycc()
         )
         if ROTATE_CAMERA:
             config["transform"] = libcamera.Transform(rotation=180)
 
         camera.configure(config)
-        logger.info(f"size: {resolution}, format: RGR888")
+        logger.info(f"size: {resolution}, format: RGB888")
         return camera  # Add this line to return the camera object
 
     except Exception as e:
