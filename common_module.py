@@ -495,7 +495,7 @@ def start_video_recording(camera, video_path, file_name, resolution=(1640, 1232)
         controls={"FrameRate": 5}
         )
     camera.configure(video_config)  # Configure before starting recording
-    logger.info(f"video_config {video_config}, resolution: {resolution}, bitrate: {bitrate}")
+    logger.info(f"resolution: {resolution}, bitrate: {bitrate}")
 
     # Set the pre_callback to apply the timestamp AFTER configuration
     # logger.debug("Setting pre_callback to apply_timestamp")
@@ -509,14 +509,6 @@ def start_video_recording(camera, video_path, file_name, resolution=(1640, 1232)
         try:
             with MappedArray(request, "main") as m:
                 frame = m.array
-
-                # Ensure BGR
-                if frame.shape[-1] == 3:
-                    frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
-
-                # Rotate if needed
-                #if ROTATE_CAMERA:
-                #    frame = cv2.rotate(frame, cv2.ROTATE_180)
 
                 # Draw timestamp
                 timestamp = time.strftime("%Y-%m-%d %X")
