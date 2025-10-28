@@ -150,11 +150,8 @@ def setup_camera(resolution=(1640, 1232)):
         camera.stop()  # Stop in case it was running
         logger.info("Stopping the camera before reconfiguring.")
 
-        if not camera.sensor_modes:
-            raise RuntimeError("No camera sensor modes detected! Check camera connection.")
-        logger.debug(f"Available sensor modes: {camera.sensor_modes}")
-
-        transform = Transform(rotation=180 if ROTATE_CAMERA else 0)
+        rotation_degrees = 180 if ROTATE_CAMERA else 0
+        transform = Transform(rotation=rotation_degrees)
         logger.info(f"Applying rotation transform: {transform}")
 
         config = camera.create_still_configuration(
