@@ -155,6 +155,7 @@ def setup_camera(resolution=(1640, 1232)):
         logger.debug(f"Available sensor modes: {camera.sensor_modes}")
 
         transform = libcamera.Transform(rotation=180 if ROTATE_CAMERA else 0)
+        logger.info(f"Applying rotation transform: {transform}")
 
         config = camera.create_still_configuration(
             main={"size": resolution, "format": "RGB888"},
@@ -163,7 +164,8 @@ def setup_camera(resolution=(1640, 1232)):
         )
 
         camera.configure(config)
-        logger.info(f"size: {resolution}, format: RGB888")
+        logger.info(f"Configured camera: size={resolution}, format=RGB888, rotation={transform.rotation}")
+        logger.debug(f"Camera configuration: {camera.camera_configuration()}")
         return camera  # Add this line to return the camera object
 
     except Exception as e:
