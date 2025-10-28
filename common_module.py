@@ -111,7 +111,7 @@ def should_rotate_image():
         return True
     elif "raspberry pi 5" in model:
         logger.info("Detected Raspberry Pi 5 — rotating camera output 180°")
-        return True
+        return False
     else:
         logger.warning("Unknown CPU model — defaulting to no rotation")
         return False
@@ -513,8 +513,8 @@ def start_video_recording(camera, video_path, file_name, resolution=(1640, 1232)
                 # Draw timestamp
                 timestamp = time.strftime("%Y-%m-%d %X")
                 origin = (40, int(frame.shape[0] * 0.85))
-                text_colour = (255, 0, 0)
-                bg_colour = (200, 200, 200)
+                text_colour = (255, 0, 0)  # Blue text in BGR, Blue text RGB = (0, 0, 255)
+                bg_colour = (200, 200, 200)  # Gray background
                 text_rectangle(frame, timestamp, origin, text_colour, bg_colour)
 
         except Exception as e:
