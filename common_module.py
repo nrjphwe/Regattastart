@@ -161,6 +161,7 @@ def setup_camera(resolution=(1640, 1232)):
         )
         if ROTATE_CAMERA:
             config["transform"] = libcamera.Transform(rotation=180)
+            logger.debug("Camera rotated")
 
         camera.configure(config)
         logger.info(f"size: {resolution}, format: RGB888")
