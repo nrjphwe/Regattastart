@@ -147,20 +147,26 @@ def setup_camera(resolution=(1640, 1232)):
     try:
         camera = Picamera2()
         # Stop the camera if it is running (no need to check is_running)
+        camera.stop()  # Stop in case it was running
         logger.info("Stopping the camera before reconfiguring.")
         camera.stop()  # Stop the camera if it is running
 
+        if not camera.sensor_modes:
+            raise RuntimeError("No camera sensor modes detected! Check camera connection.")
+        logger.debug(f"Available sensor modes: {camera.sensor_modes}")
+
         #  Configure the camera
         config = camera.create_still_configuration(
-            main={"size": (resolution), "format": "BGR888"},
+            main={"size": (resolution), "format": "RGR888"},
             colour_space=ColorSpace.Srgb()  # OR ColorSpace.Sycc()
         )
         if ROTATE_CAMERA:
             config["transform"] = libcamera.Transform(rotation=180)
 
         camera.configure(config)
-        logger.info(f"size: {resolution}, format: BGR888")
+        logger.info(f"size: {resolution}, format: RGR888")
         return camera  # Add this line to return the camera object
+
     except Exception as e:
         logger.error(f"Failed to initialize camera: {e}")
         return None
