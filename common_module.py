@@ -149,7 +149,6 @@ def setup_camera(resolution=(1640, 1232)):
         # Stop the camera if it is running (no need to check is_running)
         camera.stop()  # Stop in case it was running
         logger.info("Stopping the camera before reconfiguring.")
-        camera.stop()  # Stop the camera if it is running
 
         if not camera.sensor_modes:
             raise RuntimeError("No camera sensor modes detected! Check camera connection.")
