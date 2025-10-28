@@ -110,7 +110,7 @@ def should_rotate_image():
         logger.info("Detected CM5 — rotating camera output 180°")
         return True
     elif "raspberry pi 5" in model:
-        logger.info("Detected Raspberry Pi 5 — no rotation needed")
+        logger.info("Detected Raspberry Pi 5 — rotating camera output 180°")
         return True
     else:
         logger.warning("Unknown CPU model — defaulting to no rotation")
