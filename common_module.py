@@ -109,7 +109,7 @@ def should_rotate_image():
     if "compute module 5" in model or "cm5" in model:
         logger.info("Detected CM5 — rotating camera output 180°")
         return True
-    elif "Raspberry Pi 5" in model:
+    elif "raspberry pi 5" in model:
         logger.info("Detected Raspberry Pi 5 — no rotation needed")
         return True
     else:
