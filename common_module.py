@@ -156,7 +156,7 @@ def setup_camera(resolution=(1640, 1232)):
 
         #  Configure the camera
         config = camera.create_still_configuration(
-            main={"size": (resolution), "format": "RGB888"},
+            main={"size": resolution, "format": "RGB888"},
             colour_space=ColorSpace.Srgb()  # OR ColorSpace.Sycc()
         )
         if ROTATE_CAMERA:
