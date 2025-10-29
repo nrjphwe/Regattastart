@@ -642,7 +642,7 @@ def main():
         listen_thread.start()
 
         # --- Start video0 recording & start sequences ---
-        camera = setup_camera(rotate_degrees=ROTATE_DEGREES, mode="video")
+        camera = setup_camera(resolution=(1640, 1232), mode="video", rotate_degrees=0)
         start_video_recording(camera, video_path, "video0.h264", resolution=(1640,1232), bitrate=4000000)
         start_sequence(camera, start_time_dt, num_starts, dur_between_starts, photo_path)
         last_start = start_time_dt + dt.timedelta(minutes=(num_starts - 1) * dur_between_starts)
