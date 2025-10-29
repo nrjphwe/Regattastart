@@ -5,9 +5,10 @@ import subprocess, threading, time
 import datetime as dt
 import logging
 import logging.config
-from picamera2 import Picamera2, ColorSpace, Transform
+from picamera2.picamera2 import Picamera2, MappedArray
 from picamera2.encoders import H264Encoder
-from picamera2 import MappedArray
+from picamera2.transform import Transform
+from picamera2.color_spaces import ColorSpace
 # from libcamera import Transform
 # from libcamera import ColorSpace
 from picamera2 import Picamera2, MappedArray
@@ -118,6 +119,18 @@ def should_rotate_image():
         logger.warning("Unknown CPU model — defaulting to no rotation")
         return False
 
+def auto_rotate_by_board():
+    """Detect board and return recommended rotation in degrees."""
+    try:
+        board_info = os.popen('cat /proc/device-tree/model').read().strip()
+        if "Raspberry Pi 5" in board_info:
+            return 180  # RPI5 + OV5647
+        elif "Compute Module 5" in board_info:
+            return 0    # CM5 + IMX219
+    except Exception as e:
+        logger.warning(f"Cannot detect board: {e}")
+    return 0
+
 
 #  Set rotation flag once at startup
 ROTATE_CAMERA = should_rotate_image()
@@ -226,6 +239,11 @@ def setup_camera(resolution=None, rotate_degrees=None, mode="still"):
 
     except Exception as e:
         logger.error(f"Failed to initialize camera: {e}")
+        if camera:
+            try:
+                camera.close()
+            except Exception:
+                pass
         return None
 
 
