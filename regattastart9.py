@@ -2,6 +2,7 @@
 # after git pull, do: sudo cp regattastart9.py /usr/lib/cgi-bin/
 import os
 from common_module import (
+    auto_rotate_by_board,
     setup_camera,
     remove_picture_files,
     remove_video_files,
@@ -14,7 +15,6 @@ from common_module import (
     process_video,
     get_cpu_model,
     get_h264_writer,
-    ROTATE_CAMERA
 )
 
 # Use a deque to store the most recent frames in memory
@@ -63,6 +63,8 @@ logger.info("="*60)
 logger.info(f"Starting new regattastart9.py session at {dt.datetime.now()}")
 logger.info(f"Detected CPU model string: '{cpu_model}'")
 logger.info("="*60)
+
+ROTATE_DEGREES = auto_rotate_by_board()
 
 # reset the contents of the status variable, used for flagging that
 # video1-conversion is complete.
@@ -593,7 +595,8 @@ def main():
     global stop_event, listen_thread, wd_thread
     try:
         # --- Camera setup ---
-        camera = setup_camera()  # choose resolution internally
+        camera = setup_camera(rotate_degrees=ROTATE_DEGREES, mode="still")
+        # camera = setup_camera()  # choose resolution internally
         if camera is None:
             logger.error("CAMERA SETUP: failed")
             return 1
@@ -639,6 +642,7 @@ def main():
         listen_thread.start()
 
         # --- Start video0 recording & start sequences ---
+        camera = setup_camera(rotate_degrees=ROTATE_DEGREES, mode="video")
         start_video_recording(camera, video_path, "video0.h264", resolution=(1640,1232), bitrate=4000000)
         start_sequence(camera, start_time_dt, num_starts, dur_between_starts, photo_path)
         last_start = start_time_dt + dt.timedelta(minutes=(num_starts - 1) * dur_between_starts)
