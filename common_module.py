@@ -178,9 +178,6 @@ def setup_camera(
         except Exception:
             pass
 
-        sensor_name = camera.sensor_configuration().get("Sensor name", "").lower()
-        logger.info(f"Detected sensor: {sensor_name}")
-
         # Choose configuration based on mode
         if mode == "video":
             config = camera.create_video_configuration(
