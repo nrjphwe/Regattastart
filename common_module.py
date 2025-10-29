@@ -6,13 +6,13 @@ import datetime as dt
 import logging
 import logging.config
 # from libcamera import Transform
-#from libcamera import ColorSpace
+# from libcamera import ColorSpace
 from picamera2.picamera2 import Picamera2
 from picamera2.encoders import H264Encoder
-from picamera2 import Transform
-from picamera2.color_spaces import ColorSpace
-from picamera2 import MappedArray
-from picamera2.encoders import H264Encoder
+# from picamera2 import Transform
+# from picamera2.color_spaces import ColorSpace
+# from picamera2 import MappedArray
+# from picamera2.encoders import H264Encoder
 import RPi.GPIO as GPIO
 import lgpio
 from queue import Queue, Full, Empty
@@ -119,6 +119,7 @@ def should_rotate_image():
         logger.warning("Unknown CPU model — defaulting to no rotation")
         return False
 
+
 def auto_rotate_by_board():
     """Detect board and return recommended rotation in degrees."""
     try:
@@ -156,84 +157,51 @@ def remove_video_files(directory, pattern):
 # Camera setup
 # -------------------------
 
-
-# def setup_camera(resolution=(1640, 1232)):
-def setup_camera(resolution=None, rotate_degrees=None, mode="still"):
+def setup_camera(
+    resolution=(1640, 1232),
+    mode="still",
+    rotate_degrees=0,
+):
     """
-    Unified camera setup for both RPI5 + V1.3 and CM5 + V2.1.
-
-    Args:
-        resolution (tuple): (width, height), optional, auto-detected if None.
-        rotate_degrees (int): Rotation to apply, optional.
-        mode (str): "still" or "video".
-
-    Returns:
-        Picamera2 object or None if initialization failed.
+    Initialize Picamera2 for still or video mode.
+    Works with both IMX219 (V2.1) and OV5647 (V1.3) sensors on Raspberry Pi 5.
+    Rotation handled using camera controls instead of Transform.
     """
 
     global logger  # Explicitly declare logger as global
     camera = None
     try:
         camera = Picamera2()
-        camera.stop()  # Stop in case it was running
+        # Stop the camera in case it’s already running
+        try:
+            camera.stop()
+        except Exception:
+            pass
 
         sensor_name = camera.sensor_configuration().get("Sensor name", "").lower()
         logger.info(f"Detected sensor: {sensor_name}")
 
-        # --- Auto-select defaults based on sensor ---
-        if "imx219" in sensor_name:
-            cam_type = "IMX219"
-            if resolution is None:
-                resolution = (1640, 1232)
-            pixel_format = "RGB888"
-        elif "ov5647" in sensor_name:
-            cam_type = "OV5647"
-            if resolution is None:
-                resolution = (1296, 972)
-            pixel_format = "BGR888"
-        else:
-            cam_type = "Unknown"
-            if resolution is None:
-                resolution = (1280, 720)
-            pixel_format = "BGR888"
-
-        logger.info(f"Camera type: {cam_type}, resolution={resolution}, format={pixel_format}")
-
-        # Apply rotation
-        transform = None
-        if rotate_degrees:
-            try:
-                transform = Transform(rotation=rotate_degrees)
-                logger.info(f"Applying rotation transform: {rotate_degrees}°")
-            except Exception as e:
-                logger.warning(f"Rotation not supported on this sensor: {e}")
-                transform = None
-
-        # --- Configuration based on mode ---
-        if mode == "still":
-            config = camera.create_still_configuration(
-                main={"size": resolution, "format": pixel_format},
-                colour_space=ColorSpace.Srgb(),
-                transform=transform if transform else Transform()
-            )
-        elif mode == "video":
+        # Choose configuration based on mode
+        if mode == "video":
             config = camera.create_video_configuration(
-                main={"size": resolution, "format": pixel_format},
-                colour_space=ColorSpace.Srgb(),
-                transform=transform if transform else Transform()
+                main={"size": resolution, "format": "RGB888"}
             )
-        else:
-            logger.warning(f"Unknown mode '{mode}', defaulting to still.")
+        else:  # default to still
             config = camera.create_still_configuration(
-                main={"size": resolution, "format": pixel_format},
-                colour_space=ColorSpace.Srgb(),
-                transform=transform if transform else Transform()
+                main={"size": resolution, "format": "RGB888"}
             )
 
         camera.configure(config)
 
-        logger.info(f"Configured {cam_type} camera successfully (mode={mode}).")
-        logger.debug(f"Camera configuration: {camera.camera_configuration()}")
+        # Apply rotation (0, 90, 180, 270)
+        try:
+            camera.set_controls({"Rotation": int(rotate_degrees)})
+        except Exception as e:
+            if logger:
+                logger.warning(f"Rotation control not supported: {e}")
+
+        if logger:
+            logger.info(f"Camera configured: mode={mode}, resolution={resolution}, rotation={rotate_degrees}")
 
         return camera
 
