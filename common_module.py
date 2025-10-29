@@ -5,12 +5,12 @@ import subprocess, threading, time
 import datetime as dt
 import logging
 import logging.config
+# from libcamera import Transform
+#from libcamera import ColorSpace
 from picamera2.picamera2 import Picamera2, MappedArray
 from picamera2.encoders import H264Encoder
 from picamera2.transform import Transform
 from picamera2.color_spaces import ColorSpace
-# from libcamera import Transform
-# from libcamera import ColorSpace
 from picamera2 import Picamera2, MappedArray
 from picamera2.encoders import H264Encoder
 import RPi.GPIO as GPIO
