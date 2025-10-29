@@ -110,10 +110,10 @@ def should_rotate_image():
 
     # Adjust based on which system is upside down
     if "compute module 5" in model or "cm5" in model:
-        logger.info("Detected CM5 — rotating camera output 180°")
+        logger.info("Detected CM5")
         return True
     elif "raspberry pi 5" in model:
-        logger.info("Detected Raspberry Pi 5 — rotating camera output 180°")
+        logger.info("Detected Raspberry Pi 5")
         return False
     else:
         logger.warning("Unknown CPU model — defaulting to no rotation")
