@@ -150,6 +150,7 @@ logger.info(f"Camera rotation flag set to: {ROTATE_CAMERA}")
 
 
 def setup_camera(resolution=(1640, 1232)):
+    logger.info("Setup of camera")
     global logger  # Explicitly declare logger as global
     try:
         camera = Picamera2()
