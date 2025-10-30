@@ -158,10 +158,17 @@ def setup_camera(resolution=(1640, 1232)):
         logger.info("Stopping the camera before reconfiguring.")
         camera.stop()  # Stop the camera if it is running
 
+        if ROTATE_CAMERA:
+            transform = Transform(hflip=True, vflip=True)
+            logger.info("Camera transform set to hflip and vflip due to ROTATE_CAMERA=True")
+        else: 
+            transform = Transform()  # No flip
+            logger.info("Camera transform set to no flip")        
+
         # Configure the camera
         config = camera.create_still_configuration(
             main={"size": resolution, "format": "BGR888"},
-            transform=Transform(hflip=True, vflip=True),
+            transform=transform,
             colour_space=ColorSpace.Srgb()  # OR ColorSpace.Sycc()
         )
         camera.configure(config)
@@ -212,8 +219,8 @@ def capture_picture(camera, photo_path, file_name, rotate=False):
             text_colour = (255, 0, 0)  # Blue text in BGR, Blue text RGB = (0, 0, 255)
             bg_colour = (200, 200, 200)  # Gray background
 
-            # if ROTATE_CAMERA:
-            #    frame = cv2.rotate(frame, cv2.ROTATE_180)
+            if ROTATE_CAMERA:
+                frame = cv2.rotate(frame, cv2.ROTATE_180)
 
             # Use text_rectangle function in common_module to draw timestamp
             text_rectangle(frame, timestamp, origin, text_colour, bg_colour)
