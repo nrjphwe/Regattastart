@@ -126,6 +126,7 @@ def auto_rotate_by_board():
         logger.warning(f"Cannot detect board: {e}")
     return 0
 
+
 #  Set rotation flag once at startup
 ROTATE_CAMERA = should_rotate_image()
 logger.info(f"Camera rotation flag set to: {ROTATE_CAMERA}")
@@ -206,10 +207,13 @@ def capture_picture(camera, photo_path, file_name, rotate=False):
             origin = (40, int(frame.shape[0] * 0.85))  # Bottom-left corner
             text_colour = (255, 0, 0)  # Blue text in BGR, Blue text RGB = (0, 0, 255)
             bg_colour = (200, 200, 200)  # Gray background
-            # Use text_rectangle function in common_module to draw timestamp
-            text_rectangle(frame, timestamp, origin, text_colour, bg_colour)
+
             if rotate:
                 frame = cv2.rotate(frame, cv2.ROTATE_180)
+
+            # Use text_rectangle function in common_module to draw timestamp
+            text_rectangle(frame, timestamp, origin, text_colour, bg_colour)
+
             resized_for_display = letterbox(frame, (1280, 960))
             cv2.imwrite(os.path.join(photo_path, file_name), resized_for_display)
             logger.debug(f"Saved resized_for_display size: {resized_for_display.shape}")
