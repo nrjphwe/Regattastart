@@ -538,12 +538,13 @@ def process_video(video_path, input_file, output_file, frame_rate=None, resoluti
 
 
 def setup_gpio():
+    level = 1  # Initial level HIGH
     try:
         # seems like initial value off corresponds to 1
         h = lgpio.gpiochip_open(0)  # Open GPIO chip 0
-        lgpio.gpio_claim_output(h, 26, 1)  # Signal pin
-        lgpio.gpio_claim_output(h, 20, 1)  # Lamp1
-        lgpio.gpio_claim_output(h, 21, 1)  # Lamp2
+        lgpio.gpio_claim_output(h, 26, level)  # Signal pin
+        lgpio.gpio_claim_output(h, 20, level)  # Lamp1
+        lgpio.gpio_claim_output(h, 21, level)  # Lamp2
         logger.info("GPIO setup successful: Signal=26, Lamp1=20, Lamp2=21")
         return h, 26, 20, 21  # Return the GPIO handle and pin numbers
     except Exception as e:
