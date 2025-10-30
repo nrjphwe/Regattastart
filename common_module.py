@@ -28,9 +28,18 @@ text_colour = (255, 0, 0)  # Blue text in BGR
 # bg_colour = (200, 200, 200)  # Light grey background
 
 # GPIO pin numbers for the relay and lamps
-signal_pin = 26
-lamp1 = 20
-lamp2 = 21
+signal = 26  # for signal to pin 37 left 2nd from the bottom,
+# for new startmachine: Relay channel 3 input (IN3) purple wire
+lamp1 = 20   # , for lamp1 to pin 38 right 2nd from the bottom
+# for new startmachine: Relay channel 1 input (IN1) blue wire
+lamp2 = 21   # for lamp2 to pin 40 right bottom
+# for new startmachine Relay channel 2 input (IN2) green wire
+
+# for new startmachine GND grey wire
+"""
+Purple GPIO 26 (37)-(38) GPIO 20 blue
+Grey Ground  (39)-(40) GPIO 21 Green
+"""
 
 # Define ON/OFF states for clarity
 ON = GPIO.LOW
@@ -67,6 +76,10 @@ def setup_logging():
 
 # Initialize logging immediately when the module is imported
 setup_logging()
+
+# -------------------------
+# Hardware detection
+# -------------------------
 
 
 def get_cpu_model():
@@ -541,13 +554,16 @@ def setup_gpio():
 def trigger_relay(handle, pin, state, duration=None):
     """Control a relay by turning it ON or OFF, optionally with a delay."""
     try:
-        # logger.info(f"Triggering relay on pin {pin} to state {state}")
-        lgpio.gpio_write(handle, pin, 0 if state == "on" else 1)
-        # logger.debug(f"Pin {pin} set to {'HIGH' if state == 'on' else 'LOW'}")
+        if state == "on":
+            lgpio.gpio_write(handle, pin, 1)  # HIGH = ON
+        else:
+            lgpio.gpio_write(handle, pin, 0)  # LOW = OFF
+
+        logger.info(f"Triggering relay on pin {pin} to state {state}")
         if duration:
             time.sleep(int(duration))
-            lgpio.gpio_write(handle, pin, 1)  # Turn off after the duration
-            # logger.debug(f"Pin {pin} turned OFF after {duration} seconds")
+            lgpio.gpio_write(handle, pin, 0)  # Turn off after the duration
+            logger.debug(f"Pin {pin} turned OFF after {duration} seconds")
     except Exception as e:
         logger.error(f"Failed to trigger relay on pin {pin}: {e}")
 
