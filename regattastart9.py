@@ -638,12 +638,6 @@ def main():
         listen_thread = threading.Thread(target=listen_for_messages, args=(stop_event,), daemon=True)
         listen_thread.start()
 
-        # --- Start watchdog ---
-        # stop_event = threading.Event()
-        # wd_thread = start_watchdog_thread(heartbeat_file="/tmp/regattastart.heartbeat", interval=5)
-        # wd_thread = start_watchdog(timeout=15)  # adjust timeout as needed
-        # logger.info("Watchdog thread started")
-
         # --- Start video0 recording & start sequences ---
         start_video_recording(camera, video_path, "video0.h264", resolution=(1640,1232), bitrate=4000000)
         start_sequence(camera, start_time_dt, num_starts, dur_between_starts, photo_path)
