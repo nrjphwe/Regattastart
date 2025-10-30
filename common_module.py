@@ -150,8 +150,8 @@ logger.info(f"Camera rotation flag set to: {ROTATE_CAMERA}")
 
 
 def setup_camera(resolution=(1640, 1232)):
-    logger.info("Setup of camera")
     global logger  # Explicitly declare logger as global
+    logger.info("Setup of camera")
     try:
         camera = Picamera2()
         # Stop the camera if it is running (no need to check is_running)
