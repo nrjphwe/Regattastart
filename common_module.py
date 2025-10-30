@@ -158,19 +158,21 @@ def setup_camera(resolution=(1640, 1232)):
         logger.info("Stopping the camera before reconfiguring.")
         camera.stop()  # Stop the camera if it is running
 
-        if ROTATE_CAMERA:
-            transform = Transform(hflip=True, vflip=True)
-            logger.info("Camera transform set to hflip and vflip due to ROTATE_CAMERA=True")
-        else: 
-            transform = Transform()  # No flip
-            logger.info("Camera transform set to no flip")        
-
         # Configure the camera
-        config = camera.create_still_configuration(
-            main={"size": resolution, "format": "BGR888"},
-            transform=transform,
-            colour_space=ColorSpace.Srgb()  # OR ColorSpace.Sycc()
-        )
+        if ROTATE_CAMERA:
+            config = camera.create_still_configuration(
+                main={"size": resolution, "format": "BGR888"},
+                transform = Transform(hflip=True, vflip=True)
+                colour_space=ColorSpace.Srgb()  # OR ColorSpace.Sycc()
+            )
+            logger.info("Camera transform set to hflip and vflip due to ROTATE_CAMERA=True")
+        else:
+            config = camera.create_still_configuration(
+                main={"size": resolution, "format": "BGR888"},
+                colour_space=ColorSpace.Srgb()  # OR ColorSpace.Sycc()
+            )
+            logger.info("No transform, set to no flip")        
+
         camera.configure(config)
         logger.info(f"size: {resolution}, format: BGR888")
         return camera  # Add this line to return the camera object
