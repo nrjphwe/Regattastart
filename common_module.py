@@ -125,7 +125,7 @@ def should_rotate_image():
         logger.info("Detected CM5, rotate 180")
         return True
     elif "raspberry pi 5" in model:
-        logger.info("Detected Raspberry Pi, 5 rotate 180")
+        logger.info("Detected Raspberry Pi, 5 rotate 0")
         return False
     else:
         logger.warning("Unknown CPU model — defaulting to no rotation")
@@ -137,7 +137,7 @@ def auto_rotate_by_board():
     try:
         board_info = os.popen('cat /proc/device-tree/model').read().strip()
         if "Raspberry Pi 5" in board_info:
-            return 180  # RPI5 + OV5647
+            return 0  # RPI5 + OV5647
         elif "Compute Module 5" in board_info:
             return 180    # CM5 + IMX219
     except Exception as e:
