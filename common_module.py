@@ -135,10 +135,10 @@ def auto_rotate_by_board():
     """Detect board and return recommended rotation in degrees."""
     try:
         board_info = os.popen('cat /proc/device-tree/model').read().strip()
-        if "Raspberry Pi 5" in board_info:
+        if "Compute Module 5" in board_info:
+            return 180  # CM5 + IMX219
+        elif "Raspberry Pi 5" in board_info:
             return 0  # RPI5 + OV5647
-        elif "Compute Module 5" in board_info:
-            return 180    # CM5 + IMX219
     except Exception as e:
         logger.warning(f"Cannot detect board: {e}")
     return 0
@@ -161,6 +161,7 @@ def setup_camera(resolution=(1640, 1232)):
         # Configure the camera
         config = camera.create_still_configuration(
             main={"size": resolution, "format": "BGR888"},
+            transform=Transform(hflip=True, vflip=True),
             colour_space=ColorSpace.Srgb()  # OR ColorSpace.Sycc()
         )
         camera.configure(config)
