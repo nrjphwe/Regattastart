@@ -161,9 +161,9 @@ def setup_camera(resolution=(1640, 1232)):
         transform = Transform(hflip=True, vflip=True),  # Rotate 180-degree
 
         # Configure the camera
-        config = camera.create_still_configuration( 
-            transform=transform,
+        config = camera.create_still_configuration(
             main={"size": resolution, "format": "BGR888"},
+            transform=transform,
             colour_space=ColorSpace.Srgb()  # OR ColorSpace.Sycc()
         )
         camera.configure(config)
@@ -501,8 +501,8 @@ def start_video_recording(camera, video_path, file_name, resolution=(1640, 1232)
         transform = Transform(hflip=True, vflip=True),  # Rotate 180-degree
 
     video_config = camera.create_video_configuration(
-        transform=transform,
         main={"size": resolution, "format": "BGR888"},
+        transform=transform,
         controls={"FrameRate": 5}
         )
     camera.configure(video_config)  # Configure before starting recording
