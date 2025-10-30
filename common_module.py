@@ -77,6 +77,23 @@ def setup_logging():
 # Initialize logging immediately when the module is imported
 setup_logging()
 
+def remove_picture_files(directory, pattern):
+    files = os.listdir(directory)
+    for file in files:
+        if file.endswith(pattern):
+            file_path = os.path.join(directory, file)
+            os.remove(file_path)
+
+
+def remove_video_files(directory, pattern):
+    files = os.listdir(directory)
+    for file in files:
+        if file.startswith(pattern):
+            file_path = os.path.join(directory, file)
+            os.remove(file_path)
+
+
+
 # -------------------------
 # Hardware detection
 # -------------------------
@@ -97,17 +114,18 @@ def get_cpu_model():
     except Exception as e:
         logger.error(f"Exception while reading /proc/cpuinfo: {e}")
         return "Unknown"
-    
+
+
 def should_rotate_image():
     model = get_cpu_model().lower()
     logger.info(f"Detected CPU model: {model}")
 
     # Adjust based on which system is upside down
     if "compute module 5" in model or "cm5" in model:
-        logger.info("Detected CM5")
+        logger.info("Detected CM5, rotate 180")
         return True
     elif "raspberry pi 5" in model:
-        logger.info("Detected Raspberry Pi 5")
+        logger.info("Detected Raspberry Pi, 5 rotate 180")
         return False
     else:
         logger.warning("Unknown CPU model — defaulting to no rotation")
@@ -132,22 +150,6 @@ ROTATE_CAMERA = should_rotate_image()
 logger.info(f"Camera rotation flag set to: {ROTATE_CAMERA}")
 
 
-def remove_picture_files(directory, pattern):
-    files = os.listdir(directory)
-    for file in files:
-        if file.endswith(pattern):
-            file_path = os.path.join(directory, file)
-            os.remove(file_path)
-
-
-def remove_video_files(directory, pattern):
-    files = os.listdir(directory)
-    for file in files:
-        if file.startswith(pattern):
-            file_path = os.path.join(directory, file)
-            os.remove(file_path)
-
-
 def setup_camera(resolution=(1640, 1232)):
     global logger  # Explicitly declare logger as global
     try:
@@ -155,9 +157,14 @@ def setup_camera(resolution=(1640, 1232)):
         # Stop the camera if it is running (no need to check is_running)
         logger.info("Stopping the camera before reconfiguring.")
         camera.stop()  # Stop the camera if it is running
+
+        # Create a transform object
+        transform = Transform(hflip=True, vflip=True)
+
         # Configure the camera
-        config = camera.create_still_configuration(
-            main={"size": (resolution), "format": "BGR888"},
+        config = camera.create_still_configuration( 
+            transform=transform,
+            main={"size": resolution, "format": "BGR888"},
             colour_space=ColorSpace.Srgb()  # OR ColorSpace.Sycc()
         )
         camera.configure(config)
