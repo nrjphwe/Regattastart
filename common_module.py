@@ -97,6 +97,38 @@ def get_cpu_model():
     except Exception as e:
         logger.error(f"Exception while reading /proc/cpuinfo: {e}")
         return "Unknown"
+    
+def should_rotate_image():
+    model = get_cpu_model().lower()
+    logger.info(f"Detected CPU model: {model}")
+
+    # Adjust based on which system is upside down
+    if "compute module 5" in model or "cm5" in model:
+        logger.info("Detected CM5")
+        return True
+    elif "raspberry pi 5" in model:
+        logger.info("Detected Raspberry Pi 5")
+        return False
+    else:
+        logger.warning("Unknown CPU model — defaulting to no rotation")
+        return False
+
+
+def auto_rotate_by_board():
+    """Detect board and return recommended rotation in degrees."""
+    try:
+        board_info = os.popen('cat /proc/device-tree/model').read().strip()
+        if "Raspberry Pi 5" in board_info:
+            return 180  # RPI5 + OV5647
+        elif "Compute Module 5" in board_info:
+            return 180    # CM5 + IMX219
+    except Exception as e:
+        logger.warning(f"Cannot detect board: {e}")
+    return 0
+
+#  Set rotation flag once at startup
+ROTATE_CAMERA = should_rotate_image()
+logger.info(f"Camera rotation flag set to: {ROTATE_CAMERA}")
 
 
 def remove_picture_files(directory, pattern):
@@ -628,7 +660,7 @@ def start_sequence(camera, first_start_time, num_starts, dur_between_starts, pho
                     if any(k in label for k in ["5_min", "4_min", "1_min", "Start"]):
                         trigger_label = label.split()[0]  # "5_min", "4_min", etc.
                         image_name = f"{i+1}a_start_{trigger_label}.jpg"
-                        capture_picture(camera, photo_path, image_name)
+                        capture_picture(camera, photo_path, image_name, rotate=ROTATE_CAMERA)
                         time.sleep(0.1)
                     last_triggered.add((event_time, label))
 
