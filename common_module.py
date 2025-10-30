@@ -157,13 +157,9 @@ def setup_camera(resolution=(1640, 1232)):
         logger.info("Stopping the camera before reconfiguring.")
         camera.stop()  # Stop the camera if it is running
 
-        # Create a transform object
-        transform = Transform(hflip=True, vflip=True),  # Rotate 180-degree
-
         # Configure the camera
         config = camera.create_still_configuration(
             main={"size": resolution, "format": "BGR888"},
-            transform=transform,
             colour_space=ColorSpace.Srgb()  # OR ColorSpace.Sycc()
         )
         camera.configure(config)
@@ -214,7 +210,7 @@ def capture_picture(camera, photo_path, file_name, rotate=False):
             text_colour = (255, 0, 0)  # Blue text in BGR, Blue text RGB = (0, 0, 255)
             bg_colour = (200, 200, 200)  # Gray background
 
-            if rotate:
+            if ROTATE_CAMERA:
                 frame = cv2.rotate(frame, cv2.ROTATE_180)
 
             # Use text_rectangle function in common_module to draw timestamp
@@ -263,6 +259,10 @@ def apply_timestamp(request):
             if frame is None or frame.shape[0] == 0:
                 logger.error("apply_timestamp: Frame is None or empty!")
                 return
+
+            if ROTATE_CAMERA:
+                frame = cv2.rotate(frame, cv2.ROTATE_180)
+
             # Define text position
             origin = (40, int(frame.shape[0] * 0.85))  # Bottom-left corner
             text_colour = (0, 0, 255)  # Red text in BGR
@@ -497,12 +497,8 @@ def start_video_recording(camera, video_path, file_name, resolution=(1640, 1232)
     logger.debug(f"Will start video rec. output file: {output_file}")
     encoder = H264Encoder(bitrate=bitrate)
 
-    if ROTATE_CAMERA:
-        transform = Transform(hflip=True, vflip=True),  # Rotate 180-degree
-
     video_config = camera.create_video_configuration(
         main={"size": resolution, "format": "BGR888"},
-        transform=transform,
         controls={"FrameRate": 5}
         )
     camera.configure(video_config)  # Configure before starting recording
