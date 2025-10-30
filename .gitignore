@@ -4,3 +4,5 @@
 .vscode/settings.json
 dump.php
 *.ipynb
+__pycache__/
+*.pyc
