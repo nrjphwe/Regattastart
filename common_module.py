@@ -60,7 +60,8 @@ def setup_logging():
     global logger  # Ensure logger is a global variable
     # remove log file
     file_path = "/var/www/html/python.log"
-    os.remove(file_path)
+    if os.path.exists(file_path):
+        os.remove(file_path)
 
     # Load configuration
     logging.config.fileConfig('/usr/lib/cgi-bin/logging.conf')
