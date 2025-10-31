@@ -7,11 +7,16 @@ import logging
 import logging.config
 from libcamera import Transform
 from libcamera import ColorSpace
-from picamera2 import Picamera2, MappedArray
 from picamera2.encoders import H264Encoder
 import RPi.GPIO as GPIO
 import lgpio
 from queue import Queue, Full, Empty
+try:
+    from picamera2 import MappedArray  # older style
+    HAVE_MAPPEDARRAY = True
+except Exception:
+    HAVE_MAPPEDARRAY = False
+
 
 # Initialize global variables
 logger = None
@@ -217,8 +222,13 @@ def capture_picture(camera, photo_path, file_name, rotate=False):
     """
     try:
         request = camera.capture_request()  # Capture a single request
-        with MappedArray(request, "main") as m:
-            frame = m.array  # Get the frame as a NumPy array
+        # When grabbing frames:
+        if HAVE_MAPPEDARRAY:
+            with MappedArray(request, "main") as m:
+                frame = m.array
+        else:
+            # fallback: capture_array or use request.to_array() depending on version
+            frame = camera.capture_array()  # returns numpy array
             logger.debug(f"frame shape: {frame.shape} dtype: {frame.dtype}")
             # Ensure the frame is in BGR format
             if frame.shape[-1] == 3:  # Assuming 3 channels for RGB/BGR
@@ -278,8 +288,14 @@ def apply_timestamp(request):
     # if ROTATE_CAMERA:
     #    logger.info("In apply_timestamp, camera rotated if ROTATE_CAMERA=True")
     try:
-        with MappedArray(request, "main") as m:
-            frame = m.array  # Get the frame
+        # When grabbing frames:
+        if HAVE_MAPPEDARRAY:
+            with MappedArray(request, "main") as m:
+                frame = m.array
+        else:
+            # fallback: capture_array or use request.to_array() depending on version
+            frame = camera.capture_array()  # returns numpy array
+
             if frame is None or frame.shape[0] == 0:
                 logger.error("apply_timestamp: Frame is None or empty!")
                 return
