@@ -230,9 +230,9 @@ def capture_picture(camera, photo_path, file_name, rotate=False):
             text_colour = (255, 0, 0)  # Blue text in BGR, Blue text RGB = (0, 0, 255)
             bg_colour = (200, 200, 200)  # Gray background
 
-            if ROTATE_CAMERA:
-                frame = cv2.rotate(frame, cv2.ROTATE_180)
-                logger.info("in capture_picture, Camera rotated if ROTATE_CAMERA=True")
+            #if ROTATE_CAMERA:
+            #    frame = cv2.rotate(frame, cv2.ROTATE_180)
+            #    logger.info("in capture_picture, Camera rotated if ROTATE_CAMERA=True")
 
             # Use text_rectangle function in common_module to draw timestamp
             text_rectangle(frame, timestamp, origin, text_colour, bg_colour)
