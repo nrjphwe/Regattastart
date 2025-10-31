@@ -161,7 +161,7 @@ def setup_camera(resolution=(1640, 1232)):
         camera.stop()  # Stop the camera if it is running
 
         # Configure the camera
-        #transform=Transform(hflip=False, vflip=False),
+        # transform=Transform(hflip=False, vflip=False),
         # if ROTATE_CAMERA:
         config = camera.create_still_configuration(
             main={"size": resolution, "format": "BGR888"},
@@ -315,12 +315,22 @@ def restart_camera(camera, resolution=(1640, 1232), fps=15):
         best_mode = min(sensor_modes, key=lambda m: abs(m["size"][0] - resolution[0]) + abs(m["size"][1] - resolution[1]))
         logger.debug(f"Using sensor mode: {best_mode}")
 
-        config = camera.create_video_configuration(
-            # main={"size": best_mode["size"], "format": "BGR888"},
-            main={"size": best_mode["size"], "format": "RGB888"},
-            transform=Transform(hflip=True, vflip=True),
-            colour_space=ColorSpace.Srgb()  # OR ColorSpace.Sycc()
-        )
+        # Configure the camera for frames captures
+        if ROTATE_CAMERA:
+            config = camera.create_video_configuration(
+                main={"size": best_mode["size"], "format": "BGR888"},
+                transform=Transform(hflip=False, vflip=False),
+                colour_space=ColorSpace.Srgb()  # OR ColorSpace.Sycc()
+            )
+            logger.info("Camera rotated/transform set to not flip due to ROTATE_CAMERA=True")
+        else:
+            config = camera.create_video_configuration(
+                main={"size": best_mode["size"], "format": "BGR888"},
+                transform=Transform(hflip=True, vflip=True),
+                colour_space=ColorSpace.Srgb()  # OR ColorSpace.Sycc()
+            )
+            logger.info("Setting to rotate / flip")
+
         logger.debug(f"Config before applying: {config}")
         camera.configure(config)
         camera.set_controls({"FrameRate": fps})
@@ -553,7 +563,6 @@ def stop_video_recording(cam):
     logger.info("Recording stopped and camera fully released.")
 
 
-# Changed this with New_7, from libx264 to h264_v4l2m2m
 def process_video(video_path, input_file, output_file, frame_rate=None, resolution=None, mode="remux"):
     source = os.path.join(video_path, input_file)
     dest = os.path.join(video_path, output_file)
