@@ -274,8 +274,8 @@ def text_rectangle(frame, text, origin, text_colour=(255, 0, 0), bg_colour=(200,
 
 def apply_timestamp(request):
     timestamp = time.strftime("%Y-%m-%d %X")
-    if ROTATE_CAMERA:
-        logger.info("In apply_timestamp, camera rotated if ROTATE_CAMERA=True")
+    # if ROTATE_CAMERA:
+    #    logger.info("In apply_timestamp, camera rotated if ROTATE_CAMERA=True")
     try:
         with MappedArray(request, "main") as m:
             frame = m.array  # Get the frame
