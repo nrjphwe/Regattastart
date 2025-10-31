@@ -171,9 +171,10 @@ def setup_camera(resolution=(1640, 1232)):
         else:
             config = camera.create_still_configuration(
                 main={"size": resolution, "format": "BGR888"},
+                transform=Transform(hflip=False, vflip=False),
                 colour_space=ColorSpace.Srgb()  # OR ColorSpace.Sycc()
             )
-            logger.info("No transform, set to no flip")        
+            logger.info("Setting to no flip")
 
         camera.configure(config)
         logger.info(f"size: {resolution}, format: BGR888")
@@ -207,6 +208,12 @@ def letterbox(image, target_size=(640, 480)):
 
 
 def capture_picture(camera, photo_path, file_name, rotate=False):
+    """
+    Camera direction was setup in setup_camera as rotated/flipped for CM5 
+    and no rotating for RPI5, then in start_video_recording we call apply_timestamp
+    where we again rotate if needed. This means for capture_picture we do NOT need to rotate again.
+
+    """
     try:
         request = camera.capture_request()  # Capture a single request
         with MappedArray(request, "main") as m:
@@ -225,6 +232,7 @@ def capture_picture(camera, photo_path, file_name, rotate=False):
 
             if ROTATE_CAMERA:
                 frame = cv2.rotate(frame, cv2.ROTATE_180)
+                logger.info("in capture_picture, Camera rotated if ROTATE_CAMERA=True")
 
             # Use text_rectangle function in common_module to draw timestamp
             text_rectangle(frame, timestamp, origin, text_colour, bg_colour)
@@ -238,7 +246,7 @@ def capture_picture(camera, photo_path, file_name, rotate=False):
         logger.error(f"Failed to capture picture: {e}", exc_info=True)
 
 
-def text_rectangle(frame, text, origin, text_colour=(255, 0, 0), bg_colour=(200, 200, 200), font=FONT, font_scale=FONT_SCALE, thickness=THICKNESS):
+def text_rectangle(frame, text, origin, text_colour=(255, 0, 0), bg_colour=(200, 200, 200), font=FONT, font_scale=FONT_SCALE, thickness=THICKNESS)
     """
     Draw a background rectangle and overlay text on a frame.
     Default values for text_colour is Blue and for background is grey.
@@ -275,6 +283,7 @@ def apply_timestamp(request):
 
             if ROTATE_CAMERA:
                 frame = cv2.rotate(frame, cv2.ROTATE_180)
+                logger.info("In apply_timestamp, camera rotated if ROTATE_CAMERA=True")
 
             # Define text position
             origin = (40, int(frame.shape[0] * 0.85))  # Bottom-left corner
