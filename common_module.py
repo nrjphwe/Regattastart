@@ -96,6 +96,8 @@ def remove_video_files(directory, pattern):
 
 # -------------------------
 # Hardware detection
+# CM5 needs 180 rotation
+# RPI5 needs ? rotation 
 # -------------------------
 
 
@@ -162,7 +164,7 @@ def setup_camera(resolution=(1640, 1232)):
         if ROTATE_CAMERA:
             config = camera.create_still_configuration(
                 main={"size": resolution, "format": "BGR888"},
-                transform = Transform(hflip=True, vflip=True)
+                transform=Transform(hflip=True, vflip=True),
                 colour_space=ColorSpace.Srgb()  # OR ColorSpace.Sycc()
             )
             logger.info("Camera transform set to hflip and vflip due to ROTATE_CAMERA=True")
