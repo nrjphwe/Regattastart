@@ -161,20 +161,20 @@ def setup_camera(resolution=(1640, 1232)):
         camera.stop()  # Stop the camera if it is running
 
         # Configure the camera
-        if ROTATE_CAMERA:
-            config = camera.create_still_configuration(
-                main={"size": resolution, "format": "BGR888"},
-                transform=Transform(hflip=False, vflip=False),
-                colour_space=ColorSpace.Srgb()  # OR ColorSpace.Sycc()
-            )
-            logger.info("Camera rotated/transform set to not flip due to ROTATE_CAMERA=True")
-        else:
-            config = camera.create_still_configuration(
-                main={"size": resolution, "format": "BGR888"},
-                transform=Transform(hflip=True, vflip=True),
-                colour_space=ColorSpace.Srgb()  # OR ColorSpace.Sycc()
-            )
-            logger.info("Setting to rotate / flip")
+        #transform=Transform(hflip=False, vflip=False),
+        # if ROTATE_CAMERA:
+        config = camera.create_still_configuration(
+            main={"size": resolution, "format": "BGR888"},
+            colour_space=ColorSpace.Srgb()  # OR ColorSpace.Sycc()
+        )
+        logger.info("Camera not rotated/transform for all RPI5 and CM5")
+        # else:
+        #    config = camera.create_still_configuration(
+        #        main={"size": resolution, "format": "BGR888"},
+        #        transform=Transform(hflip=True, vflip=True),
+        #        colour_space=ColorSpace.Srgb()  # OR ColorSpace.Sycc()
+        #    )
+        #    logger.info("Setting to rotate / flip")
 
         camera.configure(config)
         logger.info(f"size: {resolution}, format: BGR888")
