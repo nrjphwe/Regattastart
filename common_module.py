@@ -148,7 +148,7 @@ def auto_rotate_by_board():
 
 #  Set rotation flag once at startup
 ROTATE_CAMERA = should_rotate_image()
-logger.info(f"Camera rotation flag set to: {ROTATE_CAMERA}")
+logger.info(f"Camera rotate flag set to: {ROTATE_CAMERA}")
 
 
 def setup_camera(resolution=(1640, 1232)):
@@ -167,14 +167,14 @@ def setup_camera(resolution=(1640, 1232)):
                 transform=Transform(hflip=True, vflip=True),
                 colour_space=ColorSpace.Srgb()  # OR ColorSpace.Sycc()
             )
-            logger.info("Camera transform set to hflip and vflip due to ROTATE_CAMERA=True")
+            logger.info("Camera rotated/transform set to hflip and vflip due to ROTATE_CAMERA=True")
         else:
             config = camera.create_still_configuration(
                 main={"size": resolution, "format": "BGR888"},
                 transform=Transform(hflip=False, vflip=False),
                 colour_space=ColorSpace.Srgb()  # OR ColorSpace.Sycc()
             )
-            logger.info("Setting to no flip")
+            logger.info("Setting to no rotate / flip")
 
         camera.configure(config)
         logger.info(f"size: {resolution}, format: BGR888")
@@ -283,12 +283,13 @@ def apply_timestamp(request):
 
             if ROTATE_CAMERA:
                 frame = cv2.rotate(frame, cv2.ROTATE_180)
-                logger.info("In apply_timestamp, camera rotated if ROTATE_CAMERA=True")
 
             # Define text position
             origin = (40, int(frame.shape[0] * 0.85))  # Bottom-left corner
             text_colour = (0, 0, 255)  # Red text in BGR
             text_rectangle(frame, timestamp, origin, text_colour)
+        if ROTATE_CAMERA:
+            logger.info("In apply_timestamp, camera rotated if ROTATE_CAMERA=True")
     except Exception as e:
         logger.error(f"Error in apply_timestamp: {e}", exc_info=True)
 
