@@ -246,7 +246,7 @@ def capture_picture(camera, photo_path, file_name, rotate=False):
         logger.error(f"Failed to capture picture: {e}", exc_info=True)
 
 
-def text_rectangle(frame, text, origin, text_colour=(255, 0, 0), bg_colour=(200, 200, 200), font=FONT, font_scale=FONT_SCALE, thickness=THICKNESS)
+def text_rectangle(frame, text, origin, text_colour=(255, 0, 0), bg_colour=(200, 200, 200), font=FONT, font_scale=FONT_SCALE, thickness=THICKNESS):
     """
     Draw a background rectangle and overlay text on a frame.
     Default values for text_colour is Blue and for background is grey.
