@@ -274,6 +274,8 @@ def text_rectangle(frame, text, origin, text_colour=(255, 0, 0), bg_colour=(200,
 
 def apply_timestamp(request):
     timestamp = time.strftime("%Y-%m-%d %X")
+    if ROTATE_CAMERA:
+        logger.info("In apply_timestamp, camera rotated if ROTATE_CAMERA=True")
     try:
         with MappedArray(request, "main") as m:
             frame = m.array  # Get the frame
@@ -288,8 +290,6 @@ def apply_timestamp(request):
             origin = (40, int(frame.shape[0] * 0.85))  # Bottom-left corner
             text_colour = (0, 0, 255)  # Red text in BGR
             text_rectangle(frame, timestamp, origin, text_colour)
-        if ROTATE_CAMERA:
-            logger.info("In apply_timestamp, camera rotated if ROTATE_CAMERA=True")
     except Exception as e:
         logger.error(f"Error in apply_timestamp: {e}", exc_info=True)
 
@@ -520,10 +520,22 @@ def start_video_recording(camera, video_path, file_name, resolution=(1640, 1232)
     logger.debug(f"Will start video rec. output file: {output_file}")
     encoder = H264Encoder(bitrate=bitrate)
 
-    video_config = camera.create_video_configuration(
-        main={"size": resolution, "format": "BGR888"},
-        controls={"FrameRate": 5}
+    # Configure the camera for video recording
+    if ROTATE_CAMERA:
+        video_config = camera.create_video_configuration(
+            main={"size": resolution, "format": "BGR888"},
+            transform=Transform(hflip=False, vflip=False),
+            controls={"FrameRate": 5}
         )
+        logger.info("Camera rotated/transform set to not flip due to ROTATE_CAMERA=True")
+    else:
+        video_config = camera.create_video_configuration(
+            main={"size": resolution, "format": "BGR888"},
+            transform=Transform(hflip=True, vflip=True),
+            controls={"FrameRate": 5}
+        )
+        logger.info("Setting to rotate / flip")
+
     camera.configure(video_config)  # Configure before starting recording
     logger.info(f"video_config {video_config}, resolution: {resolution}, bitrate: {bitrate}")
     # Set the pre_callback to apply the timestamp AFTER configuration
