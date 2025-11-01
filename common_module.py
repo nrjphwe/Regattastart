@@ -142,7 +142,7 @@ def should_rotate_image():
 def auto_rotate_by_board():
     """Detect board and return recommended rotation in degrees."""
     try:
-        board_info = os.popen('cat /proc/device-tree/model').read().strip()
+        board_info = open('cat /proc/device-tree/model').read().strip()
         if "Compute Module 5" in board_info:
             return 180  # CM5 + IMX219
         elif "Raspberry Pi 5" in board_info:
