@@ -5,18 +5,29 @@ import subprocess, threading, time
 import datetime as dt
 import logging
 import logging.config
-from libcamera import Transform
-from libcamera import ColorSpace
 from picamera2.encoders import H264Encoder
 import RPi.GPIO as GPIO
 import lgpio
 from queue import Queue, Full, Empty
+# # Prefer picamera2 submodules when available
+try:
+    from picamera2.transform import Transform
+    from picamera2.color_spaces import ColorSpace
+except Exception:
+    try:
+        from libcamera import Transform, ColorSpace
+    except Exception:
+        Transform = None
+        ColorSpace = None
+try:
+    from picamera2.picamera2 import Picamera2
+except Exception:
+    from picamera2 import Picamera2  # older layout
 try:
     from picamera2 import MappedArray  # older style
     HAVE_MAPPEDARRAY = True
 except Exception:
     HAVE_MAPPEDARRAY = False
-
 
 # Initialize global variables
 logger = None
