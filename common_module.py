@@ -230,6 +230,7 @@ def capture_picture(camera, photo_path, file_name, rotate=False):
             # fallback: capture_array or use request.to_array() depending on version
             frame = camera.capture_array()  # returns numpy array
             logger.debug(f"frame shape: {frame.shape} dtype: {frame.dtype}")
+
             # Ensure the frame is in BGR format
             if frame.shape[-1] == 3:  # Assuming 3 channels for RGB/BGR
                 # logger.debug("Converting frame from RGB to BGR")
@@ -241,7 +242,7 @@ def capture_picture(camera, photo_path, file_name, rotate=False):
             text_colour = (255, 0, 0)  # Blue text in BGR, Blue text RGB = (0, 0, 255)
             bg_colour = (200, 200, 200)  # Gray background
 
-            #if ROTATE_CAMERA:
+            # if ROTATE_CAMERA:
             #    frame = cv2.rotate(frame, cv2.ROTATE_180)
             #    logger.info("in capture_picture, Camera rotated if ROTATE_CAMERA=True")
 
@@ -255,6 +256,11 @@ def capture_picture(camera, photo_path, file_name, rotate=False):
         logger.info(f'Captured picture: {file_name}')
     except Exception as e:
         logger.error(f"Failed to capture picture: {e}", exc_info=True)
+    finally:
+        try:
+            request.release()
+        except Exception:
+            pass
 
 
 def text_rectangle(frame, text, origin, text_colour=(255, 0, 0), bg_colour=(200, 200, 200), font=FONT, font_scale=FONT_SCALE, thickness=THICKNESS):
@@ -567,11 +573,10 @@ def start_video_recording(camera, video_path, file_name, resolution=(1640, 1232)
     logger.info(f"video_config {video_config}, resolution: {resolution}, bitrate: {bitrate}")
     # Set the pre_callback to apply the timestamp AFTER configuration
     logger.debug("Setting pre_callback to apply_timestamp")
+    logger.info(f"Starting recording to {output_file}")
     camera.pre_callback = apply_timestamp
-
-    # Start recording
     camera.start_recording(encoder, output_file)
-    logger.info(f"Started recording video: {output_file}")
+    logger.info("Recording started")
 
 
 def stop_video_recording(cam):
