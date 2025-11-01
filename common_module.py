@@ -267,11 +267,6 @@ def capture_picture(camera, photo_path, file_name, rotate=False):
         logger.info(f'Captured picture: {file_name}')
     except Exception as e:
         logger.error(f"Failed to capture picture: {e}", exc_info=True)
-    finally:
-        try:
-            request.release()
-        except Exception:
-            pass
 
 
 def text_rectangle(frame, text, origin, text_colour=(255, 0, 0), bg_colour=(200, 200, 200), font=FONT, font_scale=FONT_SCALE, thickness=THICKNESS):
