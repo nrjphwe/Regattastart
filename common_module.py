@@ -295,34 +295,6 @@ def text_rectangle(frame, text, origin, text_colour=(255, 0, 0), bg_colour=(200,
         logger.error(f"Error in text_rectangle: {e}", exc_info=True)
 
 
-def apply_timestamp(request):
-    timestamp = time.strftime("%Y-%m-%d %X")
-    # if ROTATE_CAMERA:
-    #    logger.info("In apply_timestamp, camera rotated if ROTATE_CAMERA=True")
-    try:
-        # When grabbing frames:
-        if HAVE_MAPPEDARRAY:
-            with MappedArray(request, "main") as m:
-                frame = m.array
-        else:
-            # fallback: capture_array or use request.to_array() depending on version
-            frame = camera.capture_array()  # returns numpy array
-
-            if frame is None or frame.shape[0] == 0:
-                logger.error("apply_timestamp: Frame is None or empty!")
-                return
-
-            if ROTATE_CAMERA:
-                frame = cv2.rotate(frame, cv2.ROTATE_180)
-
-            # Define text position
-            origin = (40, int(frame.shape[0] * 0.85))  # Bottom-left corner
-            text_colour = (0, 0, 255)  # Red text in BGR
-            text_rectangle(frame, timestamp, origin, text_colour)
-    except Exception as e:
-        logger.error(f"Error in apply_timestamp: {e}", exc_info=True)
-
-
 def restart_camera(camera, resolution=(1640, 1232), fps=15):
     try:
         if camera is not None:
@@ -551,6 +523,32 @@ def get_h264_writer(video_path, fps, frame_size, force_sw=False, logger=None):
         return writer, "ffmpeg-sw"
 
 
+def apply_timestamp(request):
+    timestamp = time.strftime("%Y-%m-%d %X")
+    try:
+        # When grabbing frames:
+        if HAVE_MAPPEDARRAY:
+            with MappedArray(request, "main") as m:
+                frame = m.array
+        else:
+            # fallback: capture_array or use request.to_array() depending on version
+            frame = camera.capture_array()  # returns numpy array
+
+            if frame is None or frame.shape[0] == 0:
+                logger.error("apply_timestamp: Frame is None or empty!")
+                return
+
+            if ROTATE_CAMERA:
+                frame = cv2.rotate(frame, cv2.ROTATE_180)
+
+            # Define text position
+            origin = (40, int(frame.shape[0] * 0.85))  # Bottom-left corner
+            text_colour = (0, 0, 255)  # Red text in BGR
+            text_rectangle(frame, timestamp, origin, text_colour)
+    except Exception as e:
+        logger.error(f"Error in apply_timestamp: {e}", exc_info=True)
+
+
 def start_video_recording(camera, video_path, file_name, resolution=(1640, 1232), bitrate=4000000):
     """
     Start video recording using H264Encoder and with timestamp.
@@ -563,6 +561,7 @@ def start_video_recording(camera, video_path, file_name, resolution=(1640, 1232)
     if ROTATE_CAMERA:
         video_config = camera.create_video_configuration(
             main={"size": resolution, "format": "BGR888"},
+            buffer_count=2,  # ensures frame is available for mapping
             transform=Transform(hflip=False, vflip=False),
             controls={"FrameRate": 5}
         )
@@ -570,6 +569,7 @@ def start_video_recording(camera, video_path, file_name, resolution=(1640, 1232)
     else:
         video_config = camera.create_video_configuration(
             main={"size": resolution, "format": "BGR888"},
+            buffer_count=2,  # ensures frame is available for mapping
             transform=Transform(hflip=True, vflip=True),
             controls={"FrameRate": 5}
         )
