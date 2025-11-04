@@ -135,25 +135,51 @@ def cleanup_processed_timestamps(processed_timestamps, threshold_seconds=30):
 # function to load the YOLOv5 model
 def load_model_with_timeout(result_queue):
     try:
-        if cpu_model and "Raspberry Pi 3" in cpu_model:
-            # inference_interval = 2.0  # seconds between inferences
-            yolov_model = "yolov5n"   # lighter model
+        start_time = time.time()
+        # Choose model based on CPU
+        if cpu_model and "Raspberry Pi 4" in cpu_model:
+            yolov_model = "yolov5n"  # lätt modell
+            device = 'cpu'
+            logger.info("Raspberry Pi 4 detected: using YOLOv5n")
+
         elif cpu_model and "Raspberry Pi 5" in cpu_model:
-            # inference_interval = 0.5  # more frequent
-            yolov_model = "yolov5s"
+            yolov_model = "yolov5s"  # lite tyngre
+            device = 'cpu'
+            logger.info("Raspberry Pi 5 detected: using YOLOv5s")
+
+        elif cpu_model and "Raspberry Pi CM5" in cpu_model:
+            yolov_model = "yolov5s"  # eller "yolov5m" om högre precision önskas
+            device = 'cpu'
+            logger.info("Raspberry Pi CM5 detected: using YOLOv5s (SSD optimerad)")
+
         else:
-            # inference_interval = 1.0
-            yolov_model = "yolov5s"
+            yolov_model = "yolov5s"  # default
+            device = 'cpu'
+            logger.info(f"Unknown CPU ({cpu_model}): defaulting to YOLOv5s")
 
         from models.common import DetectMultiBackend
-        model_path = "/var/www/html/" + yolov_model + ".pt"  # Path to the YOLOv5 model file
-        logger.info(f"Loading YOLOv5 model from {model_path} for {cpu_model} with model {yolov_model}")
-        device = 'cpu'
+
+        model_path = f"/var/www/html/{yolov_model}.pt"  # Path to the YOLOv5 model file
+        logger.info(f"Loading YOLOv5 model from {model_path} on {cpu_model}")
+
+        # load model
         model = DetectMultiBackend(model_path, device=device)
+
+        # Optimera för CPU (PyTorch 2.x)
+        try:
+            if torch.__version__ >= "2.0":
+                model.model = torch.compile(model.model)
+                logger.info("Model compiled for faster CPU inference")
+        except Exception as e:
+            logger.warning(f"CPU compilation skipped: {e}")
+
+        # put model in queue
         result_queue.put(model)  # Put the model in the queue
+        end_time = time.time()
+        logger.info(f"Model loaded in {end_time - start_time:.2f} seconds")
     except Exception as e:
         logger.error(f"FAILED to load YOLOv5 model: {e}", exc_info=True)
-        result_queue.put(e)  # Put the exception in the queue
+        result_queue.put(None) 
 
 
 def prepare_input(img, device='cpu'):
