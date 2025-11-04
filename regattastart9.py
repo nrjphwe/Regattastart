@@ -179,7 +179,7 @@ def load_model_with_timeout(result_queue):
         logger.info(f"Model loaded in {end_time - start_time:.2f} seconds")
     except Exception as e:
         logger.error(f"FAILED to load YOLOv5 model: {e}", exc_info=True)
-        result_queue.put(None) 
+        result_queue.put(None)
 
 
 def prepare_input(img, device='cpu'):
@@ -372,7 +372,8 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
                         break
 
                     # --- WATCHDOG CHECK ---
-                    if (datetime.now() - last_frame_time).total_seconds() > 5:
+                    # changed from 5 to 20 seconds timeout
+                    if (datetime.now() - last_frame_time).total_seconds() > 20:
                         logger.error("Watchdog: no new frame for >5s, breaking loop")
                         break
 
