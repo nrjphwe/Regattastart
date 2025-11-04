@@ -526,27 +526,42 @@ def get_h264_writer(video_path, fps, frame_size, force_sw=False, logger=None):
 def apply_timestamp(request):
     timestamp = time.strftime("%Y-%m-%d %X")
     try:
-        # When grabbing frames:
+        frame = None
+
+        # --- Preferred path: modify frame in-place using MappedArray ---
         if HAVE_MAPPEDARRAY:
-            with MappedArray(request, "main") as m:
-                frame = m.array
-        else:
-            # fallback: capture_array or use request.to_array() depending on version
-            frame = camera.capture_array()  # returns numpy array
+            try:
+                with MappedArray(request, "main") as m:
+                    frame = m.array
+                    origin = (40, int(frame.shape[0] * 0.85))
+                    text_colour = (0, 0, 255)
+                    text_rectangle(frame, timestamp, origin, text_colour)
+                    logger.debug("Timestamp drawn via MappedArray")
+                    return
+            except Exception as map_err:
+                logger.warning(f"MappedArray unavailable: {map_err}, falling back to capture_array()")
 
-            if frame is None or frame.shape[0] == 0:
-                logger.error("apply_timestamp: Frame is None or empty!")
-                return
+        # --- Fallback path: capture new frame and draw on copy ---
+        try:
+            frame = camera.capture_array("main")
+        except Exception as cap_err:
+            logger.error(f"apply_timestamp: capture_array failed: {cap_err}")
+            return
 
-            if ROTATE_CAMERA:
-                frame = cv2.rotate(frame, cv2.ROTATE_180)
+        if frame is None or frame.size == 0:
+            logger.warning("apply_timestamp: got empty frame in fallback path")
+            return
 
-            # Define text position
-            origin = (40, int(frame.shape[0] * 0.85))  # Bottom-left corner
-            text_colour = (0, 0, 255)  # Red text in BGR
-            text_rectangle(frame, timestamp, origin, text_colour)
+        if ROTATE_CAMERA:
+            frame = cv2.rotate(frame, cv2.ROTATE_180)
+
+        origin = (40, int(frame.shape[0] * 0.85))
+        text_colour = (0, 0, 255)
+        text_rectangle(frame, timestamp, origin, text_colour)
+        logger.debug("Timestamp drawn via fallback frame")
+
     except Exception as e:
-        logger.error(f"Error in apply_timestamp: {e}", exc_info=True)
+        logger.error(f"apply_timestamp: unexpected error: {e}", exc_info=True)
 
 
 def start_video_recording(camera, video_path, file_name, resolution=(1640, 1232), bitrate=4000000):
