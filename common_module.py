@@ -5,13 +5,29 @@ import subprocess, threading, time
 import datetime as dt
 import logging
 import logging.config
-from libcamera import Transform
-from libcamera import ColorSpace
-from picamera2 import Picamera2, MappedArray
 from picamera2.encoders import H264Encoder
 import RPi.GPIO as GPIO
 import lgpio
 from queue import Queue, Full, Empty
+# # Prefer picamera2 submodules when available
+try:
+    from picamera2.transform import Transform
+    from picamera2.color_spaces import ColorSpace
+except Exception:
+    try:
+        from libcamera import Transform, ColorSpace
+    except Exception:
+        Transform = None
+        ColorSpace = None
+try:
+    from picamera2.picamera2 import Picamera2
+except Exception:
+    from picamera2 import Picamera2  # older layout
+try:
+    from picamera2 import MappedArray  # older style
+    HAVE_MAPPEDARRAY = True
+except Exception:
+    HAVE_MAPPEDARRAY = False
 
 # Initialize global variables
 logger = None
@@ -28,9 +44,18 @@ text_colour = (255, 0, 0)  # Blue text in BGR
 # bg_colour = (200, 200, 200)  # Light grey background
 
 # GPIO pin numbers for the relay and lamps
-signal_pin = 26
-lamp1 = 20
-lamp2 = 21
+signal = 26  # for signal to pin 37 left 2nd from the bottom,
+# for new startmachine: Relay channel 3 input (IN3) purple wire
+lamp1 = 20   # , for lamp1 to pin 38 right 2nd from the bottom
+# for new startmachine: Relay channel 1 input (IN1) blue wire
+lamp2 = 21   # for lamp2 to pin 40 right bottom
+# for new startmachine Relay channel 2 input (IN2) green wire
+
+# for new startmachine GND grey wire
+"""
+Purple GPIO 26 (37)-(38) GPIO 20 blue
+Grey Ground  (39)-(40) GPIO 21 Green
+"""
 
 # Define ON/OFF states for clarity
 ON = GPIO.LOW
@@ -51,7 +76,8 @@ def setup_logging():
     global logger  # Ensure logger is a global variable
     # remove log file
     file_path = "/var/www/html/python.log"
-    os.remove(file_path)
+    if os.path.exists(file_path):
+        os.remove(file_path)
 
     # Load configuration
     logging.config.fileConfig('/usr/lib/cgi-bin/logging.conf')
@@ -67,6 +93,29 @@ def setup_logging():
 
 # Initialize logging immediately when the module is imported
 setup_logging()
+
+
+def remove_picture_files(directory, pattern):
+    files = os.listdir(directory)
+    for file in files:
+        if file.endswith(pattern):
+            file_path = os.path.join(directory, file)
+            os.remove(file_path)
+
+
+def remove_video_files(directory, pattern):
+    files = os.listdir(directory)
+    for file in files:
+        if file.startswith(pattern):
+            file_path = os.path.join(directory, file)
+            os.remove(file_path)
+
+
+# -------------------------
+# Hardware detection
+# CM5 needs 180 rotation
+# RPI5 needs ? rotation 
+# -------------------------
 
 
 def get_cpu_model():
@@ -86,34 +135,64 @@ def get_cpu_model():
         return "Unknown"
 
 
-def remove_picture_files(directory, pattern):
-    files = os.listdir(directory)
-    for file in files:
-        if file.endswith(pattern):
-            file_path = os.path.join(directory, file)
-            os.remove(file_path)
+def should_rotate_image():
+    model = get_cpu_model().lower()
+    logger.info(f"Detected CPU model: {model}")
+    # Adjust based on which system is upside down
+    if "compute module 5" in model or "cm5" in model:
+        logger.info("Detected CM5, rotate 180")
+        return True
+    elif "raspberry pi 5" in model:
+        logger.info("Detected Raspberry Pi 5, rotate 0")
+        return False
+    else:
+        logger.warning("Unknown CPU model — defaulting to no rotation")
+        return False
 
 
-def remove_video_files(directory, pattern):
-    files = os.listdir(directory)
-    for file in files:
-        if file.startswith(pattern):
-            file_path = os.path.join(directory, file)
-            os.remove(file_path)
+def auto_rotate_by_board():
+    """Detect board and return recommended rotation in degrees."""
+    try:
+        board_info = open('cat /proc/device-tree/model').read().strip()
+        if "Compute Module 5" in board_info:
+            return 180  # CM5 + IMX219
+        elif "Raspberry Pi 5" in board_info:
+            return 0  # RPI5 + OV5647
+    except Exception as e:
+        logger.warning(f"Cannot detect board: {e}")
+    return 0
+
+
+#  Set rotation flag once at startup
+ROTATE_CAMERA = should_rotate_image()
+logger.info(f"Camera rotate flag set to: {ROTATE_CAMERA}")
 
 
 def setup_camera(resolution=(1640, 1232)):
     global logger  # Explicitly declare logger as global
+    logger.info("Setup of camera")
     try:
         camera = Picamera2()
         # Stop the camera if it is running (no need to check is_running)
         logger.info("Stopping the camera before reconfiguring.")
         camera.stop()  # Stop the camera if it is running
+
         # Configure the camera
+        # transform=Transform(hflip=False, vflip=False),
+        # if ROTATE_CAMERA:
         config = camera.create_still_configuration(
-            main={"size": (resolution), "format": "BGR888"},
+            main={"size": resolution, "format": "BGR888"},
             colour_space=ColorSpace.Srgb()  # OR ColorSpace.Sycc()
         )
+        logger.info("Camera not rotated/transform for all RPI5 and CM5")
+        # else:
+        #    config = camera.create_still_configuration(
+        #        main={"size": resolution, "format": "BGR888"},
+        #        transform=Transform(hflip=True, vflip=True),
+        #        colour_space=ColorSpace.Srgb()  # OR ColorSpace.Sycc()
+        #    )
+        #    logger.info("Setting to rotate / flip")
+
         camera.configure(config)
         logger.info(f"size: {resolution}, format: BGR888")
         return camera  # Add this line to return the camera object
@@ -146,28 +225,44 @@ def letterbox(image, target_size=(640, 480)):
 
 
 def capture_picture(camera, photo_path, file_name, rotate=False):
+    """
+    Camera direction was setup in setup_camera as rotated/flipped for CM5 
+    and no rotating for RPI5, then in start_video_recording we call apply_timestamp
+    where we again rotate if needed. This means for capture_picture we do NOT need to rotate again.
+
+    """
     try:
         request = camera.capture_request()  # Capture a single request
-        with MappedArray(request, "main") as m:
-            frame = m.array  # Get the frame as a NumPy array
+        # When grabbing frames:
+        if HAVE_MAPPEDARRAY:
+            with MappedArray(request, "main") as m:
+                frame = m.array
+        else:
+            # fallback: capture_array or use request.to_array() depending on version
+            frame = camera.capture_array()  # returns numpy array
             logger.debug(f"frame shape: {frame.shape} dtype: {frame.dtype}")
-            # Ensure the frame is in BGR format
-            if frame.shape[-1] == 3:  # Assuming 3 channels for RGB/BGR
-                # logger.debug("Converting frame from RGB to BGR")
-                frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
 
-            # Apply timestamp (reuse the same logic as in apply_timestamp)
-            timestamp = time.strftime("%Y-%m-%d %X")
-            origin = (40, int(frame.shape[0] * 0.85))  # Bottom-left corner
-            text_colour = (255, 0, 0)  # Blue text in BGR, Blue text RGB = (0, 0, 255)
-            bg_colour = (200, 200, 200)  # Gray background
-            # Use text_rectangle function in common_module to draw timestamp
-            text_rectangle(frame, timestamp, origin, text_colour, bg_colour)
-            if rotate:
-                frame = cv2.rotate(frame, cv2.ROTATE_180)
-            resized_for_display = letterbox(frame, (1280, 960))
-            cv2.imwrite(os.path.join(photo_path, file_name), resized_for_display)
-            logger.debug(f"Saved resized_for_display size: {resized_for_display.shape}")
+        # Ensure the frame is in BGR format
+        if frame.shape[-1] == 3:  # Assuming 3 channels for RGB/BGR
+            # logger.debug("Converting frame from RGB to BGR")
+            frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
+
+        # Apply timestamp (reuse the same logic as in apply_timestamp)
+        timestamp = time.strftime("%Y-%m-%d %X")
+        origin = (40, int(frame.shape[0] * 0.85))  # Bottom-left corner
+        text_colour = (255, 0, 0)  # Blue text in BGR, Blue text RGB = (0, 0, 255)
+        bg_colour = (200, 200, 200)  # Gray background
+
+        # if ROTATE_CAMERA:
+        #    frame = cv2.rotate(frame, cv2.ROTATE_180)
+        #    logger.info("in capture_picture, Camera rotated if ROTATE_CAMERA=True")
+
+        # Use text_rectangle function in common_module to draw timestamp
+        text_rectangle(frame, timestamp, origin, text_colour, bg_colour)
+
+        resized_for_display = letterbox(frame, (1280, 960))
+        cv2.imwrite(os.path.join(photo_path, file_name), resized_for_display)
+        logger.debug(f"Saved resized_for_display size: {resized_for_display.shape}")
         request.release()
         logger.info(f'Captured picture: {file_name}')
     except Exception as e:
@@ -200,22 +295,6 @@ def text_rectangle(frame, text, origin, text_colour=(255, 0, 0), bg_colour=(200,
         logger.error(f"Error in text_rectangle: {e}", exc_info=True)
 
 
-def apply_timestamp(request):
-    timestamp = time.strftime("%Y-%m-%d %X")
-    try:
-        with MappedArray(request, "main") as m:
-            frame = m.array  # Get the frame
-            if frame is None or frame.shape[0] == 0:
-                logger.error("apply_timestamp: Frame is None or empty!")
-                return
-            # Define text position
-            origin = (40, int(frame.shape[0] * 0.85))  # Bottom-left corner
-            text_colour = (0, 0, 255)  # Red text in BGR
-            text_rectangle(frame, timestamp, origin, text_colour)
-    except Exception as e:
-        logger.error(f"Error in apply_timestamp: {e}", exc_info=True)
-
-
 def restart_camera(camera, resolution=(1640, 1232), fps=15):
     try:
         if camera is not None:
@@ -237,12 +316,22 @@ def restart_camera(camera, resolution=(1640, 1232), fps=15):
         best_mode = min(sensor_modes, key=lambda m: abs(m["size"][0] - resolution[0]) + abs(m["size"][1] - resolution[1]))
         logger.debug(f"Using sensor mode: {best_mode}")
 
-        config = camera.create_video_configuration(
-            # main={"size": best_mode["size"], "format": "BGR888"},
-            main={"size": best_mode["size"], "format": "RGB888"},
-            transform=Transform(hflip=True, vflip=True),
-            colour_space=ColorSpace.Srgb()  # OR ColorSpace.Sycc()
-        )
+        # Configure the camera for frames captures
+        if ROTATE_CAMERA:
+            config = camera.create_video_configuration(
+                main={"size": best_mode["size"], "format": "BGR888"},
+                transform=Transform(hflip=False, vflip=False),
+                colour_space=ColorSpace.Srgb()  # OR ColorSpace.Sycc()
+            )
+            logger.info("Camera rotated/transform set to not flip due to ROTATE_CAMERA=True")
+        else:
+            config = camera.create_video_configuration(
+                main={"size": best_mode["size"], "format": "BGR888"},
+                transform=Transform(hflip=True, vflip=True),
+                colour_space=ColorSpace.Srgb()  # OR ColorSpace.Sycc()
+            )
+            logger.info("Setting to rotate / flip")
+
         logger.debug(f"Config before applying: {config}")
         camera.configure(config)
         camera.set_controls({"FrameRate": fps})
@@ -434,6 +523,47 @@ def get_h264_writer(video_path, fps, frame_size, force_sw=False, logger=None):
         return writer, "ffmpeg-sw"
 
 
+def apply_timestamp(request):
+    timestamp = time.strftime("%Y-%m-%d %X")
+    try:
+        frame = None
+
+        # --- Preferred path: modify frame in-place using MappedArray ---
+        if HAVE_MAPPEDARRAY:
+            try:
+                with MappedArray(request, "main") as m:
+                    frame = m.array
+                    origin = (40, int(frame.shape[0] * 0.85))
+                    text_colour = (0, 0, 255)
+                    text_rectangle(frame, timestamp, origin, text_colour)
+                    logger.debug("Timestamp drawn via MappedArray")
+                    return
+            except Exception as map_err:
+                logger.warning(f"MappedArray unavailable: {map_err}, falling back to capture_array()")
+
+        # --- Fallback path: capture new frame and draw on copy ---
+        try:
+            frame = camera.capture_array("main")
+        except Exception as cap_err:
+            logger.error(f"apply_timestamp: capture_array failed: {cap_err}")
+            return
+
+        if frame is None or frame.size == 0:
+            logger.warning("apply_timestamp: got empty frame in fallback path")
+            return
+
+        if ROTATE_CAMERA:
+            frame = cv2.rotate(frame, cv2.ROTATE_180)
+
+        origin = (40, int(frame.shape[0] * 0.85))
+        text_colour = (0, 0, 255)
+        text_rectangle(frame, timestamp, origin, text_colour)
+        logger.debug("Timestamp drawn via fallback frame")
+
+    except Exception as e:
+        logger.error(f"apply_timestamp: unexpected error: {e}", exc_info=True)
+
+
 def start_video_recording(camera, video_path, file_name, resolution=(1640, 1232), bitrate=4000000):
     """
     Start video recording using H264Encoder and with timestamp.
@@ -442,20 +572,32 @@ def start_video_recording(camera, video_path, file_name, resolution=(1640, 1232)
     logger.debug(f"Will start video rec. output file: {output_file}")
     encoder = H264Encoder(bitrate=bitrate)
 
-    video_config = camera.create_video_configuration(
-        main={"size": resolution, "format": "BGR888"},
-        transform=Transform(hflip=True, vflip=True),  # Rotate 180-degree
-        controls={"FrameRate": 5}
+    # Configure the camera for video recording
+    if ROTATE_CAMERA:
+        video_config = camera.create_video_configuration(
+            main={"size": resolution, "format": "BGR888"},
+            buffer_count=2,  # ensures frame is available for mapping
+            transform=Transform(hflip=False, vflip=False),
+            controls={"FrameRate": 5}
         )
+        logger.info("Camera rotated/transform set to not flip due to ROTATE_CAMERA=True")
+    else:
+        video_config = camera.create_video_configuration(
+            main={"size": resolution, "format": "BGR888"},
+            buffer_count=2,  # ensures frame is available for mapping
+            transform=Transform(hflip=True, vflip=True),
+            controls={"FrameRate": 5}
+        )
+        logger.info("Setting to rotate / flip")
+
     camera.configure(video_config)  # Configure before starting recording
     logger.info(f"video_config {video_config}, resolution: {resolution}, bitrate: {bitrate}")
     # Set the pre_callback to apply the timestamp AFTER configuration
     logger.debug("Setting pre_callback to apply_timestamp")
+    logger.info(f"Starting recording to {output_file}")
     camera.pre_callback = apply_timestamp
-
-    # Start recording
     camera.start_recording(encoder, output_file)
-    logger.info(f"Started recording video: {output_file}")
+    logger.info("Recording started")
 
 
 def stop_video_recording(cam):
@@ -464,7 +606,6 @@ def stop_video_recording(cam):
     logger.info("Recording stopped and camera fully released.")
 
 
-# Changed this with New_7, from libx264 to h264_v4l2m2m
 def process_video(video_path, input_file, output_file, frame_rate=None, resolution=None, mode="remux"):
     source = os.path.join(video_path, input_file)
     dest = os.path.join(video_path, output_file)
@@ -525,12 +666,13 @@ def process_video(video_path, input_file, output_file, frame_rate=None, resoluti
 
 
 def setup_gpio():
+    level = 1  # Initial level HIGH
     try:
         # seems like initial value off corresponds to 1
         h = lgpio.gpiochip_open(0)  # Open GPIO chip 0
-        lgpio.gpio_claim_output(h, 26, 1)  # Signal pin
-        lgpio.gpio_claim_output(h, 20, 1)  # Lamp1
-        lgpio.gpio_claim_output(h, 21, 1)  # Lamp2
+        lgpio.gpio_claim_output(h, 26, level)  # Signal pin
+        lgpio.gpio_claim_output(h, 20, level)  # Lamp1
+        lgpio.gpio_claim_output(h, 21, level)  # Lamp2
         logger.info("GPIO setup successful: Signal=26, Lamp1=20, Lamp2=21")
         return h, 26, 20, 21  # Return the GPIO handle and pin numbers
     except Exception as e:
@@ -541,13 +683,16 @@ def setup_gpio():
 def trigger_relay(handle, pin, state, duration=None):
     """Control a relay by turning it ON or OFF, optionally with a delay."""
     try:
-        # logger.info(f"Triggering relay on pin {pin} to state {state}")
-        lgpio.gpio_write(handle, pin, 0 if state == "on" else 1)
-        # logger.debug(f"Pin {pin} set to {'HIGH' if state == 'on' else 'LOW'}")
+        if state == "on":
+            lgpio.gpio_write(handle, pin, 1)  # HIGH = ON
+        else:
+            lgpio.gpio_write(handle, pin, 0)  # LOW = OFF
+
+        logger.info(f"Triggering relay on pin {pin} to state {state}")
         if duration:
             time.sleep(int(duration))
-            lgpio.gpio_write(handle, pin, 1)  # Turn off after the duration
-            # logger.debug(f"Pin {pin} turned OFF after {duration} seconds")
+            lgpio.gpio_write(handle, pin, 0)  # Turn off after the duration
+            logger.debug(f"Pin {pin} turned OFF after {duration} seconds")
     except Exception as e:
         logger.error(f"Failed to trigger relay on pin {pin}: {e}")
 
@@ -611,7 +756,7 @@ def start_sequence(camera, first_start_time, num_starts, dur_between_starts, pho
                     if any(k in label for k in ["5_min", "4_min", "1_min", "Start"]):
                         trigger_label = label.split()[0]  # "5_min", "4_min", etc.
                         image_name = f"{i+1}a_start_{trigger_label}.jpg"
-                        capture_picture(camera, photo_path, image_name)
+                        capture_picture(camera, photo_path, image_name, rotate=ROTATE_CAMERA)
                         time.sleep(0.1)
                     last_triggered.add((event_time, label))
 
