@@ -147,10 +147,10 @@ def load_model_with_timeout(result_queue):
             device = 'cpu'
             logger.info("Raspberry Pi 5 detected: using YOLOv5s")
 
-        elif cpu_model and "Raspberry Pi Compute Model 5" in cpu_model:
+        elif cpu_model and "Raspberry Pi Compute Module 5" in cpu_model:
             yolov_model = "yolov5m"  # eller "yolov5m" if higher precision needed 
             device = 'cpu'
-            logger.info("Raspberry Pi CM5 detected: using YOLOv5s (SSD optimized)")
+            logger.info("Raspberry Pi CM5 detected: using YOLOv5m (SSD optimized)")
 
         else:
             yolov_model = "yolov5s"  # default
