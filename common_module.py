@@ -536,7 +536,7 @@ def apply_timestamp(request):
                     origin = (40, int(frame.shape[0] * 0.85))
                     text_colour = (0, 0, 255)
                     text_rectangle(frame, timestamp, origin, text_colour)
-                    logger.debug("Timestamp drawn via MappedArray")
+                    # logger.debug("Timestamp drawn via MappedArray")
                     return
             except Exception as map_err:
                 logger.warning(f"MappedArray unavailable: {map_err}, falling back to capture_array()")
