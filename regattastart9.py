@@ -217,6 +217,35 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
     # RESTART CAMERA
     camera = restart_camera(camera, resolution=(1920, 1080), fps=fps)
 
+     # LOAD YOLOv5 MODEL
+    try:
+        result_queue = queue.Queue()  # Create a queue to hold the result
+        load_thread = threading.Thread(target=load_model_with_timeout, args=(result_queue,))
+        load_thread.start()
+        load_thread.join(timeout=60)  # Wait for up to 60 seconds
+    except Exception as e:
+        logger.error(f"Unhandled exception occurred load_thread: {e}", exc_info=True)
+        return
+
+    if not load_thread.is_alive():
+        try:
+            result = result_queue.get_nowait()  # Get the result from the queue
+            if isinstance(result, Exception):
+                logger.error("YOLOv5 model loading failed with an exception.")
+                return
+            model = result  # Successfully loaded model
+            logger.debug("YOLOv5 model loaded successfully.")
+        except queue.Empty:
+            logger.error("YOLOv5 model loading failed: No result returned.")
+            return
+    else:
+        logger.error("YOLOv5 model loading timed out.")
+        load_thread.join()  # Ensure the thread is cleaned up
+        return
+
+    # Filter for 'boat' class (COCO ID for 'boat' is 8)
+    model.classes = [8]
+
     while True:
         if stop_event.is_set():
             logger.info("Stop event set, breaking loop")
@@ -262,35 +291,6 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
         # Set the camera to the desired resolution and frame rate
         fpsw = fps
         logger.debug(f"FPS set to {fpsw}, proceeding to load YOLOv5 model.")
-
-        # LOAD YOLOv5 MODEL
-        try:
-            result_queue = queue.Queue()  # Create a queue to hold the result
-            load_thread = threading.Thread(target=load_model_with_timeout, args=(result_queue,))
-            load_thread.start()
-            load_thread.join(timeout=60)  # Wait for up to 60 seconds
-        except Exception as e:
-            logger.error(f"Unhandled exception occurred load_thread: {e}", exc_info=True)
-            return
-
-        if not load_thread.is_alive():
-            try:
-                result = result_queue.get_nowait()  # Get the result from the queue
-                if isinstance(result, Exception):
-                    logger.error("YOLOv5 model loading failed with an exception.")
-                    return
-                model = result  # Successfully loaded model
-                logger.debug("YOLOv5 model loaded successfully.")
-            except queue.Empty:
-                logger.error("YOLOv5 model loading failed: No result returned.")
-                return
-        else:
-            logger.error("YOLOv5 model loading timed out.")
-            load_thread.join()  # Ensure the thread is cleaned up
-            return
-
-        # Filter for 'boat' class (COCO ID for 'boat' is 8)
-        model.classes = [8]
 
         # SETUP VIDEO WRITER
         video1_h264_file = os.path.join(video_path, "video1.h264")
@@ -373,8 +373,8 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
 
                     # --- WATCHDOG CHECK ---
                     # changed from 5 to 20 seconds timeout
-                    if (datetime.now() - last_frame_time).total_seconds() > 20:
-                        logger.error("Watchdog: no new frame for >5s, breaking loop")
+                    if (datetime.now() - last_frame_time).total_seconds() > 60:
+                        logger.error("Watchdog: no new frame for >60s, breaking loop")
                         break
 
                     # Capture a frame from the camera
