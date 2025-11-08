@@ -372,8 +372,8 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
                         break
 
                     # --- WATCHDOG CHECK ---
-                    # changed from 5 to 20 seconds timeout
-                    if (datetime.now() - last_frame_time).total_seconds() > 60:
+                    # changed from 5 to 120 seconds timeout
+                    if (datetime.now() - last_frame_time).total_seconds() > 120:
                         logger.error("Watchdog: no new frame for >60s, breaking loop")
                         break
 
