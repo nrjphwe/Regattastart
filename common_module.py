@@ -316,19 +316,25 @@ def restart_camera(camera, resolution=(1640, 1232), fps=15):
         best_mode = min(sensor_modes, key=lambda m: abs(m["size"][0] - resolution[0]) + abs(m["size"][1] - resolution[1]))
         logger.debug(f"Using sensor mode: {best_mode}")
 
+        # --- Correct color mapping and consistent transform ---
+        raw_format = "BGGR10"  # Fix for color swap issue
+        colour_space = ColorSpace.Rec709  # Matches working video0
+
         # Configure the camera for frames captures
         if ROTATE_CAMERA:
             config = camera.create_video_configuration(
                 main={"size": best_mode["size"], "format": "BGR888"},
+                raw={"format": raw_format},
                 transform=Transform(hflip=False, vflip=False),
-                colour_space=ColorSpace.Srgb()  # OR ColorSpace.Sycc()
+                colour_space=colour_space
             )
             logger.info("Camera rotated/transform set to not flip due to ROTATE_CAMERA=True")
         else:
             config = camera.create_video_configuration(
                 main={"size": best_mode["size"], "format": "BGR888"},
+                raw={"format": raw_format},
                 transform=Transform(hflip=True, vflip=True),
-                colour_space=ColorSpace.Srgb()  # OR ColorSpace.Sycc()
+                colour_space=colour_space
             )
             logger.info("Setting to rotate / flip")
 
