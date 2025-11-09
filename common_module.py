@@ -318,7 +318,7 @@ def restart_camera(camera, resolution=(1640, 1232), fps=15):
 
         # --- Correct color mapping and consistent transform ---
         raw_format = "BGGR10"  # Fix for color swap issue
-        colour_space = ColorSpace.Rec709  # Matches working video0
+        colour_space = ColorSpace.Rec709()  # Matches working video0
 
         # Configure the camera for frames captures
         if ROTATE_CAMERA:
@@ -338,6 +338,7 @@ def restart_camera(camera, resolution=(1640, 1232), fps=15):
             )
             logger.info("Setting to rotate / flip")
 
+        logger.debug(f"Applied colour space: {config['colour_space']}")
         logger.debug(f"Config before applying: {config}")
         camera.configure(config)
         camera.set_controls({"FrameRate": fps})
