@@ -317,6 +317,7 @@ def restart_camera(camera, resolution=(1640, 1232), fps=15):
         logger.debug(f"Using sensor mode: {best_mode}")
 
         # --- Correct color mapping and consistent transform ---
+        best_mode = min(sensor_modes, key=lambda m: abs(m["size"][0] - resolution[0]) + abs(m["size"][1] - resolution[1]))
         raw_format = "BGGR10"  # Fix for color swap issue
         colour_space = ColorSpace.Rec709()  # Matches working video0
 
@@ -324,7 +325,7 @@ def restart_camera(camera, resolution=(1640, 1232), fps=15):
         if ROTATE_CAMERA:
             config = camera.create_video_configuration(
                 main={"size": best_mode["size"], "format": "BGR888"},
-                raw={"format": raw_format},
+                raw={"format": best_mode["unpacked"], "size": best_mode["size"]}  # match sensor
                 transform=Transform(hflip=False, vflip=False),
                 colour_space=colour_space
             )
@@ -332,7 +333,7 @@ def restart_camera(camera, resolution=(1640, 1232), fps=15):
         else:
             config = camera.create_video_configuration(
                 main={"size": best_mode["size"], "format": "BGR888"},
-                raw={"format": raw_format},
+                raw={"format": best_mode["unpacked"], "size": best_mode["size"]}  # match sensor
                 transform=Transform(hflip=True, vflip=True),
                 colour_space=colour_space
             )
