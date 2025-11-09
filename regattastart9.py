@@ -217,7 +217,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
     # RESTART CAMERA
     camera = restart_camera(camera, resolution=(1920, 1080), fps=fps)
 
-     # LOAD YOLOv5 MODEL
+    # LOAD YOLOv5 MODEL
     try:
         result_queue = queue.Queue()  # Create a queue to hold the result
         load_thread = threading.Thread(target=load_model_with_timeout, args=(result_queue,))
