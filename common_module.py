@@ -325,7 +325,7 @@ def restart_camera(camera, resolution=(1640, 1232), fps=15):
         if ROTATE_CAMERA:
             config = camera.create_video_configuration(
                 main={"size": best_mode["size"], "format": "BGR888"},
-                raw={"format": best_mode["unpacked"], "size": best_mode["size"]}  # match sensor
+                raw={"format": best_mode["unpacked"], "size": best_mode["size"]},  # match sensor
                 transform=Transform(hflip=False, vflip=False),
                 colour_space=colour_space
             )
@@ -333,7 +333,7 @@ def restart_camera(camera, resolution=(1640, 1232), fps=15):
         else:
             config = camera.create_video_configuration(
                 main={"size": best_mode["size"], "format": "BGR888"},
-                raw={"format": best_mode["unpacked"], "size": best_mode["size"]}  # match sensor
+                raw={"format": best_mode["unpacked"], "size": best_mode["size"]},  # match sensor
                 transform=Transform(hflip=True, vflip=True),
                 colour_space=colour_space
             )
