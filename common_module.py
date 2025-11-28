@@ -317,37 +317,35 @@ def restart_camera(camera, resolution=(1640, 1232), fps=15):
         raw_format = best_mode['unpacked']  # e.g. 'SRGGB10' or 'SBGGR10'
         main_size = best_mode['size']
 
-        colour_space = ColorSpace.Rec709()  # Matches working video0
-
         # Configure the camera for frames captures
         if ROTATE_CAMERA:
             config = camera.create_video_configuration(
-                'use_case': 'video',
-                'transform': Transform(hflip=False, vflip=False),
-                'colour_space': ColorSpace.Rec709(),
-                'buffer_count': 6,
-                'queue': True,
-                'main': {'format': 'BGR888', 'size': main_size, 'preserve_ar': True},
-                'lores': None,
-                'raw': {'format': raw_format, 'size': main_size},  # <---- auto
-                'sensor': {},
-                'display': 'main',
-                'encode': 'main'
+                use_case='video',
+                transform=Transform(hflip=False, vflip=False),
+                colour_space=ColorSpace.Rec709(),
+                buffer_count=6,
+                queue=True,
+                main={'format': 'BGR888', 'size': main_size, 'preserve_ar': True},
+                lores=None,
+                raw={'format': raw_format, 'size': main_size},  # <---- auto
+                sensor= {},
+                display= 'main',
+                encode= 'main'
             )
             logger.info("Camera rotated/transform set to not flip due to ROTATE_CAMERA=True")
         else:
             config = camera.create_video_configuration(
-                'use_case': 'video',
-                'transform': Transform(hflip=True, vflip=True),
-                'colour_space': ColorSpace.Rec709(),
-                'buffer_count': 6,
-                'queue': True,
-                'main': {'format': 'BGR888', 'size': main_size, 'preserve_ar': True},
-                'lores': None,
-                'raw': {'format': raw_format, 'size': main_size},  # <---- auto
-                'sensor': {},
-                'display': 'main',
-                'encode': 'main'
+                use_case='video',
+                transform=Transform(hflip=False, vflip=True),
+                colour_space=ColorSpace.Rec709(),
+                buffer_count=6,
+                queue=True,
+                main={'format': 'BGR888', 'size': main_size, 'preserve_ar': True},
+                lores=None,
+                raw={'format': raw_format, 'size': main_size},
+                sensor={},
+                display='main',
+                encode='main'
             )
             logger.info("Setting to rotate / flip")
 
