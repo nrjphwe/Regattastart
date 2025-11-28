@@ -306,36 +306,48 @@ def restart_camera(camera, resolution=(1640, 1232), fps=15):
         camera = Picamera2()
         logger.info("New Picamera2 instance created.")
 
-        # List available sensor modes
-        sensor_modes = camera.sensor_modes
-        if not sensor_modes:
+        # Query available modes
+        modes = camera.sensor_modes
+        if not modes:
             logger.error("No sensor modes available. Camera may not be detected!")
             return None
-
-        # Find a sensor mode that best matches the requested resolution
-        best_mode = min(sensor_modes, key=lambda m: abs(m["size"][0] - resolution[0]) + abs(m["size"][1] - resolution[1]))
+        best_mode = modes[0]  # or your selection logic
         logger.debug(f"Using sensor mode: {best_mode}")
 
-        # --- Correct color mapping and consistent transform ---
-        best_mode = min(sensor_modes, key=lambda m: abs(m["size"][0] - resolution[0]) + abs(m["size"][1] - resolution[1]))
-        raw_format = "BGGR10"  # Fix for color swap issue
+        raw_format = best_mode['unpacked']  # e.g. 'SRGGB10' or 'SBGGR10'
+        main_size = best_mode['size']
+
         colour_space = ColorSpace.Rec709()  # Matches working video0
 
         # Configure the camera for frames captures
         if ROTATE_CAMERA:
             config = camera.create_video_configuration(
-                main={"size": best_mode["size"], "format": "BGR888"},
-                raw={"format": best_mode["unpacked"], "size": best_mode["size"]},  # match sensor
-                transform=Transform(hflip=False, vflip=False),
-                colour_space=colour_space
+                'use_case': 'video',
+                'transform': Transform(hflip=False, vflip=False),
+                'colour_space': ColorSpace.Rec709(),
+                'buffer_count': 6,
+                'queue': True,
+                'main': {'format': 'BGR888', 'size': main_size, 'preserve_ar': True},
+                'lores': None,
+                'raw': {'format': raw_format, 'size': main_size},  # <---- auto
+                'sensor': {},
+                'display': 'main',
+                'encode': 'main'
             )
             logger.info("Camera rotated/transform set to not flip due to ROTATE_CAMERA=True")
         else:
             config = camera.create_video_configuration(
-                main={"size": best_mode["size"], "format": "BGR888"},
-                raw={"format": best_mode["unpacked"], "size": best_mode["size"]},  # match sensor
-                transform=Transform(hflip=True, vflip=True),
-                colour_space=colour_space
+                'use_case': 'video',
+                'transform': Transform(hflip=True, vflip=True),
+                'colour_space': ColorSpace.Rec709(),
+                'buffer_count': 6,
+                'queue': True,
+                'main': {'format': 'BGR888', 'size': main_size, 'preserve_ar': True},
+                'lores': None,
+                'raw': {'format': raw_format, 'size': main_size},  # <---- auto
+                'sensor': {},
+                'display': 'main',
+                'encode': 'main'
             )
             logger.info("Setting to rotate / flip")
 
