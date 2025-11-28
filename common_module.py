@@ -336,7 +336,7 @@ def restart_camera(camera, resolution=(1640, 1232), fps=15):
         else:
             config = camera.create_video_configuration(
                 use_case='video',
-                transform=Transform(hflip=False, vflip=True),
+                transform=Transform(hflip=True, vflip=True),
                 colour_space=ColorSpace.Rec709(),
                 buffer_count=6,
                 queue=True,
