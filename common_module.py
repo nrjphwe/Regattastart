@@ -34,8 +34,8 @@ logger = None
 signal_dur = 0.9  # Default signal duration
 
 FONT = cv2.FONT_HERSHEY_DUPLEX  # Font settings for text annotations
-FONT_SCALE = 2   # Font scale for text annotations
-THICKNESS = 2  # Thickness of the text annotations
+# FONT_SCALE = 2   # Font scale for text annotations
+# THICKNESS = 2  # Thickness of the text annotations
 
 sensor_size = 1640, 1232  # sensors aspect ratio
 
@@ -243,6 +243,19 @@ def text_rectangle(frame, text, origin, text_colour=(255, 0, 0), bg_colour=(200,
     OpenCV uses BGR by default, ensure colours are set in BGR format
     """
     try:
+        # Get current frame height (H) and width (W)
+        H, W = frame.shape[:2]
+
+        # --- Dynamic Scaling Calculation ---
+        # Baseline height is 1088 (from CM5 log). Base scale needed for 1088 is estimated at 0.8
+        BASE_HEIGHT = 1088
+        BASE_FONT_SCALE = 0.8  # Start with a more conservative scale than the original 2.0
+        BASE_THICKNESS = 2
+
+        # Calculate dynamic scale and thickness
+        font_scale = BASE_FONT_SCALE * (H / BASE_HEIGHT)
+        thickness = max(1, int(BASE_THICKNESS * (H / BASE_HEIGHT)))
+
         # Calculate text size
         text_size = cv2.getTextSize(text, font, font_scale, thickness)[0]
         text_width, text_height = text_size
