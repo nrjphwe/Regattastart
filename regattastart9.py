@@ -398,13 +398,15 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
 
                     # --- TIMESTAMP ---
                     capture_timestamp = datetime.now()
+                    logger.info("test xxxx")
+                    """
                     text_rectangle(
                         frame,
                         capture_timestamp.strftime("%Y-%m-%d %H:%M:%S"),
                         origin, font_scale=fontScale,
                         thickness=thickness
                     )
-
+                    """
                     # Initialize list to store detections for this frame
                     detections_for_frame = []
                     boat_in_current_frame = False
