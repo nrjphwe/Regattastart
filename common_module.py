@@ -140,10 +140,10 @@ def should_rotate_image():
     logger.info(f"Detected CPU model: {model}")
     # Adjust based on which system is upside down
     if "compute module 5" in model or "cm5" in model:
-        logger.info("Detected CM5, rotate 180")
-        return True
+        logger.info("Detected CM5, do NOT rotate")
+        return False
     elif "raspberry pi 5" in model:
-        logger.info("Detected Raspberry Pi 5, rotate 0")
+        logger.info("Detected Raspberry Pi 5, do NOT rotate")
         return False
     else:
         logger.warning("Unknown CPU model — defaulting to no rotation")
@@ -177,21 +177,11 @@ def setup_camera(resolution=(1640, 1232)):
         logger.info("Stopping the camera before reconfiguring.")
         camera.stop()  # Stop the camera if it is running
 
-        # Configure the camera
-        # transform=Transform(hflip=False, vflip=False),
-        # if ROTATE_CAMERA:
         config = camera.create_still_configuration(
             main={"size": resolution, "format": "BGR888"},
             colour_space=ColorSpace.Srgb()  # OR ColorSpace.Sycc()
         )
         logger.info("Camera not rotated/transform for all RPI5 and CM5")
-        # else:
-        #    config = camera.create_still_configuration(
-        #        main={"size": resolution, "format": "BGR888"},
-        #        transform=Transform(hflip=True, vflip=True),
-        #        colour_space=ColorSpace.Srgb()  # OR ColorSpace.Sycc()
-        #    )
-        #    logger.info("Setting to rotate / flip")
 
         camera.configure(config)
         logger.info(f"size: {resolution}, format: BGR888")
@@ -252,10 +242,6 @@ def capture_picture(camera, photo_path, file_name, rotate=False):
         origin = (40, int(frame.shape[0] * 0.85))  # Bottom-left corner
         text_colour = (255, 0, 0)  # Blue text in BGR, Blue text RGB = (0, 0, 255)
         bg_colour = (200, 200, 200)  # Gray background
-
-        # if ROTATE_CAMERA:
-        #    frame = cv2.rotate(frame, cv2.ROTATE_180)
-        #    logger.info("in capture_picture, Camera rotated if ROTATE_CAMERA=True")
 
         # Use text_rectangle function in common_module to draw timestamp
         text_rectangle(frame, timestamp, origin, text_colour, bg_colour)
@@ -321,7 +307,7 @@ def restart_camera(camera, resolution=(1640, 1232), fps=15):
         if ROTATE_CAMERA:
             config = camera.create_video_configuration(
                 use_case='video',
-                transform=Transform(hflip=True, vflip=False),
+                transform=Transform(hflip=True, vflip=True),
                 colour_space=ColorSpace.Rec709(),
                 buffer_count=6,
                 queue=True,
@@ -336,7 +322,7 @@ def restart_camera(camera, resolution=(1640, 1232), fps=15):
         else:
             config = camera.create_video_configuration(
                 use_case='video',
-                transform=Transform(hflip=True, vflip=True),
+                transform=Transform(hflip=False, vflip=False),
                 colour_space=ColorSpace.Rec709(),
                 buffer_count=6,
                 queue=True,
@@ -595,18 +581,18 @@ def start_video_recording(camera, video_path, file_name, resolution=(1640, 1232)
         video_config = camera.create_video_configuration(
             main={"size": resolution, "format": "BGR888"},
             buffer_count=2,  # ensures frame is available for mapping
-            transform=Transform(hflip=False, vflip=False),
+            transform=Transform(hflip=True, vflip=True),
             controls={"FrameRate": 5}
         )
-        logger.info("Camera rotated/transform set to not flip due to ROTATE_CAMERA=True")
+        logger.info("Camera rotated/transform set to flip due to ROTATE_CAMERA=True")
     else:
         video_config = camera.create_video_configuration(
             main={"size": resolution, "format": "BGR888"},
             buffer_count=2,  # ensures frame is available for mapping
-            transform=Transform(hflip=True, vflip=True),
+            transform=Transform(hflip=False, vflip=False),
             controls={"FrameRate": 5}
         )
-        logger.info("Setting to rotate / flip")
+        logger.info("Setting to NOT rotate / flip")
 
     camera.configure(video_config)  # Configure before starting recording
     logger.info(f"video_config {video_config}, resolution: {resolution}, bitrate: {bitrate}")
