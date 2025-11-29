@@ -34,7 +34,7 @@ logger = None
 signal_dur = 0.9  # Default signal duration
 
 FONT = cv2.FONT_HERSHEY_DUPLEX  # Font settings for text annotations
-FONT_SCALE = 1   # Font scale for text annotations
+FONT_SCALE = 2   # Font scale for text annotations
 THICKNESS = 2  # Thickness of the text annotations
 
 sensor_size = 1640, 1232  # sensors aspect ratio
