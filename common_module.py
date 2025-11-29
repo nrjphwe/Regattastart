@@ -150,19 +150,6 @@ def should_rotate_image():
         return False
 
 
-def auto_rotate_by_board():
-    """Detect board and return recommended rotation in degrees."""
-    try:
-        board_info = open('cat /proc/device-tree/model').read().strip()
-        if "Compute Module 5" in board_info:
-            return 180  # CM5 + IMX219
-        elif "Raspberry Pi 5" in board_info:
-            return 0  # RPI5 + OV5647
-    except Exception as e:
-        logger.warning(f"Cannot detect board: {e}")
-    return 0
-
-
 #  Set rotation flag once at startup
 ROTATE_CAMERA = should_rotate_image()
 logger.info(f"Camera rotate flag set to: {ROTATE_CAMERA}")
