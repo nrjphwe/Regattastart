@@ -14,7 +14,6 @@ from common_module import (
     process_video,
     get_cpu_model,
     get_h264_writer,
-    clean_exit
 )
 
 # Use a deque to store the most recent frames in memory
