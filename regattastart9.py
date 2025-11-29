@@ -401,7 +401,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
                     text_rectangle(
                         frame,
                         capture_timestamp.strftime("%Y-%m-%d %H:%M:%S"),
-                        origin, fontScale=fontScale,
+                        origin, font_scale=fontScale,
                         thickness=thickness
                     )
 
