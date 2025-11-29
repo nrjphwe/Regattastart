@@ -168,7 +168,7 @@ def setup_camera(resolution=(1640, 1232)):
             main={"size": resolution, "format": "BGR888"},
             colour_space=ColorSpace.Srgb()  # OR ColorSpace.Sycc()
         )
-        logger.info("Camera not rotated/transform for all RPI5 and CM5")
+        logger.info("Camera not rotated/transform ????")
 
         camera.configure(config)
         logger.info(f"size: {resolution}, format: BGR888")
@@ -202,12 +202,6 @@ def letterbox(image, target_size=(640, 480)):
 
 
 def capture_picture(camera, photo_path, file_name, rotate=False):
-    """
-    Camera direction was setup in setup_camera as rotated/flipped for CM5 
-    and no rotating for RPI5, then in start_video_recording we call apply_timestamp
-    where we again rotate if needed. This means for capture_picture we do NOT need to rotate again.
-
-    """
     try:
         request = camera.capture_request()  # Capture a single request
         # When grabbing frames:
@@ -262,7 +256,15 @@ def text_rectangle(frame, text, origin, text_colour=(255, 0, 0), bg_colour=(200,
         cv2.rectangle(frame, bg_top_left, bg_bottom_right, bg_colour, -1)  # -1 fills the rectangle
 
         # Overlay the text on top of the background
-        cv2.putText(frame, text, origin, font, font_scale, text_colour, thickness, cv2.LINE_AA)
+        cv2.putText(
+            frame,
+            text,
+            origin,
+            font,
+            font_scale,
+            text_colour,
+            thickness,
+            cv2.LINE_AA)
 
     except Exception as e:
         logger.error(f"Error in text_rectangle: {e}", exc_info=True)
@@ -305,7 +307,7 @@ def restart_camera(camera, resolution=(1640, 1232), fps=15):
                 display='main',
                 encode='main'
             )
-            logger.info("Camera rotated/transform set to not flip due to ROTATE_CAMERA=True")
+            logger.info("Camera rotated/transform set to flip due to ROTATE_CAMERA=True")
         else:
             config = camera.create_video_configuration(
                 use_case='video',
