@@ -424,13 +424,13 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
 
                     boat_in_current_frame = False
 
-                    # --- INFERENCE ON EVERY 4TH FRAME ---
+                    # --- INFERENCE ON EVERY 2nd FRAME ---
                     # Crop region of interest
                     cropped_frame = frame[y_start:y_start + crop_height, x_start:x_start + crop_width]
                     resized_frame = cv2.resize(cropped_frame, (inference_width, inference_height))
                     input_tensor = prepare_input(resized_frame, device='cpu')
 
-                    if frame_counter % 4 == 0:
+                    if frame_counter % 2 == 0:
                         # Run YOLOv5 inference
                         results = model(input_tensor)  # DetectMultiBackend returns list-of-tensors
                         detections = non_max_suppression(results, conf_thres=0.25, iou_thres=0.45)[0]
