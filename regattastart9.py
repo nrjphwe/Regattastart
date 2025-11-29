@@ -333,11 +333,11 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
         logger.debug(f"scale_x = {scale_x}, scale_y = {scale_y}")
 
         # Base scale text size and thickness
-        # base_fontScale = 0.9  # Default font size at 640x480
+        base_fontScale = 0.9  # Default font size at 640x480
         base_thickness = 2  # Default thickness at 640x480
         scale_factor = (scale_x + scale_y) / 2  # Average scale factor
-        # fontScale = max(base_fontScale * scale_factor, 0.6)  # Prevent too small text
-        thickness = max(int(base_thickness * scale_factor), 1)  # Prevent too thin lines
+        fontScale = min(max(base_fontScale * scale_factor, 0.6), 3.0)
+        thickness = min(max(int(base_thickness * scale_factor), 1), 6)
         font = cv2.FONT_HERSHEY_DUPLEX
         # (x, y) → OpenCV cv2.putText expects the bottom-left corner of the text string.
         # x = 40 → fixed horizontal offset, i.e. always 40 pixels from the left edge of the frame
@@ -398,7 +398,12 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
 
                     # --- TIMESTAMP ---
                     capture_timestamp = datetime.now()
-                    text_rectangle(frame, capture_timestamp.strftime("%Y-%m-%d %H:%M:%S"), origin)
+                    text_rectangle(
+                        frame,
+                        capture_timestamp.strftime("%Y-%m-%d %H:%M:%S"),
+                        origin, fontScale=fontScale,
+                        thickness=thickness
+                    )
 
                     # Initialize list to store detections for this frame
                     detections_for_frame = []
