@@ -145,12 +145,12 @@ def load_model_with_timeout(result_queue):
         elif cpu_model and "Raspberry Pi 5" in cpu_model:
             yolov_model = "yolov5n"  # lite tyngre
             device = 'cpu'
-            logger.info("Raspberry Pi 5 detected: using YOLOv5s")
+            logger.info("Raspberry Pi 5 detected: using YOLOv5n")
 
         elif cpu_model and "Raspberry Pi Compute Module 5" in cpu_model:
             yolov_model = "yolov5n"  # eller "yolov5m" if higher precision needed 
             device = 'cpu'
-            logger.info("Raspberry Pi CM5 detected: using YOLOv5m (SSD optimized)")
+            logger.info("Raspberry Pi CM5 detected: using YOLOv5n ( Not m, SSD optimized)")
 
         else:
             yolov_model = "yolov5s"  # default
@@ -354,14 +354,14 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
                 if time.time() - last_adjustment > 30:
                     temp = get_cpu_temp()
                     throttle = get_throttle_status()
-                    logger.info(f"Temp={temp:.1f}°C Throttle=0x{throttle:x} FPS={fps}")
+                    logger.info(f"Temperature={temp:.1f}°C Throttle=0x{throttle:x} FPS={fps}")
                     if temp is not None:
                         if temp and temp > 82:
                             fps = max(5, fps - 2)   # lower FPS gradually
-                            logger.warning(f"High temp {temp:.1f}°C → reducing FPS to {fps}")
+                            logger.warning(f"High temperature {temp:.1f}°C → reducing FPS to {fps}")
                         elif temp and temp < 70 and fps < 15:
                             fps += 1
-                            logger.info(f"Cooler now {temp:.1f}°C → increasing FPS to {fps}")
+                            logger.info(f"Cooler temperature now {temp:.1f}°C → increasing FPS to {fps}")
 
                     last_adjustment = time.time()
 
