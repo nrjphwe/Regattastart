@@ -235,7 +235,7 @@ def capture_picture(camera, photo_path, file_name, rotate=False):
 
 
 def text_rectangle(frame, text, origin, text_colour=(255, 0, 0), bg_colour=(200, 200, 200),
-                   font=FONT, font_scale=1.0, thickness=2):
+                   font=FONT, font_scale=1.5, thickness=2):
     """
     Draw a background rectangle and overlay text on a frame.
     (Accepts computed font_scale and thickness.)
