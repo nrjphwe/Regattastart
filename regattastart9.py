@@ -398,14 +398,14 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
                     # --- TIMESTAMP ---
                     capture_timestamp = datetime.now()
                     logger.info("test xxxx")
-                    """
                     text_rectangle(
                         frame,
                         capture_timestamp.strftime("%Y-%m-%d %H:%M:%S"),
-                        origin, font_scale=fontScale,
+                        origin,
+                        text_colour=(255, 0, 0),
+                        font_scale=fontScale,
                         thickness=thickness
                     )
-                    """
                     # Initialize list to store detections for this frame
                     detections_for_frame = []
                     boat_in_current_frame = False
@@ -489,7 +489,9 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
                             while pre_detection_buffer:
                                 buf_id, buf_frame, buf_ts = pre_detection_buffer.popleft()
                                 label = f"{buf_ts:%Y-%m-%d %H:%M:%S} PRE"
-                                text_rectangle(buf_frame, label, origin)
+                                text_rectangle(buf_frame, label, origin,
+                                               font_scale=fontScale, 
+                                               thickness=thickness)
                                 if not safe_write(video_writer, buf_frame):
                                     logger.error("Breaking loop due to video writer stall")
                                     stall_detected = True
@@ -517,7 +519,9 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
                     # --- POST-DETECTION FRAMES ---
                     elif number_of_post_frames > 0 and not frame_written:
                         label = f"{capture_timestamp:%Y-%m-%d %H:%M:%S} POST"
-                        text_rectangle(frame, label, origin)
+                        text_rectangle(frame, label, origin,
+                                       font_scale=fontScale,
+                                       thickness=thickness)
                         if not safe_write(video_writer, frame):
                             logger.error("Breaking loop due to video writer stall")
                             stall_detected = True
