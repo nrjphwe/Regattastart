@@ -327,12 +327,12 @@ def restart_camera(camera, resolution=(TARGET_RESOLUTION), fps=15):
 
         logger.debug(f"Applied colour space: {config['colour_space']}")
         logger.debug(f"Config before applying: {config}")
-        camera.configure(config)
+        new_camera.configure(config)
         new_camera.set_controls({"FrameRate": fps})
 
         new_camera.start()
         logger.info(f"Camera restarted FORCED resolution {main_size} and FPS: {fps}.")
-        return camera  # Return new camera instance
+        return new_camera  # Return new camera instance
 
     except Exception as e:
         logger.error(f"Failed to restart camera: {e}")
