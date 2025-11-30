@@ -38,6 +38,7 @@ FONT = cv2.FONT_HERSHEY_DUPLEX  # Font settings for text annotations
 # THICKNESS = 2  # Thickness of the text annotations
 
 sensor_size = 1640, 1232  # sensors aspect ratio
+TARGET_RESOLUTION = 1280, 960  # Target resolution for display and recording
 
 # text_colour = (0, 0, 255)  # Blue text in RGB
 text_colour = (255, 0, 0)  # Blue text in BGR
@@ -288,7 +289,7 @@ def text_rectangle(frame,
         logger.error(f"Error in text_rectangle: {e}", exc_info=True)
 
 
-def restart_camera(camera, resolution=(1640, 1232), fps=15):
+def restart_camera(camera, resolution=(TARGET_RESOLUTION), fps=15):
     try:
         if camera is not None:
             camera.stop()
@@ -300,15 +301,16 @@ def restart_camera(camera, resolution=(1640, 1232), fps=15):
         logger.info("New Picamera2 instance created.")
 
         # Query available modes
-        modes = camera.sensor_modes
-        if not modes:
-            logger.error("No sensor modes available. Camera may not be detected!")
-            return None
-        best_mode = modes[0]  # or your selection logic
-        logger.debug(f"Using sensor mode: {best_mode}")
+        # modes = camera.sensor_modes
+        # if not modes:
+        #    logger.error("No sensor modes available. Camera may not be detected!")
+        #    return None
+        # best_mode = modes[0]  # or your selection logic
+        # logger.debug(f"Using sensor mode: {best_mode}")
 
-        raw_format = best_mode['unpacked']  # e.g. 'SRGGB10' or 'SBGGR10'
-        main_size = best_mode['size']
+        #raw_format = best_mode['unpacked']  # e.g. 'SRGGB10' or 'SBGGR10'
+        #main_size = best_mode['size']
+        main_size = resolution
 
         # Configure the camera for frames captures
         if ROTATE_CAMERA:
@@ -348,7 +350,7 @@ def restart_camera(camera, resolution=(1640, 1232), fps=15):
         camera.set_controls({"FrameRate": fps})
 
         camera.start()
-        logger.info(f"Camera restarted with best mode resolution {best_mode['size']} and FPS: {fps}.")
+        logger.info(f"Camera restarted FORCED resolution {main_size} and FPS: {fps}.")
         return camera  # Return new camera instance
 
     except Exception as e:
