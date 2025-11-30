@@ -397,7 +397,6 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
 
                     # --- TIMESTAMP ---
                     capture_timestamp = datetime.now()
-                    logger.info("test xxxx")
                     text_rectangle(
                         frame,
                         capture_timestamp.strftime("%Y-%m-%d %H:%M:%S"),
