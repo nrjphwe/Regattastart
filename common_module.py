@@ -161,9 +161,6 @@ def setup_camera(resolution=(1640, 1232)):
     logger.info("Setup of camera")
     try:
         camera = Picamera2()
-        # Stop the camera if it is running (no need to check is_running)
-        logger.info("Stopping the camera before reconfiguring.")
-        camera.stop()  # Stop the camera if it is running
 
         config = camera.create_still_configuration(
             main={"size": resolution, "format": "BGR888"},
@@ -241,29 +238,16 @@ def text_rectangle(frame, text, origin, text_colour=(255, 0, 0), bg_colour=(200,
                    font=FONT, font_scale=1.0, thickness=2):
     """
     Draw a background rectangle and overlay text on a frame.
-    Default values for text_colour is Blue and for background is grey.
-    OpenCV uses BGR by default, ensure colours are set in BGR format
+    (Accepts computed font_scale and thickness.)
     """
     try:
-        # Get current frame height (H) and width (W)
-        H, W = frame.shape[:2]
-
-        # --- Dynamic Scaling Calculation ---
-        # Baseline height is 1088 (from CM5 log). Base scale needed for 1088 is estimated at 0.8
-        BASE_HEIGHT = 1088
-        BASE_FONT_SCALE = 0.8  # Start with a more conservative scale than the original 2.0
-        BASE_THICKNESS = 2
-
-        # Calculate dynamic scale and thickness
-        font_scale = BASE_FONT_SCALE * (H / BASE_HEIGHT)
-        thickness = max(1, int(BASE_THICKNESS * (H / BASE_HEIGHT)))
-
-        # Calculate text size
+        # Calculate text size using provided scale/thickness
         text_size = cv2.getTextSize(text, font, font_scale, thickness)[0]
         text_width, text_height = text_size
 
-        # Calculate background rectangle coordinates
-        pad = int(5 * font_scale)
+        # Use scale_factor to keep padding proportional
+        # Use font_scale for padding calculation
+        pad = max(2, int(5 * font_scale)) 
         bg_top_left = (origin[0] - pad, origin[1] - text_height - pad) 
         bg_bottom_right = (origin[0] + text_width + pad, origin[1] + pad)
 
@@ -286,31 +270,32 @@ def text_rectangle(frame, text, origin, text_colour=(255, 0, 0), bg_colour=(200,
 
 
 def restart_camera(camera, resolution=(TARGET_RESOLUTION), fps=15):
-    try:
-        if camera is not None:
+    # Step 1: Cleanly stop and close any existing camera object
+    if camera is not None:
+        try:
+            logger.info("Attempting to stop and close previous camera instance.")
             camera.stop()
-            camera.close()
-            logger.info("Previous camera instance stopped and closed.")
-        time.sleep(2)  # Ensure the camera is fully released
+            camera.close() # Ensure resources are fully released
+        except Exception as e:
+            # Log a warning, but proceed, as the camera might already be closed/invalid
+            logger.warning(f"Error while stopping/closing old camera object: {e}")
 
-        camera = Picamera2()
-        logger.info("New Picamera2 instance created.")
+    # Step 2: Create a NEW Picamera2 instance
+    new_camera = None
+    try:
+        new_camera = Picamera2()
+        logger.info("New Picamera2 instance created successfully.")
+    except Exception as e:
+        logger.error(f"FATAL: Failed to create new Picamera2 instance: {e}")
+        return None  # Critical failure, cannot proceed
 
-        # Query available modes
-        # modes = camera.sensor_modes
-        # if not modes:
-        #    logger.error("No sensor modes available. Camera may not be detected!")
-        #    return None
-        # best_mode = modes[0]  # or your selection logic
-        # logger.debug(f"Using sensor mode: {best_mode}")
-
-        #raw_format = best_mode['unpacked']  # e.g. 'SRGGB10' or 'SBGGR10'
-        #main_size = best_mode['size']
+    # Step 3: Configure the new camera object for video (1920x1080)
+    try:
         main_size = resolution
 
         # Configure the camera for frames captures
         if ROTATE_CAMERA:
-            config = camera.create_video_configuration(
+            config = new_camera.create_video_configuration(
                 use_case='video',
                 transform=Transform(hflip=True, vflip=True),
                 colour_space=ColorSpace.Rec709(),
@@ -318,14 +303,14 @@ def restart_camera(camera, resolution=(TARGET_RESOLUTION), fps=15):
                 queue=True,
                 main={'format': 'BGR888', 'size': main_size, 'preserve_ar': True},
                 lores=None,
-                raw={'format': raw_format, 'size': main_size},  # <---- auto
+                raw=None, # <---- auto
                 sensor={},
                 display='main',
                 encode='main'
             )
             logger.info("Camera rotated/transform set to flip due to ROTATE_CAMERA=True")
         else:
-            config = camera.create_video_configuration(
+            config = new_camera.create_video_configuration(
                 use_case='video',
                 transform=Transform(hflip=False, vflip=False),
                 colour_space=ColorSpace.Rec709(),
@@ -333,7 +318,7 @@ def restart_camera(camera, resolution=(TARGET_RESOLUTION), fps=15):
                 queue=True,
                 main={'format': 'BGR888', 'size': main_size, 'preserve_ar': True},
                 lores=None,
-                raw={'format': raw_format, 'size': main_size},
+                raw=None,  # <---- auto
                 sensor={},
                 display='main',
                 encode='main'
@@ -343,9 +328,9 @@ def restart_camera(camera, resolution=(TARGET_RESOLUTION), fps=15):
         logger.debug(f"Applied colour space: {config['colour_space']}")
         logger.debug(f"Config before applying: {config}")
         camera.configure(config)
-        camera.set_controls({"FrameRate": fps})
+        new_camera.set_controls({"FrameRate": fps})
 
-        camera.start()
+        new_camera.start()
         logger.info(f"Camera restarted FORCED resolution {main_size} and FPS: {fps}.")
         return camera  # Return new camera instance
 
