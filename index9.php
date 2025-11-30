@@ -3,7 +3,7 @@
     header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
     header("Access-Control-Allow-Headers: *");
 
-    define('APP_VERSION', '25.10.10'); // You can replace '1.0.0' with your desired version number
+    define('APP_VERSION', '25.11.30'); // You can replace '1.0.0' with your desired version number
 
     $custom_session_path = '/var/www/php_sessions';
     if (!file_exists($custom_session_path)) {
