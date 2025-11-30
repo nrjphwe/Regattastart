@@ -14,7 +14,6 @@ from common_module import (
     process_video,
     get_cpu_model,
     get_h264_writer,
-    clean_exit
 )
 
 # Use a deque to store the most recent frames in memory
@@ -135,25 +134,51 @@ def cleanup_processed_timestamps(processed_timestamps, threshold_seconds=30):
 # function to load the YOLOv5 model
 def load_model_with_timeout(result_queue):
     try:
-        if cpu_model and "Raspberry Pi 3" in cpu_model:
-            # inference_interval = 2.0  # seconds between inferences
-            yolov_model = "yolov5n"   # lighter model
+        start_time = time.time()
+        # Choose model based on CPU
+        if cpu_model and "Raspberry Pi 4" in cpu_model:
+            yolov_model = "yolov5n"  # lätt modell
+            device = 'cpu'
+            logger.info("Raspberry Pi 4 detected: using YOLOv5n")
+
         elif cpu_model and "Raspberry Pi 5" in cpu_model:
-            # inference_interval = 0.5  # more frequent
-            yolov_model = "yolov5s"
+            yolov_model = "yolov5n"  # lite tyngre
+            device = 'cpu'
+            logger.info("Raspberry Pi 5 detected: using YOLOv5n")
+
+        elif cpu_model and "Raspberry Pi Compute Module 5" in cpu_model:
+            yolov_model = "yolov5n"  # eller "yolov5m" if higher precision needed 
+            device = 'cpu'
+            logger.info("Raspberry Pi CM5 detected: using YOLOv5n ( Not m, SSD optimized)")
+
         else:
-            # inference_interval = 1.0
-            yolov_model = "yolov5s"
+            yolov_model = "yolov5s"  # default
+            device = 'cpu'
+            logger.info(f"Unknown CPU ({cpu_model}): defaulting to YOLOv5s")
 
         from models.common import DetectMultiBackend
-        model_path = "/var/www/html/" + yolov_model + ".pt"  # Path to the YOLOv5 model file
-        logger.info(f"Loading YOLOv5 model from {model_path} for {cpu_model} with model {yolov_model}")
-        device = 'cpu'
+
+        model_path = f"/var/www/html/{yolov_model}.pt"  # Path to the YOLOv5 model file
+        logger.info(f"Loading YOLOv5 model from {model_path} on {cpu_model}")
+
+        # load model
         model = DetectMultiBackend(model_path, device=device)
+
+        # Optimera för CPU (PyTorch 2.x)
+        try:
+            if torch.__version__ >= "2.0":
+                model.model = torch.compile(model.model)
+                logger.info("Model compiled for faster CPU inference")
+        except Exception as e:
+            logger.warning(f"CPU compilation skipped: {e}")
+
+        # put model in queue
         result_queue.put(model)  # Put the model in the queue
+        end_time = time.time()
+        logger.info(f"Model loaded in {end_time - start_time:.2f} seconds")
     except Exception as e:
         logger.error(f"FAILED to load YOLOv5 model: {e}", exc_info=True)
-        result_queue.put(e)  # Put the exception in the queue
+        result_queue.put(None)
 
 
 def prepare_input(img, device='cpu'):
@@ -190,6 +215,35 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
 
     # RESTART CAMERA
     camera = restart_camera(camera, resolution=(1920, 1080), fps=fps)
+
+    # LOAD YOLOv5 MODEL
+    try:
+        result_queue = queue.Queue()  # Create a queue to hold the result
+        load_thread = threading.Thread(target=load_model_with_timeout, args=(result_queue,))
+        load_thread.start()
+        load_thread.join(timeout=60)  # Wait for up to 60 seconds
+    except Exception as e:
+        logger.error(f"Unhandled exception occurred load_thread: {e}", exc_info=True)
+        return
+
+    if not load_thread.is_alive():
+        try:
+            result = result_queue.get_nowait()  # Get the result from the queue
+            if isinstance(result, Exception):
+                logger.error("YOLOv5 model loading failed with an exception.")
+                return
+            model = result  # Successfully loaded model
+            logger.debug("YOLOv5 model loaded successfully.")
+        except queue.Empty:
+            logger.error("YOLOv5 model loading failed: No result returned.")
+            return
+    else:
+        logger.error("YOLOv5 model loading timed out.")
+        load_thread.join()  # Ensure the thread is cleaned up
+        return
+
+    # Filter for 'boat' class (COCO ID for 'boat' is 8)
+    model.classes = [8]
 
     while True:
         if stop_event.is_set():
@@ -237,35 +291,6 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
         fpsw = fps
         logger.debug(f"FPS set to {fpsw}, proceeding to load YOLOv5 model.")
 
-        # LOAD YOLOv5 MODEL
-        try:
-            result_queue = queue.Queue()  # Create a queue to hold the result
-            load_thread = threading.Thread(target=load_model_with_timeout, args=(result_queue,))
-            load_thread.start()
-            load_thread.join(timeout=60)  # Wait for up to 60 seconds
-        except Exception as e:
-            logger.error(f"Unhandled exception occurred load_thread: {e}", exc_info=True)
-            return
-
-        if not load_thread.is_alive():
-            try:
-                result = result_queue.get_nowait()  # Get the result from the queue
-                if isinstance(result, Exception):
-                    logger.error("YOLOv5 model loading failed with an exception.")
-                    return
-                model = result  # Successfully loaded model
-                logger.debug("YOLOv5 model loaded successfully.")
-            except queue.Empty:
-                logger.error("YOLOv5 model loading failed: No result returned.")
-                return
-        else:
-            logger.error("YOLOv5 model loading timed out.")
-            load_thread.join()  # Ensure the thread is cleaned up
-            return
-
-        # Filter for 'boat' class (COCO ID for 'boat' is 8)
-        model.classes = [8]
-
         # SETUP VIDEO WRITER
         video1_h264_file = os.path.join(video_path, "video1.h264")
         video_writer, writer_type = get_h264_writer(
@@ -307,11 +332,11 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
         logger.debug(f"scale_x = {scale_x}, scale_y = {scale_y}")
 
         # Base scale text size and thickness
-        # base_fontScale = 0.9  # Default font size at 640x480
+        base_fontScale = 0.9  # Default font size at 640x480
         base_thickness = 2  # Default thickness at 640x480
         scale_factor = (scale_x + scale_y) / 2  # Average scale factor
-        # fontScale = max(base_fontScale * scale_factor, 0.6)  # Prevent too small text
-        thickness = max(int(base_thickness * scale_factor), 1)  # Prevent too thin lines
+        fontScale = min(max(base_fontScale * scale_factor, 0.6), 3.0)
+        thickness = min(max(int(base_thickness * scale_factor), 1), 6)
         font = cv2.FONT_HERSHEY_DUPLEX
         # (x, y) → OpenCV cv2.putText expects the bottom-left corner of the text string.
         # x = 40 → fixed horizontal offset, i.e. always 40 pixels from the left edge of the frame
@@ -328,14 +353,14 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
                 if time.time() - last_adjustment > 30:
                     temp = get_cpu_temp()
                     throttle = get_throttle_status()
-                    logger.info(f"Temp={temp:.1f}°C Throttle=0x{throttle:x} FPS={fps}")
+                    logger.info(f"Temperature={temp:.1f}°C Throttle=0x{throttle:x} FPS={fps}")
                     if temp is not None:
                         if temp and temp > 82:
                             fps = max(5, fps - 2)   # lower FPS gradually
-                            logger.warning(f"High temp {temp:.1f}°C → reducing FPS to {fps}")
+                            logger.warning(f"High temperature {temp:.1f}°C → reducing FPS to {fps}")
                         elif temp and temp < 70 and fps < 15:
                             fps += 1
-                            logger.info(f"Cooler now {temp:.1f}°C → increasing FPS to {fps}")
+                            logger.info(f"Cooler temperature now {temp:.1f}°C → increasing FPS to {fps}")
 
                     last_adjustment = time.time()
 
@@ -346,8 +371,9 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
                         break
 
                     # --- WATCHDOG CHECK ---
-                    if (datetime.now() - last_frame_time).total_seconds() > 5:
-                        logger.error("Watchdog: no new frame for >5s, breaking loop")
+                    # changed from 5 to 120 seconds timeout
+                    if (datetime.now() - last_frame_time).total_seconds() > 120:
+                        logger.error("Watchdog: no new frame for >60s, breaking loop")
                         break
 
                     # Capture a frame from the camera
@@ -371,8 +397,14 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
 
                     # --- TIMESTAMP ---
                     capture_timestamp = datetime.now()
-                    text_rectangle(frame, capture_timestamp.strftime("%Y-%m-%d %H:%M:%S"), origin)
-
+                    # text_rectangle(
+                    #    frame,
+                    #    capture_timestamp.strftime("%Y-%m-%d %H:%M:%S"),
+                    #    origin,
+                    #    text_colour=(255, 0, 0),
+                    #    font_scale=fontScale,
+                    #    thickness=thickness
+                    #)
                     # Initialize list to store detections for this frame
                     detections_for_frame = []
                     boat_in_current_frame = False
@@ -392,13 +424,13 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
 
                     boat_in_current_frame = False
 
-                    # --- INFERENCE ON EVERY 4TH FRAME ---
+                    # --- INFERENCE ON EVERY 2nd FRAME ---
                     # Crop region of interest
                     cropped_frame = frame[y_start:y_start + crop_height, x_start:x_start + crop_width]
                     resized_frame = cv2.resize(cropped_frame, (inference_width, inference_height))
                     input_tensor = prepare_input(resized_frame, device='cpu')
 
-                    if frame_counter % 4 == 0:
+                    if frame_counter % 2 == 0:
                         # Run YOLOv5 inference
                         results = model(input_tensor)  # DetectMultiBackend returns list-of-tensors
                         detections = non_max_suppression(results, conf_thres=0.25, iou_thres=0.45)[0]
@@ -456,7 +488,9 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
                             while pre_detection_buffer:
                                 buf_id, buf_frame, buf_ts = pre_detection_buffer.popleft()
                                 label = f"{buf_ts:%Y-%m-%d %H:%M:%S} PRE"
-                                text_rectangle(buf_frame, label, origin)
+                                text_rectangle(buf_frame, label, origin,
+                                               font_scale=fontScale, 
+                                               thickness=thickness)
                                 if not safe_write(video_writer, buf_frame):
                                     logger.error("Breaking loop due to video writer stall")
                                     stall_detected = True
@@ -471,7 +505,9 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
                                         font, 0.7, (0, 255, 0), 2)
 
                         label = capture_timestamp.strftime("%Y-%m-%d %H:%M:%S")
-                        text_rectangle(frame, label, origin)
+                        text_rectangle(frame, label, origin,
+                                       font_scale=fontScale,
+                                       thickness=thickness)
                         if not safe_write(video_writer, frame):
                             logger.error("Breaking loop due to video writer stall")
                             stall_detected = True
@@ -484,7 +520,9 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
                     # --- POST-DETECTION FRAMES ---
                     elif number_of_post_frames > 0 and not frame_written:
                         label = f"{capture_timestamp:%Y-%m-%d %H:%M:%S} POST"
-                        text_rectangle(frame, label, origin)
+                        text_rectangle(frame, label, origin,
+                                       font_scale=fontScale,
+                                       thickness=thickness)
                         if not safe_write(video_writer, frame):
                             logger.error("Breaking loop due to video writer stall")
                             stall_detected = True

@@ -34,10 +34,11 @@ logger = None
 signal_dur = 0.9  # Default signal duration
 
 FONT = cv2.FONT_HERSHEY_DUPLEX  # Font settings for text annotations
-FONT_SCALE = 2   # Font scale for text annotations
-THICKNESS = 2  # Thickness of the text annotations
+# FONT_SCALE = 2   # Font scale for text annotations
+# THICKNESS = 2  # Thickness of the text annotations
 
 sensor_size = 1640, 1232  # sensors aspect ratio
+TARGET_RESOLUTION = 1280, 960  # Target resolution for display and recording
 
 # text_colour = (0, 0, 255)  # Blue text in RGB
 text_colour = (255, 0, 0)  # Blue text in BGR
@@ -140,27 +141,14 @@ def should_rotate_image():
     logger.info(f"Detected CPU model: {model}")
     # Adjust based on which system is upside down
     if "compute module 5" in model or "cm5" in model:
-        logger.info("Detected CM5, rotate 180")
-        return True
-    elif "raspberry pi 5" in model:
-        logger.info("Detected Raspberry Pi 5, rotate 0")
+        logger.info("Detected CM5, do NOT rotate")
         return False
+    elif "raspberry pi 5" in model:
+        logger.info("Detected Raspberry Pi 5, rotate 180 degrees")
+        return True
     else:
         logger.warning("Unknown CPU model — defaulting to no rotation")
         return False
-
-
-def auto_rotate_by_board():
-    """Detect board and return recommended rotation in degrees."""
-    try:
-        board_info = open('cat /proc/device-tree/model').read().strip()
-        if "Compute Module 5" in board_info:
-            return 180  # CM5 + IMX219
-        elif "Raspberry Pi 5" in board_info:
-            return 0  # RPI5 + OV5647
-    except Exception as e:
-        logger.warning(f"Cannot detect board: {e}")
-    return 0
 
 
 #  Set rotation flag once at startup
@@ -173,25 +161,12 @@ def setup_camera(resolution=(1640, 1232)):
     logger.info("Setup of camera")
     try:
         camera = Picamera2()
-        # Stop the camera if it is running (no need to check is_running)
-        logger.info("Stopping the camera before reconfiguring.")
-        camera.stop()  # Stop the camera if it is running
 
-        # Configure the camera
-        # transform=Transform(hflip=False, vflip=False),
-        # if ROTATE_CAMERA:
         config = camera.create_still_configuration(
             main={"size": resolution, "format": "BGR888"},
             colour_space=ColorSpace.Srgb()  # OR ColorSpace.Sycc()
         )
-        logger.info("Camera not rotated/transform for all RPI5 and CM5")
-        # else:
-        #    config = camera.create_still_configuration(
-        #        main={"size": resolution, "format": "BGR888"},
-        #        transform=Transform(hflip=True, vflip=True),
-        #        colour_space=ColorSpace.Srgb()  # OR ColorSpace.Sycc()
-        #    )
-        #    logger.info("Setting to rotate / flip")
+        logger.info("Camera not rotated/transform ????")
 
         camera.configure(config)
         logger.info(f"size: {resolution}, format: BGR888")
@@ -225,12 +200,6 @@ def letterbox(image, target_size=(640, 480)):
 
 
 def capture_picture(camera, photo_path, file_name, rotate=False):
-    """
-    Camera direction was setup in setup_camera as rotated/flipped for CM5 
-    and no rotating for RPI5, then in start_video_recording we call apply_timestamp
-    where we again rotate if needed. This means for capture_picture we do NOT need to rotate again.
-
-    """
     try:
         request = camera.capture_request()  # Capture a single request
         # When grabbing frames:
@@ -253,10 +222,6 @@ def capture_picture(camera, photo_path, file_name, rotate=False):
         text_colour = (255, 0, 0)  # Blue text in BGR, Blue text RGB = (0, 0, 255)
         bg_colour = (200, 200, 200)  # Gray background
 
-        # if ROTATE_CAMERA:
-        #    frame = cv2.rotate(frame, cv2.ROTATE_180)
-        #    logger.info("in capture_picture, Camera rotated if ROTATE_CAMERA=True")
-
         # Use text_rectangle function in common_module to draw timestamp
         text_rectangle(frame, timestamp, origin, text_colour, bg_colour)
 
@@ -269,19 +234,20 @@ def capture_picture(camera, photo_path, file_name, rotate=False):
         logger.error(f"Failed to capture picture: {e}", exc_info=True)
 
 
-def text_rectangle(frame, text, origin, text_colour=(255, 0, 0), bg_colour=(200, 200, 200), font=FONT, font_scale=FONT_SCALE, thickness=THICKNESS):
+def text_rectangle(frame, text, origin, text_colour=(255, 0, 0), bg_colour=(200, 200, 200),
+                   font=FONT, font_scale=1.5, thickness=2):
     """
     Draw a background rectangle and overlay text on a frame.
-    Default values for text_colour is Blue and for background is grey.
-    OpenCV uses BGR by default, ensure colours are set in BGR format
+    (Accepts computed font_scale and thickness.)
     """
     try:
-        # Calculate text size
+        # Calculate text size using provided scale/thickness
         text_size = cv2.getTextSize(text, font, font_scale, thickness)[0]
         text_width, text_height = text_size
 
-        # Calculate background rectangle coordinates
-        pad = int(5 * font_scale)
+        # Use scale_factor to keep padding proportional
+        # Use font_scale for padding calculation
+        pad = max(2, int(5 * font_scale)) 
         bg_top_left = (origin[0] - pad, origin[1] - text_height - pad) 
         bg_bottom_right = (origin[0] + text_width + pad, origin[1] + pad)
 
@@ -289,56 +255,84 @@ def text_rectangle(frame, text, origin, text_colour=(255, 0, 0), bg_colour=(200,
         cv2.rectangle(frame, bg_top_left, bg_bottom_right, bg_colour, -1)  # -1 fills the rectangle
 
         # Overlay the text on top of the background
-        cv2.putText(frame, text, origin, font, font_scale, text_colour, thickness, cv2.LINE_AA)
+        cv2.putText(
+            frame,
+            text,
+            origin,
+            font,
+            font_scale,
+            text_colour,
+            thickness,
+            cv2.LINE_AA)
 
     except Exception as e:
         logger.error(f"Error in text_rectangle: {e}", exc_info=True)
 
 
-def restart_camera(camera, resolution=(1640, 1232), fps=15):
-    try:
-        if camera is not None:
+def restart_camera(camera, resolution=(TARGET_RESOLUTION), fps=15):
+    # Step 1: Cleanly stop and close any existing camera object
+    if camera is not None:
+        try:
+            logger.info("Attempting to stop and close previous camera instance.")
             camera.stop()
-            camera.close()
-            logger.info("Previous camera instance stopped and closed.")
-        time.sleep(2)  # Ensure the camera is fully released
+            camera.close() # Ensure resources are fully released
+        except Exception as e:
+            # Log a warning, but proceed, as the camera might already be closed/invalid
+            logger.warning(f"Error while stopping/closing old camera object: {e}")
 
-        camera = Picamera2()
-        logger.info("New Picamera2 instance created.")
+    # Step 2: Create a NEW Picamera2 instance
+    new_camera = None
+    try:
+        new_camera = Picamera2()
+        logger.info("New Picamera2 instance created successfully.")
+    except Exception as e:
+        logger.error(f"FATAL: Failed to create new Picamera2 instance: {e}")
+        return None  # Critical failure, cannot proceed
 
-        # List available sensor modes
-        sensor_modes = camera.sensor_modes
-        if not sensor_modes:
-            logger.error("No sensor modes available. Camera may not be detected!")
-            return None
-
-        # Find a sensor mode that best matches the requested resolution
-        best_mode = min(sensor_modes, key=lambda m: abs(m["size"][0] - resolution[0]) + abs(m["size"][1] - resolution[1]))
-        logger.debug(f"Using sensor mode: {best_mode}")
+    # Step 3: Configure the new camera object for video (1920x1080)
+    try:
+        main_size = resolution
 
         # Configure the camera for frames captures
         if ROTATE_CAMERA:
-            config = camera.create_video_configuration(
-                main={"size": best_mode["size"], "format": "BGR888"},
-                transform=Transform(hflip=False, vflip=False),
-                colour_space=ColorSpace.Srgb()  # OR ColorSpace.Sycc()
-            )
-            logger.info("Camera rotated/transform set to not flip due to ROTATE_CAMERA=True")
-        else:
-            config = camera.create_video_configuration(
-                main={"size": best_mode["size"], "format": "BGR888"},
+            config = new_camera.create_video_configuration(
+                use_case='video',
                 transform=Transform(hflip=True, vflip=True),
-                colour_space=ColorSpace.Srgb()  # OR ColorSpace.Sycc()
+                colour_space=ColorSpace.Rec709(),
+                buffer_count=6,
+                queue=True,
+                main={'format': 'BGR888', 'size': main_size, 'preserve_ar': True},
+                lores=None,
+                raw=None, # <---- auto
+                sensor={},
+                display='main',
+                encode='main'
+            )
+            logger.info("Camera rotated/transform set to flip due to ROTATE_CAMERA=True")
+        else:
+            config = new_camera.create_video_configuration(
+                use_case='video',
+                transform=Transform(hflip=False, vflip=False),
+                colour_space=ColorSpace.Rec709(),
+                buffer_count=6,
+                queue=True,
+                main={'format': 'BGR888', 'size': main_size, 'preserve_ar': True},
+                lores=None,
+                raw=None,  # <---- auto
+                sensor={},
+                display='main',
+                encode='main'
             )
             logger.info("Setting to rotate / flip")
 
+        logger.debug(f"Applied colour space: {config['colour_space']}")
         logger.debug(f"Config before applying: {config}")
-        camera.configure(config)
-        camera.set_controls({"FrameRate": fps})
+        new_camera.configure(config)
+        new_camera.set_controls({"FrameRate": fps})
 
-        camera.start()
-        logger.info(f"Camera restarted with best mode resolution {best_mode['size']} and FPS: {fps}.")
-        return camera  # Return new camera instance
+        new_camera.start()
+        logger.info(f"Camera restarted FORCED resolution {main_size} and FPS: {fps}.")
+        return new_camera  # Return new camera instance
 
     except Exception as e:
         logger.error(f"Failed to restart camera: {e}")
@@ -536,7 +530,7 @@ def apply_timestamp(request):
                     origin = (40, int(frame.shape[0] * 0.85))
                     text_colour = (0, 0, 255)
                     text_rectangle(frame, timestamp, origin, text_colour)
-                    logger.debug("Timestamp drawn via MappedArray")
+                    # logger.debug("Timestamp drawn via MappedArray")
                     return
             except Exception as map_err:
                 logger.warning(f"MappedArray unavailable: {map_err}, falling back to capture_array()")
@@ -577,18 +571,18 @@ def start_video_recording(camera, video_path, file_name, resolution=(1640, 1232)
         video_config = camera.create_video_configuration(
             main={"size": resolution, "format": "BGR888"},
             buffer_count=2,  # ensures frame is available for mapping
-            transform=Transform(hflip=False, vflip=False),
+            transform=Transform(hflip=True, vflip=True),
             controls={"FrameRate": 5}
         )
-        logger.info("Camera rotated/transform set to not flip due to ROTATE_CAMERA=True")
+        logger.info("Camera rotated/transform set to flip due to ROTATE_CAMERA=True")
     else:
         video_config = camera.create_video_configuration(
             main={"size": resolution, "format": "BGR888"},
             buffer_count=2,  # ensures frame is available for mapping
-            transform=Transform(hflip=True, vflip=True),
+            transform=Transform(hflip=False, vflip=False),
             controls={"FrameRate": 5}
         )
-        logger.info("Setting to rotate / flip")
+        logger.info("Setting to NOT rotate / flip")
 
     camera.configure(video_config)  # Configure before starting recording
     logger.info(f"video_config {video_config}, resolution: {resolution}, bitrate: {bitrate}")
