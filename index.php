@@ -207,8 +207,8 @@
         <div class="button-container">
             <!-- Link to index6 -->
             <button class="w3-button w3-border w3-large w3-round-large w3-hover-grey w3-blue">
-                <a href="/index6.php" title="Setup page Regattastart6" style="text-decoration: none; color: white;">
-                    Regattastart6 with 1 or 2 starts
+                <a href="/index8.php" title="Setup page Regattastart8" style="text-decoration: none; color: white;">
+                    Regattastart8 using Yolo8 for image detection
                 </a>
             </button>
             <!-- Link to index9 -->
