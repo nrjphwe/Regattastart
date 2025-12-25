@@ -142,7 +142,7 @@
 <div class="w3-container" style="text-align: center;">
     <!-- Content Wrapper with center alignment -->
     <div class="w3-margin w3-padding-large content-wrapper">
-        <form action="index9.php" method="POST">
+        <form action="index8.php" method="POST">
             <div class="w3-row-padding">
                 <!-- Left side content -->
                 <div class="w3-half">
