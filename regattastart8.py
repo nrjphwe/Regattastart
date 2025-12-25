@@ -46,6 +46,12 @@ stop_event = threading.Event()
 listen_thread = None
 cpu_model = get_cpu_model()
 
+pu_model = get_cpu_model()
+logger.info("="*60)
+logger.info(f"Starting new regattastart8.py session at {dt.datetime.now()}")
+logger.info(f"Detected CPU model string: '{cpu_model}'")
+logger.info("="*60)
+
 
 # --- MODELL-LADDNING (YOLOv8) ---
 def load_yolov8_model(result_queue):
