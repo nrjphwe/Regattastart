@@ -46,20 +46,21 @@ stop_event = threading.Event()
 listen_thread = None
 cpu_model = get_cpu_model()
 
+
 # --- MODELL-LADDNING (YOLOv8) ---
 def load_yolov8_model(result_queue):
     try:
         start_time = time.time()
         # Sökväg till din tränade modell
         model_path = "/var/www/html/best.pt"
-        
+
         if not os.path.exists(model_path):
             logger.error(f"Model file not found at {model_path}")
             result_queue.put(None)
             return
 
         model = YOLO(model_path)
-        
+
         # Optimera för CPU om möjligt
         if torch.__version__ >= "2.0":
             try:
@@ -74,22 +75,23 @@ def load_yolov8_model(result_queue):
         logger.error(f"Error loading YOLOv8: {e}", exc_info=True)
         result_queue.put(None)
 
+
 # --- INSPELNING OCH DETEKTERING ---
 def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, fps):
     # Konfiguration
     DETECTION_CONF_THRESHOLD = 0.5
     max_duration = (video_end + (num_starts-1)*5) * 60
-    
+
     # Starta om kamera för Video 1
     camera = restart_camera(camera, resolution=(1920, 1080), fps=fps)
-    
+
     # Ladda modellen via tråd
     res_q = queue.Queue()
     t = threading.Thread(target=load_yolov8_model, args=(res_q,))
     t.start()
     t.join(timeout=60)
     model = res_q.get_nowait()
-    
+
     if model is None:
         logger.error("Could not proceed without YOLOv8 model")
         return
@@ -119,13 +121,11 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
     font = cv2.FONT_HERSHEY_DUPLEX
     frame_count = 0
 
-    
-
     try:
         last_frame_ts = datetime.now()
         while not stop_event.is_set():
             if (datetime.now() - last_frame_ts).total_seconds() > 120: break
-            
+
             frame = camera.capture_array()
             if frame is None: continue
             last_frame_ts = datetime.now()
@@ -138,10 +138,10 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
             if frame_count % 2 == 0:
                 cropped = frame[y_start:y_start+crop_height, x_start:x_start+crop_width]
                 resized = cv2.resize(cropped, (inf_w, inf_h))
-                
+
                 # Kör YOLOv8
                 results = model.predict(resized, conf=DETECTION_CONF_THRESHOLD, verbose=False)[0]
-                
+
                 new_dets = []
                 for box in results.boxes:
                     x1, y1, x2, y2 = map(int, box.xyxy[0])
@@ -164,14 +164,14 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
                         text_rectangle(b_f, f"{b_ts:%H:%M:%S} PRE", origin)
                         writer.write(b_f)
                     in_seq = True
-                
+
                 for (x1, y1, x2, y2, c) in last_detections:
                     cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
                     cv2.putText(frame, f"Sailboat {c:.2f}", (x1, y1-10), font, 0.7, (0, 255, 0), 2)
-                
+
                 text_rectangle(frame, ts.strftime("%H:%M:%S"), origin)
                 writer.write(frame)
-            
+
             elif post_frames_left > 0:
                 text_rectangle(frame, f"{ts:%H:%M:%S} POST", origin)
                 writer.write(frame)
@@ -185,6 +185,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
     finally:
         if writer: writer.release()
         process_video(video_path, "video1.h264", "video1.mp4", mode="remux")
+
 
 # --- STANDARD FUNKTIONER FRÅN V9 ---
 def listen_for_messages(stop_event):
@@ -202,6 +203,7 @@ def listen_for_messages(stop_event):
                     break
         time.sleep(0.1)
 
+
 def main():
     camera = None
     global listen_thread
@@ -211,7 +213,7 @@ def main():
 
         if len(sys.argv) < 2: return 1
         form_data = json.loads(sys.argv[1])
-        
+
         video_end = int(form_data["video_end"])
         num_starts = int(form_data["num_starts"])
         start_time_str = str(form_data["start_time"])
@@ -229,7 +231,7 @@ def main():
         # Sekvens startar
         start_video_recording(camera, video_path, "video0.h264", resolution=(1640,1232), bitrate=4000000)
         start_sequence(camera, start_time_dt, num_starts, dur_between_starts, photo_path)
-        
+
         last_start = start_time_dt + dt.timedelta(minutes=(num_starts - 1) * dur_between_starts)
         end_wait = last_start + dt.timedelta(minutes=2)
         while dt.datetime.now() < end_wait: time.sleep(1)
