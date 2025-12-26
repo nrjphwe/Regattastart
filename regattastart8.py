@@ -184,7 +184,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
                     cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 3)
                     cv2.putText(frame, f"{c:.2f} {ts:%H:%M:%S}", (x1, y1-15), font, 0.8, (0, 255, 0), 2)
 
-                text_rectangle(frame, ts.strftime("%H:%M:%S"), origin)
+                text_rectangle(frame, f"{ts:%Y-%m-%d %H:%M:%S}", origin)
                 writer.write(frame)
 
             elif post_frames_left > 0:
