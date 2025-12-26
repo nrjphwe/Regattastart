@@ -46,7 +46,6 @@ stop_event = threading.Event()
 listen_thread = None
 cpu_model = get_cpu_model()
 
-pu_model = get_cpu_model()
 logger.info("="*60)
 logger.info(f"Starting new regattastart8.py session at {dt.datetime.now()}")
 logger.info(f"Detected CPU model string: '{cpu_model}'")
@@ -113,7 +112,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
     shift_offset = 100
     x_start = max((f_w - crop_width) // 2 + shift_offset, 50)
     y_start = max((f_h - crop_height) // 2, 0)
-    
+
     # YOLOv8 använder oftast 640x640 internt
     inf_w, inf_h = 640, 640
     scale_x = crop_width / inf_w
@@ -128,6 +127,8 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
     post_frames_left = 0
     last_detections = []
     in_seq = False
+
+    # Annotation inställningar (Banner-position)
     origin = (40, int(f_h * 0.85))
     font = cv2.FONT_HERSHEY_DUPLEX
     frame_count = 0
@@ -135,7 +136,9 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
     try:
         last_frame_ts = datetime.now()
         while not stop_event.is_set():
-            if (datetime.now() - last_frame_ts).total_seconds() > 120: break
+            if (datetime.now() - last_frame_ts).total_seconds() > 120: 
+                logger.error("Watchdog: Camera frozen")
+                break
 
             frame = camera.capture_array()
             if frame is None: continue
@@ -145,7 +148,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
 
             pre_buffer.append((frame_count, frame.copy(), ts))
 
-            # Detektering varannan bild för att spara CPU
+            # --- INFERENCE (Varannan frame för att spara CPU) ---
             if frame_count % 2 == 0:
                 cropped = frame[y_start:y_start+crop_height, x_start:x_start+crop_width]
                 resized = cv2.resize(cropped, (inf_w, inf_h))
@@ -172,31 +175,40 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
                 if not in_seq:
                     while pre_buffer:
                         _, b_f, b_ts = pre_buffer.popleft()
-                        text_rectangle(b_f, f"{b_ts:%H:%M:%S} PRE", origin)
+                        label_pre = f"{b_ts:%Y-%m-%d %H:%M:%S} PRE"
+                        text_rectangle(b_f, label_pre, origin)
                         writer.write(b_f)
                     in_seq = True
 
                 for (x1, y1, x2, y2, c) in last_detections:
-                    cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
-                    cv2.putText(frame, f"Sailboat {c:.2f}", (x1, y1-10), font, 0.7, (0, 255, 0), 2)
+                    cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 3)
+                    cv2.putText(frame, f"Sailboat {c:.2f}", (x1, y1-15), font, 0.8, (0, 255, 0), 2)
 
                 text_rectangle(frame, ts.strftime("%H:%M:%S"), origin)
                 writer.write(frame)
 
             elif post_frames_left > 0:
-                text_rectangle(frame, f"{ts:%H:%M:%S} POST", origin)
+                # Ingen båt i just denna bild, men vi filmar vidare (POST-fas)
+                label_post = f"{ts:%Y-%m-%d %H:%M:%S} POST"
+                text_rectangle(frame, label_post, origin)
                 writer.write(frame)
                 post_frames_left -= 1
             else:
                 in_seq = False
 
-            if (datetime.now() - start_time_dt).total_seconds() >= max_duration: break
+            if (datetime.now() - start_time_dt).total_seconds() >= max_duration: 
+                logger.info("Max duration reached for Video 1")
+                break
+
             time.sleep(1/fps)
-
+    except Exception as e:
+        logger.error(f"Error in finish_recording loop: {e}", exc_info=True)
     finally:
-        if writer: writer.release()
+        if writer: 
+            writer.release()
+            logger.info(f"Video writer released: {v1_h264}")
+        # Konvertera till MP4
         process_video(video_path, "video1.h264", "video1.mp4", mode="remux")
-
 
 # --- STANDARD FUNKTIONER FRÅN V9 ---
 def listen_for_messages(stop_event):
