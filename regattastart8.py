@@ -204,11 +204,12 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
     except Exception as e:
         logger.error(f"Error in finish_recording loop: {e}", exc_info=True)
     finally:
-        if writer: 
+        if writer:
             writer.release()
             logger.info(f"Video writer released: {v1_h264}")
         # Konvertera till MP4
         process_video(video_path, "video1.h264", "video1.mp4", mode="remux")
+
 
 # --- STANDARD FUNKTIONER FRÅN V9 ---
 def listen_for_messages(stop_event):
