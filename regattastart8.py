@@ -90,6 +90,7 @@ def load_yolov8_model(result_queue):
 def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, fps):
     # Konfiguration
     DETECTION_CONF_THRESHOLD = 0.5
+    last_adjustment = time.time()
     max_duration = (video_end + (num_starts-1)*5) * 60
 
     # Starta om kamera för Video 1
@@ -163,8 +164,12 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
 
             pre_buffer.append((frame_count, frame.copy(), ts))
 
+            skip_factor = 2  # Standard: kör AI varannan bild
+            if temp > 80:
+                skip_factor = 5  # Vid hetta: kör AI bara var femte bild
+
             # --- INFERENCE (Varannan frame för att spara CPU) ---
-            if frame_count % 2 == 0:
+            if frame_count % skip_factor == 0:
                 cropped = frame[y_start:y_start+crop_height, x_start:x_start+crop_width]
                 resized = cv2.resize(cropped, (inf_w, inf_h))
 
