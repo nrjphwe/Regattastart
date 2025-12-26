@@ -40,7 +40,7 @@
     console_log("video1Exists = " . $video1Exists);
 
     # initialize the status for Stop_recording button
-    $stopRecordingPressed = false;
+    $stopRecordingPressed = $_SESSION['stopRecordingPressed'] ?? false;
     // Retrieve session data
     $formData = isset($_SESSION['form_data']) && is_array($_SESSION['form_data']) ? $_SESSION['form_data'] : [];
     $start_time = $formData['start_time'] ?? null;
