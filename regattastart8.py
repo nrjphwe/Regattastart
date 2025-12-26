@@ -275,5 +275,6 @@ def main():
         stop_event.set()
         if camera: camera.stop()
 
+
 if __name__ == "__main__":
     sys.exit(main())
