@@ -58,7 +58,7 @@ def load_yolov8_model(result_queue):
     try:
         start_time = time.time()
         # Sökväg till din tränade modell
-        model_path = "/var/www/html/best.pt"
+        model_path = "/var/www/html/yolo8.pt"
 
         if not os.path.exists(model_path):
             logger.error(f"Model file not found at {model_path}")
