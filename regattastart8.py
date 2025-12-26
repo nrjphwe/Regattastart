@@ -133,6 +133,21 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
     font = cv2.FONT_HERSHEY_DUPLEX
     frame_count = 0
 
+    # --- Every 30 seconds, check system load ---
+    if time.time() - last_adjustment > 30:
+        temp = get_cpu_temp()
+        throttle = get_throttle_status()
+        logger.info(f"Temperature={temp:.1f}°C Throttle=0x{throttle:x} FPS={fps}")
+        if temp is not None:
+            if temp and temp > 82:
+                fps = max(5, fps - 2)   # lower FPS gradually
+                logger.warning(f"High temperature {temp:.1f}°C → reducing FPS to {fps}")
+            elif temp and temp < 70 and fps < 15:
+                fps += 1
+                logger.info(f"Cooler temperature now {temp:.1f}°C → increasing FPS to {fps}")
+
+        last_adjustment = time.time()
+
     try:
         last_frame_ts = datetime.now()
         while not stop_event.is_set():
@@ -226,6 +241,22 @@ def listen_for_messages(stop_event):
                     stop_event.set()
                     break
         time.sleep(0.1)
+
+
+def get_cpu_temp():
+    try:
+        with open("/sys/class/thermal/thermal_zone0/temp", "r") as f:
+            return int(f.read()) / 1000.0  # °C
+    except FileNotFoundError:
+        return None
+
+
+def get_throttle_status():
+    try:
+        output = subprocess.check_output(["vcgencmd", "get_throttled"]).decode().strip()
+        return int(output.split('=')[1], 16)
+    except Exception:
+        return 0
 
 
 def main():
