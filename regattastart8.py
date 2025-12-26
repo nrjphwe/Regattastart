@@ -52,6 +52,11 @@ logger.info(f"Starting new regattastart8.py session at {dt.datetime.now()}")
 logger.info(f"Detected CPU model string: '{cpu_model}'")
 logger.info("="*60)
 
+# reset the contents of the status variable, used for flagging that
+# video1-conversion is complete.
+with open('/var/www/html/status.txt', 'w') as status_file:
+    status_file.write("")
+
 
 # --- MODELL-LADDNING (YOLOv8) ---
 def load_yolov8_model(result_queue):
