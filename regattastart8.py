@@ -134,20 +134,9 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
     font = cv2.FONT_HERSHEY_DUPLEX
     frame_count = 0
 
-    # --- Every 30 seconds, check system load ---
-    if time.time() - last_adjustment > 30:
-        temp = get_cpu_temp()
-        throttle = get_throttle_status()
-        logger.info(f"Temperature={temp:.1f}°C Throttle=0x{throttle:x} FPS={fps}")
-        if temp is not None:
-            if temp and temp > 82:
-                fps = max(5, fps - 2)   # lower FPS gradually
-                logger.warning(f"High temperature {temp:.1f}°C → reducing FPS to {fps}")
-            elif temp and temp < 70 and fps < 15:
-                fps += 1
-                logger.info(f"Cooler temperature now {temp:.1f}°C → increasing FPS to {fps}")
-
-        last_adjustment = time.time()
+    # --- Initiera utanför loopen ---
+    last_adjustment = time.time()
+    skip_factor = 2
 
     try:
         last_frame_ts = datetime.now()
@@ -164,9 +153,29 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
 
             pre_buffer.append((frame_count, frame.copy(), ts))
 
-            skip_factor = 2  # Standard: kör AI varannan bild
-            if temp > 80:
-                skip_factor = 5  # Vid hetta: kör AI bara var femte bild
+            if time.time() - last_adjustment > 30:
+                temp = get_cpu_temp()
+                throttle = get_throttle_status()
+                
+                if temp is not None:
+                    # Logik för AI-belastning (Skip Factor)
+                    if temp > 80:
+                        skip_factor = 5  # Kör AI mer sällan vid hetta
+                        logger.warning(f"High temp ({temp:.1f}C) -> Increasing skip_factor to {skip_factor}")
+                    elif temp < 72:
+                        skip_factor = 2  # Gå tillbaka till standard när det svalnat
+                        logger.info(f"Cooler temp ({temp:.1f}C) -> Resetting skip_factor to {skip_factor}")
+
+                    # Logik för Bildhastighet (FPS)
+                    if temp > 84: # Lite högre tröskel för att sänka FPS
+                        fps = max(5, fps - 2)
+                        logger.warning(f"Critical temp ({temp:.1f}C) -> Reducing FPS to {fps}")
+                    elif temp < 70 and fps < 15:
+                        fps = min(15, fps + 1)
+                        logger.info(f"Safe temp ({temp:.1f}C) -> Increasing FPS to {fps}")
+                        
+                logger.info(f"System Check: Temp={temp:.1f}C, Skip={skip_factor}, FPS={fps}, Throttle=0x{throttle:x}")
+                last_adjustment = time.time()
 
             # --- INFERENCE (Varannan frame för att spara CPU) ---
             if frame_count % skip_factor == 0:
