@@ -51,11 +51,6 @@ logger.info(f"Starting new regattastart8.py session at {dt.datetime.now()}")
 logger.info(f"Detected CPU model string: '{cpu_model}'")
 logger.info("="*60)
 
-# reset the contents of the status variable, used for flagging that
-# video1-conversion is complete.
-with open('/var/www/html/status.txt', 'w') as status_file:
-    status_file.write("")
-
 
 # --- MODELL-LADDNING (YOLOv8) ---
 def load_yolov8_model(result_queue):
@@ -287,6 +282,15 @@ def main():
         num_starts = int(form_data["num_starts"])
         start_time_str = str(form_data["start_time"])
         dur_between_starts = int(form_data["dur_between_starts"])
+
+        # Rensa gamla bilder (jpg)
+        remove_picture_files(photo_path, ".jpg")  # clean up
+        # Rensa gamla videofiler (både råa .h264 och färdiga .mp4)
+        remove_video_files(photo_path, "video")  # clean up
+        # Rensa status-filen så att webbsidan nollställs
+        if os.path.exists('/var/www/html/status.txt'):
+            with open('/var/www/html/status.txt', 'w') as f:
+                f.write('recording')
 
         start_time_dt = dt.datetime.combine(dt.date.today(), dt.datetime.strptime(start_time_str, "%H:%M").time())
         if start_time_dt < dt.datetime.now(): start_time_dt += dt.timedelta(days=1)
