@@ -77,10 +77,13 @@ def setup_logging():
     For only errors: export LOG_LEVEL=ERROR
     """
     global logger  # Ensure logger is a global variable
+
     # remove log file
     file_path = "/var/www/html/python.log"
-    if os.path.exists(file_path):
+    try:
         os.remove(file_path)
+    except OSError:
+        pass  # Ignorera om filen redan är borta
 
     # Load configuration
     logging.config.fileConfig('/usr/lib/cgi-bin/logging.conf')

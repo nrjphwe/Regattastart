@@ -40,8 +40,8 @@
         $_SESSION["form_data"] = $_POST;
 
         // Execute the Python script
-        #$command = 'python3 /usr/lib/cgi-bin/regattastart9.py ' . escapeshellarg(json_encode($_POST)) . ' > /var/www/html/output.txt 2>&1 &';
-        $command = '/home/pi/yolov5_env/bin/python /usr/lib/cgi-bin/regattastart9.py ' . escapeshellarg(json_encode($_POST)) . ' > /var/www/html/output.txt 2>&1 &';
+        #$command = 'python3 /usr/lib/cgi-bin/regattastart8.py ' . escapeshellarg(json_encode($_POST)) . ' > /var/www/html/output.txt 2>&1 &';
+        $command = '/home/pi/yolov5_env/bin/python /usr/lib/cgi-bin/regattastart8.py ' . escapeshellarg(json_encode($_POST)) . ' > /var/www/html/output.txt 2>&1 &';
 
         shell_exec($command);
         echo date('h:i:s') . "<br>";
@@ -63,7 +63,7 @@
 <!DOCTYPE html>
 <head>
     <meta charset="UTF-8">
-    <title> Regattastart9 image detection </title>
+    <title> Regattastart8 image detection Yolo8</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="/w3.css">
     <!-- set styles -->
@@ -129,7 +129,7 @@
 <header>
     <div style="text-align: center;">
         <div class="w3-container w3-green">
-            <h2>Regattastart9 with image detection </h2>
+            <h2>Regattastart8 with image detection </h2>
         </div>
     </div>
     <div style="text-align: center;">
@@ -142,7 +142,7 @@
 <div class="w3-container" style="text-align: center;">
     <!-- Content Wrapper with center alignment -->
     <div class="w3-margin w3-padding-large content-wrapper">
-        <form action="index9.php" method="POST">
+        <form action="index8.php" method="POST">
             <div class="w3-row-padding">
                 <!-- Left side content -->
                 <div class="w3-half">

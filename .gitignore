@@ -6,3 +6,4 @@ dump.php
 *.ipynb
 __pycache__/
 *.pyc
+best.pt

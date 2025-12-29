@@ -3,7 +3,7 @@
     header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
     header("Access-Control-Allow-Headers: *");
     // after "git pull", "sudo cp /home/pi/Regattastart/index.php /var/www/html/"
-    define('APP_VERSION', '2025.11.30'); // You can replace '1.0.0' with your desired version number
+    define('APP_VERSION', '2025.12.29'); // You can replace '1.0.0' with your desired version number
 
     $custom_session_path = '/var/www/php_sessions';
     if (!file_exists($custom_session_path)) {
@@ -40,7 +40,7 @@
     console_log("video1Exists = " . $video1Exists);
 
     # initialize the status for Stop_recording button
-    $stopRecordingPressed = false;
+    $stopRecordingPressed = $_SESSION['stopRecordingPressed'] ?? false;
     // Retrieve session data
     $formData = isset($_SESSION['form_data']) && is_array($_SESSION['form_data']) ? $_SESSION['form_data'] : [];
     $start_time = $formData['start_time'] ?? null;
@@ -207,14 +207,14 @@
         <div class="button-container">
             <!-- Link to index6 -->
             <button class="w3-button w3-border w3-large w3-round-large w3-hover-grey w3-blue">
-                <a href="/index6.php" title="Setup page Regattastart6" style="text-decoration: none; color: white;">
-                    Regattastart6 with 1 or 2 starts
+                <a href="/index8.php" title="Setup page Regattastart8" style="text-decoration: none; color: white;">
+                    Regattastart8 - image detection Yolov8
                 </a>
             </button>
             <!-- Link to index9 -->
             <button class="w3-button w3-border w3-large w3-round-large w3-hover-grey w3-green">
                 <a href="/index9.php" title="Setup page Regattastart9" style="text-decoration: none; color: white;">
-                    Regattastart9 -- with image detection
+                    Regattastart9 - image detection Yolov5
                 </a>
             </button>
              <!-- Link to index10 -->
