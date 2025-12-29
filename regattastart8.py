@@ -150,6 +150,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
     frame_count = 0
 
     # --- Initiera utanför loopen ---
+    uncertain_saved_total = 0 # Räknare för denna session
     last_adjustment = time.time()
     skip_factor = 2
 
@@ -215,7 +216,9 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
                 # Spara osäkra bilder för framtida annotering
                 # NYTT: Kolla om vi ska spara träningsdata
                 if last_detections:
-                    save_uncertain_image(frame, last_detections)
+                    was_saved = save_uncertain_image(frame, last_detections, uncertain_saved_total, max_images=100)
+                    if was_saved:
+                        uncertain_saved_total += 1
 
             is_boat = len(last_detections) > 0
 
