@@ -52,6 +52,25 @@ logger.info(f"Detected CPU model string: '{cpu_model}'")
 logger.info("="*60)
 
 
+def save_uncertain_image(frame, detections, current_count, max_images=100, folder='/var/www/html/images/training_data/'):
+    """Sparar bilden vid osäkerhet, upp till max_images stycken."""
+    if current_count >= max_images:
+        return False # Gränsen nådd
+
+    for (_, _, _, _, conf) in detections:
+        # Om vi hittar en båt med konfidens mellan 20% och 45%
+        if 0.20 <= conf <= 0.45:
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
+            filename = f"{folder}uncertain_{timestamp}.jpg"
+
+            # Spara en ren bild utan boxar för träning
+            cv2.imwrite(filename, frame)
+            logger.info(f"Saved uncertain detection #{current_count+1} (conf: {conf:.2f})")
+            return True  # Indikera att en bild sparades
+
+    return False
+
+
 # --- MODELL-LADDNING (YOLOv8) ---
 def load_yolov8_model(result_queue):
     try:
@@ -84,6 +103,7 @@ def load_yolov8_model(result_queue):
 # --- INSPELNING OCH DETEKTERING ---
 def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, fps):
     # Konfiguration
+    saved_count = 0  # Räknare för sparade osäkra bilder
     DETECTION_CONF_THRESHOLD = 0.5
     last_adjustment = time.time()
     max_duration = (video_end + (num_starts-1)*5) * 60
@@ -191,6 +211,11 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
                     ny2 = int(y2 * scale_y) + y_start
                     new_dets.append((nx1, ny1, nx2, ny2, conf))
                 last_detections = new_dets
+
+                # Spara osäkra bilder för framtida annotering
+                # NYTT: Kolla om vi ska spara träningsdata
+                if last_detections:
+                    save_uncertain_image(frame, last_detections)
 
             is_boat = len(last_detections) > 0
 
