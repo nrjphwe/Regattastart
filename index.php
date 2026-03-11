@@ -58,7 +58,8 @@
         $_SESSION['stopRecordingPressed'] = $stopRecordingPressed;
 
         // Call the stop_recording.php logic directly
-        include 'stop_recording.php';
+        //include 'stop_recording.php';
+        exec("php /var/www/html/stop_recording.php > /dev/null 2>&1 &");
 
     } else {
         console_log('Stop recording POST not received');
