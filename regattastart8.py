@@ -87,11 +87,8 @@ def load_yolov8_model(result_queue):
 
         # Optimera för CPU om möjligt
         if torch.__version__ >= "2.0":
-            try:
-                model.model = torch.compile(model.model)
-                logger.info("Model compiled for CPU optimization")
-            except:
-                logger.info("Model compilation skipped")
+            model.model = torch.compile(model.model)
+            logger.info("Model compiled for CPU optimization")
 
         result_queue.put(model)
         logger.info(f"YOLOv8 model loaded in {time.time() - start_time:.2f}s")
