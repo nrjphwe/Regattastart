@@ -43,7 +43,7 @@
     $stopRecordingPressed = $_SESSION['stopRecordingPressed'] ?? false;
     // Retrieve session data
     $formData = isset($_SESSION['form_data']) && is_array($_SESSION['form_data']) ? $_SESSION['form_data'] : [];
-    session_write_close(); // Close the session to allow other scripts to access it
+
     $start_time = $formData['start_time'] ?? null;
     $num_starts = $formData['num_starts'] ?? null;
     // Extract relevant session data
@@ -54,14 +54,17 @@
     {
         // Handle stop recording logic here
         console_log('The stop_recording.php POST received in index.php');
-        $stopRecordingPressed = true;
+
         // Store this value in a session to persist it across requests
-        $_SESSION['stopRecordingPressed'] = $stopRecordingPressed;
+        $_SESSION['stopRecordingPressed'] = true;
+        session_write_close(); // Close the session to allow other scripts to access it
 
         // Call the stop_recording.php logic directly
         //include 'stop_recording.php';
         exec("php /var/www/html/stop_recording.php > /dev/null 2>&1 &");
 
+        $stopRecordingPressed = true;
+        console_log('Stop recording started in the background');
     } else {
         console_log('Stop recording POST not received');
     }
