@@ -43,6 +43,7 @@
     $stopRecordingPressed = $_SESSION['stopRecordingPressed'] ?? false;
     // Retrieve session data
     $formData = isset($_SESSION['form_data']) && is_array($_SESSION['form_data']) ? $_SESSION['form_data'] : [];
+    session_write_close(); // Close the session to allow other scripts to access it
     $start_time = $formData['start_time'] ?? null;
     $num_starts = $formData['num_starts'] ?? null;
     // Extract relevant session data
