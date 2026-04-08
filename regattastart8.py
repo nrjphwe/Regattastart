@@ -234,12 +234,14 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
                     cv2.putText(frame, f"{c:.2f} {ts:%H:%M:%S}", (x1, y1-15), font, 0.8, (0, 255, 0), 2)
 
                 text_rectangle(frame, f"{ts:%Y-%m-%d %H:%M:%S}", origin)
+                frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                 writer.write(frame)
 
             elif post_frames_left > 0:
                 # Ingen båt i just denna bild, men vi filmar vidare (POST-fas)
                 label_post = f"{ts:%Y-%m-%d %H:%M:%S} POST"
                 text_rectangle(frame, label_post, origin)
+                frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                 writer.write(frame)
                 post_frames_left -= 1
             else:
