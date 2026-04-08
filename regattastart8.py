@@ -121,6 +121,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
 
     # Beräkna crop och skalning
     frame = camera.capture_array()
+    # frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
     f_h, f_w = frame.shape[:2]
     shift_offset = 100
     x_start = max((f_w - crop_width) // 2 + shift_offset, 50)
@@ -159,6 +160,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
                 break
 
             frame = camera.capture_array()
+            frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
             if frame is None: continue
             last_frame_ts = datetime.now()
             frame_count += 1
