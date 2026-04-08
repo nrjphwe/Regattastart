@@ -390,9 +390,13 @@ class FFmpegVideoWriter:
 
         ffmpeg_cmd = [
             "ffmpeg", "-y", "-fflags", "+genpts",
-            "-f", "rawvideo", "-pix_fmt", "bgr24",
-            "-s", f"{width}x{height}", "-r", str(self.fps),
-            "-i", "-", "-an"
+            "-f", "rawvideo",
+            "-pix_fmt", "bgr24",
+            "-s", f"{width}x{height}",
+            "-r", str(self.fps),
+            "-i", "-",
+            "-vf", "format=bgr24",
+            "-an"
         ]
 
         if hw:
