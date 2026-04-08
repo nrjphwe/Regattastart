@@ -396,7 +396,9 @@ class FFmpegVideoWriter:
         ]
 
         if hw:
-            ffmpeg_cmd += ["-vf", "format=nv12", "-c:v", codec, "-b:v", "2M"]
+            # ffmpeg_cmd += ["-vf", "format=nv12", "-c:v", codec, "-b:v", "2M"]
+            ffmpeg_cmd += ["-vf", "-c:v", codec,  "-b:v", "2M",
+                           "format=nv12,colorspace=bt709:iall=bt601-6-625:fast=1"]
         else:
             ffmpeg_cmd += ["-c:v", codec, "-preset", "ultrafast",
                            "-tune", "zerolatency", "-crf", "28"]
