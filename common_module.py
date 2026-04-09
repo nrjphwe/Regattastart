@@ -203,7 +203,7 @@ def letterbox(image, target_size=(640, 480)):
     )
 
 
-def capture_picture(camera, photo_path, file_name, rotate=False):
+def xxx_capture_picture(camera, photo_path, file_name, rotate=False):
     try:
         request = camera.capture_request()  # Capture a single request
         # When grabbing frames:
@@ -235,6 +235,31 @@ def capture_picture(camera, photo_path, file_name, rotate=False):
         logger.debug(f"Saved resized_for_display size: {resized_for_display.shape}")
         request.release()
         logger.info(f'Captured picture: {file_name}')
+    except Exception as e:
+        logger.error(f"Failed to capture picture: {e}", exc_info=True)
+
+
+def capture_picture(camera, photo_path, file_name, rotate=False):
+    try:
+        # ALWAYS use capture_array for stills
+        frame = camera.capture_array("main")
+
+        # ALWAYS convert to BGR
+        frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
+
+        timestamp = time.strftime("%Y-%m-%d %X")
+        origin = (40, int(frame.shape[0] * 0.85))
+
+        text_colour = (255, 0, 0)  # blå i BGR
+        bg_colour = (200, 200, 200)
+
+        text_rectangle(frame, timestamp, origin, text_colour, bg_colour)
+
+        resized_for_display = letterbox(frame, (1280, 960))
+        cv2.imwrite(os.path.join(photo_path, file_name), resized_for_display)
+
+        logger.info(f'Captured picture: {file_name}')
+
     except Exception as e:
         logger.error(f"Failed to capture picture: {e}", exc_info=True)
 
@@ -308,7 +333,7 @@ def restart_camera(camera, resolution=(TARGET_RESOLUTION), fps=15):
                 queue=True,
                 main={'format': 'BGR888', 'size': main_size, 'preserve_ar': True},
                 lores=None,
-                raw=None, # <---- auto
+                raw=None,  # <---- auto
                 sensor={},
                 display='main',
                 encode='main'
@@ -560,7 +585,7 @@ def apply_timestamp(request):
 
         origin = (40, int(frame.shape[0] * 0.85))
         # text_colour = (0, 0, 255) # röd i BGR
-        text_colour = (255, 0, 0) # blå i BGR
+        text_colour = (255, 0, 0)  # blå i BGR
         text_rectangle(frame, timestamp, origin, text_colour)
         logger.debug("Timestamp drawn via fallback frame")
 
