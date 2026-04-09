@@ -213,6 +213,7 @@ def capture_picture(camera, photo_path, file_name, rotate=False):
         else:
             # fallback: capture_array or use request.to_array() depending on version
             frame = camera.capture_array()  # returns numpy array
+            frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
             logger.debug(f"frame shape: {frame.shape} dtype: {frame.dtype}")
 
         # Ensure the frame is in BGR format
