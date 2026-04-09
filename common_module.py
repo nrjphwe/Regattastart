@@ -40,7 +40,6 @@ FONT = cv2.FONT_HERSHEY_DUPLEX  # Font settings for text annotations
 sensor_size = 1640, 1232  # sensors aspect ratio
 TARGET_RESOLUTION = 1280, 960  # Target resolution for display and recording
 
-# text_colour = (0, 0, 255)  # Blue text in RGB
 text_colour = (255, 0, 0)  # Blue text in BGR
 # bg_colour = (200, 200, 200)  # Light grey background
 
@@ -210,7 +209,7 @@ def capture_picture(camera, photo_path, file_name, rotate=False):
         # When grabbing frames:
         if HAVE_MAPPEDARRAY:
             with MappedArray(request, "main") as m:
-                frame = m.array
+                frame = m.array.copy()
         else:
             # fallback: capture_array or use request.to_array() depending on version
             frame = camera.capture_array()  # returns numpy array
@@ -401,8 +400,11 @@ class FFmpegVideoWriter:
 
         if hw:
             # ffmpeg_cmd += ["-vf", "format=nv12", "-c:v", codec, "-b:v", "2M"]
-            ffmpeg_cmd += ["-vf", "-c:v", codec,  "-b:v", "2M",
-                           "format=nv12,colorspace=bt709:iall=bt601-6-625:fast=1"]
+            ffmpeg_cmd += [
+                "-vf", "format=nv12,colorspace=bt709",
+                "-c:v", codec,
+                "-b:v", "2M"
+            ]
         else:
             ffmpeg_cmd += ["-c:v", codec, "-preset", "ultrafast",
                            "-tune", "zerolatency", "-crf", "28"]
@@ -462,7 +464,8 @@ class FFmpegVideoWriter:
             frame = cv2.resize(frame, (exp_w, exp_h))
 
         try:
-            self.queue.put_nowait(frame.copy())
+            # self.queue.put_nowait(frame.copy())
+            self.queue.put_nowait(frame)
         except Full:
             if self.logger:
                 self.logger.warning("[FFmpegVideoWriter] Frame queue full, dropping frame")
@@ -539,19 +542,13 @@ def apply_timestamp(request):
                 with MappedArray(request, "main") as m:
                     frame = m.array
                     origin = (40, int(frame.shape[0] * 0.85))
-                    text_colour = (0, 0, 255)
+                    # text_colour = (0, 0, 255) # röd i BGR
+                    text_colour = (255, 0, 0) # blå i BGR
                     text_rectangle(frame, timestamp, origin, text_colour)
                     # logger.debug("Timestamp drawn via MappedArray")
                     return
             except Exception as map_err:
                 logger.warning(f"MappedArray unavailable: {map_err}, falling back to capture_array()")
-
-        # --- Fallback path: capture new frame and draw on copy ---
-        try:
-            frame = camera.capture_array("main")
-        except Exception as cap_err:
-            logger.error(f"apply_timestamp: capture_array failed: {cap_err}")
-            return
 
         if frame is None or frame.size == 0:
             logger.warning("apply_timestamp: got empty frame in fallback path")
@@ -561,7 +558,8 @@ def apply_timestamp(request):
             frame = cv2.rotate(frame, cv2.ROTATE_180)
 
         origin = (40, int(frame.shape[0] * 0.85))
-        text_colour = (0, 0, 255)
+        # text_colour = (0, 0, 255) # röd i BGR
+        text_colour = (255, 0, 0) # blå i BGR
         text_rectangle(frame, timestamp, origin, text_colour)
         logger.debug("Timestamp drawn via fallback frame")
 
