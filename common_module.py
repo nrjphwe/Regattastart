@@ -568,8 +568,8 @@ def apply_timestamp(request):
                 with MappedArray(request, "main") as m:
                     frame = m.array
                     origin = (40, int(frame.shape[0] * 0.85))
-                    # text_colour = (0, 0, 255) # röd i BGR
-                    text_colour = (255, 0, 0) # blå i BGR
+                    text_colour = (0, 0, 255) # blå i RGB
+                    # text_colour = (255, 0, 0) # blå i BGR
                     text_rectangle(frame, timestamp, origin, text_colour)
                     # logger.debug("Timestamp drawn via MappedArray")
                     return
