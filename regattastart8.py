@@ -179,7 +179,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
                         logger.warning(f"High temp ({temp:.1f}C) -> Increasing skip_factor to {skip_factor}")
                     elif temp < 72:
                         skip_factor = 2  # Gå tillbaka till standard när det svalnat
-                        logger.info(f"Cooler temp ({temp:.1f}C) -> Resetting skip_factor to {skip_factor}")
+                        logger.debug(f"Cooler temp ({temp:.1f}C) -> Resetting skip_factor to {skip_factor}")
 
                     # Logik för Bildhastighet (FPS)
                     if temp > 84: # Lite högre tröskel för att sänka FPS
