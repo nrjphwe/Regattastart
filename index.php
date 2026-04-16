@@ -210,7 +210,7 @@
     <main>
         <!-- Top 3 button container -->
         <div class="button-container">
-            <!-- Link to index6 -->
+            <!-- Link to index8 -->
             <button class="w3-button w3-border w3-large w3-round-large w3-hover-grey w3-blue">
                 <a href="/index8.php" title="Setup page Regattastart8" style="text-decoration: none; color: white;">
                     Regattastart8 - image detection Yolov8
@@ -342,6 +342,64 @@
                             }
                         } else {
                             console_log('picture 5 min 2nd start do not exists');
+                        }
+                    }
+                }
+            ?>
+        </div>
+        <!-- Display pictures for the 3rd start -->
+        <div style="text-align: center;">
+            <?php
+                //if ($num_starts == 3)
+                {
+                    $filename = '1a_start_Start.jpg';
+                    $imagePath = 'images/' . $filename; // Relative path
+                    if (file_exists($imagePath)) 
+                    {
+                        // Check and display the first image
+                        $filename = '3a_start_5_min.jpg';
+                        $imagePath = 'images/' . $filename; // Relative path
+                        if (file_exists($imagePath)) {
+                            $imagePath .= '?' . filemtime($imagePath);
+                            echo "<h3> Bilder tagna vid varje signal innan 3a start  </h3> ";
+                            echo "<br> ------------------------------------------------- <p></p> ";
+                            echo "<h3> Varningssignal 5 minuter innan 3a start</h3>";
+                            echo "<img id='$filename' src='$imagePath' alt='3a_start 5 min picture' width='640' height=480'>";
+
+                            // Check and display the second image
+                            $filename = '3a_start_4_min.jpg';
+                            $imagePath = 'images/' . $filename; // Relative path
+                            if (file_exists($imagePath)) {
+                                $imagePath .= '?' . filemtime($imagePath);
+                                echo "<h3> Signal 4 minuter innan 3a start </h3>";
+                                echo "<img id='$filename' src='$imagePath' alt='3a_start 4 min picture' width='640' height='480'>";
+
+                                // Check and display the third image
+                                $filename = '3a_start_1_min.jpg';
+                                $imagePath = 'images/' . $filename; // Relative path
+                                if (file_exists($imagePath)) {
+                                    $imagePath .= '?' . filemtime($imagePath);
+                                    echo "<h3> Signal 1 minuter innan 3a start </h3>";
+                                    echo "<img id='$filename' src='$imagePath' alt='3a_start 1 min picture' width='640' height='480'>";
+
+                                    // Check and display the start image
+                                    $filename = '3a_start_Start.jpg';
+                                    $imagePath = 'images/' . $filename; // Relative path
+                                    if (file_exists($imagePath)) {
+                                        $imagePath .= '?' . filemtime($imagePath);
+                                        echo "<h3> Foto vid 3a start $second_start_time </h3>";
+                                        echo "<img id='$filename' src='$imagePath' alt='3a start picture' width='640' height='480'>";
+                                    } else {
+                                        console_log('picture start 3rd start do not exists');
+                                    }
+                                } else {
+                                    console_log('picture 1 min 3rd start do not exists');
+                                }
+                            } else {
+                                console_log('picture 4 min 3rd start do not exists');
+                            }
+                        } else {
+                            console_log('picture 5 min 3rd start do not exists');
                         }
                     }
                 }
