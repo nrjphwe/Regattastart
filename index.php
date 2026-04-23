@@ -140,7 +140,7 @@
             $start_time_minutes = 0; // Default or fallback value
         }
 
-        if ($num_starts >= 2) {
+        if ($num_starts = 2) {
             echo ", Duration between starts: $dur_between_starts min";
             // Calculate second start time in minutes
             $second_start_time_minutes = $start_time_minutes + $dur_between_starts * 1;
