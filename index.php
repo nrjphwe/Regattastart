@@ -387,7 +387,7 @@
                                     $imagePath = 'images/' . $filename; // Relative path
                                     if (file_exists($imagePath)) {
                                         $imagePath .= '?' . filemtime($imagePath);
-                                        echo "<h3> Foto vid 3a start $second_start_time </h3>";
+                                        echo "<h3> Foto vid 3a start $third_start_time </h3>";
                                         echo "<img id='$filename' src='$imagePath' alt='3a start picture' width='640' height='480'>";
                                     } else {
                                         console_log('picture start 3rd start do not exists');
