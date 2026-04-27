@@ -43,6 +43,22 @@ TARGET_RESOLUTION = 1280, 960  # Target resolution for display and recording
 text_colour = (255, 0, 0)  # Blue text in BGR
 # bg_colour = (200, 200, 200)  # Light grey background
 
+# GPIO pin numbers for the relay and lamps
+lamp1 = 20   # , for lamp1 to pin 38 right 2nd from the bottom
+# for new startmachine: Relay channel 1 input (IN1) blue wire
+
+lamp2 = 21   # for lamp2 to pin 40 right bottom
+# for new startmachine Relay channel 2 input (IN2) green wire
+
+signal = 26  # for signal to pin 37 left 2nd from the bottom,
+# for new startmachine: Relay channel 3 input (IN3) purple wire
+
+# for new startmachine GND grey wire
+"""
+Purple GPIO 26 (37)-(38) GPIO 20 blue
+Grey Ground  (39)-(40) GPIO 21 Green
+"""
+
 # Define ON/OFF states for clarity
 ON = GPIO.LOW
 OFF = GPIO.HIGH
