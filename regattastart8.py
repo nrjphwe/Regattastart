@@ -43,6 +43,7 @@ photo_path = '/var/www/html/images/'
 stop_event = threading.Event()
 listen_thread = None
 cpu_model = get_cpu_model()
+ENABLE_PRE_POST_FRAMES = False  # Set to True to re-enable pre/post buffering
 
 logger.info("="*60)
 logger.info(f"Starting new regattastart8.py session at {dt.datetime.now()}")
@@ -237,7 +238,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
                 # frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                 writer.write(frame)
 
-            elif post_frames_left > 0:
+            elif ENABLE_PRE_POST_FRAMES and post_frames_left > 0:
                 # Ingen båt i just denna bild, men vi filmar vidare (POST-fas)
                 label_post = f"{ts:%Y-%m-%d %H:%M:%S} POST"
                 text_rectangle(frame, label_post, origin)
