@@ -223,11 +223,14 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
             if is_boat:
                 post_frames_left = int(1.0 * fps)
                 if not in_seq:
-                    while pre_buffer:
-                        _, b_f, b_ts = pre_buffer.popleft()
-                        label_pre = f"{b_ts:%Y-%m-%d %H:%M:%S} PRE"
-                        text_rectangle(b_f, label_pre, origin)
-                        writer.write(b_f)
+                    if ENABLE_PRE_POST_FRAMES:
+                        while pre_buffer:
+                            _, b_f, b_ts = pre_buffer.popleft()
+                            label_pre = f"{b_ts:%Y-%m-%d %H:%M:%S} PRE"
+                            text_rectangle(b_f, label_pre, origin)
+                            writer.write(b_f)
+                    else:
+                        pre_buffer.clear()  # töm bufferten även när vi inte skriver den, annars växer den i minnet
                     in_seq = True
 
                 for (x1, y1, x2, y2, c) in last_detections:
