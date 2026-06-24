@@ -438,6 +438,10 @@
                 }
             ?>
         </div>
+        <!-- Refresh button -->
+        <div style="text-align: center;" class="w3-panel w3-pale-grey">
+            <button type="button" class="w3-button w3-round-large w3-khaki w3-hover-red" onclick="return refreshThePage()">Refresh page</button>
+        </div> 
         <!-- PHP Script to display video1 when available in w3-pale-red section -->
         <?php
             if ($video0Exists) {
