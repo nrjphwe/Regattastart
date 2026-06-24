@@ -216,13 +216,12 @@
                     Regattastart8 - image detection Yolov8
                 </a>
             </button>
-            <!-- Link to index9 
+            <!-- 
             <button class="w3-button w3-border w3-large w3-round-large w3-hover-grey w3-green">
                 <a href="/index9.php" title="Setup page Regattastart9" style="text-decoration: none; color: white;">
                     Regattastart9 - image detection Yolov5
                 </a>
             </button>
-             <!-- Link to index10 -->
             <button class="w3-button w3-border w3-small w3-round-large w3-hover-grey w3-red">
                 <a href="/index10.php" title="Setup page Regattastart10 " style="text-decoration: none; color: white;">
                     Regattastart10 with image & number detection
