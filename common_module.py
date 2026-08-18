@@ -5,29 +5,34 @@ import subprocess, threading, time
 import datetime as dt
 import logging
 import logging.config
-from picamera2.encoders import H264Encoder
-import RPi.GPIO as GPIO
-import lgpio
 from queue import Queue, Full, Empty
-# # Prefer picamera2 submodules when available
+
+# Safe import for libcamera / picamera2
 try:
+    from picamera2.encoders import H264Encoder
     from picamera2.transform import Transform
     from picamera2.color_spaces import ColorSpace
+    from picamera2.picamera2 import Picamera2  # type: ignore
 except Exception:
     try:
+        from picamera2 import Picamera2, H264Encoder
         from libcamera import Transform, ColorSpace
     except Exception:
+        Picamera2 = None
+        H264Encoder = None
         Transform = None
         ColorSpace = None
 try:
-    from picamera2.picamera2 import Picamera2
-except Exception:
-    from picamera2 import Picamera2  # older layout
-try:
-    from picamera2 import MappedArray  # older style
+    from picamera2 import MappedArray
     HAVE_MAPPEDARRAY = True
 except Exception:
     HAVE_MAPPEDARRAY = False
+
+# Safe import for lgpio
+try:
+    import lgpio  # type: ignore
+except ImportError:
+    lgpio = None
 
 # Initialize global variables
 logger = None
@@ -59,9 +64,9 @@ Purple GPIO 26 (37)-(38) GPIO 20 blue
 Grey Ground  (39)-(40) GPIO 21 Green
 """
 
-# Define ON/OFF states for clarity
-ON = GPIO.LOW
-OFF = GPIO.HIGH
+# Relay logic (ON = HIGH / 1, OFF = LOW / 0 with lgpio)
+ON = 1
+OFF = 0
 
 
 def setup_logging():
