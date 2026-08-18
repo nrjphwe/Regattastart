@@ -145,8 +145,8 @@ def should_rotate_image():
     logger.info(f"Detected CPU model: {model}")
     # Adjust based on which system is upside down
     if "compute module 5" in model or "cm5" in model:
-        logger.info("Detected CM5, do NOT rotate")
-        return False
+        logger.info("Detected CM5, rotate 180 degrees")
+        return True
     elif "raspberry pi 5" in model:
         logger.info("Detected Raspberry Pi 5, rotate 180 degrees")
         return True
@@ -170,7 +170,10 @@ def setup_camera(resolution=(1640, 1232)):
             main={"size": resolution, "format": "BGR888"},
             colour_space=ColorSpace.Srgb()  # OR ColorSpace.Sycc()
         )
-        logger.info("Camera not rotated/transform ????")
+        if ROTATE_CAMERA:
+            logger.info("Camera will be rotated 180 degrees")
+        else:
+            logger.info("Camera will not be rotated")
 
         camera.configure(config)
         logger.info(f"size: {resolution}, format: BGR888")
@@ -203,43 +206,7 @@ def letterbox(image, target_size=(640, 480)):
     )
 
 
-def xxx_capture_picture(camera, photo_path, file_name, rotate=False):
-    try:
-        request = camera.capture_request()  # Capture a single request
-        # When grabbing frames:
-        if HAVE_MAPPEDARRAY:
-            with MappedArray(request, "main") as m:
-                frame = m.array.copy()
-        else:
-            # fallback: capture_array or use request.to_array() depending on version
-            frame = camera.capture_array()  # returns numpy array
-            frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
-            logger.debug(f"frame shape: {frame.shape} dtype: {frame.dtype}")
-
-        # Ensure the frame is in BGR format
-        # if frame.shape[-1] == 3:  # Assuming 3 channels for RGB/BGR
-            # logger.debug("Converting frame from RGB to BGR")
-            # frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
-
-        # Apply timestamp (reuse the same logic as in apply_timestamp)
-        timestamp = time.strftime("%Y-%m-%d %X")
-        origin = (40, int(frame.shape[0] * 0.85))  # Bottom-left corner
-        text_colour = (255, 0, 0)  # Blue text in BGR, Blue text RGB = (0, 0, 255)
-        bg_colour = (200, 200, 200)  # Gray background
-
-        # Use text_rectangle function in common_module to draw timestamp
-        text_rectangle(frame, timestamp, origin, text_colour, bg_colour)
-
-        resized_for_display = letterbox(frame, (1280, 960))
-        cv2.imwrite(os.path.join(photo_path, file_name), resized_for_display)
-        logger.debug(f"Saved resized_for_display size: {resized_for_display.shape}")
-        request.release()
-        logger.info(f'Captured picture: {file_name}')
-    except Exception as e:
-        logger.error(f"Failed to capture picture: {e}", exc_info=True)
-
-
-def capture_picture(camera, photo_path, file_name, rotate=False):
+def capture_picture(camera, photo_path, file_name, rotate=True):
     try:
         # ALWAYS use capture_array for stills
         frame = camera.capture_array("main")
