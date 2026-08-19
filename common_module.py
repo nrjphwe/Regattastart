@@ -7,21 +7,37 @@ import logging
 import logging.config
 from queue import Queue, Full, Empty
 
-# Safe import for libcamera / picamera2
+Picamera2 = None
+H264Encoder = None
+Transform = None
+ColorSpace = None
+
+try:
+    from picamera2 import Picamera2
+except Exception as e:
+    print(f"[import] Picamera2 failed: {e}")
+
 try:
     from picamera2.encoders import H264Encoder
-    from picamera2.transform import Transform
-    from picamera2.color_spaces import ColorSpace
-    from picamera2.picamera2 import Picamera2  # type: ignore
-except Exception:
+except Exception as e:
+    print(f"[import] H264Encoder failed: {e}")
+
+try:
+    from picamera2 import Transform
+except Exception as e1:
     try:
-        from picamera2 import Picamera2, H264Encoder
-        from libcamera import Transform, ColorSpace
-    except Exception:
-        Picamera2 = None
-        H264Encoder = None
-        Transform = None
-        ColorSpace = None
+        from libcamera import Transform
+    except Exception as e2:
+        print(f"[import] Transform failed: {e1} / {e2}")
+
+try:
+    from picamera2 import ColorSpace
+except Exception as e1:
+    try:
+        from libcamera import ColorSpace
+    except Exception as e2:
+        print(f"[import] ColorSpace failed: {e1} / {e2}")
+
 try:
     from picamera2 import MappedArray
     HAVE_MAPPEDARRAY = True
