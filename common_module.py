@@ -698,6 +698,8 @@ def setup_gpio():
         logger.error(f"Error in setup_gpio: {e}")
         raise
 
+_active_relay_timers = []
+
 def trigger_relay(handle, pin, state, duration=None):
     """Control a relay by turning it ON or OFF. Non-blocking even with duration."""
     try:
@@ -706,30 +708,36 @@ def trigger_relay(handle, pin, state, duration=None):
             logger.info(f"Triggering relay on pin {pin} to state on")
             if duration:
                 def _turn_off():
-                    lgpio.gpio_write(handle, pin, 0)
-                    logger.debug(f"Pin {pin} turned OFF after {duration} seconds")
-                threading.Timer(duration, _turn_off).start()
+                    try:
+                        lgpio.gpio_write(handle, pin, 0)
+                        logger.debug(f"Pin {pin} turned OFF after {duration} seconds")
+                    except Exception as e:
+                        logger.error(f"Deferred turn-off failed for pin {pin}: {e}")
+                timer = threading.Timer(duration, _turn_off)
+                timer.daemon = True
+                _active_relay_timers.append(timer)
+                timer.start()
         else:
             lgpio.gpio_write(handle, pin, 0)
             logger.info(f"Triggering relay on pin {pin} to state off")
     except Exception as e:
         logger.error(f"Failed to trigger relay on pin {pin}: {e}")
 
-def xxxtrigger_relay(handle, pin, state, duration=None):
-    """Control a relay by turning it ON or OFF, optionally with a delay."""
-    try:
-        if state == "on":
-            lgpio.gpio_write(handle, pin, 1)  # HIGH = ON
-        else:
-            lgpio.gpio_write(handle, pin, 0)  # LOW = OFF
 
-        logger.info(f"Triggering relay on pin {pin} to state {state}")
-        if duration:
-            time.sleep(int(duration))
-            lgpio.gpio_write(handle, pin, 0)  # Turn off after the duration
-            logger.debug(f"Pin {pin} turned OFF after {duration} seconds")
-    except Exception as e:
-        logger.error(f"Failed to trigger relay on pin {pin}: {e}")
+def flush_pending_relay_timers(handle, pins):
+    """Wait for any pending relay-off timers to complete, then force all pins LOW
+    as a fail-safe, before the GPIO chip is closed."""
+    global _active_relay_timers
+    for t in _active_relay_timers:
+        t.join(timeout=2)  # let the still-open handle actually turn things off
+    _active_relay_timers = []
+
+    for pin in pins:
+        try:
+            lgpio.gpio_write(handle, pin, 0)
+        except Exception as e:
+            logger.error(f"Fail-safe: could not force pin {pin} OFF: {e}")
+    logger.info(f"Fail-safe: forced pins {pins} OFF before GPIO cleanup")
 
 
 def cleanup_gpio(handle):
@@ -797,7 +805,8 @@ def start_sequence(camera, first_start_time, num_starts, dur_between_starts, pho
 
             time.sleep(0.1)
         logger.info(f"Start_sequence, End of iteration: {i+1}")
-    cleanup_gpio(gpio_handle)  # Clean up GPIO after each iteration
+        flush_pending_relay_timers(gpio_handle, [SIGNAL, LAMP1, LAMP2])
+        cleanup_gpio(gpio_handle)  # Clean up GPIO after each iteration
 
 
 def clean_exit(camera=None, video_writer=None):
