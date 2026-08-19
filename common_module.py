@@ -698,8 +698,24 @@ def setup_gpio():
         logger.error(f"Error in setup_gpio: {e}")
         raise
 
-
 def trigger_relay(handle, pin, state, duration=None):
+    """Control a relay by turning it ON or OFF. Non-blocking even with duration."""
+    try:
+        if state == "on":
+            lgpio.gpio_write(handle, pin, 1)
+            logger.info(f"Triggering relay on pin {pin} to state on")
+            if duration:
+                def _turn_off():
+                    lgpio.gpio_write(handle, pin, 0)
+                    logger.debug(f"Pin {pin} turned OFF after {duration} seconds")
+                threading.Timer(duration, _turn_off).start()
+        else:
+            lgpio.gpio_write(handle, pin, 0)
+            logger.info(f"Triggering relay on pin {pin} to state off")
+    except Exception as e:
+        logger.error(f"Failed to trigger relay on pin {pin}: {e}")
+
+def xxxtrigger_relay(handle, pin, state, duration=None):
     """Control a relay by turning it ON or OFF, optionally with a delay."""
     try:
         if state == "on":
