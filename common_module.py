@@ -350,6 +350,10 @@ def restart_camera(camera, resolution=(TARGET_RESOLUTION), fps=15):
         new_camera.set_controls({"FrameRate": fps})
 
         new_camera.start()
+        # Allow camera exposure/auto controls to settle
+        for _ in range(10):
+            new_camera.capture_array("main")
+            time.sleep(0.1)
         logger.info(f"Camera restarted FORCED resolution {main_size} and FPS: {fps}.")
         return new_camera  # Return new camera instance
 
@@ -706,23 +710,23 @@ def trigger_relay(handle, pin, state, duration=None):
     try:
         if state == "on":
             lgpio.gpio_write(handle, pin, 1)
-            logger.info(f"Triggering relay on pin {pin} to state on")
+            logger.info(f"Triggering relay on GPIO {pin} to state on")
             if duration:
                 def _turn_off():
                     try:
                         lgpio.gpio_write(handle, pin, 0)
-                        logger.debug(f"Pin {pin} turned OFF after {duration} seconds")
+                        logger.debug(f"GPIO {pin} turned OFF after {duration} seconds")
                     except Exception as e:
-                        logger.error(f"Deferred turn-off failed for pin {pin}: {e}")
+                        logger.error(f"Deferred turn-off failed for GPIO {pin}: {e}")
                 timer = threading.Timer(duration, _turn_off)
                 timer.daemon = True
                 _active_relay_timers.append(timer)
                 timer.start()
         else:
             lgpio.gpio_write(handle, pin, 0)
-            logger.info(f"Triggering relay on pin {pin} to state off")
+            logger.info(f"Triggering relay on GPIO {pin} to state off")
     except Exception as e:
-        logger.error(f"Failed to trigger relay on pin {pin}: {e}")
+        logger.error(f"Failed to trigger relay on GPIO {pin}: {e}")
 
 
 def flush_pending_relay_timers(handle, pins):
@@ -737,8 +741,8 @@ def flush_pending_relay_timers(handle, pins):
         try:
             lgpio.gpio_write(handle, pin, 0)
         except Exception as e:
-            logger.error(f"Fail-safe: could not force pin {pin} OFF: {e}")
-    logger.info(f"Fail-safe: forced pins {pins} OFF before GPIO cleanup")
+            logger.error(f"Fail-safe: could not force GPIO {pin} OFF: {e}")
+    logger.info(f"Fail-safe: forced GPIOs {pins} OFF before GPIO cleanup")
 
 
 def cleanup_gpio(handle):
