@@ -807,7 +807,8 @@ def start_sequence(camera, first_start_time, num_starts, dur_between_starts, pho
             time.sleep(0.1)
         logger.info(f"Start_sequence, End of iteration: {i+1}")
         flush_pending_relay_timers(gpio_handle, [SIGNAL, LAMP1, LAMP2])
-        cleanup_gpio(gpio_handle)  # Clean up GPIO after each iteration
+    # GPIO-handle ska hållas öppen under ALLA starter
+    cleanup_gpio(gpio_handle)
 
 
 def clean_exit(camera=None, video_writer=None):
