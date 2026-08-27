@@ -65,16 +65,17 @@ text_colour = (255, 0, 0)  # Blue text in BGR
 # bg_colour = (200, 200, 200)  # Light grey background
 
 # GPIO pin numbers for the relay and lamps
-lamp1 = 20   # , for lamp1 to pin 38 right 2nd from the bottom
-# for new startmachine: Relay channel 1 input (IN1) blue wire
+signal = 20   # , for lamp1 to pin 38 right 2nd from the bottom
+# for new startmachine:(IN1) green cable and long green muff
 
-lamp2 = 21   # for lamp2 to pin 40 right bottom
-# for new startmachine Relay channel 2 input (IN2) green wire
+lamp1 = 21   # for lamp2 to pin 40 right bottom
+# for new startmachine (IN2) yellow cable and long yellow muff 
 
-signal = 26  # for signal to pin 37 left 2nd from the bottom,
-# for new startmachine: Relay channel 3 input (IN3) purple wire
+lamp2 = 26  # for signal to pin 37 left 2nd from the bottom,
+# for new startmachine: input (IN3) green cable and red muff
 
-# for new startmachine GND grey wire
+# for new startmachine GND Pin 39: yellow cable and long yellow muff 
+
 """
 Purple GPIO 26 (37)-(38) GPIO 20 blue
 Grey Ground  (39)-(40) GPIO 21 Green
