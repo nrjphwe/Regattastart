@@ -65,13 +65,13 @@ text_colour = (255, 0, 0)  # Blue text in BGR
 # bg_colour = (200, 200, 200)  # Light grey background
 
 # GPIO pin numbers for the relay and lamps
-signal = 20   # , for lamp1 to pin 38 right 2nd from the bottom
+signal = 20   # GPIO20 for signal to pin 38 right 2nd from the bottom
 # for new startmachine:(IN1) green cable and long green muff
 
-lamp1 = 21   # for lamp2 to pin 40 right bottom
+lamp1 = 21   # GPIO21 for lamp1 to pin 40 right bottom
 # for new startmachine (IN2) yellow cable and long yellow muff 
 
-lamp2 = 26  # for signal to pin 37 left 2nd from the bottom,
+lamp2 = 26  # GPIO26 for lamp2 to pin 37 left 2nd from the bottom,
 # for new startmachine: input (IN3) green cable and red muff
 
 # for new startmachine GND Pin 39: yellow cable and long yellow muff 
@@ -690,11 +690,11 @@ def setup_gpio():
     try:
         # seems like initial value off corresponds to 1
         h = lgpio.gpiochip_open(0)  # Open GPIO chip 0
-        lgpio.gpio_claim_output(h, 26, level)  # Signal pin
-        lgpio.gpio_claim_output(h, 20, level)  # Lamp1
-        lgpio.gpio_claim_output(h, 21, level)  # Lamp2
-        logger.info("GPIO setup successful: Signal=26, Lamp1=20, Lamp2=21")
-        return h, 26, 20, 21  # Return the GPIO handle and pin numbers
+        lgpio.gpio_claim_output(h, 20, level)  # signal
+        lgpio.gpio_claim_output(h, 21, level)  # Lamp1
+        lgpio.gpio_claim_output(h, 26, level)  # Lamp2
+        logger.info("GPIO setup successful: Signal=20, Lamp1=21, Lamp2=26")
+        return h, 20, 21, 26  # Return the GPIO handle and pin numbers
     except Exception as e:
         logger.error(f"Error in setup_gpio: {e}")
         raise
