@@ -1,4 +1,5 @@
 #!/home/pi/yolov5_env/bin/python
+# after git pull, do: sudo cp regattastart8.py /usr/lib/cgi-bin/
 import os
 from common_module import (
     setup_camera,
