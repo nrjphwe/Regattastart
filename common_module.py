@@ -703,7 +703,9 @@ def setup_gpio():
         logger.error(f"Error in setup_gpio: {e}")
         raise
 
+
 _active_relay_timers = []
+
 
 def trigger_relay(handle, pin, state, duration=None):
     """Control a relay by turning it ON or OFF. Non-blocking even with duration."""
