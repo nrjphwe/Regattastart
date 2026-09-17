@@ -1,4 +1,5 @@
 #!/home/pi/yolov5_env/bin/python
+# after git pull, do: sudo cp common_module.py /usr/lib/cgi-bin/
 import cv2
 import os
 import subprocess, threading, time
