@@ -1,5 +1,4 @@
 #!/home/pi/yolov5_env/bin/python
-# after git pull, do: sudo cp regattastart8.py /usr/lib/cgi-bin/
 import os
 from common_module import (
     setup_camera,
@@ -52,10 +51,14 @@ logger.info(f"Detected CPU model string: '{cpu_model}'")
 logger.info("="*60)
 
 
-def save_uncertain_image(frame, detections, current_count, max_images=100, folder='/var/www/html/images/training_data/'):
-    """Sparar bilden vid osäkerhet, upp till max_images stycken."""
+def save_uncertain_image(frame, detections, current_count, max_images=300, folder='/var/www/html/images/training_data/', last_save_time=0.0, min_interval_seconds=5.0):
+    """Sparar bilden vid osäkerhet, upp till max_images stycken, med en cooldown mellan sparningar."""
     if current_count >= max_images:
-        return False # Gränsen nådd
+        return False, last_save_time  # Gränsen nådd
+
+    now = time.time()
+    if now - last_save_time < min_interval_seconds:
+        return False, last_save_time  # Vänta ut cooldown innan nästa sparning
 
     for (_, _, _, _, conf) in detections:
         # Om vi hittar en båt med konfidens mellan 20% och 45%
@@ -66,9 +69,9 @@ def save_uncertain_image(frame, detections, current_count, max_images=100, folde
             # Spara en ren bild utan boxar för träning
             cv2.imwrite(filename, frame)
             logger.info(f"Saved uncertain detection #{current_count+1} (conf: {conf:.2f})")
-            return True  # Indikera att en bild sparades
+            return True, now  # Indikera att en bild sparades, uppdatera tidsstämpel
 
-    return False
+    return False, last_save_time
 
 
 # --- MODELL-LADDNING (YOLOv8) ---
@@ -102,7 +105,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
     # Konfiguration
     saved_count = 0  # Räknare för sparade osäkra bilder
     DETECTION_CONF_THRESHOLD = 0.5
-    UNCERTAIN_CONF_FLOOR = 0.20   # NEW: let YOLO return low-confidence boxes too
+    UNCERTAIN_CONF_FLOOR = 0.20  # Lägre golv så YOLO även returnerar osäkra boxar
     last_adjustment = time.time()
     max_duration = (video_end + (num_starts-1)*5) * 60
 
@@ -153,6 +156,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
 
     # --- Initiera utanför loopen ---
     uncertain_saved_total = 0 # Räknare för denna session
+    last_uncertain_save_time = 0.0 # Cooldown-tidsstämpel mellan sparade osäkra bilder
     last_adjustment = time.time()
     skip_factor = 2
 
@@ -201,7 +205,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
                 cropped = frame[y_start:y_start+crop_height, x_start:x_start+crop_width]
                 resized = cv2.resize(cropped, (inf_w, inf_h))
 
-                # Kör YOLOv8
+                # Kör YOLOv8 med lågt golv så osäkra detektioner också returneras
                 results = model.predict(resized, conf=UNCERTAIN_CONF_FLOOR, verbose=False)[0]
 
                 new_dets = []
@@ -214,16 +218,20 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
                     nx2 = int(x2 * scale_x) + x_start
                     ny2 = int(y2 * scale_y) + y_start
                     new_dets.append((nx1, ny1, nx2, ny2, conf))
+
                 # Endast säkra detektioner styr inspelning/ritning av boxar
                 last_detections = [d for d in new_dets if d[4] >= DETECTION_CONF_THRESHOLD]
 
-                # Spara osäkra bilder för framtida annotering
+                # Spara osäkra bilder för framtida annotering (från ALLA detektioner, inkl. lågkonfidens)
                 # NYTT: Kolla om vi ska spara träningsdata
                 if new_dets:
-                    was_saved = save_uncertain_image(frame, new_dets, uncertain_saved_total, max_images=100)
+                    was_saved, last_uncertain_save_time = save_uncertain_image(
+                        frame, new_dets, uncertain_saved_total,
+                        max_images=300, last_save_time=last_uncertain_save_time, min_interval_seconds=5.0
+                    )
                     if was_saved:
                         uncertain_saved_total += 1
- 
+
             is_boat = len(last_detections) > 0
 
             if is_boat:
