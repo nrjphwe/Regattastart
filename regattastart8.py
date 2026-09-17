@@ -101,8 +101,12 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
     # Konfiguration
     saved_count = 0  # Räknare för sparade osäkra bilder
     DETECTION_CONF_THRESHOLD = 0.5
+    UNCERTAIN_CONF_FLOOR = 0.20   # NEW: let YOLO return low-confidence boxes too
     last_adjustment = time.time()
     max_duration = (video_end + (num_starts-1)*5) * 60
+
+    # Säkerställ att mappen för träningsdata finns, annars misslyckas cv2.imwrite tyst
+    os.makedirs('/var/www/html/images/training_data/', exist_ok=True)
 
     # Starta om kamera för Video 1
     camera = restart_camera(camera, resolution=(1920, 1080), fps=fps)
@@ -197,7 +201,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
                 resized = cv2.resize(cropped, (inf_w, inf_h))
 
                 # Kör YOLOv8
-                results = model.predict(resized, conf=DETECTION_CONF_THRESHOLD, verbose=False)[0]
+                results = model.predict(resized, conf=UNCERTAIN_CONF_FLOOR, verbose=False)[0]
 
                 new_dets = []
                 for box in results.boxes:
@@ -209,15 +213,16 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
                     nx2 = int(x2 * scale_x) + x_start
                     ny2 = int(y2 * scale_y) + y_start
                     new_dets.append((nx1, ny1, nx2, ny2, conf))
-                last_detections = new_dets
+                # Endast säkra detektioner styr inspelning/ritning av boxar
+                last_detections = [d for d in new_dets if d[4] >= DETECTION_CONF_THRESHOLD]
 
                 # Spara osäkra bilder för framtida annotering
                 # NYTT: Kolla om vi ska spara träningsdata
-                if last_detections:
-                    was_saved = save_uncertain_image(frame, last_detections, uncertain_saved_total, max_images=100)
+                if new_dets:
+                    was_saved = save_uncertain_image(frame, new_dets, uncertain_saved_total, max_images=100)
                     if was_saved:
                         uncertain_saved_total += 1
-
+ 
             is_boat = len(last_detections) > 0
 
             if is_boat:
