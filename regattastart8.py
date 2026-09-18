@@ -51,27 +51,58 @@ logger.info(f"Detected CPU model string: '{cpu_model}'")
 logger.info("="*60)
 
 
-def save_uncertain_image(frame, detections, current_count, max_images=300, folder='/var/www/html/images/training_data/', last_save_time=0.0, min_interval_seconds=5.0):
-    """Sparar bilden vid osäkerhet, upp till max_images stycken, med en cooldown mellan sparningar."""
+def _iou(box_a, box_b):
+    """Beräknar Intersection-over-Union mellan två (x1, y1, x2, y2) boxar."""
+    ax1, ay1, ax2, ay2 = box_a
+    bx1, by1, bx2, by2 = box_b
+    ix1, iy1 = max(ax1, bx1), max(ay1, by1)
+    ix2, iy2 = min(ax2, bx2), min(ay2, by2)
+    iw, ih = max(0, ix2 - ix1), max(0, iy2 - iy1)
+    inter = iw * ih
+    if inter == 0:
+        return 0.0
+    area_a = max(0, ax2 - ax1) * max(0, ay2 - ay1)
+    area_b = max(0, bx2 - bx1) * max(0, by2 - by1)
+    return inter / float(area_a + area_b - inter)
+
+
+def save_uncertain_image(frame, detections, current_count, max_images=300,
+                          folder='/var/www/html/images/training_data/',
+                          last_save_time=0.0, min_interval_seconds=30.0,
+                          last_save_bbox=None, iou_dedup_threshold=0.5):
+    """Sparar bilden vid osäkerhet, upp till max_images stycken.
+
+    En cooldown förhindrar spam, men om en osäker detektion dyker upp på en
+    tydligt ANNAN plats i bilden (låg IoU mot senast sparade box) sparas den
+    ändå direkt - annars skulle t.ex. en båt som långsamt tar ner seglen vid
+    mållinjen kunna generera dussintals nästan identiska bilder av samma
+    händelse, istället för ett varierat urval av olika osäkra fall.
+    """
     if current_count >= max_images:
-        return False, last_save_time  # Gränsen nådd
+        return False, last_save_time, last_save_bbox  # Gränsen nådd
 
     now = time.time()
-    if now - last_save_time < min_interval_seconds:
-        return False, last_save_time  # Vänta ut cooldown innan nästa sparning
 
-    for (_, _, _, _, conf) in detections:
+    for (x1, y1, x2, y2, conf) in detections:
         # Om vi hittar en båt med konfidens mellan 20% och 45%
         if 0.20 <= conf <= 0.45:
+            box = (x1, y1, x2, y2)
+            same_spot = (
+                last_save_bbox is not None
+                and _iou(box, last_save_bbox) >= iou_dedup_threshold
+            )
+            if same_spot and (now - last_save_time) < min_interval_seconds:
+                continue  # Samma objekt/plats som senast - hoppa över, testa nästa detektion
+
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
             filename = f"{folder}uncertain_{timestamp}.jpg"
 
             # Spara en ren bild utan boxar för träning
             cv2.imwrite(filename, frame)
             logger.info(f"Saved uncertain detection #{current_count+1} (conf: {conf:.2f})")
-            return True, now  # Indikera att en bild sparades, uppdatera tidsstämpel
+            return True, now, box  # Bild sparad, uppdatera tidsstämpel och senaste position
 
-    return False, last_save_time
+    return False, last_save_time, last_save_bbox
 
 
 # --- MODELL-LADDNING (YOLOv8) ---
@@ -157,6 +188,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
     # --- Initiera utanför loopen ---
     uncertain_saved_total = 0 # Räknare för denna session
     last_uncertain_save_time = 0.0 # Cooldown-tidsstämpel mellan sparade osäkra bilder
+    last_uncertain_save_bbox = None # Position för senast sparad osäker bild (för spatial dedup)
     last_adjustment = time.time()
     skip_factor = 2
 
@@ -225,9 +257,10 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, f
                 # Spara osäkra bilder för framtida annotering (från ALLA detektioner, inkl. lågkonfidens)
                 # NYTT: Kolla om vi ska spara träningsdata
                 if new_dets:
-                    was_saved, last_uncertain_save_time = save_uncertain_image(
+                    was_saved, last_uncertain_save_time, last_uncertain_save_bbox = save_uncertain_image(
                         frame, new_dets, uncertain_saved_total,
-                        max_images=300, last_save_time=last_uncertain_save_time, min_interval_seconds=5.0
+                        max_images=300, last_save_time=last_uncertain_save_time,
+                        min_interval_seconds=30.0, last_save_bbox=last_uncertain_save_bbox
                     )
                     if was_saved:
                         uncertain_saved_total += 1
