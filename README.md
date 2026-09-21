@@ -26,5 +26,15 @@ Setting up wireless networking (Not valid with RPI5 and Bookworm):
 
 Temperature during execution with cooler.
 
-The apache-server resides in a Raspberry Pi5 with Bookworm, The web-page index9.php triggers execution of a python script regattastart9.py. The script triggers relays to turn on signals and lamps at the start, then takes pictures and makes videos. The video1 is made through image recognition of sailboats, inference using yolov5. After the video1 is made the index.php page is used to see the resulting time for the sailboats crossing the finish-line, as time is annotated.
+The apache-server resides in a Raspberry PI5 with Bookworm, The web-page index9.php triggers execution of a python script regattastart9.py. The script triggers relays to turn on signals and lamps at the start, then takes pictures and makes videos. The video1 is made through image recognition of sailboats, inference using yolov5. After the video1 is made the index.php page is used to see the resulting time for the sailboats crossing the finish-line, as time is annotated.
 
+A standard yolov8 model was trained to "not" detect ships, motorboats, canoes and other non sailing vessels. The result is in the yolov8.pt file
+
+At the web-page http://regattastart5.local you can select:
+
+- Regattastart8 using yolov8 for image recognition
+- Regattastart9 for image recognition (using yolov5)
+- Regattastart10 with image recognitionbut also Number detection
+
+- logging information at: /var/www/html/python.log
+  (tail -f /var/www/html/python.log )

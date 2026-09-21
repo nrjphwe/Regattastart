@@ -43,6 +43,7 @@
     $stopRecordingPressed = $_SESSION['stopRecordingPressed'] ?? false;
     // Retrieve session data
     $formData = isset($_SESSION['form_data']) && is_array($_SESSION['form_data']) ? $_SESSION['form_data'] : [];
+
     $start_time = $formData['start_time'] ?? null;
     $num_starts = $formData['num_starts'] ?? null;
     // Extract relevant session data
@@ -53,13 +54,17 @@
     {
         // Handle stop recording logic here
         console_log('The stop_recording.php POST received in index.php');
-        $stopRecordingPressed = true;
+
         // Store this value in a session to persist it across requests
-        $_SESSION['stopRecordingPressed'] = $stopRecordingPressed;
+        $_SESSION['stopRecordingPressed'] = true;
+        session_write_close(); // Close the session to allow other scripts to access it
 
         // Call the stop_recording.php logic directly
-        include 'stop_recording.php';
+        //include 'stop_recording.php';
+        exec("php /var/www/html/stop_recording.php > /dev/null 2>&1 &");
 
+        $stopRecordingPressed = true;
+        console_log('Stop recording started in the background');
     } else {
         console_log('Stop recording POST not received');
     }
@@ -205,24 +210,24 @@
     <main>
         <!-- Top 3 button container -->
         <div class="button-container">
-            <!-- Link to index6 -->
+            <!-- Link to index8 -->
             <button class="w3-button w3-border w3-large w3-round-large w3-hover-grey w3-blue">
                 <a href="/index8.php" title="Setup page Regattastart8" style="text-decoration: none; color: white;">
                     Regattastart8 - image detection Yolov8
                 </a>
             </button>
-            <!-- Link to index9 -->
+            <!-- 
             <button class="w3-button w3-border w3-large w3-round-large w3-hover-grey w3-green">
                 <a href="/index9.php" title="Setup page Regattastart9" style="text-decoration: none; color: white;">
                     Regattastart9 - image detection Yolov5
                 </a>
             </button>
-             <!-- Link to index10 -->
             <button class="w3-button w3-border w3-small w3-round-large w3-hover-grey w3-red">
                 <a href="/index10.php" title="Setup page Regattastart10 " style="text-decoration: none; color: white;">
                     Regattastart10 with image & number detection
                 </a>
             </button>
+            -->
         </div>
         <!-- Bilder tagna vid varje signal innan 1a start  -->
         <div style="text-align: center;" class="w3-panel w3-pale-blue">
@@ -342,6 +347,64 @@
                 }
             ?>
         </div>
+        <!-- Display pictures for the 3rd start -->
+        <div style="text-align: center;">
+            <?php
+                //if ($num_starts == 3)
+                {
+                    $filename = '1a_start_Start.jpg';
+                    $imagePath = 'images/' . $filename; // Relative path
+                    if (file_exists($imagePath)) 
+                    {
+                        // Check and display the first image
+                        $filename = '3a_start_5_min.jpg';
+                        $imagePath = 'images/' . $filename; // Relative path
+                        if (file_exists($imagePath)) {
+                            $imagePath .= '?' . filemtime($imagePath);
+                            echo "<h3> Bilder tagna vid varje signal innan 3a start  </h3> ";
+                            echo "<br> ------------------------------------------------- <p></p> ";
+                            echo "<h3> Varningssignal 5 minuter innan 3a start</h3>";
+                            echo "<img id='$filename' src='$imagePath' alt='3a_start 5 min picture' width='640' height=480'>";
+
+                            // Check and display the second image
+                            $filename = '3a_start_4_min.jpg';
+                            $imagePath = 'images/' . $filename; // Relative path
+                            if (file_exists($imagePath)) {
+                                $imagePath .= '?' . filemtime($imagePath);
+                                echo "<h3> Signal 4 minuter innan 3a start </h3>";
+                                echo "<img id='$filename' src='$imagePath' alt='3a_start 4 min picture' width='640' height='480'>";
+
+                                // Check and display the third image
+                                $filename = '3a_start_1_min.jpg';
+                                $imagePath = 'images/' . $filename; // Relative path
+                                if (file_exists($imagePath)) {
+                                    $imagePath .= '?' . filemtime($imagePath);
+                                    echo "<h3> Signal 1 minuter innan 3a start </h3>";
+                                    echo "<img id='$filename' src='$imagePath' alt='3a_start 1 min picture' width='640' height='480'>";
+
+                                    // Check and display the start image
+                                    $filename = '3a_start_Start.jpg';
+                                    $imagePath = 'images/' . $filename; // Relative path
+                                    if (file_exists($imagePath)) {
+                                        $imagePath .= '?' . filemtime($imagePath);
+                                        echo "<h3> Foto vid 3a start $third_start_time </h3>";
+                                        echo "<img id='$filename' src='$imagePath' alt='3a start picture' width='640' height='480'>";
+                                    } else {
+                                        console_log('picture start 3rd start do not exists');
+                                    }
+                                } else {
+                                    console_log('picture 1 min 3rd start do not exists');
+                                }
+                            } else {
+                                console_log('picture 4 min 3rd start do not exists');
+                            }
+                        } else {
+                            console_log('picture 5 min 3rd start do not exists');
+                        }
+                    }
+                }
+            ?>
+        </div>
         <!-- Display video0 when it is available -->
         <div style="text-align: center;" class="w3-panel w3-pale-blue">
             <?php
@@ -375,6 +438,10 @@
                 }
             ?>
         </div>
+        <!-- Refresh button -->
+        <div style="text-align: center;" class="w3-panel w3-pale-grey">
+            <button type="button" class="w3-button w3-round-large w3-khaki w3-hover-red" onclick="return refreshThePage()">Refresh page</button>
+        </div> 
         <!-- PHP Script to display video1 when available in w3-pale-red section -->
         <?php
             if ($video0Exists) {

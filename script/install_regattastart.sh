@@ -7,8 +7,9 @@ set -x
 cd "$(dirname "$0")/.."
 
 echo "=> Installing regattastart files at CGI-BIN...\n"
+sudo cp -v regattastart10.py /usr/lib/cgi-bin
 sudo cp -v regattastart9.py /usr/lib/cgi-bin
-sudo cp -v regattastart6.py /usr/lib/cgi-bin
+sudo cp -v regattastar8.py /usr/lib/cgi-bin
 sudo cp -v logging.conf /usr/lib/cgi-bin
 sudo cp -v common_module.py /usr/lib/cgi-bin
 sudo chmod -R 755 /usr/lib/cgi-bin
@@ -20,13 +21,13 @@ sudo systemctl restart apache2.service
 
 sudo apt install php libapache2-mod-php -y
 
-
 echo "=> Installing regattastart php files at /var/www/html/...\n"
 sudo mkdir -v -p /var/www/html/images
 sudo cp -v /var/www/html/index.html /var/www/html/index0.html
 sudo rm -v /var/www/html/index.html
 sudo cp -v index.php /var/www/html
-sudo cp -v index6.php /var/www/html
+sudo cp -v index10.php /var/www/html
+sudo cp -v index8.php /var/www/html
 sudo cp -v index9.php /var/www/html
 sudo cp -v functions.php /var/www/html
 sudo cp -v stop_recording.php /var/www/html
@@ -46,10 +47,6 @@ sudo chmod g+rw /dev/gpiomem
 sudo usermod -a -G gpio www-data
 
 echo: "to let above commands survice reboot"
-echo: Create a file, e.g., /etc/udev/rules.d/99-mem.rules, with the following content:
-sudo mkdir -v -p /etc/udev/rules.d/99-mem.rules
-echo 'KERNEL=="mem", MODE="0660"' | sudo tee -a /etc/udev/rules.d/99-mem.rules
-
 sudo mkdir -v -p /etc/udev/rules.d/99-gpioomem.rules
 echo 'KERNEL=="gpiomem", GROUP="gpio", MODE="0660"' | sudo tee -a /etc/udev/rules.d/99-gpiomem.rules
 
