@@ -132,7 +132,7 @@
         echo "<p style='font-size:12px'>";
         echo " Todays Date: " . date ("Y-m-d");
         echo ", Number of starts= $num_starts";
-        echo " First start at: " . $start_time;
+        echo ", First start at: " . $start_time;
         if (!empty($start_time) && strpos($start_time, ':') !== false) {
             list($start_hour, $start_minute) = explode(':', $start_time);
             $start_time_minutes = intval($start_hour) * 60 + intval($start_minute);
@@ -142,7 +142,7 @@
         }
 
         if ($num_starts >= 2) {
-            echo ", Duration between starts: $dur_between_starts min";
+            echo ", duration between starts: $dur_between_starts min";
             // Calculate second start time in minutes
             $second_start_time_minutes = $start_time_minutes + $dur_between_starts * 1;
             // Convert second start time back to hours and minutes
