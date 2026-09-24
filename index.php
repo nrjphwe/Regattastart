@@ -248,232 +248,37 @@
         <div style="text-align: center;" class="w3-panel w3-pale-grey">
             <button type="button" class="w3-button w3-round-large w3-khaki w3-hover-red" onclick="return refreshThePage()">Refresh page</button>
         </div> 
+
         <!-- Display pictures for the 1st start  -->
         <div style="text-align: center;">
             <?php
-                // Check and display the first image
-                $filename = '1a_start_5_min.jpg';
-                $imagePath = 'images/' . $filename; // Relative path
-                if (file_exists($imagePath)) 
-                {
-                    $imagePath .= '?' . filemtime($imagePath);
-                    echo "<h3> Varningssignal 5 minuter innan 1a start</h3>";
-                    echo "<img id='$filename' src='$imagePath' alt='1a_start 5 min picture' width='640' height='406' loading='lazy' />";
+                $prev_start_ok = true; // 1st start has no prerequisite photo
+                for ($start_num = 1; $start_num <= $num_starts; $start_num++) {
+                    $prefix = "{$start_num}a_start";
+                    $labels = ['5_min' => '5 minuter', '4_min' => '4 minuter', '1_min' => '1 minut', 'Start' => null];
+                    if (!$prev_start_ok) break;
 
-                    // Check and display the second image
-                    $filename = '1a_start_4_min.jpg';
-                    $imagePath = 'images/' . $filename; // Relative path
-                    if (file_exists($imagePath)) 
-                    {
-                        $imagePath .= '?' . filemtime($imagePath);
-                        echo "<h3> Signal 4 minuter innan 1a start </h3>";
-                        echo "<img id='$filename' src='$imagePath' alt='1a_start 4 min picture' width='640' height='480'>";
-
-                        // Check and display the third image
-                        $filename = '1a_start_1_min.jpg';
-                        $imagePath = 'images/' . $filename; // Relative path
-                        if (file_exists($imagePath)) 
-                        {
-                            $imagePath .= '?' . filemtime($imagePath);
-                            echo "<h3> Signal 1 minuter innan 1a start </h3>";
-                            echo "<img id='$filename' src='$imagePath' alt='1a_start 1 min picture' width='640' height='480'>";
-
-                            // Check and display the start image
-                            $filename = '1a_start_Start.jpg';
-                            $imagePath = 'images/' . $filename; // Relative path
-                            if (file_exists($imagePath)) 
-                            {
-                                $imagePath .= '?' . filemtime($imagePath);
-                                echo "<h3> Foto vid 1a start $start_time </h3>";
-                                echo "<img id='$filename' src='$imagePath' alt='1a start picture' width='640' height='480'>";
-                            } else {
-                                console_log('picture for the start do not exists');
-                            }
-                        } else {
-                            console_log('picture 1 min do not exists');
-                        }
-                    } else {
-                        console_log('picture 4 min do not exists');
-                    }
-                } else {
-                    //console_log('picture 5 min do not exists');
-                }
-            ?>
-        </div> 
-        <!-- Display pictures for the 2nd start -->
-        <div style="text-align: center;">
-            <?php
-                //if ($num_starts == 2)
-                {
-                    $filename = '1a_start_Start.jpg';
-                    $imagePath = 'images/' . $filename; // Relative path
-                    if (file_exists($imagePath)) 
-                    {
-                        // Check and display the first image
-                        $filename = '2a_start_5_min.jpg';
-                        $imagePath = 'images/' . $filename; // Relative path
+                    echo "<div style='text-align: center;'>";
+                    $all_ok = true;
+                    foreach ($labels as $suffix => $label) {
+                        $filename = "{$prefix}_{$suffix}.jpg";
+                        $imagePath = 'images/' . $filename;
                         if (file_exists($imagePath)) {
                             $imagePath .= '?' . filemtime($imagePath);
-                            echo "<h3> Bilder tagna vid varje signal innan 2a start  </h3> ";
-                            echo "<br> ------------------------------------------------- <p></p> ";
-                            echo "<h3> Varningssignal 5 minuter innan 2a start</h3>";
-                            echo "<img id='$filename' src='$imagePath' alt='2a_start 5 min picture' width='640' height=480'>";
-
-                            // Check and display the second image
-                            $filename = '2a_start_4_min.jpg';
-                            $imagePath = 'images/' . $filename; // Relative path
-                            if (file_exists($imagePath)) {
-                                $imagePath .= '?' . filemtime($imagePath);
-                                echo "<h3> Signal 4 minuter innan 2a start </h3>";
-                                echo "<img id='$filename' src='$imagePath' alt='2a_start 4 min picture' width='640' height='480'>";
-
-                                // Check and display the third image
-                                $filename = '2a_start_1_min.jpg';
-                                $imagePath = 'images/' . $filename; // Relative path
-                                if (file_exists($imagePath)) {
-                                    $imagePath .= '?' . filemtime($imagePath);
-                                    echo "<h3> Signal 1 minuter innan 2a start </h3>";
-                                    echo "<img id='$filename' src='$imagePath' alt='2a_start 1 min picture' width='640' height='480'>";
-
-                                    // Check and display the start image
-                                    $filename = '2a_start_Start.jpg';
-                                    $imagePath = 'images/' . $filename; // Relative path
-                                    if (file_exists($imagePath)) {
-                                        $imagePath .= '?' . filemtime($imagePath);
-                                        echo "<h3> Foto vid 2a start $second_start_time </h3>";
-                                        echo "<img id='$filename' src='$imagePath' alt='2a start picture' width='640' height='480'>";
-                                    } else {
-                                        console_log('picture start 2nd start do not exists');
-                                    }
-                                } else {
-                                    console_log('picture 1 min 2nd start do not exists');
-                                }
-                            } else {
-                                console_log('picture 4 min 2nd start do not exists');
-                            }
+                            $heading = $label ? "Signal $label innan start $start_num" : "Foto vid start $start_num";
+                            echo "<h3>$heading</h3>";
+                            echo "<img id='$filename' src='$imagePath' alt='$filename' width='640' height='480'>";
                         } else {
-                            console_log('picture 5 min 2nd start do not exists');
+                            console_log("picture $suffix start $start_num do not exist");
+                            $all_ok = false;
+                            break;
                         }
                     }
+                    echo "</div>";
+                    $prev_start_ok = $all_ok;
                 }
-            ?>
-        </div>
-        <!-- Display pictures for the 3rd start -->
-        <div style="text-align: center;">
-            <?php
-                //if ($num_starts == 3)
-                {
-                    $filename = '1a_start_Start.jpg';
-                    $imagePath = 'images/' . $filename; // Relative path
-                    if (file_exists($imagePath)) 
-                    {
-                        // Check and display the first image
-                        $filename = '3a_start_5_min.jpg';
-                        $imagePath = 'images/' . $filename; // Relative path
-                        if (file_exists($imagePath)) {
-                            $imagePath .= '?' . filemtime($imagePath);
-                            echo "<h3> Bilder tagna vid varje signal innan 3a start  </h3> ";
-                            echo "<br> ------------------------------------------------- <p></p> ";
-                            echo "<h3> Varningssignal 5 minuter innan 3a start</h3>";
-                            echo "<img id='$filename' src='$imagePath' alt='3a_start 5 min picture' width='640' height=480'>";
-
-                            // Check and display the second image
-                            $filename = '3a_start_4_min.jpg';
-                            $imagePath = 'images/' . $filename; // Relative path
-                            if (file_exists($imagePath)) {
-                                $imagePath .= '?' . filemtime($imagePath);
-                                echo "<h3> Signal 4 minuter innan 3a start </h3>";
-                                echo "<img id='$filename' src='$imagePath' alt='3a_start 4 min picture' width='640' height='480'>";
-
-                                // Check and display the third image
-                                $filename = '3a_start_1_min.jpg';
-                                $imagePath = 'images/' . $filename; // Relative path
-                                if (file_exists($imagePath)) {
-                                    $imagePath .= '?' . filemtime($imagePath);
-                                    echo "<h3> Signal 1 minuter innan 3a start </h3>";
-                                    echo "<img id='$filename' src='$imagePath' alt='3a_start 1 min picture' width='640' height='480'>";
-
-                                    // Check and display the start image
-                                    $filename = '3a_start_Start.jpg';
-                                    $imagePath = 'images/' . $filename; // Relative path
-                                    if (file_exists($imagePath)) {
-                                        $imagePath .= '?' . filemtime($imagePath);
-                                        echo "<h3> Foto vid 3a start $third_start_time </h3>";
-                                        echo "<img id='$filename' src='$imagePath' alt='3a start picture' width='640' height='480'>";
-                                    } else {
-                                        console_log('picture start 3rd start do not exists');
-                                    }
-                                } else {
-                                    console_log('picture 1 min 3rd start do not exists');
-                                }
-                            } else {
-                                console_log('picture 4 min 3rd start do not exists');
-                            }
-                        } else {
-                            console_log('picture 5 min 3rd start do not exists');
-                        }
-                    }
-                }
-            ?>
-        </div>
-        <!-- Display pictures for the 4th start -->
-        <div style="text-align: center;">
-            <?php
-                //if ($num_starts == 4)
-                {
-                    $filename = '1a_start_Start.jpg';
-                    $imagePath = 'images/' . $filename; // Relative path
-                    if (file_exists($imagePath)) 
-                    {
-                        // Check and display the first image
-                        $filename = '4a_start_5_min.jpg';
-                        $imagePath = 'images/' . $filename; // Relative path
-                        if (file_exists($imagePath)) {
-                            $imagePath .= '?' . filemtime($imagePath);
-                            echo "<h3> Bilder tagna vid varje signal innan 4e start  </h3> ";
-                            echo "<br> ------------------------------------------------- <p></p> ";
-                            echo "<h3> Varningssignal 5 minuter innan 4e start</h3>";
-                            echo "<img id='$filename' src='$imagePath' alt='4a_start 5 min picture' width='640' height=480'>";
-
-                            // Check and display the second image
-                            $filename = '4a_start_4_min.jpg';
-                            $imagePath = 'images/' . $filename; // Relative path
-                            if (file_exists($imagePath)) {
-                                $imagePath .= '?' . filemtime($imagePath);
-                                echo "<h3> Signal 4 minuter innan 4e start </h3>";
-                                echo "<img id='$filename' src='$imagePath' alt='4a_start 4 min picture' width='640' height='480'>";
-
-                                // Check and display the third image
-                                $filename = '4a_start_1_min.jpg';
-                                $imagePath = 'images/' . $filename; // Relative path
-                                if (file_exists($imagePath)) {
-                                    $imagePath .= '?' . filemtime($imagePath);
-                                    echo "<h3> Signal 1 minuter innan 4e start </h3>";
-                                    echo "<img id='$filename' src='$imagePath' alt='4a_start 1 min picture' width='640' height='480'>";
-
-                                    // Check and display the start image
-                                    $filename = '4a_start_Start.jpg';
-                                    $imagePath = 'images/' . $filename; // Relative path
-                                    if (file_exists($imagePath)) {
-                                        $imagePath .= '?' . filemtime($imagePath);
-                                        echo "<h3> Foto vid 4e start $fourth_start_time </h3>";
-                                        echo "<img id='$filename' src='$imagePath' alt='4a start picture' width='640' height='480'>";
-                                    } else {
-                                        console_log('picture start 4th start do not exists');
-                                    }
-                                } else {
-                                    console_log('picture 1 min 4th start do not exists');
-                                }
-                            } else {
-                                console_log('picture 4 min 4th start do not exists');
-                            }
-                        } else {
-                            console_log('picture 5 min 4th start do not exists');
-                        }
-                    }
-                }
-            ?>
-        </div>
+                ?>
+            </div>
         <!-- Display video0 when it is available -->
         <div style="text-align: center;" class="w3-panel w3-pale-blue">
             <?php
