@@ -278,6 +278,7 @@
                     $prev_start_ok = $all_ok;
                 }
                 ?>
+            </div>
         <!-- Display video0 when it is available -->
         <div style="text-align: center;" class="w3-panel w3-pale-blue">
             <?php
