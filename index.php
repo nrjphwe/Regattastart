@@ -131,7 +131,7 @@
         // Print data on top of page
         echo "<p style='font-size:12px'>";
         echo " First start at: " . $start_time;
-        echo " Date: " . date ("Y-m-d H:i:s.");
+        echo " Todays Date: " . date ("Y-m-d");
         echo ", Number of starts= $num_starts";
         if (!empty($start_time) && strpos($start_time, ':') !== false) {
             list($start_hour, $start_minute) = explode(':', $start_time);
