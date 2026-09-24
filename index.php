@@ -150,7 +150,7 @@
             $second_start_time = sprintf('%02d:%02d', $second_start_hour, $second_start_minute);
             echo ", 2nd Start at: $second_start_time";
         }
-        if ($num_starts == 3) {
+        if ($num_starts >= 3) {
              // Calculate third start time in minutes
             $third_start_time_minutes = $start_time_minutes + $dur_between_starts * 2;
             // Convert third start time back to hours and minutes
