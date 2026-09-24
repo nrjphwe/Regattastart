@@ -130,9 +130,9 @@
     <?php
         // Print data on top of page
         echo "<p style='font-size:12px'>";
-        echo " First start at: " . $start_time;
         echo " Todays Date: " . date ("Y-m-d");
         echo ", Number of starts= $num_starts";
+        echo " First start at: " . $start_time;
         if (!empty($start_time) && strpos($start_time, ':') !== false) {
             list($start_hour, $start_minute) = explode(':', $start_time);
             $start_time_minutes = intval($start_hour) * 60 + intval($start_minute);
