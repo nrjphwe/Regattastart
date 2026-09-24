@@ -6,6 +6,5 @@ dump.php
 *.ipynb
 __pycache__/
 *.pyc
-best.pt
-yolo8.pt
+*.pt
 
