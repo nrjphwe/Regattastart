@@ -160,6 +160,16 @@
             $third_start_time = sprintf('%02d:%02d', $third_start_hour, $third_start_minute);
             echo ", 3rd Start at: $third_start_time";
         }
+        if ($num_starts >= 4) {
+             // Calculate fourth start time in minutes
+            $fourth_start_time_minutes = $start_time_minutes + $dur_between_starts * 3;
+            // Convert fourth start time back to hours and minutes
+            $fourth_start_hour = floor($fourth_start_time_minutes / 60);
+            $fourth_start_minute = $fourth_start_time_minutes % 60;
+            // Format fourth start time
+            $fourth_start_time = sprintf('%02d:%02d', $fourth_start_hour, $fourth_start_minute);
+            echo ", 4th Start at: $fourth_start_time";
+        }
         if (isset($video_dur)) {
             echo "<br>";
             echo " Video duration: $video_dur min,"  ;
@@ -400,6 +410,64 @@
                             }
                         } else {
                             console_log('picture 5 min 3rd start do not exists');
+                        }
+                    }
+                }
+            ?>
+        </div>
+        <!-- Display pictures for the 4th start -->
+        <div style="text-align: center;">
+            <?php
+                //if ($num_starts == 4)
+                {
+                    $filename = '1a_start_Start.jpg';
+                    $imagePath = 'images/' . $filename; // Relative path
+                    if (file_exists($imagePath)) 
+                    {
+                        // Check and display the first image
+                        $filename = '4a_start_5_min.jpg';
+                        $imagePath = 'images/' . $filename; // Relative path
+                        if (file_exists($imagePath)) {
+                            $imagePath .= '?' . filemtime($imagePath);
+                            echo "<h3> Bilder tagna vid varje signal innan 4a start  </h3> ";
+                            echo "<br> ------------------------------------------------- <p></p> ";
+                            echo "<h3> Varningssignal 5 minuter innan 4a start</h3>";
+                            echo "<img id='$filename' src='$imagePath' alt='4a_start 5 min picture' width='640' height=480'>";
+
+                            // Check and display the second image
+                            $filename = '4a_start_4_min.jpg';
+                            $imagePath = 'images/' . $filename; // Relative path
+                            if (file_exists($imagePath)) {
+                                $imagePath .= '?' . filemtime($imagePath);
+                                echo "<h3> Signal 4 minuter innan 4a start </h3>";
+                                echo "<img id='$filename' src='$imagePath' alt='4a_start 4 min picture' width='640' height='480'>";
+
+                                // Check and display the third image
+                                $filename = '4a_start_1_min.jpg';
+                                $imagePath = 'images/' . $filename; // Relative path
+                                if (file_exists($imagePath)) {
+                                    $imagePath .= '?' . filemtime($imagePath);
+                                    echo "<h3> Signal 1 minuter innan 4a start </h3>";
+                                    echo "<img id='$filename' src='$imagePath' alt='4a_start 1 min picture' width='640' height='480'>";
+
+                                    // Check and display the start image
+                                    $filename = '4a_start_Start.jpg';
+                                    $imagePath = 'images/' . $filename; // Relative path
+                                    if (file_exists($imagePath)) {
+                                        $imagePath .= '?' . filemtime($imagePath);
+                                        echo "<h3> Foto vid 4a start $fourth_start_time </h3>";
+                                        echo "<img id='$filename' src='$imagePath' alt='4a start picture' width='640' height='480'>";
+                                    } else {
+                                        console_log('picture start 4th start do not exists');
+                                    }
+                                } else {
+                                    console_log('picture 1 min 4th start do not exists');
+                                }
+                            } else {
+                                console_log('picture 4 min 4th start do not exists');
+                            }
+                        } else {
+                            console_log('picture 5 min 4th start do not exists');
                         }
                     }
                 }
