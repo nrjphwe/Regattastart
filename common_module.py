@@ -695,11 +695,11 @@ def setup_gpio():
     try:
         # seems like initial value off corresponds to 1
         h = lgpio.gpiochip_open(0)  # Open GPIO chip 0
-        lgpio.gpio_claim_output(h, 20, level)  # signal
-        lgpio.gpio_claim_output(h, 21, level)  # Lamp1
-        lgpio.gpio_claim_output(h, 26, level)  # Lamp2
+        lgpio.gpio_claim_output(h, signal, level)  # signal
+        lgpio.gpio_claim_output(h, lamp1, level)  # Lamp1
+        lgpio.gpio_claim_output(h, lamp2, level)  # Lamp2
         logger.info("GPIO setup successful: Signal=20, Lamp1=21, Lamp2=26")
-        return h, 20, 21, 26  # Return the GPIO handle and pin numbers
+        return h, signal, lamp1, lamp2  # Return the GPIO handle and pin numbers
     except Exception as e:
         logger.error(f"Error in setup_gpio: {e}")
         raise

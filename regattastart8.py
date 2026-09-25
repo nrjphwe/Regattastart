@@ -134,7 +134,6 @@ def load_yolov8_model(result_queue):
 # --- INSPELNING OCH DETEKTERING ---
 def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, fps):
     # Konfiguration
-    saved_count = 0  # Räknare för sparade osäkra bilder
     DETECTION_CONF_THRESHOLD = 0.5
     UNCERTAIN_CONF_FLOOR = 0.20  # Lägre golv så YOLO även returnerar osäkra boxar
     last_adjustment = time.time()
