@@ -1,5 +1,4 @@
 #!/home/pi/yolov5_env/bin/python
-# after git pull, do: sudo cp common_module.py /usr/lib/cgi-bin/
 import cv2
 import os
 import subprocess, threading, time
@@ -7,6 +6,10 @@ import datetime as dt
 import logging
 import logging.config
 from queue import Queue, Full, Empty
+
+# --- Konfigurerbara konstanter ---
+LOG_FILE_PATH = "/var/www/html/python.log"
+LOG_CONF_PATH = "/usr/lib/cgi-bin/logging.conf"
 
 Picamera2 = None
 H264Encoder = None
@@ -45,118 +48,71 @@ try:
 except Exception:
     HAVE_MAPPEDARRAY = False
 
-# Safe import for lgpio
 try:
     import lgpio  # type: ignore
 except ImportError:
     lgpio = None
 
-# Initialize global variables
+# Globala inställningar
 logger = None
-signal_dur = 0.9  # Default signal duration
+signal_dur = 0.9
 
-FONT = cv2.FONT_HERSHEY_DUPLEX  # Font settings for text annotations
-# FONT_SCALE = 2   # Font scale for text annotations
-# THICKNESS = 2  # Thickness of the text annotations
+FONT = cv2.FONT_HERSHEY_DUPLEX
+sensor_size = 1640, 1232
+TARGET_RESOLUTION = 1280, 960
 
-sensor_size = 1640, 1232  # sensors aspect ratio
-TARGET_RESOLUTION = 1280, 960  # Target resolution for display and recording
+text_colour = (255, 0, 0)  # BGR Blue
 
-text_colour = (255, 0, 0)  # Blue text in BGR
-# bg_colour = (200, 200, 200)  # Light grey background
+# GPIO-pinnar för relä/lampor
+signal = 20
+lamp1 = 21
+lamp2 = 26
 
-# GPIO pin numbers for the relay and lamps
-signal = 20   # GPIO20 for signal to pin 38 right 2nd from the bottom
-# for new startmachine:(IN1) green cable and long green muff
-
-lamp1 = 21   # GPIO21 for lamp1 to pin 40 right bottom
-# for new startmachine (IN2) yellow cable and long yellow muff 
-
-lamp2 = 26  # GPIO26 for lamp2 to pin 37 left 2nd from the bottom,
-# for new startmachine: input (IN3) green cable and red muff
-
-# for new startmachine GND Pin 39: yellow cable and long yellow muff 
-
-"""
-Purple GPIO 26 (37)-(38) GPIO 20 blue
-Grey Ground  (39)-(40) GPIO 21 Green
-"""
-
-# Relay logic (ON = HIGH / 1, OFF = LOW / 0 with lgpio)
 ON = 1
 OFF = 0
 
+_relay_lock = threading.Lock()
+_active_relay_timers = []
+
 
 def setup_logging():
-    """
-    Initialize logging using configuration from an INI file 
-    and dynamically set the logging level.
-
-    Set LOG_LEVEL as an environment variable before running the script:
-    For full debugging: export LOG_LEVEL=DEBUG
-    For normal info level: export LOG_LEVEL=INFO
-    For only warnings and above: export LOG_LEVEL=WARNING
-    For only errors: export LOG_LEVEL=ERROR
-    """
-    global logger  # Ensure logger is a global variable
-
-    # remove log file
-    file_path = "/var/www/html/python.log"
+    global logger
     try:
-        os.remove(file_path)
+        if os.path.exists(LOG_FILE_PATH):
+            os.remove(LOG_FILE_PATH)
     except OSError:
-        pass  # Ignorera om filen redan är borta
+        pass
 
-    # Load configuration
-    logging.config.fileConfig('/usr/lib/cgi-bin/logging.conf')
+    if os.path.exists(LOG_CONF_PATH):
+        logging.config.fileConfig(LOG_CONF_PATH)
+    else:
+        logging.basicConfig(level=logging.INFO)
 
-    # Create a logger
     logger = logging.getLogger('start')
-
-    # Logga den aktuella nivån från logging.conf
-    current_level = logging.getLevelName(logger.getEffectiveLevel())
-    print(f"Current logging level from logging.conf: {current_level}")
     logger.info("Logging initialized in common_module")
 
 
-# Initialize logging immediately when the module is imported
 setup_logging()
 
 
 def remove_picture_files(directory, pattern):
-    files = os.listdir(directory)
-    for file in files:
+    for file in os.listdir(directory):
         if file.endswith(pattern):
-            file_path = os.path.join(directory, file)
-            os.remove(file_path)
+            os.remove(os.path.join(directory, file))
 
 
 def remove_video_files(directory, pattern):
-    files = os.listdir(directory)
-    for file in files:
+    for file in os.listdir(directory):
         if file.startswith(pattern):
-            file_path = os.path.join(directory, file)
-            os.remove(file_path)
-
-
-# -------------------------
-# Hardware detection
-# CM5 needs 180 rotation
-# RPI5 needs ? rotation 
-# -------------------------
+            os.remove(os.path.join(directory, file))
 
 
 def get_cpu_model():
     try:
         with open("/proc/cpuinfo", "r") as f:
-            lines = f.readlines()
-            for line in lines:
+            for line in f:
                 if any(key in line for key in ("Model", "model name", "Hardware")) and ":" in line:
                     return line.strip().split(":")[1].strip()
-            # Fallback if no match
-            logger.warning("No matching CPU model line found. Dumping /proc/cpuinfo:")
-            for line in lines:
-                logger.warning(line.strip())
             return "Unknown"
     except Exception as e:
         logger.error(f"Exception while reading /proc/cpuinfo: {e}")
@@ -166,62 +122,43 @@ def get_cpu_model():
 def should_rotate_image():
     model = get_cpu_model().lower()
     logger.info(f"Detected CPU model: {model}")
-    # Adjust based on which system is upside down
-    if "compute module 5" in model or "cm5" in model:
-        logger.info("Detected CM5, rotate 180 degrees")
+    if "compute module 5" in model or "cm5" in model or "raspberry pi 5" in model:
+        logger.info("Detected CM5/Pi5 - rotating 180 degrees")
         return True
-    elif "raspberry pi 5" in model:
-        logger.info("Detected Raspberry Pi 5, rotate 180 degrees")
-        return True
-    else:
-        logger.warning("Unknown CPU model — defaulting to no rotation")
-        return False
+    return False
 
 
-#  Set rotation flag once at startup
 ROTATE_CAMERA = should_rotate_image()
-logger.info(f"Camera rotate flag set to: {ROTATE_CAMERA}")
 
 
 def setup_camera(resolution=(1640, 1232)):
-    global logger  # Explicitly declare logger as global
     logger.info("Setup of camera")
     try:
         camera = Picamera2()
-
         config = camera.create_still_configuration(
             main={"size": resolution, "format": "BGR888"},
-            colour_space=ColorSpace.Srgb()  # OR ColorSpace.Sycc()
+            colour_space=ColorSpace.Srgb()
         )
-        if ROTATE_CAMERA:
-            logger.info("Camera will be rotated 180 degrees")
-        else:
-            logger.info("Camera will not be rotated")
-
         camera.configure(config)
-        logger.info(f"size: {resolution}, format: BGR888")
-        return camera  # Add this line to return the camera object
+        return camera
     except Exception as e:
         logger.error(f"Failed to initialize camera: {e}")
         return None
 
 
-def letterbox(image, target_size=(640, 480)):
+def letterbox(image, target_size=(1280, 960)):
     ih, iw = image.shape[:2]
-    w, h = target_size  # (width, height)
+    w, h = target_size
 
     scale = min(w / iw, h / ih)
     nw, nh = int(iw * scale), int(ih * scale)
 
-    logger.debug(f"Original: {iw}x{ih}, Target: {w}x{h}, New: {nw}x{nh}")
     image_resized = cv2.resize(image, (nw, nh), interpolation=cv2.INTER_LINEAR)
 
     top = (h - nh) // 2
     bottom = h - nh - top
     left = (w - nw) // 2
     right = w - nw - left
-
-    logger.debug(f"Padding: top={top}, bottom={bottom}, left={left}, right={right}")
 
     return cv2.copyMakeBorder(
         image_resized, top, bottom, left, right,
@@ -231,23 +168,20 @@ def letterbox(image, target_size=(640, 480)):
 
 def capture_picture(camera, photo_path, file_name, rotate=True):
     try:
-        # ALWAYS use capture_array for stills
         frame = camera.capture_array("main")
-
-        # ALWAYS convert to BGR
         frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
 
         timestamp = time.strftime("%Y-%m-%d %X")
         origin = (40, int(frame.shape[0] * 0.85))
 
-        text_colour = (255, 0, 0)  # blå i BGR
-        bg_colour = (200, 200, 200)
+        text_rectangle(frame, timestamp, origin, text_colour=(255, 0, 0), bg_colour=(200, 200, 200))
 
-        text_rectangle(frame, timestamp, origin, text_colour, bg_colour)
+        if frame.shape[1] != TARGET_RESOLUTION[0] or frame.shape[0] != TARGET_RESOLUTION[1]:
+            resized_for_display = letterbox(frame, TARGET_RESOLUTION)
+        else:
+            resized_for_display = frame
 
-        resized_for_display = letterbox(frame, (1280, 960))
         cv2.imwrite(os.path.join(photo_path, file_name), resized_for_display)
-
         logger.info(f'Captured picture: {file_name}')
 
     except Exception as e:
@@ -256,502 +190,78 @@ def capture_picture(camera, photo_path, file_name, rotate=True):
 
 def text_rectangle(frame, text, origin, text_colour=(255, 0, 0), bg_colour=(200, 200, 200),
                    font=FONT, font_scale=1.5, thickness=2):
-    """
-    Draw a background rectangle and overlay text on a frame.
-    (Accepts computed font_scale and thickness.)
-    """
     try:
-        # Calculate text size using provided scale/thickness
         text_size = cv2.getTextSize(text, font, font_scale, thickness)[0]
         text_width, text_height = text_size
-
-        # Use scale_factor to keep padding proportional
-        # Use font_scale for padding calculation
-        pad = max(2, int(5 * font_scale)) 
-        bg_top_left = (origin[0] - pad, origin[1] - text_height - pad) 
+        pad = max(2, int(5 * font_scale))
+        bg_top_left = (origin[0] - pad, origin[1] - text_height - pad)
         bg_bottom_right = (origin[0] + text_width + pad, origin[1] + pad)
 
-        # Draw the background rectangle
-        cv2.rectangle(frame, bg_top_left, bg_bottom_right, bg_colour, -1)  # -1 fills the rectangle
-
-        # Overlay the text on top of the background
-        cv2.putText(
-            frame,
-            text,
-            origin,
-            font,
-            font_scale,
-            text_colour,
-            thickness,
-            cv2.LINE_AA)
-
+        cv2.rectangle(frame, bg_top_left, bg_bottom_right, bg_colour, -1)
+        cv2.putText(frame, text, origin, font, font_scale, text_colour, thickness, cv2.LINE_AA)
     except Exception as e:
         logger.error(f"Error in text_rectangle: {e}", exc_info=True)
 
 
-def restart_camera(camera, resolution=(TARGET_RESOLUTION), fps=15):
-    # Step 1: Cleanly stop and close any existing camera object
-    if camera is not None:
-        try:
-            logger.info("Attempting to stop and close previous camera instance.")
-            camera.stop()
-            camera.close() # Ensure resources are fully released
-        except Exception as e:
-            # Log a warning, but proceed, as the camera might already be closed/invalid
-            logger.warning(f"Error while stopping/closing old camera object: {e}")
-
-    # Step 2: Create a NEW Picamera2 instance
-    new_camera = None
-    try:
-        new_camera = Picamera2()
-        logger.info("New Picamera2 instance created successfully.")
-    except Exception as e:
-        logger.error(f"FATAL: Failed to create new Picamera2 instance: {e}")
-        return None  # Critical failure, cannot proceed
-
-    # Step 3: Configure the new camera object for video (1920x1080)
-    try:
-        main_size = resolution
-
-        # Configure the camera for frames captures
-        if ROTATE_CAMERA:
-            config = new_camera.create_video_configuration(
-                use_case='video',
-                transform=Transform(hflip=True, vflip=True),
-                colour_space=ColorSpace.Rec709(),
-                buffer_count=6,
-                queue=True,
-                main={'format': 'BGR888', 'size': main_size, 'preserve_ar': True},
-                lores=None,
-                raw=None,  # <---- auto
-                sensor={},
-                display='main',
-                encode='main'
-            )
-            logger.info("Camera rotated/transform set to flip due to ROTATE_CAMERA=True")
-        else:
-            config = new_camera.create_video_configuration(
-                use_case='video',
-                transform=Transform(hflip=False, vflip=False),
-                colour_space=ColorSpace.Rec709(),
-                buffer_count=6,
-                queue=True,
-                main={'format': 'BGR888', 'size': main_size, 'preserve_ar': True},
-                lores=None,
-                raw=None,  # <---- auto
-                sensor={},
-                display='main',
-                encode='main'
-            )
-            logger.info("Setting to rotate / flip")
-
-        logger.debug(f"Applied colour space: {config['colour_space']}")
-        logger.debug(f"Config before applying: {config}")
-        new_camera.configure(config)
-        new_camera.set_controls({"FrameRate": fps})
-
-        new_camera.start()
-        # Allow camera exposure/auto controls to settle
-        for _ in range(10):
-            new_camera.capture_array("main")
-            time.sleep(0.1)
-        logger.info(f"Camera restarted FORCED resolution {main_size} and FPS: {fps}.")
-        return new_camera  # Return new camera instance
-
-    except Exception as e:
-        logger.error(f"Failed to restart camera: {e}")
-        return None  # Avoid using an uninitialized camera
-
-
-class FFmpegVideoWriter:
-    """
-    Non-blocking ffmpeg video writer using background thread and queue.
-    Automatically restarts ffmpeg if it crashes or stalls.
-    """
-
-    def __init__(self, filename, fps, frame_size, force_sw=False, logger=None):
-        self.filename = filename
-        self.fps = fps
-        self.frame_size = frame_size
-        self.force_sw = force_sw
-        self.logger = logger
-
-        self.proc = None
-        self.hw_enabled = False
-        self.queue = Queue(maxsize=100)
-        self.stop_event = threading.Event()
-        self.lock = threading.Lock()
-
-        # Start ffmpeg process
-        self._start_ffmpeg_with_fallback()
-
-        # Start background writer thread
-        self.thread = threading.Thread(target=self._writer_loop, daemon=True)
-        self.thread.start()
-
-    # -------------------------------------------------------------------
-    def _start_ffmpeg_with_fallback(self):
-        """Try hardware first, then software encoder if needed."""
-        if not self.force_sw and self._start_ffmpeg(hw=True):
-            self.hw_enabled = True
-            if self.logger:
-                self.logger.info(f"[FFmpegVideoWriter] Started hardware H.264 (v4l2m2m) for {self.filename}")
-        else:
-            if self.logger:
-                self.logger.info(f"[FFmpegVideoWriter] Using software H.264 (libx264) for {self.filename}")
-            if not self._start_ffmpeg(hw=False):
-                raise RuntimeError("Failed to start FFmpeg (hw and sw both failed).")
-
-    # -------------------------------------------------------------------
-    def _start_ffmpeg(self, hw=True):
-        width, height = self.frame_size
-        codec = "h264_v4l2m2m" if hw else "libx264"
-
-        ffmpeg_cmd = [
-            "ffmpeg", "-y", "-fflags", "+genpts",
-            "-f", "rawvideo",
-            "-pix_fmt", "bgr24",
-            "-s", f"{width}x{height}",
-            "-r", str(self.fps),
-            "-i", "-",
-            "-vf", "format=bgr24",
-            "-an"
-        ]
-
-        if hw:
-            # ffmpeg_cmd += ["-vf", "format=nv12", "-c:v", codec, "-b:v", "2M"]
-            ffmpeg_cmd += [
-                "-vf", "format=nv12,colorspace=bt709",
-                "-c:v", codec,
-                "-b:v", "2M"
-            ]
-        else:
-            ffmpeg_cmd += ["-c:v", codec, "-preset", "ultrafast",
-                           "-tune", "zerolatency", "-crf", "28"]
-
-        ffmpeg_cmd += ["-pix_fmt", "yuv420p", "-movflags", "+faststart", self.filename]
-
-        try:
-            self.proc = subprocess.Popen(
-                ffmpeg_cmd,
-                stdin=subprocess.PIPE,
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.PIPE,
-                bufsize=10**6,
-            )
-            # Monitor stderr for debug info
-            threading.Thread(target=self._read_stderr, daemon=True).start()
-            return True
-        except Exception as e:
-            if self.logger:
-                self.logger.error(f"[FFmpegVideoWriter] Failed to start FFmpeg ({codec}): {e}")
-            return False
-
-    # -------------------------------------------------------------------
-    def _read_stderr(self):
-        """Read ffmpeg stderr for debugging."""
-        if not self.proc or not self.proc.stderr:
-            return
-        for line in self.proc.stderr:
-            text = line.decode(errors="ignore").strip()
-            if self.logger and text:
-                if "error" in text.lower() or "frame=" in text:
-                    self.logger.debug(f"[FFmpeg] {text}")
-
-    # -------------------------------------------------------------------
-    def _restart_ffmpeg(self):
-        """Restart ffmpeg process if it has died."""
-        with self.lock:
-            if self.proc and self.proc.poll() is None:
-                return  # still alive
-            if self.logger:
-                self.logger.warning("[FFmpegVideoWriter] Restarting ffmpeg encoder due to crash/stall...")
-            try:
-                self._start_ffmpeg_with_fallback()
-            except Exception as e:
-                if self.logger:
-                    self.logger.error(f"[FFmpegVideoWriter] Restart failed: {e}")
-
-    # -------------------------------------------------------------------
-    def write(self, frame):
-        """Enqueue frame for non-blocking write."""
-        if self.proc is None or self.proc.poll() is not None:
-            self._restart_ffmpeg()
-
-        h, w = frame.shape[:2]
-        exp_w, exp_h = self.frame_size
-        if (w, h) != (exp_w, exp_h):
-            frame = cv2.resize(frame, (exp_w, exp_h))
-
-        try:
-            # self.queue.put_nowait(frame.copy())
-            self.queue.put_nowait(frame)
-        except Full:
-            if self.logger:
-                self.logger.warning("[FFmpegVideoWriter] Frame queue full, dropping frame")
-
-    # -------------------------------------------------------------------
-    def _writer_loop(self):
-        """Background writer thread that pushes frames to ffmpeg."""
-        while not self.stop_event.is_set():
-            try:
-                frame = self.queue.get(timeout=1)
-            except Empty:
-                continue
-
-            if frame is None:
-                break
-
-            try:
-                if not self.proc or self.proc.poll() is not None:
-                    self._restart_ffmpeg()
-                self.proc.stdin.write(frame.tobytes())
-            except BrokenPipeError:
-                if self.logger:
-                    self.logger.error("[FFmpegVideoWriter] Broken pipe detected, restarting encoder.")
-                self._restart_ffmpeg()
-            except Exception as e:
-                if self.logger:
-                    self.logger.error(f"[FFmpegVideoWriter] Write error: {e}")
-                self._restart_ffmpeg()
-
-    # -------------------------------------------------------------------
-    def release(self):
-        """Stop the writer thread and close ffmpeg cleanly."""
-        self.stop_event.set()
-        try:
-            self.queue.put_nowait(None)
-        except Full:
-            pass
-
-        if self.thread.is_alive():
-            self.thread.join(timeout=3)
-
-        if self.proc:
-            try:
-                if self.proc.stdin:
-                    self.proc.stdin.close()
-                self.proc.wait(timeout=5)
-                if self.proc.stderr:
-                    err = self.proc.stderr.read().decode(errors="ignore")
-                    if err.strip() and self.logger:
-                        self.logger.debug(f"[FFmpegVideoWriter] FFmpeg final log:\n{err}")
-            except Exception as e:
-                if self.logger:
-                    self.logger.error(f"[FFmpegVideoWriter] Error during release: {e}")
-            finally:
-                self.proc = None
-
-
-def get_h264_writer(video_path, fps, frame_size, force_sw=False, logger=None):
-    writer = FFmpegVideoWriter(video_path, fps, frame_size, force_sw=force_sw, logger=logger)
-    if writer.hw_enabled:
-        return writer, "ffmpeg-hw"
-    else:
-        return writer, "ffmpeg-sw"
-
-
-def apply_timestamp(request):
-    timestamp = time.strftime("%Y-%m-%d %X")
-    try:
-        frame = None
-
-        # --- Preferred path: modify frame in-place using MappedArray ---
-        if HAVE_MAPPEDARRAY:
-            try:
-                with MappedArray(request, "main") as m:
-                    frame = m.array
-                    origin = (40, int(frame.shape[0] * 0.85))
-                    text_colour = (0, 0, 255) # blå i RGB
-                    # text_colour = (255, 0, 0) # blå i BGR
-                    text_rectangle(frame, timestamp, origin, text_colour)
-                    # logger.debug("Timestamp drawn via MappedArray")
-                    return
-            except Exception as map_err:
-                logger.warning(f"MappedArray unavailable: {map_err}, falling back to capture_array()")
-
-        if frame is None or frame.size == 0:
-            logger.warning("apply_timestamp: got empty frame in fallback path")
-            return
-
-        if ROTATE_CAMERA:
-            frame = cv2.rotate(frame, cv2.ROTATE_180)
-
-        origin = (40, int(frame.shape[0] * 0.85))
-        # text_colour = (0, 0, 255) # röd i BGR
-        text_colour = (255, 0, 0)  # blå i BGR
-        text_rectangle(frame, timestamp, origin, text_colour)
-        logger.debug("Timestamp drawn via fallback frame")
-
-    except Exception as e:
-        logger.error(f"apply_timestamp: unexpected error: {e}", exc_info=True)
-
-
-def start_video_recording(camera, video_path, file_name, resolution=(1640, 1232), bitrate=4000000):
-    """
-    Start video recording using H264Encoder and with timestamp.
-    """
-    output_file = os.path.join(video_path, file_name)
-    logger.debug(f"Will start video rec. output file: {output_file}")
-    encoder = H264Encoder(bitrate=bitrate)
-
-    # Configure the camera for video recording
-    if ROTATE_CAMERA:
-        video_config = camera.create_video_configuration(
-            main={"size": resolution, "format": "BGR888"},
-            buffer_count=2,  # ensures frame is available for mapping
-            transform=Transform(hflip=True, vflip=True),
-            controls={"FrameRate": 5}
-        )
-        logger.info("Camera rotated/transform set to flip due to ROTATE_CAMERA=True")
-    else:
-        video_config = camera.create_video_configuration(
-            main={"size": resolution, "format": "BGR888"},
-            buffer_count=2,  # ensures frame is available for mapping
-            transform=Transform(hflip=False, vflip=False),
-            controls={"FrameRate": 5}
-        )
-        logger.info("Setting to NOT rotate / flip")
-
-    camera.configure(video_config)  # Configure before starting recording
-    logger.info(f"video_config {video_config}, resolution: {resolution}, bitrate: {bitrate}")
-    # Set the pre_callback to apply the timestamp AFTER configuration
-    logger.debug("Setting pre_callback to apply_timestamp")
-    logger.info(f"Starting recording to {output_file}")
-    camera.pre_callback = apply_timestamp
-    camera.start_recording(encoder, output_file)
-    logger.info("Recording started")
-
-
-def stop_video_recording(cam):
-    cam.stop_recording()
-    cam.stop()  # Fully stop the camera
-    logger.info("Recording stopped and camera fully released.")
-
-
-def process_video(video_path, input_file, output_file, frame_rate=None, resolution=None, mode="remux"):
-    source = os.path.join(video_path, input_file)
-    dest = os.path.join(video_path, output_file)
-
-    if not os.path.exists(source) or os.path.getsize(source) <= 5000:
-        logger.info(f"Warning: {input_file} is empty or does not exist. Skipping conversion.")
-        return
-
-    if mode == "remux":
-        #  Fastest, no re-encode
-        command = [
-            "ffmpeg", "-fflags", "+genpts", "-i", source,
-            "-c", "copy",
-            "-y", dest
-        ]
-        resolution = None  # explicitly ignore resolution for remux
-
-    elif mode == "hw":
-        #  Hardware encoder (keeps Pi cool)
-        command = [
-            "ffmpeg", "-i", source,
-            "-c:v", "h264_v4l2m2m",
-            "-b:v", "4M",  # adjust bitrate
-            "-movflags", "+faststart",
-            "-y", dest
-        ]
-        if frame_rate or resolution:
-            vf_filters = []
-            if resolution:
-                vf_filters.append(f"scale={resolution[0]}:{resolution[1]}:in_range=full:out_range=tv")
-            if frame_rate:
-                vf_filters.append(f"fps={frame_rate}")
-            if vf_filters:
-                command.extend(["-vf", ",".join(vf_filters)])
-
-    else:
-        # Software fallback (not recommended on Pi for high-res)
-        command = [
-            "ffmpeg", "-i", source,
-            "-vcodec", "libx264",
-            "-crf", "23",
-            "-preset", "fast",
-            "-movflags", "+faststart",
-        ]
-        vf_filters = [f"scale={resolution[0]}:{resolution[1]}:in_range=full:out_range=tv"]
-        if frame_rate:
-            vf_filters.append(f"fps={frame_rate}")
-        command.extend(["-vf", ",".join(vf_filters)])
-        command.extend(["-pix_fmt", "yuv420p"])
-        command.extend(["-y", dest])
-
-    try:
-        subprocess.run(command, check=True)
-        logger.debug(f"Video processed: {output_file} (mode={mode})")
-    except Exception as e:
-        logger.error(f"Failed to process video {input_file}: {e}")
-        return
-
-
 def setup_gpio():
-    # level = 1  # Initial level HIGH 
-    level = 0  # Initial level LOW This is valid for both CM5 and RPI5, as it
-    # corresponds to OFF state for the relays. If you want them ON at startup, change to 1.
+    level = 0
     try:
-        # seems like initial value off corresponds to 1
-        h = lgpio.gpiochip_open(0)  # Open GPIO chip 0
-        lgpio.gpio_claim_output(h, signal, level)  # signal
-        lgpio.gpio_claim_output(h, lamp1, level)  # Lamp1
-        lgpio.gpio_claim_output(h, lamp2, level)  # Lamp2
+        h = lgpio.gpiochip_open(0)
+        lgpio.gpio_claim_output(h, signal, level)
+        lgpio.gpio_claim_output(h, lamp1, level)
+        lgpio.gpio_claim_output(h, lamp2, level)
         logger.info("GPIO setup successful: Signal=20, Lamp1=21, Lamp2=26")
-        return h, signal, lamp1, lamp2  # Return the GPIO handle and pin numbers
+        return h, signal, lamp1, lamp2
     except Exception as e:
         logger.error(f"Error in setup_gpio: {e}")
         raise
 
 
-_active_relay_timers = []
-
-
 def trigger_relay(handle, pin, state, duration=None):
-    """Control a relay by turning it ON or OFF. Non-blocking even with duration."""
     try:
         if state == "on":
             lgpio.gpio_write(handle, pin, 1)
-            logger.info(f"Triggering relay on GPIO {pin} to state on")
+            logger.info(f"Triggering relay on GPIO {pin} to state ON")
             if duration:
                 def _turn_off():
                     try:
                         lgpio.gpio_write(handle, pin, 0)
-                        logger.debug(f"GPIO {pin} turned OFF after {duration} seconds")
+                        logger.debug(f"GPIO {pin} turned OFF after {duration}s")
                     except Exception as e:
                         logger.error(f"Deferred turn-off failed for GPIO {pin}: {e}")
+
                 timer = threading.Timer(duration, _turn_off)
                 timer.daemon = True
-                _active_relay_timers.append(timer)
+                with _relay_lock:
+                    _active_relay_timers.append(timer)
                 timer.start()
         else:
             lgpio.gpio_write(handle, pin, 0)
-            logger.info(f"Triggering relay on GPIO {pin} to state off")
+            logger.info(f"Triggering relay on GPIO {pin} to state OFF")
     except Exception as e:
         logger.error(f"Failed to trigger relay on GPIO {pin}: {e}")
 
 
 def flush_pending_relay_timers(handle, pins):
-    """Wait for any pending relay-off timers to complete, then force all pins LOW
-    as a fail-safe, before the GPIO chip is closed."""
     global _active_relay_timers
-    for t in _active_relay_timers:
-        t.join(timeout=2)  # let the still-open handle actually turn things off
-    _active_relay_timers = []
+    with _relay_lock:
+        timers = list(_active_relay_timers)
+        _active_relay_timers.clear()
+
+    for t in timers:
+        t.join(timeout=2)
 
     for pin in pins:
         try:
             lgpio.gpio_write(handle, pin, 0)
         except Exception as e:
             logger.error(f"Fail-safe: could not force GPIO {pin} OFF: {e}")
-    logger.info(f"Fail-safe: forced GPIOs {pins} OFF before GPIO cleanup")
+    logger.info(f"Fail-safe: forced GPIOs {pins} OFF")
 
 
 def cleanup_gpio(handle):
-    global logger
     try:
-        lgpio.gpiochip_close(handle)  # Close GPIO chip 0
+        lgpio.gpiochip_close(handle)
         logger.debug("GPIO resources cleaned up successfully.")
     except Exception as e:
         logger.error(f"Error while cleaning up GPIO: {e}")
@@ -759,84 +269,44 @@ def cleanup_gpio(handle):
 
 def start_sequence(camera, first_start_time, num_starts, dur_between_starts, photo_path):
     """
-    Run one or more start sequences.
-    - first_start_time: datetime of the FIRST start
-    - num_starts: how many start sequences (1–3 typically)
-    - dur_between_starts: minutes between starts
+    Optimerad startsekvens med exakt tidsväntan (sleep till nästa event)
+    istället för en intensiv polling-loop.
     """
     gpio_handle, SIGNAL, LAMP1, LAMP2 = setup_gpio()
 
-    for i in range(num_starts):
-        logger.info(f"Start_sequence. Start of iteration {i+1}")
+    try:
+        for i in range(num_starts):
+            logger.info(f"Start_sequence: Start av iteration {i+1}")
+            start_time = first_start_time + dt.timedelta(minutes=i * dur_between_starts)
 
-        start_time = first_start_time + dt.timedelta(minutes=i * dur_between_starts)
-        logger.info(f"Start_sequence, start_time : {start_time}")
+            # Schemalägg alla händelser i kronologisk ordning
+            events = [
+                (start_time - dt.timedelta(minutes=5), lambda: trigger_relay(gpio_handle, LAMP1, "on"), "5_min Lamp1 ON -- Flag P UP", "5_min"),
+                (start_time - dt.timedelta(minutes=5) + dt.timedelta(seconds=1), lambda: trigger_relay(gpio_handle, SIGNAL, "on", 1), "5_min Warning Signal", None),
+                (start_time - dt.timedelta(minutes=4, seconds=2), lambda: trigger_relay(gpio_handle, LAMP2, "on"), "4_min Lamp2 ON", None),
+                (start_time - dt.timedelta(minutes=4), lambda: trigger_relay(gpio_handle, SIGNAL, "on", 1), "4_min Preparation Signal", "4_min"),
+                (start_time - dt.timedelta(minutes=1, seconds=2), lambda: trigger_relay(gpio_handle, LAMP2, "off"), "1_min Lamp2 OFF -- Flag P DOWN", None),
+                (start_time - dt.timedelta(minutes=1), lambda: trigger_relay(gpio_handle, SIGNAL, "on", 1), "1_min Signal", "1_min"),
+                (start_time - dt.timedelta(seconds=2), lambda: trigger_relay(gpio_handle, LAMP1, "off"), "Lamp1 OFF at Start", None),
+                (start_time, lambda: trigger_relay(gpio_handle, SIGNAL, "on", 1), "Start Signal", "Start"),
+            ]
 
-        # Define time intervals for each relay trigger
-        # Define schedule of events
-        time_intervals = [
-            (start_time - dt.timedelta(minutes=5), lambda: trigger_relay(gpio_handle, LAMP1, "on"), "5_min Lamp1 ON -- Flag P UP"),
-            (start_time - dt.timedelta(minutes=5) + dt.timedelta(seconds=1), lambda: trigger_relay(gpio_handle, SIGNAL, "on", 1), "5_min Warning Signal"),
-            (start_time - dt.timedelta(minutes=4, seconds=2), lambda: trigger_relay(gpio_handle, LAMP2, "on"), "4_min Lamp2 ON"),
-            (start_time - dt.timedelta(minutes=4), lambda: trigger_relay(gpio_handle, SIGNAL, "on", 1), "4_min Preparation Signal"),
-            (start_time - dt.timedelta(minutes=1, seconds=2), lambda: trigger_relay(gpio_handle, LAMP2, "off"), "1_min Lamp2 OFF -- Flag P DOWN"),
-            (start_time - dt.timedelta(minutes=1), lambda: trigger_relay(gpio_handle, SIGNAL, "on", 1), "1_min Signal"),
-            (start_time - dt.timedelta(seconds=2), lambda: trigger_relay(gpio_handle, LAMP1, "off"), "Lamp1 OFF at Start"),
-            (start_time, lambda: trigger_relay(gpio_handle, SIGNAL, "on", 1), "Start Signal"),
-        ]
+            for event_time, action, label, photo_tag in events:
+                now = dt.datetime.now()
+                wait_seconds = (event_time - now).total_seconds()
 
-        last_triggered = set()
-        timeout = start_time + dt.timedelta(seconds=30)  # fail-safe
+                if wait_seconds > 0:
+                    time.sleep(wait_seconds)
 
-        while True:
-            now = dt.datetime.now()
+                logger.info(f"Triggering: {label} at {dt.datetime.now()}")
+                action()
 
-            if now > timeout:
-                logger.warning(f"Start_sequence: Timeout reached for iteration {i+1}")
-                break
+                if photo_tag:
+                    image_name = f"{i+1}a_start_{photo_tag}.jpg"
+                    capture_picture(camera, photo_path, image_name, rotate=ROTATE_CAMERA)
 
-            all_done = all((t, l) in last_triggered for t, _, l in time_intervals)
-            if all_done:
-                logger.info(f"Start_sequence: All events triggered for iteration {i+1}")
-                break
+            logger.info(f"Start_sequence: Slut på iteration {i+1}")
+            flush_pending_relay_timers(gpio_handle, [SIGNAL, LAMP1, LAMP2])
 
-            for event_time, action, label in time_intervals:
-                if abs((now - event_time).total_seconds()) <= 1 and (event_time, label) not in last_triggered:
-                    logger.info(f"Triggering: {label} at {event_time}")
-                    action()
-                    if any(k in label for k in ["5_min", "4_min", "1_min", "Start"]):
-                        trigger_label = label.split()[0]  # "5_min", "4_min", etc.
-                        image_name = f"{i+1}a_start_{trigger_label}.jpg"
-                        capture_picture(camera, photo_path, image_name, rotate=ROTATE_CAMERA)
-                        time.sleep(0.1)
-                    last_triggered.add((event_time, label))
-
-            time.sleep(0.1)
-        logger.info(f"Start_sequence, End of iteration: {i+1}")
-        flush_pending_relay_timers(gpio_handle, [SIGNAL, LAMP1, LAMP2])
-    # GPIO-handle ska hållas öppen under ALLA starter
-    cleanup_gpio(gpio_handle)
-
-
-def clean_exit(camera=None, video_writer=None):
-    """Release camera, video writer, and log clean shutdown."""
-    logger.info("Clean exit initiated")
-
-    # Stop detection-driven video
-    if video_writer is not None:
-        try:
-            video_writer.release()
-            logger.info("Video1 writer released, file finalized.")
-        except Exception as e:
-            logger.error(f"Error releasing video_writer: {e}")
-
-    # Stop continuous recording (Video0)
-    if camera is not None:
-        try:
-            stop_video_recording(camera)
-            camera.close()
-            logger.info("Camera stopped and closed.")
-        except Exception as e:
-            logger.error(f"Error stopping/closing camera: {e}")
-
-    logger.info("Exiting now.")
+    finally:
+        cleanup_gpio(gpio_handle)
