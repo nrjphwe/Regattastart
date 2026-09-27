@@ -4,7 +4,7 @@ from common_module import (
     setup_camera,
     remove_picture_files,
     remove_video_files,
-    restart_camera,
+    setup_camera,
     start_video_recording,
     start_sequence,
     stop_video_recording,
