@@ -23,6 +23,7 @@ import threading
 import time
 import cv2
 import torch
+import queue
 import sys
 import subprocess
 import select
@@ -42,7 +43,7 @@ photo_path = '/var/www/html/images/'
 stop_event = threading.Event()
 listen_thread = None
 cpu_model = get_cpu_model()
-ENABLE_PRE_POST_FRAMES = False
+ENABLE_PRE_POST_FRAMES = False  # Set to True to re-enable pre/post buffering
 
 logger.info("="*60)
 logger.info(f"Starting new regattastart8.py session at {dt.datetime.now()}")
@@ -113,7 +114,8 @@ def load_yolov8_model(result_queue):
 
         if not os.path.exists(model_path):
             logger.error(f"Model file not found at {model_path}")
-            return None
+            result_queue.put(None)
+            return
 
         model = YOLO(model_path)
 
@@ -122,36 +124,47 @@ def load_yolov8_model(result_queue):
             model.model = torch.compile(model.model)
             logger.info("Model compiled for CPU optimization")
 
+        result_queue.put(model)
         logger.info(f"YOLOv8 model loaded in {time.time() - start_time:.2f}s")
-        return model
     except Exception as e:
         logger.error(f"Error loading YOLOv8: {e}", exc_info=True)
-        return None
+        result_queue.put(None)
 
 
-def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, initial_fps):
-    global fps
-    fps = initial_fps
+# --- INSPELNING OCH DETEKTERING ---
+def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, fps):
+    # Konfiguration
     DETECTION_CONF_THRESHOLD = 0.5
-    UNCERTAIN_CONF_FLOOR = 0.20
-    max_duration = (video_end + (num_starts - 1) * 5) * 60
+    UNCERTAIN_CONF_FLOOR = 0.20  # Lägre golv så YOLO även returnerar osäkra boxar
+    last_adjustment = time.time()
+    max_duration = (video_end + (num_starts-1)*5) * 60
 
+    # Säkerställ att mappen för träningsdata finns, annars misslyckas cv2.imwrite tyst
     os.makedirs('/var/www/html/images/training_data/', exist_ok=True)
 
+    # Starta om kamera för Video 1
     camera = restart_camera(camera, resolution=(1920, 1080), fps=fps)
 
-    model = load_yolov8_model()
+    # Ladda modellen via tråd
+    res_q = queue.Queue()
+    t = threading.Thread(target=load_yolov8_model, args=(res_q,))
+    t.start()
+    t.join(timeout=60)
+    model = res_q.get_nowait()
+
     if model is None:
         logger.error("Could not proceed without YOLOv8 model")
         return
 
-    # Hämta referensram direkt i BGR888
+    # Beräkna crop och skalning
     frame = camera.capture_array()
+    frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
     f_h, f_w = frame.shape[:2]
     shift_offset = 100
     x_start = max((f_w - crop_width) // 2 + shift_offset, 50)
     y_start = max((f_h - crop_height) // 2, 0)
 
+    # YOLOv8 använder oftast 640x640 internt
     inf_w, inf_h = 640, 640
     scale_x = crop_width / inf_w
     scale_y = crop_height / inf_h
@@ -160,6 +173,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, i
     v1_h264 = os.path.join(video_path, "video1.h264")
     writer, _ = get_h264_writer(v1_h264, fps=fps, frame_size=(f_w, f_h), force_sw=True, logger=logger)
 
+    # Logik-variabler
     pre_buffer = deque(maxlen=int(0.5 * fps))
     post_frames_left = 0
     last_detections = []
@@ -170,33 +184,29 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, i
     font = cv2.FONT_HERSHEY_DUPLEX
     frame_count = 0
 
-    uncertain_saved_total = 0
-    last_uncertain_save_time = 0.0
-    last_uncertain_save_bbox = None
+    # --- Initiera utanför loopen ---
+    uncertain_saved_total = 0 # Räknare för denna session
+    last_uncertain_save_time = 0.0 # Cooldown-tidsstämpel mellan sparade osäkra bilder
+    last_uncertain_save_bbox = None # Position för senast sparad osäker bild (för spatial dedup)
     last_adjustment = time.time()
     skip_factor = 2
 
     try:
         last_frame_ts = datetime.now()
         while not stop_event.is_set():
-            loop_start = time.time()
-
-            if (datetime.now() - last_frame_ts).total_seconds() > 120:
+            if (datetime.now() - last_frame_ts).total_seconds() > 120: 
                 logger.error("Watchdog: Camera frozen")
                 break
 
-            # Direktfångst utan cvtColor om Picamera2 är konfigurerad för BGR
             frame = camera.capture_array()
-            if frame is None:
-                continue
-
+            frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
+            if frame is None: continue
             last_frame_ts = datetime.now()
             frame_count += 1
             ts = datetime.now()
 
             pre_buffer.append((frame_count, frame.copy(), ts))
 
-            # Termisk övervakning och justering
             if time.time() - last_adjustment > 30:
                 temp = get_cpu_temp()
                 throttle = get_throttle_status()
@@ -221,7 +231,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, i
                 logger.info(f"System Check: Temp={temp:.1f}C, Skip={skip_factor}, FPS={fps}, Throttle=0x{throttle:x}")
                 last_adjustment = time.time()
 
-            # --- INFERENCE ---
+            # --- INFERENCE (Varannan frame för att spara CPU) ---
             if frame_count % skip_factor == 0:
                 cropped = frame[y_start:y_start+crop_height, x_start:x_start+crop_width]
                 resized = cv2.resize(cropped, (inf_w, inf_h))
@@ -274,25 +284,24 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, i
                     cv2.putText(frame, f"{c:.2f} {ts:%H:%M:%S}", (x1, y1-15), font, 0.8, (0, 255, 0), 2)
 
                 text_rectangle(frame, f"{ts:%Y-%m-%d %H:%M:%S}", origin)
+                # frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                 writer.write(frame)
 
             elif ENABLE_PRE_POST_FRAMES and post_frames_left > 0:
+                # Ingen båt i just denna bild, men vi filmar vidare (POST-fas)
                 label_post = f"{ts:%Y-%m-%d %H:%M:%S} POST"
                 text_rectangle(frame, label_post, origin)
+                # frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                 writer.write(frame)
                 post_frames_left -= 1
             else:
                 in_seq = False
 
-            if (datetime.now() - start_time_dt).total_seconds() >= max_duration:
+            if (datetime.now() - start_time_dt).total_seconds() >= max_duration: 
                 logger.info("Max duration reached for Video 1")
                 break
 
-            # Precisions-sleep för exakt bildfrekvens
-            elapsed = time.time() - loop_start
-            sleep_time = max(0.001, (1.0 / fps) - elapsed)
-            time.sleep(sleep_time)
-
+            time.sleep(1/fps)
     except Exception as e:
         logger.error(f"Error in finish_recording loop: {e}", exc_info=True)
     finally:
@@ -303,30 +312,20 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, i
         process_video(video_path, "video1.h264", "video1.mp4", mode="remux")
 
 
+# --- STANDARD FUNKTIONER FRÅN V9 ---
 def listen_for_messages(stop_event):
     pipe_path = '/var/www/html/tmp/stop_recording_pipe'
-    if os.path.exists(pipe_path):
-        try:
-            os.unlink(pipe_path)
-        except OSError:
-            pass
-    
-    os.makedirs(os.path.dirname(pipe_path), exist_ok=True)
+    if os.path.exists(pipe_path): os.unlink(pipe_path)
     os.mkfifo(pipe_path)
     os.chmod(pipe_path, 0o666)
 
     while not stop_event.is_set():
-        try:
-            with open(pipe_path, 'r') as fifo:
-                rlist, _, _ = select.select([fifo], [], [], 0.5)
-                if rlist:
-                    line = fifo.readline().strip()
-                    if line == 'stop_recording':
-                        logger.info("Received stop_recording signal via pipe")
-                        stop_event.set()
-                        break
-        except Exception as e:
-            logger.warning(f"Error in pipe listener: {e}")
+        with open(pipe_path, 'r') as fifo:
+            rlist, _, _ = select.select([fifo], [], [], 0.5)
+            if rlist:
+                if fifo.readline().strip() == 'stop_recording':
+                    stop_event.set()
+                    break
         time.sleep(0.1)
 
 
@@ -351,13 +350,9 @@ def main():
     global listen_thread
     try:
         camera = setup_camera()
-        if camera is None:
-            return 1
+        if camera is None: return 1
 
-        if len(sys.argv) < 2:
-            logger.error("Missing JSON argument")
-            return 1
-            
+        if len(sys.argv) < 2: return 1
         form_data = json.loads(sys.argv[1])
 
         video_end = int(form_data["video_end"])
@@ -365,43 +360,39 @@ def main():
         start_time_str = str(form_data["start_time"])
         dur_between_starts = int(form_data["dur_between_starts"])
 
-        remove_picture_files(photo_path, ".jpg")
-        remove_video_files(photo_path, "video")
-        
-        status_file = '/var/www/html/status.txt'
-        os.makedirs(os.path.dirname(status_file), exist_ok=True)
-        with open(status_file, 'w') as f:
-            f.write('recording')
+        # Rensa gamla bilder (jpg)
+        remove_picture_files(photo_path, ".jpg")  # clean up
+        # Rensa gamla videofiler (både råa .h264 och färdiga .mp4)
+        remove_video_files(photo_path, "video")  # clean up
+        # Rensa status-filen så att webbsidan nollställs
+        if os.path.exists('/var/www/html/status.txt'):
+            with open('/var/www/html/status.txt', 'w') as f:
+                f.write('recording')
 
         start_time_dt = dt.datetime.combine(dt.date.today(), dt.datetime.strptime(start_time_str, "%H:%M").time())
-        if start_time_dt < dt.datetime.now():
-            start_time_dt += dt.timedelta(days=1)
+        if start_time_dt < dt.datetime.now(): start_time_dt += dt.timedelta(days=1)
 
         t5min = start_time_dt - dt.timedelta(minutes=5)
-        while dt.datetime.now() < t5min and not stop_event.is_set():
-            time.sleep(1)
-
-        if stop_event.is_set():
-            return 0
+        while dt.datetime.now() < t5min: time.sleep(1)
 
         listen_thread = threading.Thread(target=listen_for_messages, args=(stop_event,), daemon=True)
         listen_thread.start()
 
-        start_video_recording(camera, video_path, "video0.h264", resolution=(1640, 1232), bitrate=4000000)
+        # Sekvens startar
+        start_video_recording(camera, video_path, "video0.h264", resolution=(1640,1232), bitrate=4000000)
         start_sequence(camera, start_time_dt, num_starts, dur_between_starts, photo_path)
 
         last_start = start_time_dt + dt.timedelta(minutes=(num_starts - 1) * dur_between_starts)
         end_wait = last_start + dt.timedelta(minutes=2)
-        while dt.datetime.now() < end_wait and not stop_event.is_set():
-            time.sleep(1)
+        while dt.datetime.now() < end_wait: time.sleep(1)
 
         stop_video_recording(camera)
         process_video(video_path, "video0.h264", "video0.mp4", mode="remux")
 
+        # Starta YOLO-detektering (Video 1)
         finish_recording(camera, video_path, num_starts, video_end, start_time_dt, fps)
 
-        with open(status_file, 'w') as f:
-            f.write('complete')
+        with open('/var/www/html/status.txt', 'w') as f: f.write('complete')
         return 0
 
     except Exception as e:
@@ -409,14 +400,8 @@ def main():
         return 1
     finally:
         stop_event.set()
-        if camera:
-            try:
-                camera.stop()
-                camera.close()
-            except Exception as e:
-                logger.warning(f"Error stopping/closing camera in finally: {e}")
+        if camera: camera.stop()
 
 
 if __name__ == "__main__":
     sys.exit(main())
-    
