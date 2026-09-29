@@ -75,11 +75,13 @@ lamp1 = 21   # GPIO21 for lamp1 to pin 40 right bottom
 lamp2 = 26  # GPIO26 for lamp2 to pin 37 left 2nd from the bottom,
 # for new startmachine: input (IN3) green cable and red muff
 
-# for new startmachine GND Pin 39: yellow cable and long yellow muff 
+# for new startmachine GND Pin 39: yellow cable and long yellow muff
 
 """
-Purple GPIO 26 (37)-(38) GPIO 20 blue
-Grey Ground  (39)-(40) GPIO 21 Green
+(37) GPIO 26 (Lamp2) - Green cable and red muff
+(38) GPIO 20 (Signal) - Blue cable and long blue muff
+(39) GND (Ground) - Yellow cable and long yellow muff
+(40) GPIO 21 (Lamp1) - Yellow cable and long yellow muff
 """
 
 # Relay logic (ON = HIGH / 1, OFF = LOW / 0 with lgpio)
