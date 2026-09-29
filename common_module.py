@@ -607,7 +607,7 @@ def start_video_recording(camera, video_path, file_name, resolution=(1640, 1232)
     encoder = H264Encoder(bitrate=bitrate)
 
     # --- FIX: Stop camera if it's currently running before applying new configuration ---
-    if camera.is_running:
+    if camera.started:
         logger.debug("Stopping camera prior to reconfiguration for video recording.")
         camera.stop()
 
