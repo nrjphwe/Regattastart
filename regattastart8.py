@@ -105,7 +105,7 @@ def save_uncertain_image(frame, detections, current_count, max_images=300,
 
 
 # --- MODELL-LADDNING (YOLOv8) ---
-def load_yolov8_model(result_queue):
+def load_yolov8_model():
     try:
         start_time = time.time()
         # Sökväg till din tränade modell
@@ -127,6 +127,22 @@ def load_yolov8_model(result_queue):
     except Exception as e:
         logger.error(f"Error loading YOLOv8: {e}", exc_info=True)
         return None
+
+
+def get_cpu_temp():
+    try:
+        with open("/sys/class/thermal/thermal_zone0/temp", "r") as f:
+            return int(f.read()) / 1000.0  # °C
+    except FileNotFoundError:
+        return None
+
+
+def get_throttle_status():
+    try:
+        output = subprocess.check_output(["vcgencmd", "get_throttled"]).decode().strip()
+        return int(output.split('=')[1], 16)
+    except Exception:
+        return 0
 
 
 def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, initial_fps):
@@ -328,22 +344,6 @@ def listen_for_messages(stop_event):
         except Exception as e:
             logger.warning(f"Error in pipe listener: {e}")
         time.sleep(0.1)
-
-
-def get_cpu_temp():
-    try:
-        with open("/sys/class/thermal/thermal_zone0/temp", "r") as f:
-            return int(f.read()) / 1000.0  # °C
-    except FileNotFoundError:
-        return None
-
-
-def get_throttle_status():
-    try:
-        output = subprocess.check_output(["vcgencmd", "get_throttled"]).decode().strip()
-        return int(output.split('=')[1], 16)
-    except Exception:
-        return 0
 
 
 def main():
