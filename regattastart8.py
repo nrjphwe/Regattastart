@@ -83,8 +83,8 @@ def save_uncertain_image(frame, detections, current_count, max_images=300,
     now = time.time()
 
     for (x1, y1, x2, y2, conf) in detections:
-        # Om vi hittar en båt med konfidens mellan 20% och 45%
-        if 0.20 <= conf <= 0.45:
+        # Om vi hittar en båt med konfidens mellan 40% och 49%
+        if 0.4 <= conf <= 0.49:
             box = (x1, y1, x2, y2)
             same_spot = (
                 last_save_bbox is not None
