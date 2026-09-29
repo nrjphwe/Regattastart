@@ -94,7 +94,7 @@ def save_uncertain_image(frame, detections, current_count, max_images=300,
                 continue  # Samma objekt/plats som senast - hoppa över, testa nästa detektion
 
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
-            filename = f"{folder}uncertain_{timestamp}.jpg"
+            filename = f"{folder}uncertain_{timestamp}conf{conf:.2f}.jpg"
 
             # Spara en ren bild utan boxar för träning
             cv2.imwrite(filename, frame)
