@@ -825,7 +825,8 @@ def start_sequence(camera, first_start_time, num_starts, dur_between_starts, pho
                 break
 
             for event_time, action, label in time_intervals:
-                if abs((now - event_time).total_seconds()) <= 1 and (event_time, label) not in last_triggered:
+                if now >= event_time and (event_time, label) not in last_triggered:
+                # if abs((now - event_time).total_seconds()) <= 1 and (event_time, label) not in last_triggered:
                     logger.info(f"Triggering: {label} at {event_time}")
                     action()
                     if any(k in label for k in ["5_min", "4_min", "1_min", "Start"]):
