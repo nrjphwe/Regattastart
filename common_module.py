@@ -202,7 +202,16 @@ def setup_camera(resolution=(1640, 1232)):
 
         camera.configure(config)
         logger.info(f"size: {resolution}, format: BGR888")
-        return camera  # Add this line to return the camera object
+
+        # --- ADDED: Start camera and let AEC/AWB settle ---
+        camera.start()
+        time.sleep(1.0)  # Allow sensor exposure & white balance to converge
+        for _ in range(5):
+            _ = camera.capture_array("main")
+            time.sleep(0.05)
+
+        return camera
+    
     except Exception as e:
         logger.error(f"Failed to initialize camera: {e}")
         return None
@@ -617,6 +626,14 @@ def start_video_recording(camera, video_path, file_name, resolution=(1640, 1232)
 
     camera.configure(video_config)  # Configure before starting recording
     logger.info(f"video_config {video_config}, resolution: {resolution}, bitrate: {bitrate}")
+
+    # --- ADDED: Start stream briefly so exposure settles BEFORE recording ---
+    camera.start()
+    time.sleep(1.0)
+    for _ in range(5):
+        _ = camera.capture_array("main")
+        time.sleep(0.05)
+
     # Set the pre_callback to apply the timestamp AFTER configuration
     logger.debug("Setting pre_callback to apply_timestamp")
     logger.info(f"Starting recording to {output_file}")
