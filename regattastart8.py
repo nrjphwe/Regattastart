@@ -97,8 +97,8 @@ def save_uncertain_image(frame, detections, current_count, max_images=300,
             filename = f"{folder}uncertain_{timestamp}_conf_{conf:.2f}.jpg"
 
             # Konvertera från RGB till BGR så att cv2.imwrite sparar rätt färger
-            frame_bgr = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
-            cv2.imwrite(filename, frame_bgr)
+            # frame_bgr = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
+            cv2.imwrite(filename, frame)
 
             logger.info(f"Saved uncertain detection #{current_count+1} (conf: {conf:.2f})")
             return True, now, box  # Bild sparad, uppdatera tidsstämpel och senaste position
@@ -204,9 +204,17 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, i
                 break
 
             # Direktfångst utan cvtColor om Picamera2 är konfigurerad för BGR
-            frame = camera.capture_array()
-            if frame is None:
+            # frame = camera.capture_array()
+            # if frame is None:
+            #    continue
+
+            # Hämta bildruta från kamera (RGB)
+            frame_rgb = camera.capture_array()
+            if frame_rgb is None:
                 continue
+
+            # Konvertera till BGR för OpenCV & Video Writer
+            frame = cv2.cvtColor(frame_rgb, cv2.COLOR_RGB2BGR)
 
             last_frame_ts = datetime.now()
             frame_count += 1
@@ -421,4 +429,3 @@ def main():
 
 if __name__ == "__main__":
     sys.exit(main())
-    
