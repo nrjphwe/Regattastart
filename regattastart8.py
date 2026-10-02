@@ -96,8 +96,10 @@ def save_uncertain_image(frame, detections, current_count, max_images=300,
             timestamp = datetime.now().strftime("%H%M%S_%f")
             filename = f"{folder}uncertain_{timestamp}_conf_{conf:.2f}.jpg"
 
-            # Spara en ren bild utan boxar för träning
-            cv2.imwrite(filename, frame)
+            # Konvertera från RGB till BGR så att cv2.imwrite sparar rätt färger
+            frame_bgr = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
+            cv2.imwrite(filename, frame_bgr)
+
             logger.info(f"Saved uncertain detection #{current_count+1} (conf: {conf:.2f})")
             return True, now, box  # Bild sparad, uppdatera tidsstämpel och senaste position
 

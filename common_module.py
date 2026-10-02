@@ -425,14 +425,15 @@ class FFmpegVideoWriter:
             "-s", f"{width}x{height}",
             "-r", str(self.fps),
             "-i", "-",
-            "-vf", "format=bgr24",
+            # "-vf", "format=bgr24",
             "-an"
         ]
 
         if hw:
             # ffmpeg_cmd += ["-vf", "format=nv12", "-c:v", codec, "-b:v", "2M"]
             ffmpeg_cmd += [
-                "-vf", "format=nv12,colorspace=bt709",
+                "-vf", "sws_flags=bicubic,format=nv12",
+                # "-vf", "format=nv12,colorspace=bt709",
                 "-c:v", codec,
                 "-b:v", "2M"
             ]
