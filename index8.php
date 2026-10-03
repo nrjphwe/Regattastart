@@ -59,6 +59,10 @@
     $num_video = isset($_SESSION["form_data"]["num_video"]) ? $_SESSION["form_data"]["num_video"] : "";
     $num_starts = isset($_SESSION["form_data"]["num_starts"]) ? $_SESSION["form_data"]["num_starts"] : "";
 
+    $start_mode = $_SESSION["form_data"]["start_mode"] ?? "standard";   // 'standard' | 'continuous'
+    $dur_saved  = $_SESSION["form_data"]["dur_between_starts"] ?? "";
+
+
 ?>
 <!DOCTYPE html>
 <head>
@@ -197,7 +201,7 @@
                             </select>
                             <br>
                             <p style="font-size:11px">
-                            (First start in case of 2 starts)
+                            (First start)
                             <br>
                         </fieldset>
                     </div>
@@ -214,7 +218,7 @@
                                 <option value="180" <?php if(isset($video_end) && $video_end == "180"){echo "selected=\"selected\"";} ?> value="180">180</option>
                                 <option value="90" <?php if(isset($video_end) && $video_end == "90"){echo "selected=\"selected\"";} ?> value="90">90</option>
                                 <option value="60" <?php if(isset($video_end) && $video_end == "60"){echo "selected=\"selected\"";} ?> value="60">60</option>
-                                <option value="20"  value="20">20</option>
+                                <option value="20" <?php if(isset($video_end) && $video_end == "20"){echo "selected=\"selected\"";} ?>>20</option>
                             </select>
                             <br>
                             <p style="font-size:11px">
@@ -226,29 +230,23 @@
             </div>
             <br>
             <!-- Central content below pale-yellow -->
-            <div class="w3-row-padding">
-                <div class="w3-round w3-light-grey w3-cell">
-                    <fieldset>
-                        <legend> Setup of number of starts 1..4 </legend>
-                        <p></p>
-                        Number of starts: <select name="num_starts" id="num_starts">
-                            <option <?php if(isset($num_starts) && $num_starts == "1"){echo "selected=\"selected\"";} ?> value="1">1</option>
-                            <option <?php if(isset($num_starts) && $num_starts == "2"){echo "selected=\"selected\"";} ?> value="2">2</option>
-                            <option <?php if(isset($num_starts) && $num_starts == "3"){echo "selected=\"selected\"";} ?> value="3">3</option>
-                            <option <?php if(isset($num_starts) && $num_starts == "4"){echo "selected=\"selected\"";} ?> value="4">4</option>
-                        </select>
-                        <p></p>
-                        <!-- Option that should be hidden when only one start -->
-                        <div id="secondOptionContainer" style="display: none;">
-                            <span id="secondOptionText">In case of 2 starts, duration between the starts:</span>
-                            <select name="dur_between_starts" id="dur_between_starts">
-                                <option <?php if(isset($dur_between_starts) && $dur_between_starts == "5"){echo "selected=\"selected\"";} ?> value="5">5</option>
-                                <option <?php if(isset($dur_between_starts) && $dur_between_starts == "10"){echo "selected=\"selected\"";} ?> value="10">10</option>
-                                <option <?php if(isset($dur_between_starts) && $dur_between_starts == "10"){echo "selected=\"selected\"";} ?> value="10">15</option>
-                            </select>
-                        </div>
-                    </fieldset>
-                </div>
+            <div class="w3-round w3-light-grey w3-cell">
+                <fieldset>
+                    <legend id="startsLegend">Setup of number of starts</legend>
+                    <p></p>
+                    Start mode:
+                    <select name="start_mode" id="start_mode">
+                        <option value="standard"   <?php if ($start_mode == "standard")   echo "selected"; ?>>Standard (5, 4, 1 min signals + start)</option>
+                        <option value="continuous" <?php if ($start_mode == "continuous") echo "selected"; ?>>Continuous (start picture only)</option>
+                    </select>
+                    <p></p>
+                    Number of starts: <select name="num_starts" id="num_starts"></select>
+                    <p></p>
+                    <div id="secondOptionContainer" style="display: none;">
+                        <span id="secondOptionText"></span>
+                        <select name="dur_between_starts" id="dur_between_starts"></select>
+                    </div>
+                </fieldset>
             </div>
             <div>
                 <p>
@@ -293,25 +291,70 @@
 </footer>
 <!-- JavaScript to show/hide the second option based on the condition 1 or 2 starts -->
 <script>
-    // JavaScript to show/hide the second option based on the condition 1 or 2 starts
-    document.addEventListener('DOMContentLoaded', function() {
-        var numStarts = <?php echo json_encode($num_starts); ?>;
-        var secondOptionContainer = document.getElementById('secondOptionContainer');
-        toggleSecondOption(numStarts, secondOptionContainer);
+    const SAVED = {
+        mode: <?php echo json_encode($start_mode); ?>,
+        num:  <?php echo json_encode((string)$num_starts); ?>,
+        dur:  <?php echo json_encode((string)$dur_saved); ?>
+    };
 
-        document.querySelector('select[name="num_starts"]').addEventListener('change', function(event) {
-            var selectedValue = event.target.value;
-            toggleSecondOption(selectedValue, secondOptionContainer);
+    const CONFIG = {
+        standard: {
+            maxStarts: 4,
+            durations: [5, 10, 15],
+            defaultDur: "5",
+            legend: "Setup of number of starts 1..4",
+            text: "In case of 2 or more starts, duration between the starts:"
+        },
+        continuous: {
+            maxStarts: 20,
+            durations: [1, 2, 3, 5],
+            defaultDur: "2",
+            legend: "Continuous starts 1..20 (one picture per start, no 5/4/1 min signals)",
+            text: "Duration between the starts (minutes):"
+        }
+    };
+
+    function fillSelect(select, values, wanted, fallback) {
+        const strValues = values.map(String);
+        const chosen = strValues.includes(wanted) ? wanted : fallback;
+        select.innerHTML = "";
+        strValues.forEach(v => {
+            const opt = document.createElement("option");
+            opt.value = v;
+            opt.textContent = v;
+            if (v === chosen) opt.selected = true;
+            select.appendChild(opt);
         });
-    });
+    }
 
     function toggleSecondOption(numStarts, containerElement) {
-        if (numStarts == 1) {
-            containerElement.style.display = 'none';
-        } else {
-            containerElement.style.display = 'block';
-        }
+        containerElement.style.display = (numStarts == 1) ? 'none' : 'block';
     }
+
+    function applyMode(mode, wantedNum, wantedDur) {
+        const cfg = CONFIG[mode] || CONFIG.standard;
+        const nums = Array.from({length: cfg.maxStarts}, (_, i) => i + 1);
+        fillSelect(document.getElementById("num_starts"), nums, wantedNum, "1");
+        fillSelect(document.getElementById("dur_between_starts"), cfg.durations, wantedDur, cfg.defaultDur);
+        document.getElementById("startsLegend").textContent = cfg.legend;
+        document.getElementById("secondOptionText").textContent = cfg.text;
+        toggleSecondOption(document.getElementById("num_starts").value,
+                           document.getElementById("secondOptionContainer"));
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        applyMode(SAVED.mode, SAVED.num, SAVED.dur);
+
+        document.getElementById("start_mode").addEventListener("change", function (e) {
+            applyMode(e.target.value,
+                      document.getElementById("num_starts").value,
+                      document.getElementById("dur_between_starts").value);
+        });
+
+        document.getElementById("num_starts").addEventListener("change", function (e) {
+            toggleSecondOption(e.target.value, document.getElementById("secondOptionContainer"));
+        });
+    });
 </script>
 </body>
 </html>
