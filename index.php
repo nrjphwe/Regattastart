@@ -92,7 +92,7 @@
         function showPlaceholder() {
             var imageContainer = document.getElementById('image-container');
             var images = imageContainer.getElementsByTagName('img');
-            var placeholderText = 'Pictures pending until 5 minutes before start';
+            var placeholderText = PLACEHOLDER_TEXT;
             // Check if there are images and if all images have loaded
             if (images.length > 0 && Array.from(images).every(img => img.complete)) {
                 // Remove any existing placeholder text
