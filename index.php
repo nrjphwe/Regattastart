@@ -88,7 +88,7 @@
         ? 'Pictures pending until first start'
         : 'Pictures pending until 5 minutes before start'); ?>;</script>
     <script> 
-    // JavaScript function showPlaceholder 
+    // JavaScript function showPlaceholder
         function showPlaceholder() {
             var imageContainer = document.getElementById('image-container');
             var images = imageContainer.getElementsByTagName('img');
