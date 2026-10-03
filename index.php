@@ -169,7 +169,7 @@
             list($start_hour, $start_minute) = explode(':', $start_time);
 
             // Add video_end (duration after start) and additional 2 minutes
-            $video_end_time_minutes = $start_time_minutes + $video_end + 2 + $dur_between_starts * ($num_starts - 1);
+            $video_end_time_minutes = ($start_time_minutes + $video_end + 2 + $dur_between_starts * ($num_starts - 1)) % 1440;
 
             // Convert video end time back to HH:MM format
             $video_end_hour = floor($video_end_time_minutes / 60);
