@@ -48,7 +48,10 @@
     $num_starts = $formData['num_starts'] ?? null;
     // Extract relevant session data
     extract($formData); // This will create variables like $start_time, $video_end, etc.
+    $start_mode = $formData['start_mode'] ?? 'standard';   // 'standard' | 'continuous'
+    $continuous = ($start_mode === 'continuous');
     console_log("First start time: " . $start_time);
+
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['stop_recording'])) 
     {
@@ -81,7 +84,11 @@
     <link rel="icon" type="image/x-icon" href="/sailing-icon.jpeg">
     <!-- JavaScript to dynamically add a placeholder text or an image to the page when -->
     <!-- there are no pictures available yet. -->
-    <script> // JavaScript function showPlaceholder 
+     <script>const PLACEHOLDER_TEXT = <?php echo json_encode($continuous
+        ? 'Pictures pending until first start'
+        : 'Pictures pending until 5 minutes before start'); ?>;</script>
+    <script> 
+    // JavaScript function showPlaceholder 
         function showPlaceholder() {
             var imageContainer = document.getElementById('image-container');
             var images = imageContainer.getElementsByTagName('img');
@@ -143,34 +150,14 @@
 
         if ($num_starts >= 2) {
             echo ", duration between starts: $dur_between_starts min";
-            // Calculate second start time in minutes
-            $second_start_time_minutes = $start_time_minutes + $dur_between_starts * 1;
-            // Convert second start time back to hours and minutes
-            $second_start_hour = floor($second_start_time_minutes / 60);
-            $second_start_minute = $second_start_time_minutes % 60;
-            $second_start_time = sprintf('%02d:%02d', $second_start_hour, $second_start_minute);
-            echo ", 2nd Start at: $second_start_time";
+            $ordinals = [2 => '2nd', 3 => '3rd'];
+            for ($i = 2; $i <= $num_starts; $i++) {
+                $t = $start_time_minutes + $dur_between_starts * ($i - 1);
+                $label = $ordinals[$i] ?? "{$i}th";
+                echo ", $label Start at: " . sprintf('%02d:%02d', floor($t / 60), $t % 60);
+            }
         }
-        if ($num_starts >= 3) {
-             // Calculate third start time in minutes
-            $third_start_time_minutes = $start_time_minutes + $dur_between_starts * 2;
-            // Convert third start time back to hours and minutes
-            $third_start_hour = floor($third_start_time_minutes / 60);
-            $third_start_minute = $third_start_time_minutes % 60;
-            // Format third start time
-            $third_start_time = sprintf('%02d:%02d', $third_start_hour, $third_start_minute);
-            echo ", 3rd Start at: $third_start_time";
-        }
-        if ($num_starts >= 4) {
-             // Calculate fourth start time in minutes
-            $fourth_start_time_minutes = $start_time_minutes + $dur_between_starts * 3;
-            // Convert fourth start time back to hours and minutes
-            $fourth_start_hour = floor($fourth_start_time_minutes / 60);
-            $fourth_start_minute = $fourth_start_time_minutes % 60;
-            // Format fourth start time
-            $fourth_start_time = sprintf('%02d:%02d', $fourth_start_hour, $fourth_start_minute);
-            echo ", 4th Start at: $fourth_start_time";
-        }
+
         if (isset($video_dur)) {
             echo "<br>";
             echo " Video duration: $video_dur min,"  ;
@@ -219,7 +206,7 @@
     </header>
     <!-- Here is our page's main content -->
     <main>
-        <!-- Top 3 button container -->
+        <!-- Top button container -->
         <div class="button-container">
             <!-- Link to index8 -->
             <button class="w3-button w3-border w3-large w3-round-large w3-hover-grey w3-blue">
@@ -227,89 +214,85 @@
                     Regattastart8 - image detection Yolov8
                 </a>
             </button>
-            <!-- 
-            <button class="w3-button w3-border w3-large w3-round-large w3-hover-grey w3-green">
-                <a href="/index9.php" title="Setup page Regattastart9" style="text-decoration: none; color: white;">
-                    Regattastart9 - image detection Yolov5
-                </a>
-            </button>
-            <button class="w3-button w3-border w3-small w3-round-large w3-hover-grey w3-red">
-                <a href="/index10.php" title="Setup page Regattastart10 " style="text-decoration: none; color: white;">
-                    Regattastart10 with image & number detection
-                </a>
-            </button>
-            -->
         </div>
         <!-- Bilder tagna vid varje signal innan 1a start  -->
         <div style="text-align: center;" class="w3-panel w3-pale-blue">
-            <h3> Bilder tagna vid varje signal innan 1a start </h3>
+            <h3><?php echo $continuous
+                ? 'Bilder tagna vid varje start'
+                : 'Bilder tagna vid varje signal innan 1a start'; ?></h3>
         </div>
         <!-- Refresh button -->
         <div style="text-align: center;" class="w3-panel w3-pale-grey">
             <button type="button" class="w3-button w3-round-large w3-khaki w3-hover-red" onclick="return refreshThePage()">Refresh page</button>
         </div> 
 
-        <!-- Display pictures for the 1st start  -->
         <div style="text-align: center;">
-            <?php
-                $prev_start_ok = true; // 1st start has no prerequisite photo
-                for ($start_num = 1; $start_num <= $num_starts; $start_num++) {
-                    $prefix = "{$start_num}a_start";
-                    $labels = ['5_min' => '5 minuter', '4_min' => '4 minuter', '1_min' => '1 minut', 'Start' => null];
-                    if (!$prev_start_ok) break;
-
-                    echo "<div style='text-align: center;'>";
-                    $all_ok = true;
-                    foreach ($labels as $suffix => $label) {
-                        $filename = "{$prefix}_{$suffix}.jpg";
-                        $imagePath = 'images/' . $filename;
-                        if (file_exists($imagePath)) {
-                            $imagePath .= '?' . filemtime($imagePath);
-                            $heading = $label ? "Signal $label innan start $start_num" : "Foto vid start $start_num";
-                            echo "<h3>$heading</h3>";
-                            echo "<img id='$filename' src='$imagePath' alt='$filename' width='640' height='480'>";
-                        } else {
-                            console_log("picture $suffix start $start_num do not exist");
-                            $all_ok = false;
-                            break;
-                        }
-                    }
-                    echo "</div>";
-                    $prev_start_ok = $all_ok;
+        <?php
+        if ($continuous) {
+            for ($start_num = 1; $start_num <= $num_starts; $start_num++) {
+                $filename  = "{$start_num}a_start_Start.jpg";
+                $imagePath = 'images/' . $filename;
+                if (file_exists($imagePath)) {
+                    $imagePath .= '?' . filemtime($imagePath);
+                    echo "<div><h3>Foto vid start $start_num</h3>";
+                    echo "<img id='$filename' src='$imagePath' alt='$filename' width='640' height='480'></div>";
+                } else {
+                    console_log("picture Start $start_num do not exist");
+                    break; // later starts cannot exist yet
                 }
-                ?>
-            </div>
-        <!-- Display video0 when it is available -->
+            }
+        } else {
+            // ---- original standard procedure, unchanged ----
+            $prev_start_ok = true;
+            for ($start_num = 1; $start_num <= $num_starts; $start_num++) {
+                $prefix = "{$start_num}a_start";
+                $labels = ['5_min' => '5 minuter', '4_min' => '4 minuter', '1_min' => '1 minut', 'Start' => null];
+                if (!$prev_start_ok) break;
+                echo "<div style='text-align: center;'>";
+                $all_ok = true;
+                foreach ($labels as $suffix => $label) {
+                    $filename  = "{$prefix}_{$suffix}.jpg";
+                    $imagePath = 'images/' . $filename;
+                    if (file_exists($imagePath)) {
+                        $imagePath .= '?' . filemtime($imagePath);
+                        $heading = $label ? "Signal $label innan start $start_num" : "Foto vid start $start_num";
+                        echo "<h3>$heading</h3>";
+                        echo "<img id='$filename' src='$imagePath' alt='$filename' width='640' height='480'>";
+                    } else {
+                        console_log("picture $suffix start $start_num do not exist");
+                        $all_ok = false;
+                        break;
+                    }
+                }
+                echo "</div>";
+                $prev_start_ok = $all_ok;
+            }
+        }
+        ?>
+        </div>
+
+            <!-- Display video0 when it is available -->
         <div style="text-align: center;" class="w3-panel w3-pale-blue">
             <?php
-                // check if 1 or 2 starts
-                if ($num_starts == 2) 
-                { 
-                    // Check and display the start image
-                    if (file_exists('images/2a_start_Start.jpg'))
-                    {
-                        $video_name = 'images/video0.mp4';
-                        if (file_exists($video_name)) {
-                            echo "<h4> Video från 5 min före start och 2 min efter sista start</h4>";
-                            echo '<video id="video0" width = "640" height="480" controls><source src= ' . $video_name . ' type="video/mp4"></video><p>';
-                        } else {
-                            console_log("$video_name do not exists");
-                        }
-                    }
+            // Which picture must exist before video0 is shown?
+            if ($continuous || $num_starts == 2) {
+                $trigger_pic = "images/{$num_starts}a_start_Start.jpg";   // last start
+            } else {
+                $trigger_pic = 'images/1a_start_Start.jpg';               // original behaviour
+            }
+
+            if (file_exists($trigger_pic)) {
+                $video_name = 'images/video0.mp4';
+                if (file_exists($video_name)) {
+                    $txt = ($num_starts >= 2)
+                        ? "Video från 5 min före start och 2 min efter sista start"
+                        : "Video från 5 min före start och 2 min efter start";
+                    echo "<h4> $txt</h4>";
+                    echo '<video id="video0" width="640" height="480" controls><source src="' . $video_name . '" type="video/mp4"></video><p>';
                 } else {
-                    // Check if first start image exists
-                    if (file_exists('images/1a_start_Start.jpg'))
-                    {
-                        $video_name = 'images/video0.mp4';
-                        if (file_exists($video_name)) {
-                            //console_log("$video_name "is available");
-                            echo "<h4> Video från 5 min före start och 2 min efter start</h4>";
-                            echo '<video id="video0" width = "640" height="480" controls><source src= ' . $video_name . ' type="video/mp4"></video><p>';
-                        } else {
-                            console_log("$video_name do not exists");
-                        }
-                    }
+                    console_log("$video_name do not exists");
                 }
+            }
             ?>
         </div>
         <!-- Refresh button -->
