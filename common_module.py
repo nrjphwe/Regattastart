@@ -75,11 +75,13 @@ lamp1 = 21   # GPIO21 for lamp1 to pin 40 right bottom
 lamp2 = 26  # GPIO26 for lamp2 to pin 37 left 2nd from the bottom,
 # for new startmachine: input (IN3) green cable and red muff
 
-# for new startmachine GND Pin 39: yellow cable and long yellow muff 
+# for new startmachine GND Pin 39: yellow cable and long yellow muff
 
 """
-Purple GPIO 26 (37)-(38) GPIO 20 blue
-Grey Ground  (39)-(40) GPIO 21 Green
+(37) GPIO 26 (Lamp2) - Green cable and red muff
+(38) GPIO 20 (Signal) - Blue cable and long blue muff
+(39) GND (Ground) - Yellow cable and long yellow muff
+(40) GPIO 21 (Lamp1) - Yellow cable and long yellow muff
 """
 
 # Relay logic (ON = HIGH / 1, OFF = LOW / 0 with lgpio)
@@ -200,7 +202,16 @@ def setup_camera(resolution=(1640, 1232)):
 
         camera.configure(config)
         logger.info(f"size: {resolution}, format: BGR888")
-        return camera  # Add this line to return the camera object
+
+        # --- ADDED: Start camera and let AEC/AWB settle ---
+        camera.start()
+        time.sleep(1.0)  # Allow sensor exposure & white balance to converge
+        for _ in range(5):
+            _ = camera.capture_array("main")
+            time.sleep(0.05)
+
+        return camera
+    
     except Exception as e:
         logger.error(f"Failed to initialize camera: {e}")
         return None
@@ -414,14 +425,15 @@ class FFmpegVideoWriter:
             "-s", f"{width}x{height}",
             "-r", str(self.fps),
             "-i", "-",
-            "-vf", "format=bgr24",
+            # "-vf", "format=bgr24",
             "-an"
         ]
 
         if hw:
             # ffmpeg_cmd += ["-vf", "format=nv12", "-c:v", codec, "-b:v", "2M"]
             ffmpeg_cmd += [
-                "-vf", "format=nv12,colorspace=bt709",
+                "-vf", "sws_flags=bicubic,format=nv12",
+                # "-vf", "format=nv12,colorspace=bt709",
                 "-c:v", codec,
                 "-b:v", "2M"
             ]
@@ -595,6 +607,11 @@ def start_video_recording(camera, video_path, file_name, resolution=(1640, 1232)
     logger.debug(f"Will start video rec. output file: {output_file}")
     encoder = H264Encoder(bitrate=bitrate)
 
+    # --- FIX: Stop camera if it's currently running before applying new configuration ---
+    if camera.started:
+        logger.debug("Stopping camera prior to reconfiguration for video recording.")
+        camera.stop()
+
     # Configure the camera for video recording
     if ROTATE_CAMERA:
         video_config = camera.create_video_configuration(
@@ -615,6 +632,14 @@ def start_video_recording(camera, video_path, file_name, resolution=(1640, 1232)
 
     camera.configure(video_config)  # Configure before starting recording
     logger.info(f"video_config {video_config}, resolution: {resolution}, bitrate: {bitrate}")
+
+    # --- ADDED: Start stream briefly so exposure settles BEFORE recording ---
+    camera.start()
+    time.sleep(1.0)
+    for _ in range(5):
+        _ = camera.capture_array("main")
+        time.sleep(0.05)
+
     # Set the pre_callback to apply the timestamp AFTER configuration
     logger.debug("Setting pre_callback to apply_timestamp")
     logger.info(f"Starting recording to {output_file}")
@@ -801,7 +826,8 @@ def start_sequence(camera, first_start_time, num_starts, dur_between_starts, pho
                 break
 
             for event_time, action, label in time_intervals:
-                if abs((now - event_time).total_seconds()) <= 1 and (event_time, label) not in last_triggered:
+                if now >= event_time and (event_time, label) not in last_triggered:
+                # if abs((now - event_time).total_seconds()) <= 1 and (event_time, label) not in last_triggered:
                     logger.info(f"Triggering: {label} at {event_time}")
                     action()
                     if any(k in label for k in ["5_min", "4_min", "1_min", "Start"]):
