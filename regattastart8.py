@@ -7,6 +7,7 @@ from common_module import (
     restart_camera,
     start_video_recording,
     start_sequence,
+    start_sequence_continuous,
     stop_video_recording,
     logger,
     text_rectangle,
@@ -153,6 +154,7 @@ def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, i
     DETECTION_CONF_THRESHOLD = 0.5
     UNCERTAIN_CONF_FLOOR = 0.20
     max_duration = (video_end + (num_starts - 1) * 5) * 60
+    max_duration = (video_end + (num_starts - 1) * dur_between_starts) * 60
 
     os.makedirs('/var/www/html/images/training_data/', exist_ok=True)
 
@@ -375,6 +377,9 @@ def main():
         start_time_str = str(form_data["start_time"])
         dur_between_starts = int(form_data["dur_between_starts"])
 
+        start_mode = str(form_data.get("start_mode", "standard"))
+        logger.info(f"Start mode: {start_mode}")
+
         remove_picture_files(photo_path, ".jpg")
         remove_video_files(photo_path, "video")
         
@@ -398,7 +403,12 @@ def main():
         listen_thread.start()
 
         start_video_recording(camera, video_path, "video0.h264", resolution=(1640, 1232), bitrate=4000000)
-        start_sequence(camera, start_time_dt, num_starts, dur_between_starts, photo_path)
+
+        if start_mode == "continuous":
+            start_sequence_continuous(camera, start_time_dt, num_starts, dur_between_starts,
+                                    photo_path, stop_event=stop_event, sound_signal=True)
+        else:
+            start_sequence(camera, start_time_dt, num_starts, dur_between_starts, photo_path)
 
         last_start = start_time_dt + dt.timedelta(minutes=(num_starts - 1) * dur_between_starts)
         end_wait = last_start + dt.timedelta(minutes=2)
@@ -408,7 +418,7 @@ def main():
         stop_video_recording(camera)
         process_video(video_path, "video0.h264", "video0.mp4", mode="remux")
 
-        finish_recording(camera, video_path, num_starts, video_end, start_time_dt, fps)
+        finish_recording(camera, video_path, num_starts, video_end, start_time_dt, fps, dur_between_starts)
 
         with open(status_file, 'w') as f:
             f.write('complete')

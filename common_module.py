@@ -844,6 +844,42 @@ def start_sequence(camera, first_start_time, num_starts, dur_between_starts, pho
     cleanup_gpio(gpio_handle)
 
 
+def start_sequence_continuous(camera, first_start_time, num_starts, dur_between_starts,
+                              photo_path, stop_event=None, sound_signal=False):
+    """
+    Continuous mode: no 5/4/1 min procedure, no flag lamps.
+    Takes one picture at every start, saved as {n}a_start_Start.jpg
+    (same name that index.php already uses).
+    - sound_signal=True also fires the SIGNAL relay for 1 s at each start.
+    """
+    gpio_handle = None
+    SIGNAL = None
+    if sound_signal:
+        gpio_handle, SIGNAL, LAMP1, LAMP2 = setup_gpio()
+
+    try:
+        for i in range(num_starts):
+            start_time = first_start_time + dt.timedelta(minutes=i * dur_between_starts)
+            logger.info(f"Continuous start {i+1}/{num_starts} at {start_time}")
+
+            # Wait for this start (short sleep so the picture is on time)
+            while dt.datetime.now() < start_time:
+                if stop_event is not None and stop_event.is_set():
+                    logger.info("Continuous sequence aborted by stop_event")
+                    return
+                time.sleep(0.05)
+
+            if sound_signal:
+                trigger_relay(gpio_handle, SIGNAL, "on", 1)
+
+            capture_picture(camera, photo_path, f"{i+1}a_start_Start.jpg", rotate=ROTATE_CAMERA)
+            logger.info(f"Continuous start {i+1}: picture taken")
+    finally:
+        if gpio_handle is not None:
+            flush_pending_relay_timers(gpio_handle, [SIGNAL, LAMP1, LAMP2])
+            cleanup_gpio(gpio_handle)
+
+
 def clean_exit(camera=None, video_writer=None):
     """Release camera, video writer, and log clean shutdown."""
     logger.info("Clean exit initiated")
