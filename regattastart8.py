@@ -148,7 +148,7 @@ def get_throttle_status():
         return 0
 
 
-def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, initial_fps):
+def finish_recording(camera, video_path, num_starts, video_end, start_time_dt, initial_fps, dur_between_starts):
     global fps
     fps = initial_fps
     DETECTION_CONF_THRESHOLD = 0.5
